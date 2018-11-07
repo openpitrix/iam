@@ -33,4 +33,6 @@ message FieldValidator {
 	optional google.protobuf.Timestamp time_before = 10;
 	// Field time value after this value.
 	optional google.protobuf.Timestamp time_after = 11;
+	// Field value contains string elem.
+	repeated string repeated_contains_string = 12;
 }
