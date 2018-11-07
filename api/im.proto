@@ -8,6 +8,7 @@ package iam;
 
 option go_package = "openpitrix.io/iam/pkg/pb/iam;pbiam";
 
+import "filter.proto";
 import "google/protobuf/wrappers.proto";
 import "google/protobuf/timestamp.proto";
 
@@ -55,9 +56,6 @@ service AccountManager {
 	ListUesrs(Range) returns (ListUesrsResponse);
 	ListGroups(Range) returns (ListGroupsResponse);
 
-	SearchUsers(SearchUsersRequest) returns (SearchUsersResponse);
-	SearchGroups(SearchGroupsRequest) returns (SearchGroupsResponse);
-
 	ModifyUser(ModifyUsersRequest) returns (User);
 	ModifyGroup(ModifyGroupsRequest) returns (Group);
 
@@ -83,8 +81,9 @@ message IdList {
 	repeated string value = 1;
 }
 message Range {
-	int32 offset = 1;
-	int32 limit = 2;
+	map<string,FieldValidatorList> filter = 1;
+	int32 offset = 2;
+	int32 limit = 3;
 }
 message Password {
 	string uid = 1;
@@ -96,32 +95,7 @@ message ListUesrsResponse {
 	int32 total = 2;
 }
 message ListGroupsResponse {
-	repeated User user = 1;
-	int32 total = 2;
-}
-
-message SearchUsersRequest {
-	google.protobuf.StringValue uid = 1;
-	google.protobuf.StringValue name = 2;
-	google.protobuf.StringValue email = 3;
-	google.protobuf.StringValue description = 4;
-	google.protobuf.StringValue status = 5;
-	map<string,string> extra = 6;
-}
-message SearchUsersResponse {
-	repeated User user = 1;
-	int32 total = 2;
-}
-
-message SearchGroupsRequest {
-	google.protobuf.StringValue gid = 1;
-	google.protobuf.StringValue name = 2;
-	google.protobuf.StringValue description = 3;
-	google.protobuf.StringValue status = 4;
-	map<string,string> extra = 5;
-}
-message SearchGroupsResponse {
-	repeated User user = 1;
+	repeated Group group = 1;
 	int32 total = 2;
 }
 
