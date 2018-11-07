@@ -81,7 +81,7 @@ message IdList {
 	repeated string value = 1;
 }
 message Range {
-	map<string,FieldValidatorList> filter = 1;
+	map<string,FieldValidator> filter = 1;
 	int32 offset = 2;
 	int32 limit = 3;
 }
