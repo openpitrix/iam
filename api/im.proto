@@ -1,0 +1,147 @@
+// Copyright 2018 The OpenPitrix Authors. All rights reserved.
+// Use of this source code is governed by a Apache license
+// that can be found in the LICENSE file.
+
+syntax = "proto3";
+
+package iam;
+
+option go_package = "openpitrix.io/iam/pkg/pb/iam;pbiam";
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+
+// ----------------------------------------------------------------------------
+// basic type
+// ----------------------------------------------------------------------------
+
+message User {
+	string uid = 1;
+	string name = 2;
+	string email = 3;
+	string description = 4;
+	string password = 5;
+	string status = 6;
+	map<string,string> extra = 7;
+
+	google.protobuf.Timestamp create_time = 8;
+	google.protobuf.Timestamp update_time = 9;
+	google.protobuf.Timestamp status_time = 10;
+}
+
+message Group {
+	string gid = 1;
+	string name = 2;
+	string description = 3;
+	string status = 4;
+	map<string,string> extra = 5;
+
+ 	google.protobuf.Timestamp create_time = 6;
+	google.protobuf.Timestamp update_time = 7;
+	google.protobuf.Timestamp status_time = 8;
+}
+
+// ----------------------------------------------------------------------------
+// service api
+// ----------------------------------------------------------------------------
+
+service AccountManager {
+	CreateUser(User) returns (User);
+	CreateGroup(Group) returns (Group);
+
+	GetUser(Id) returns (User);
+	GetGroup(Id) returns (Group);
+
+	ListUesrs(Range) returns (ListUesrsResponse);
+	ListGroups(Range) returns (ListGroupsResponse);
+
+	SearchUsers(SearchUsersRequest) returns (SearchUsersResponse);
+	SearchGroups(SearchGroupsRequest) returns (SearchGroupsResponse);
+
+	ModifyUser(ModifyUsersRequest) returns (User);
+	ModifyGroup(ModifyGroupsRequest) returns (Group);
+
+	ComparePassword(Password) returns (Bool);
+	ModifyPassword(Password) returns (Bool);
+
+	DeleteUsers(IdList) returns (Bool);
+	DeleteGroups(IdList) returns (Bool);
+}
+
+// ----------------------------------------------------------------------------
+// service api type
+// ----------------------------------------------------------------------------
+
+message Bool {
+	bool value = 1;
+}
+
+message Id {
+	string value = 1;
+}
+message IdList {
+	repeated string value = 1;
+}
+message Range {
+	int32 offset = 1;
+	int32 limit = 2;
+}
+message Password {
+	string uid = 1;
+	string password = 2;
+}
+
+message ListUesrsResponse {
+	repeated User user = 1;
+	int32 total = 2;
+}
+message ListGroupsResponse {
+	repeated User user = 1;
+	int32 total = 2;
+}
+
+message SearchUsersRequest {
+	google.protobuf.StringValue uid = 1;
+	google.protobuf.StringValue name = 2;
+	google.protobuf.StringValue email = 3;
+	google.protobuf.StringValue description = 4;
+	google.protobuf.StringValue status = 5;
+	map<string,string> extra = 6;
+}
+message SearchUsersResponse {
+	repeated User user = 1;
+	int32 total = 2;
+}
+
+message SearchGroupsRequest {
+	google.protobuf.StringValue gid = 1;
+	google.protobuf.StringValue name = 2;
+	google.protobuf.StringValue description = 3;
+	google.protobuf.StringValue status = 4;
+	map<string,string> extra = 5;
+}
+message SearchGroupsResponse {
+	repeated User user = 1;
+	int32 total = 2;
+}
+
+message ModifyUsersRequest {
+	string uid = 1;
+	google.protobuf.StringValue name = 2;
+	google.protobuf.StringValue email = 3;
+	google.protobuf.StringValue description = 4;
+	google.protobuf.StringValue status = 5;
+	map<string,string> extra = 6;
+}
+
+message ModifyGroupsRequest {
+	string gid = 1;
+	google.protobuf.StringValue name = 2;
+	google.protobuf.StringValue description = 3;
+	google.protobuf.StringValue status = 4;
+	map<string,string> extra = 5;
+}
+
+// ----------------------------------------------------------------------------
+// END
+// ----------------------------------------------------------------------------
