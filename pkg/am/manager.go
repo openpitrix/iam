@@ -1,0 +1,63 @@
+// Copyright 2018 The OpenPitrix Authors. All rights reserved.
+// Use of this source code is governed by a Apache license
+// that can be found in the LICENSE file.
+
+package am
+
+import (
+	"context"
+
+	"openpitrix.io/iam/pkg/pb/am"
+)
+
+var (
+	_ pbam.AccessManagerServer = (*AccessManager)(nil)
+)
+
+type AccessManager struct {
+	p int
+}
+
+func NewAccessManager() *AccessManager {
+	return nil
+}
+
+func (p *AccessManager) CreateRole(ctx context.Context, req *pbam.Role) (*pbam.Role, error) {
+	panic("TODO")
+}
+
+func (p *AccessManager) ModifyRole(ctx context.Context, req *pbam.Role) (*pbam.Role, error) {
+	panic("TODO")
+}
+
+func (p *AccessManager) DeleteRoleByName(ctx context.Context, req *pbam.String) (*pbam.Bool, error) {
+	panic("TODO")
+}
+
+func (p *AccessManager) GetRoleByRoleName(ctx context.Context, req *pbam.String) (*pbam.Role, error) {
+	panic("TODO")
+}
+
+func (p *AccessManager) GetRoleByUserId(ctx context.Context, req *pbam.UserId) (*pbam.RoleList, error) {
+	panic("TODO")
+}
+
+func (p *AccessManager) ListRoles(ctx context.Context, req *pbam.Range) (*pbam.ListRolesResponse, error) {
+	panic("TODO")
+}
+
+func (p *AccessManager) CreateRoleBinding(ctx context.Context, req *pbam.RoleBindingList) (*pbam.Bool, error) {
+	panic("TODO")
+}
+
+func (p *AccessManager) DeleteRoleBinding(ctx context.Context, req *pbam.RoleBindingList) (*pbam.Bool, error) {
+	panic("TODO")
+}
+
+func (p *AccessManager) DeleteAllRoleBindings(ctx context.Context, req *pbam.UserId) (*pbam.Bool, error) {
+	panic("TODO")
+}
+
+func (p *AccessManager) IsGranted(ctx context.Context, req *pbam.Action) (*pbam.Bool, error) {
+	panic("TODO")
+}
