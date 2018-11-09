@@ -1,0 +1,85 @@
+// Copyright 2018 The OpenPitrix Authors. All rights reserved.
+// Use of this source code is governed by a Apache license
+// that can be found in the LICENSE file.
+
+syntax = "proto3";
+
+package iam;
+
+option go_package = "openpitrix.io/iam/pkg/pb/iam;pbiam";
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+
+// ----------------------------------------------------------------------------
+// basic type
+// ----------------------------------------------------------------------------
+
+message Rule {
+	repeated string verbs = 1;
+	repeated string path = 2;
+}
+
+message Role {
+	string name = 1; // primary key
+	repeated Rule rule = 2;
+}
+
+// ----------------------------------------------------------------------------
+// service api
+// ----------------------------------------------------------------------------
+
+service AccessManager {
+	CreateRole(Role) returns (Role);
+	ModifyRole(Role) returns (Role);
+	DeleteRoleByName(String) returns (Bool);
+
+	GetRoleByRoleName(String) returns (Role);
+	GetRoleByUserId(Id) returns (RoleList);
+	ListRoles(Range) returns (ListRolesResponse);
+
+	CreateRoleBinding(RoleBindingList) returns (Bool);
+	DeleteRoleBinding(RoleBindingList) returns (Bool);
+}
+
+// ----------------------------------------------------------------------------
+// service api type
+// ----------------------------------------------------------------------------
+
+message Bool {
+	bool value = 1;
+}
+message String {
+	string value = 1;
+}
+
+message Id {
+	string value = 1;
+}
+message IdList {
+	repeated string value = 1;
+}
+
+message Range {
+	string role_name_regexp = 1;
+	int32 offset = 2;
+	int32 limit = 3;
+}
+
+message ListRolesResponse {
+	repeated Role role = 1;
+	int32 total = 2;
+}
+
+message RoleBinding {
+	string uid = 1;
+	string role_name = 2;
+}
+message RoleBindingList {
+	string uid = 1;
+	string role_name = 2;
+}
+
+// ----------------------------------------------------------------------------
+// END
+// ----------------------------------------------------------------------------
