@@ -4,12 +4,9 @@
 
 syntax = "proto3";
 
-package iam;
+package iam.am;
 
-option go_package = "openpitrix.io/iam/pkg/pb/iam;pbiam";
-
-import "google/protobuf/wrappers.proto";
-import "google/protobuf/timestamp.proto";
+option go_package = "openpitrix.io/iam/pkg/pb/am;pbam";
 
 // ----------------------------------------------------------------------------
 // basic type
@@ -47,6 +44,10 @@ message Role {
 	repeated Rule rule = 2;
 }
 
+message RoleList {
+	repeated Role value = 1;
+}
+
 message Action {
 	string uid = 1;
 	string role_name = 2;
@@ -60,19 +61,19 @@ message Action {
 // ----------------------------------------------------------------------------
 
 service AccessManager {
-	CreateRole(Role) returns (Role);
-	ModifyRole(Role) returns (Role);
-	DeleteRoleByName(String) returns (Bool);
+	rpc CreateRole(Role) returns (Role);
+	rpc ModifyRole(Role) returns (Role);
+	rpc DeleteRoleByName(String) returns (Bool);
 
-	GetRoleByRoleName(String) returns (Role);
-	GetRoleByUserId(UserId) returns (RoleList);
-	ListRoles(Range) returns (ListRolesResponse);
+	rpc GetRoleByRoleName(String) returns (Role);
+	rpc GetRoleByUserId(UserId) returns (RoleList);
+	rpc ListRoles(Range) returns (ListRolesResponse);
 
-	CreateRoleBinding(RoleBindingList) returns (Bool);
-	DeleteRoleBinding(RoleBindingList) returns (Bool);
-	DeleteAllRoleBindings(UserId) returns (Bool);
+	rpc CreateRoleBinding(RoleBindingList) returns (Bool);
+	rpc DeleteRoleBinding(RoleBindingList) returns (Bool);
+	rpc DeleteAllRoleBindings(UserId) returns (Bool);
 
-	IsGranted(Action) returns (Bool);
+	rpc IsGranted(Action) returns (Bool);
 }
 
 // ----------------------------------------------------------------------------

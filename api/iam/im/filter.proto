@@ -4,9 +4,9 @@
 
 syntax = "proto2";
 
-package iam;
+package iam.im;
 
-option go_package = "openpitrix.io/iam/pkg/pb/iam;pbiam";
+option go_package = "openpitrix.io/iam/pkg/pb/im;pbim";
 
 import "google/protobuf/timestamp.proto";
 

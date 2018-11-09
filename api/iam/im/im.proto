@@ -4,13 +4,13 @@
 
 syntax = "proto3";
 
-package iam;
+package iam.im;
 
-option go_package = "openpitrix.io/iam/pkg/pb/iam;pbiam";
+option go_package = "openpitrix.io/iam/pkg/pb/im;pbim";
 
-import "filter.proto";
-import "google/protobuf/wrappers.proto";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "iam/im/filter.proto";
 
 // ----------------------------------------------------------------------------
 // basic type
@@ -55,23 +55,23 @@ message Group {
 // ----------------------------------------------------------------------------
 
 service AccountManager {
-	CreateUser(User) returns (User);
-	CreateGroup(Group) returns (Group);
+	rpc CreateUser(User) returns (User);
+	rpc CreateGroup(Group) returns (Group);
 
-	GetUser(Id) returns (User);   // include groups
-	GetGroup(Id) returns (Group); // include users
+	rpc GetUser(Id) returns (User);   // include groups
+	rpc GetGroup(Id) returns (Group); // include users
 
-	ListUesrs(Range) returns (ListUesrsResponse);
-	ListGroups(Range) returns (ListGroupsResponse);
+	rpc ListUesrs(Range) returns (ListUesrsResponse);
+	rpc ListGroups(Range) returns (ListGroupsResponse);
 
-	ModifyUser(ModifyUsersRequest) returns (User);
-	ModifyGroup(ModifyGroupsRequest) returns (Group);
+	rpc ModifyUser(ModifyUsersRequest) returns (User);
+	rpc ModifyGroup(ModifyGroupsRequest) returns (Group);
 
-	ComparePassword(Password) returns (Bool);
-	ModifyPassword(Password) returns (Bool);
+	rpc ComparePassword(Password) returns (Bool);
+	rpc ModifyPassword(Password) returns (Bool);
 
-	DeleteUsers(IdList) returns (Bool);
-	DeleteGroups(IdList) returns (Bool);
+	rpc DeleteUsers(IdList) returns (Bool);
+	rpc DeleteGroups(IdList) returns (Bool);
 }
 
 // ----------------------------------------------------------------------------
