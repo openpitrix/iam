@@ -29,8 +29,8 @@ message Action {
 	string uid = 1;
 	string role_name = 2;
 
-	repeated string verbs = 3;
-	repeated string path = 4;
+	string verbs = 3;
+	string path = 4;
 }
 
 // ----------------------------------------------------------------------------
