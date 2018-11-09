@@ -25,6 +25,14 @@ message Role {
 	repeated Rule rule = 2;
 }
 
+message Action {
+	string uid = 1;
+	string role_name = 2;
+
+	repeated string verbs = 3;
+	repeated string path = 4;
+}
+
 // ----------------------------------------------------------------------------
 // service api
 // ----------------------------------------------------------------------------
@@ -40,6 +48,8 @@ service AccessManager {
 
 	CreateRoleBinding(RoleBindingList) returns (Bool);
 	DeleteRoleBinding(RoleBindingList) returns (Bool);
+
+	IsGranted(Action) returns (Bool);
 }
 
 // ----------------------------------------------------------------------------
