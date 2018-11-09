@@ -2,13 +2,8 @@
 // Use of this source code is governed by a Apache license
 // that can be found in the LICENSE file.
 
-// openpitrix Identity Management service app.
-package main
+package am
 
-import (
-	"openpitrix.io/iam/pkg/am"
-)
-
-func main() {
-	am.Main()
+func Main() {
+	//
 }
