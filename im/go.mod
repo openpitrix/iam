@@ -2,4 +2,4 @@
 // Use of this source code is governed by a Apache license
 // that can be found in the LICENSE file.
 
-module openpitrix.io/iam
+module openpitrix.io/iam/im

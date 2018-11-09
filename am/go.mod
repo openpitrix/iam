@@ -2,5 +2,4 @@
 // Use of this source code is governed by a Apache license
 // that can be found in the LICENSE file.
 
-// Identity and Access Management System for OpenPitrix.
-package iam
+module openpitrix.io/iam/am
