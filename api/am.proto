@@ -15,9 +15,31 @@ import "google/protobuf/timestamp.proto";
 // basic type
 // ----------------------------------------------------------------------------
 
+// GET /api/v1/repos/repo-abcd/create_time
+//	verbs: GET
+//	api_version: v1
+//	api_group: null
+//	resource: repos
+//	resource_name: repo-abcd
+//	sub_resource: create_time
+//	non_resource: null
+
+// get user runtimes
+//	GET /api/v1/users/user-name/runtimes
+//	GET /api/v1/runtimes/rt-abcd/cpu-num
+
 message Rule {
-	repeated string verbs = 1;
-	repeated string path = 2;
+	repeated string verbs = 1; // '*' is all
+
+	string api_version = 2;    // '*' is all
+	string api_group = 3;      // '*' is all
+	string resource = 4;       // '*' is all
+
+	repeated string resource_name = 5;
+	repeated string sub_resource_regexp = 6;
+	repeated string non_resource = 7;
+
+	map<string,string> extra = 8;
 }
 
 message Role {
