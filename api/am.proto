@@ -43,11 +43,12 @@ service AccessManager {
 	DeleteRoleByName(String) returns (Bool);
 
 	GetRoleByRoleName(String) returns (Role);
-	GetRoleByUserId(Id) returns (RoleList);
+	GetRoleByUserId(UserId) returns (RoleList);
 	ListRoles(Range) returns (ListRolesResponse);
 
 	CreateRoleBinding(RoleBindingList) returns (Bool);
 	DeleteRoleBinding(RoleBindingList) returns (Bool);
+	DeleteAllRoleBindings(UserId) returns (Bool);
 
 	IsGranted(Action) returns (Bool);
 }
@@ -63,11 +64,8 @@ message String {
 	string value = 1;
 }
 
-message Id {
+message UserId {
 	string value = 1;
-}
-message IdList {
-	repeated string value = 1;
 }
 
 message Range {
