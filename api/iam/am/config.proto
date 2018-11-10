@@ -1,0 +1,30 @@
+// Copyright 2018 The OpenPitrix Authors. All rights reserved.
+// Use of this source code is governed by a Apache license
+// that can be found in the LICENSE file.
+
+syntax = "proto2";
+
+package iam.am;
+
+option go_package = "openpitrix.io/iam/pkg/pb/am;pbam";
+
+import "google/protobuf/timestamp.proto";
+
+message Config {
+	optional string log_level = 1; // debug, info, warn, error, fatal
+	optional MysqlConfig mysql = 2;
+
+	// TODO: rule file
+
+	map<string,string> extra = 100;
+}
+
+message MysqlConfig {
+	optional string host = 1 [default="openpitrix-db"];
+	optional int32 port = 2 [default=3306];
+
+	optional string user = 3 [default="root"];
+	optional string password = 4 [default="password"];
+
+	optional string database = 5 [default="openpitrix"];
+}
