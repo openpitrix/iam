@@ -25,9 +25,20 @@ option go_package = "openpitrix.io/iam/pkg/pb/am;pbam";
 //	GET /api/v1/users/user-name/runtimes
 //	GET /api/v1/runtimes/rt-abcd/cpu-num
 
+message Action {
+	string uid = 1;
+	string role_name = 2;
+
+	string verbs = 3;
+	string path = 4;
+}
+
 message Rule {
 	repeated string verbs = 1; // '*' is all
+	Resource resource = 2;
+}
 
+message Resource {
 	string api_version = 2;    // '*' is all
 	string api_group = 3;      // '*' is all
 	string resource = 4;       // '*' is all
@@ -43,17 +54,17 @@ message Role {
 	string name = 1; // primary key
 	repeated Rule rule = 2;
 }
-
 message RoleList {
 	repeated Role value = 1;
 }
 
-message Action {
+message RoleBinding {
 	string uid = 1;
 	string role_name = 2;
-
-	string verbs = 3;
-	string path = 4;
+}
+message RoleBindingList {
+	string uid = 1;
+	string role_name = 2;
 }
 
 // ----------------------------------------------------------------------------
@@ -102,14 +113,6 @@ message ListRolesResponse {
 	int32 total = 2;
 }
 
-message RoleBinding {
-	string uid = 1;
-	string role_name = 2;
-}
-message RoleBindingList {
-	string uid = 1;
-	string role_name = 2;
-}
 
 // ----------------------------------------------------------------------------
 // END
