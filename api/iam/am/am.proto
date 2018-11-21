@@ -12,6 +12,9 @@ option go_package = "openpitrix.io/iam/pkg/pb/am;pbam";
 // basic type
 // ----------------------------------------------------------------------------
 
+// TODO: all op url
+// TODO: swagger
+
 // GET /api/v1/repos/repo-abcd/create_time
 //	verbs: GET
 //	api_version: v1
