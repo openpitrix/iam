@@ -38,24 +38,24 @@ RBAC重点涉及以下几个概念:
 ```go
 // app.proto
 
-// CreateApp        POST   /v1/apps
-// GetAppStatistics GET    /v1/apps/statistics
-// DescribeApps     GET    /v1/apps
-// ModifyApp        PATCH  /v1/apps
-// DeleteApps       DELETE /v1/app
-// CreateAppVersion POST   /v1/app_versions
-// DescribeAppVersions GET /v1/app_versions
-// ModifyAppVersion PATCH /v1/app_versions
-// GetAppVersionPackage GET /v1/app_version/package
-// GetAppVersionPackageFiles GET /v1/app_version/package/files
-// SubmitAppVersion POST /v1/app_version/action/submit
-// CancelAppVersion POST /v1/app_version/action/cancel
-// ReleaseAppVersion POST /v1/app_version/action/release
-// DeleteAppVersion POST /v1/app_version/action/delete
-// PassAppVersion POST /v1/app_version/action/pass
-// RejectAppVersion POST /v1/app_version/action/reject
-// SuspendAppVersion POST /v1/app_version/action/suspend
-// RecoverAppVersion POST /v1/app_version/action/recover
+// CreateApp                 POST   /v1/apps
+// GetAppStatistics          GET    /v1/apps/statistics
+// DescribeApps              GET    /v1/apps
+// ModifyApp                 PATCH  /v1/apps
+// DeleteApps                DELETE /v1/app
+// CreateAppVersion          POST   /v1/app_versions
+// DescribeAppVersions       GET    /v1/app_versions
+// ModifyAppVersion          PATCH  /v1/app_versions
+// GetAppVersionPackage      GET    /v1/app_version/package
+// GetAppVersionPackageFiles GET    /v1/app_version/package/files
+// SubmitAppVersion          POST   /v1/app_version/action/submit
+// CancelAppVersion          POST   /v1/app_version/action/cancel
+// ReleaseAppVersion         POST   /v1/app_version/action/release
+// DeleteAppVersion          POST   /v1/app_version/action/delete
+// PassAppVersion            POST   /v1/app_version/action/pass
+// RejectAppVersion          POST   /v1/app_version/action/reject
+// SuspendAppVersion         POST   /v1/app_version/action/suspend
+// RecoverAppVersion         POST   /v1/app_version/action/recover
 ```
 
 请求的数据流程
