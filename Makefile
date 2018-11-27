@@ -4,6 +4,12 @@
 
 default:
 
+test:
+	make generate
+	go fmt ./...
+	go vet ./...
+	go test ./...
+
 dev:
 	git describe --tags --always > ./_version
 	git describe --exact-match || echo latest > ./_version

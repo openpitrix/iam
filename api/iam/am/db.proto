@@ -9,11 +9,22 @@ package iam.am;
 option go_package = "openpitrix.io/iam/pkg/pb/am;pbam";
 
 message DbSchema {
-	optional string engine = 1 [
+	optional string dbname = 1 [
+		default = "openpitrix"
+	];
+
+	optional string engine = 2 [
 		default = "InnoDB"
 	];
-	optional string encoding = 2 [
+	optional string encoding = 3 [
 		default = "UTF8"
+	];
+
+	optional string tables = 4 [
+		default = ""
+			"DbTableSchema_Role,"
+			"DbTableSchema_RoleBinding,"
+		";"
 	];
 }
 
