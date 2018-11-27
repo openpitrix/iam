@@ -20,6 +20,7 @@ docker:
 
 generate:
 	cd api && make
+	go generate ./...
 
 tools:
 	# 1. install protoc from https://github.com/protocolbuffers/protobuf/releases
