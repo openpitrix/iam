@@ -38,11 +38,11 @@ func (p *AccessManager) GetRoleByRoleName(ctx context.Context, req *pbam.String)
 	panic("TODO")
 }
 
-func (p *AccessManager) GetRoleByUserId(ctx context.Context, req *pbam.UserId) (*pbam.RoleList, error) {
+func (p *AccessManager) GetRoleByXidList(ctx context.Context, req *pbam.XidList) (*pbam.RoleList, error) {
 	panic("TODO")
 }
 
-func (p *AccessManager) ListRoles(ctx context.Context, req *pbam.Range) (*pbam.ListRolesResponse, error) {
+func (p *AccessManager) ListRoles(ctx context.Context, req *pbam.RoleNameRegexp) (*pbam.RoleList, error) {
 	panic("TODO")
 }
 
@@ -54,10 +54,10 @@ func (p *AccessManager) DeleteRoleBinding(ctx context.Context, req *pbam.RoleBin
 	panic("TODO")
 }
 
-func (p *AccessManager) DeleteAllRoleBindings(ctx context.Context, req *pbam.UserId) (*pbam.Bool, error) {
+func (p *AccessManager) DeleteAllRoleBindings(ctx context.Context, req *pbam.XidList) (*pbam.Bool, error) {
 	panic("TODO")
 }
 
-func (p *AccessManager) IsGranted(ctx context.Context, req *pbam.Action) (*pbam.Bool, error) {
+func (p *AccessManager) CanDo(ctx context.Context, req *pbam.Action) (*pbam.Bool, error) {
 	panic("TODO")
 }
