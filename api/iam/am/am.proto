@@ -21,7 +21,7 @@ option go_package = "openpitrix.io/iam/pkg/pb/am;pbam";
 //		'**'        matches any sequence of characters, include path separators.
 //		'?'         matches any single non-Separator character
 //		'[' [ '^' ] { character-range } ']'
-//					character class (must be non-empty)
+//		            character class (must be non-empty)
 //		c           matches character c (c != '*', '?', '\\', '[')
 //		'\\' c      matches character c
 //
