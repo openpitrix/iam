@@ -9,13 +9,20 @@ import (
 )
 
 type Interface interface {
-	All() []pbam.Role
-	Get(name string) (role pbam.Role, ok bool)
 	CanDo(x pbam.Action) bool
 
-	Create(name string, rule []pbam.Rule) error
-	Modify(name string, rule []pbam.Rule) error
-	Delete(name string) error
+	AllRoles() []pbam.Role
+	AllRoleBindings() []pbam.RoleBinding
+
+	GetRoleByName(name string) (role pbam.Role, ok bool)
+	GetRoleByXid(xid []string) pbam.RoleList
+
+	CreateRole(role pbam.Role) error
+	ModifyRole(role pbam.Role) error
+	DeleteRole(name string) error
+
+	CreateRoleBinding(x []pbam.RoleBinding) error
+	DeleteRoleBinding(xid []string) error
 
 	Close() error
 }

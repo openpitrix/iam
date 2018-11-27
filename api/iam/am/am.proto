@@ -68,8 +68,7 @@ message RoleBinding {
 	string xid = 2;
 }
 message RoleBindingList {
-	string role_name = 1;
-	string xid = 2;
+	repeated RoleBinding value = 1;
 }
 
 // ----------------------------------------------------------------------------
