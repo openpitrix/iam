@@ -1,4 +1,4 @@
-# iam - Identity and Access Management System #558
+# iam - Identity and Access Management System
 
 [![Build Status](https://travis-ci.org/openpitrix/iam.svg)](https://travis-ci.org/openpitrix/iam)
 [![Go Report Card](https://goreportcard.com/badge/openpitrix.io/iam)](https://goreportcard.com/report/openpitrix.io/iam)
