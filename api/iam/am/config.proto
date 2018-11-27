@@ -8,13 +8,13 @@ package iam.am;
 
 option go_package = "openpitrix.io/iam/pkg/pb/am;pbam";
 
-import "google/protobuf/timestamp.proto";
+import "iam/am/am.proto";
 
 message Config {
 	optional string log_level = 1; // debug, info, warn, error, fatal
 	optional MysqlConfig mysql = 2;
 
-	// TODO: rule file
+	repeated Role role_rule_list = 3;
 
 	map<string,string> extra = 100;
 }
