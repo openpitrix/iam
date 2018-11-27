@@ -34,9 +34,9 @@ type DBOptions struct {
 }
 
 func OpenDatabase(dbpath string, opt *DBOptions) (Interface, error) {
-	panic("TODO")
+	return openDatabase(dbpath, opt)
 }
 
-func OpenFile(jsonFile string) (Interface, error) {
-	panic("TODO")
+func OpenFile(jsonpath string) (Interface, error) {
+	return openFileServer(jsonpath)
 }
