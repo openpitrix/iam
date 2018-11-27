@@ -5,6 +5,7 @@
 module openpitrix.io/iam
 
 require (
+	github.com/bmatcuk/doublestar v1.1.1
 	github.com/golang/protobuf v1.2.0
 	github.com/urfave/cli v1.20.0
 	golang.org/x/net v0.0.0-20181108082009-03003ca0c849

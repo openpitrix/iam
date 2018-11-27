@@ -95,3 +95,23 @@ RBAC重点涉及以下几个概念:
 <!--
 RBAC的扩展信息可以放到pb里面，自动生成代码
 -->
+
+临时数据:
+
+```
+// TODO: all op url
+// TODO: swagger
+
+// GET /api/v1/repos/repo-abcd/create_time
+//	verbs: GET
+//	api_version: v1
+//	api_group: null
+//	resource: repos
+//	resource_name: repo-abcd
+//	sub_resource: create_time
+//	non_resource: null
+
+// get user runtimes
+//	GET /api/v1/users/user-name/runtimes
+//	GET /api/v1/runtimes/rt-abcd/cpu-num
+```

@@ -9,48 +9,47 @@ package iam.am;
 option go_package = "openpitrix.io/iam/pkg/pb/am;pbam";
 
 // ----------------------------------------------------------------------------
-// basic type
+// The Pattern Syntax
 // ----------------------------------------------------------------------------
 
-// TODO: all op url
-// TODO: swagger
+// The pattern syntax is:
+//
+//	pattern:
+//	{ term }
+//	term:
+//		'*'         matches any sequence of non-Separator characters
+//		'**'        matches any sequence of characters, include path separators.
+//		'?'         matches any single non-Separator character
+//		'[' [ '^' ] { character-range } ']'
+//					character class (must be non-empty)
+//		c           matches character c (c != '*', '?', '\\', '[')
+//		'\\' c      matches character c
+//
+//	character-range:
+//		c           matches character c (c != '\\', '-', ']')
+//		'\\' c      matches character c
+//		lo '-' hi   matches character c for lo <= c <= hi
+//
+// See https://godoc.org/path/filepath#Match
+// See https://github.com/bmatcuk/doublestar
+//
+// Examples: https://golang.org/src/path/filepath/match_test.go
 
-// GET /api/v1/repos/repo-abcd/create_time
-//	verbs: GET
-//	api_version: v1
-//	api_group: null
-//	resource: repos
-//	resource_name: repo-abcd
-//	sub_resource: create_time
-//	non_resource: null
-
-// get user runtimes
-//	GET /api/v1/users/user-name/runtimes
-//	GET /api/v1/runtimes/rt-abcd/cpu-num
+// ----------------------------------------------------------------------------
+// basic type
+// ----------------------------------------------------------------------------
 
 message Action {
 	string uid = 1;
 	string role_name = 2;
 
-	string verbs = 3;
+	string verb = 3;
 	string path = 4;
 }
 
 message Rule {
-	repeated string verbs = 1; // '*' is all
-	Resource resource = 2;
-}
-
-message Resource {
-	string api_version = 2;    // '*' is all
-	string api_group = 3;      // '*' is all
-	string resource = 4;       // '*' is all
-
-	repeated string resource_name = 5;
-	repeated string sub_resource_regexp = 6;
-	repeated string non_resource = 7;
-
-	map<string,string> extra = 8;
+	string path = 1;          // See Pattern Syntax
+	repeated string verb = 2; // See Pattern Syntax
 }
 
 message Role {
@@ -115,7 +114,6 @@ message ListRolesResponse {
 	repeated Role role = 1;
 	int32 total = 2;
 }
-
 
 // ----------------------------------------------------------------------------
 // END
