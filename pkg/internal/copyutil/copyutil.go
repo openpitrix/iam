@@ -2,6 +2,7 @@
 // Use of this source code is governed by a Apache license
 // that can be found in the LICENSE file.
 
+// Package copyutil provides deep copy for value type.
 package copyutil
 
 import (

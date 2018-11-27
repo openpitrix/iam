@@ -2,6 +2,7 @@
 // Use of this source code is governed by a Apache license
 // that can be found in the LICENSE file.
 
+// Package jsonutil provides json helper functions.
 package jsonutil
 
 import (
