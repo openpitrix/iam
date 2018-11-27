@@ -6,4 +6,5 @@
 //go:generate go run gen1.go
 //go:generate go fmt
 
+// OpenPitrix Access Management service database package.
 package db

@@ -22,11 +22,11 @@ func main() {
 	flag.Parse()
 
 	var buf bytes.Buffer
-	fmt.Fprintln(&buf, `// Code generated. DO NOT EDIT.
-
-// Copyright 2018 The OpenPitrix Authors. All rights reserved.
+	fmt.Fprintln(&buf, `// Copyright 2018 The OpenPitrix Authors. All rights reserved.
 // Use of this source code is governed by a Apache license
 // that can be found in the LICENSE file.
+
+// Code generated. DO NOT EDIT.
 
 package db
 

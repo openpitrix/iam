@@ -4,6 +4,7 @@
 
 // +build go1.8
 
+// OpenPitrix service version package.
 package version
 
 import (
