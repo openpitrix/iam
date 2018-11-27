@@ -35,6 +35,8 @@ func openFileServer(jsonpath string) (Interface, error) {
 		jsonpath:     jsonpath,
 		rabcJsonData: d,
 	}
+
+	p.adjustRabcData()
 	return p, nil
 }
 
@@ -74,7 +76,7 @@ func (p *rabcFileServer) CanDo(x pbam.Action) bool {
 		}
 	}
 
-	// 1. check by xid list
+	// 2. check by xid list
 	for _, role := range p.getRoleListByXid(x.RoleName...) {
 		for _, rule := range role.Rule {
 			if p.matchRule(x.Verb, x.Path, rule) {

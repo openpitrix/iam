@@ -9,6 +9,10 @@ import (
 	"openpitrix.io/iam/pkg/pb/am"
 )
 
+func (p *rabcFileServer) adjustRabcData() {
+	// keep primary key unique
+}
+
 func (p *rabcFileServer) matchRule(verb, path string, rule *pbam.Rule) bool {
 	// check verb
 	var verbMatched bool
