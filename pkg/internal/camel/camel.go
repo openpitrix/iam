@@ -2,7 +2,14 @@
 // Use of this source code is governed by a Apache license
 // that can be found in the LICENSE file.
 
+// copy from https://godoc.org/github.com/golang/protobuf/protoc-gen-go/generator
+
+// Package camel provides CamelCase helper functions.
 package camel
+
+import (
+	"strings"
+)
 
 // CamelCase returns the CamelCased name.
 // If there is an interior underscore followed by a lower case letter,
@@ -49,6 +56,12 @@ func CamelCase(s string) string {
 		}
 	}
 	return string(t)
+}
+
+// CamelCaseSlice is like CamelCase, but the argument is a slice of strings to
+// be joined with "_".
+func CamelCaseSlice(elem []string) string {
+	return CamelCase(strings.Join(elem, "_"))
 }
 
 // Is c an ASCII lower-case letter?
