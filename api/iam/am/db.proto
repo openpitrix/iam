@@ -1,0 +1,73 @@
+// Copyright 2018 The OpenPitrix Authors. All rights reserved.
+// Use of this source code is governed by a Apache license
+// that can be found in the LICENSE file.
+
+syntax = "proto2";
+
+package iam.am;
+
+option go_package = "openpitrix.io/iam/pkg/pb/am;pbam";
+
+message DbSchema {
+	optional string engine = 1 [
+		default = "InnoDB"
+	];
+	optional string encoding = 2 [
+		default = "UTF8"
+	];
+}
+
+message DbTableSchema_Role {
+	optional string _table = 1 [
+		default = "gorp:"
+			"name=role,"
+			"primary_key=,"
+			"primary_key=,"
+			"index=,"
+			"index=,"
+		";"
+	];
+
+	optional string name = 2 [
+		default = "gorp:"
+			"primary_key=true,"
+			"type=VARCHAR(50),"
+			"not_null=true,"
+			"default=,"
+		";"
+	];
+	optional string rule = 3 [
+		default = "gorp:"
+			"type=JSON,"
+		";"
+	];
+}
+
+message DbTableSchema_RoleBinding {
+	optional string _table = 1 [
+		default = "gorp:"
+			"name=role,"
+			"primary_key=,"
+			"primary_key=,"
+			"index=,"
+			"index=,"
+		";"
+	];
+
+	optional string role_name = 2 [
+		default = "gorp:"
+			"primary_key=true,"
+			"type=VARCHAR(50),"
+			"not_null=true,"
+			"default=,"
+		";"
+	];
+	optional string xid = 3 [
+		default = "gorp:"
+			"primary_key=true,"
+			"type=VARCHAR(50),"
+			"not_null=true,"
+			"default=,"
+		";"
+	];
+}
