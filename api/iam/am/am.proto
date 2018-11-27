@@ -51,8 +51,8 @@ message Action {
 }
 
 message Rule {
-	string path = 1;          // See Pattern Syntax
-	repeated string verb = 2; // See Pattern Syntax
+	string path_pattern = 1;          // See Pattern Syntax
+	repeated string verb_pattern = 2; // '*' is all
 }
 
 message Role {

@@ -65,7 +65,26 @@ func (p *rabcFileServer) CanDo(x pbam.Action) bool {
 	p.Lock()
 	defer p.Unlock()
 
-	panic("TODO")
+	// 1. check by role name
+	for _, role := range p.getRoleListByName(x.RoleName...) {
+		for _, rule := range role.Rule {
+			if p.matchRule(x.Verb, x.Path, rule) {
+				return true
+			}
+		}
+	}
+
+	// 1. check by xid list
+	for _, role := range p.getRoleListByXid(x.RoleName...) {
+		for _, rule := range role.Rule {
+			if p.matchRule(x.Verb, x.Path, rule) {
+				return true
+			}
+		}
+	}
+
+	// Failed
+	return false
 }
 
 func (p *rabcFileServer) AllRoles() []pbam.Role {
