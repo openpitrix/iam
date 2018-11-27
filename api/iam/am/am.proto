@@ -40,11 +40,14 @@ option go_package = "openpitrix.io/iam/pkg/pb/am;pbam";
 // ----------------------------------------------------------------------------
 
 message Action {
-	string xid = 1; // user_id/group_id/*_id
-	string role_name = 2;
+	// 1. check any of role can do the action
+	// 2. mappng xid to the roles, then check any role can do the action
 
-	string verb = 3;
-	string path = 4;
+	repeated string role_name = 1;
+	repeated string xid = 2; // user_id/group_id/*_id
+
+	string verb = 3; // op1/op2/...
+	string path = 4; // url
 }
 
 message Rule {
@@ -53,7 +56,7 @@ message Rule {
 }
 
 message Role {
-	string name = 1; // primary key, read only
+	string role_name = 1; // primary key, read only
 	string parent_role_name = 2;
 	repeated string child_role_name = 3;
 
@@ -64,12 +67,12 @@ message RoleList {
 }
 
 message RoleBinding {
-	string xid = 1;
-	string role_name = 2;
+	string role_name = 1;
+	string xid = 2;
 }
 message RoleBindingList {
-	string xid = 1;
-	string role_name = 2;
+	string role_name = 1;
+	string xid = 2;
 }
 
 // ----------------------------------------------------------------------------
@@ -89,6 +92,7 @@ service AccessManager {
 	rpc DeleteRoleBinding(RoleBindingList) returns (Bool);
 	rpc DeleteAllRoleBindings(UserId) returns (Bool);
 
+	// check any of xid or role_name can do the action
 	rpc CanDo(Action) returns (Bool);
 }
 
