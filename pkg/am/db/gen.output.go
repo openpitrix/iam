@@ -6,14 +6,12 @@
 
 package db
 
-import (
-	"github.com/golang/protobuf/proto"
+type Role struct {
+	Name string `db:"name, size:50, primarykey"`
+	Rule string `db:"rule"`
+}
 
-	"openpitrix.io/iam/pkg/pb/am"
-)
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ pbam.DbSchema
-var _ proto.Message
-
-// TODO
+type RoleBinding struct {
+	Name string `db:"name, size:50, primarykey"`
+	Xid  string `db:"xid, size:50, primarykey"`
+}

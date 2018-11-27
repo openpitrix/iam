@@ -5,28 +5,35 @@
 // OpenPitrix Access Management service database spec package.
 package db_spec
 
-var DbSchema = struct {
+type DbSchemaType struct {
 	DBName   string
 	Engine   string
 	Encoding string
-}{
+}
+
+type DbTableSchemaType struct {
+	FieldName     string
+	FieldType     string
+	FieldSize     int
+	PrimaryKey    bool
+	AutoIncrement bool
+	Default       string
+	NotNull       bool
+	GenIndex      bool
+}
+
+var DbSchema = DbSchemaType{
 	DBName:   "openpitrix",
 	Engine:   "InnoDB",
 	Encoding: "UTF8",
 }
 
-var DbTables = map[string][]struct {
-	FieldName  string
-	FieldType  string
-	PrimaryKey bool
-	Default    string
-	NotNull    bool
-	GenIndex   bool
-}{
+var DbTableSchema = map[string][]DbTableSchemaType{
 	"role": {
 		{
 			FieldName:  "name",
-			FieldType:  "VARCHAR(50)",
+			FieldType:  "VARCHAR",
+			FieldSize:  50,
 			PrimaryKey: true,
 			NotNull:    true,
 		},
@@ -39,13 +46,15 @@ var DbTables = map[string][]struct {
 	"role_binding": {
 		{
 			FieldName:  "name",
-			FieldType:  "VARCHAR(50)",
+			FieldType:  "VARCHAR",
+			FieldSize:  50,
 			PrimaryKey: true,
 			NotNull:    true,
 		},
 		{
 			FieldName:  "xid",
-			FieldType:  "VARCHAR(50)",
+			FieldType:  "VARCHAR",
+			FieldSize:  50,
 			PrimaryKey: true,
 			NotNull:    true,
 		},
