@@ -110,13 +110,24 @@ func (p *rabcFileServer) GetRoleByName(name string) (role pbam.Role, ok bool) {
 	p.Lock()
 	defer p.Unlock()
 
-	panic("TODO")
+	v, ok := p.getRoleByName(name)
+	if !ok {
+		return pbam.Role{}, false
+	}
+
+	copyutil.MustDeepCopy(&role, v)
+	return role, true
 }
+
 func (p *rabcFileServer) GetRoleByXid(xid []string) pbam.RoleList {
 	p.Lock()
 	defer p.Unlock()
 
-	panic("TODO")
+	var q = pbam.RoleList{}
+	var v = p.getRoleListByXid(xid...)
+
+	copyutil.MustDeepCopy(&q, v)
+	return q
 }
 
 func (p *rabcFileServer) CreateRole(role pbam.Role) error {
@@ -142,11 +153,18 @@ func (p *rabcFileServer) CreateRoleBinding(x []pbam.RoleBinding) error {
 	p.Lock()
 	defer p.Unlock()
 
-	panic("TODO")
+	if err := p.createRoleBinding(x); err != nil {
+		return err
+	}
+	return nil
 }
+
 func (p *rabcFileServer) DeleteRoleBinding(xid []string) error {
 	p.Lock()
 	defer p.Unlock()
 
-	panic("TODO")
+	if err := p.deleteRoleBinding(xid); err != nil {
+		return err
+	}
+	return nil
 }

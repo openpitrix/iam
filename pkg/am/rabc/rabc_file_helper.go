@@ -35,6 +35,14 @@ func (p *rabcFileServer) matchRule(verb, path string, rule *pbam.Rule) bool {
 	return true
 }
 
+func (p *rabcFileServer) getRoleByName(name string) (role pbam.Role, ok bool) {
+	for _, v := range p.Roles {
+		if v.RoleName == name {
+			return v, true
+		}
+	}
+	return pbam.Role{}, false
+}
 func (p *rabcFileServer) getRoleListByName(name ...string) (results []pbam.Role) {
 	for _, role := range p.Roles {
 		if p.strInStrList(role.RoleName, name) {
@@ -61,6 +69,13 @@ func (p *rabcFileServer) getRoleNameListByXid(xid ...string) (results []string) 
 		results = append(results, k)
 	}
 	return
+}
+
+func (p *rabcFileServer) createRoleBinding(x []pbam.RoleBinding) error {
+	panic("TODO")
+}
+func (p *rabcFileServer) deleteRoleBinding(xid []string) error {
+	panic("TODO")
 }
 
 func (p *rabcFileServer) strInStrList(s string, ss []string) bool {
