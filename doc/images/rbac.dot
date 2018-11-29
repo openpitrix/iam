@@ -3,14 +3,56 @@
 // that can be found in the LICENSE file.
 
 digraph G {
-	User[label="实体", color=blueviolet, style=filled];
-	Resource[label="资源", color=blueviolet, style=filled];
 
-	Role[label="角色", color=red, style=filled];
-	RoleBinding[label="角色绑定", color=red, style=filled];
+	subgraph cluster_xid {
+		label = "";
 
-	Rule[label="规则", color=green, style=filled];
+		User1[label="User1", color=sandybrown, style=filled];
+		User2[label="User2", color=sandybrown, style=filled];
+		User3[label="User3", color=sandybrown, style=filled];
 
-	Rule -> Role;
-	User -> RoleBinding -> Role -> Resource;
+		subgraph cluster_group {
+			label = "";
+
+			Group1[label="Group: admin", color=seagreen, style=filled];
+			Group2[label="Group: test", color=seagreen, style=filled];
+		}
+	}
+
+	subgraph cluster_role {
+		label = "";
+
+		Role1[label="Role: admin", color=turquoise4, style=filled];
+		Role2[label="Role: develop", color=turquoise4, style=filled];
+		Role3[label="Role: user", color=turquoise4, style=filled];
+	}
+
+	subgraph cluster_rule {
+		label = "";
+
+		Rule1[label="Rule\n{GET,PUT} /api/*/info/**", color=maroon2, style=filled];
+		Rule2[label="Rule\n{PUT} /api/app_*/**", color=maroon2, style=filled];
+		Rule3[label="Rule\n{*} /api/v[0-9]*/**", color=maroon2, style=filled];
+	}
+
+	subgraph cluster_resource {
+		label = "";
+
+		Resource1[label="/api/~user/info/...", color=royalblue, style=filled];
+		Resource2[label="/api/app_versions/list", color=royalblue, style=filled];
+		Resource3[label="/api/v1-alpha/help", color=royalblue, style=filled];
+	}
+
+	User1 -> Group1;
+	User2 -> Group1;
+	User2 -> Group2;
+	User3 -> Group2;
+
+	Group1 -> Role1;
+	Group2 -> Role2;
+	User3  -> Role3;
+
+	Role1 -> Rule1 -> Resource1;
+	Role2 -> Rule2 -> Resource2;
+	Role3 -> Rule3 -> Resource3;
 }
