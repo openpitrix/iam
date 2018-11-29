@@ -1,0 +1,21 @@
+// Copyright 2018 The OpenPitrix Authors. All rights reserved.
+// Use of this source code is governed by a Apache license
+// that can be found in the LICENSE file.
+
+digraph G {
+	User1[label="User1", color=sandybrown, style=filled];
+	User2[label="User2", color=sandybrown, style=filled];
+	User3[label="User3", color=sandybrown, style=filled];
+
+	Resource1[label="/api/~user/info/...", color=royalblue, style=filled];
+	Resource2[label="/api/app_versions/list", color=royalblue, style=filled];
+	Resource3[label="/api/v1-alpha/help", color=royalblue, style=filled];
+
+	User1 -> Resource1;
+
+	User2 -> Resource1;
+	User2 -> Resource2;
+
+	User3 -> Resource2;
+	User3 -> Resource3;
+}
