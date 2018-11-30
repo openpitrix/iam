@@ -79,7 +79,7 @@ func (p *Database) GetRoleByRoleName(name string) (*pbam.Role, error) {
 	return v.ToPbRole(), nil
 }
 
-func (p *Database) GetRoleByRoleNameRegexp(nameRegexp string) (*pbam.RoleList, error) {
+func (p *Database) ListRoles(nameRegexp string) (*pbam.RoleList, error) {
 	if nameRegexp == "" {
 		nameRegexp = ".*" // all
 	}
@@ -153,4 +153,66 @@ func (p *Database) DeleteRoleBinding(xid ...string) error {
 		return err
 	}
 	return nil
+}
+
+func (p *Database) GetRoleBindingByRoleName(name string) (*pbam.RoleBindingList, error) {
+	var bindings []RoleBinding
+	err := p.Select(&bindings, `SELECT * FROM role_binding WHERE role_name=$1;`, name)
+	if err != nil {
+		return nil, err
+	}
+
+	result := &pbam.RoleBindingList{
+		Value: make([]*pbam.RoleBinding, len(bindings)),
+	}
+	for i, v := range bindings {
+		result.Value[i] = v.ToPbRoleBinding()
+	}
+
+	return result, nil
+}
+
+func (p *Database) GetRoleBindingByXidList(xid ...string) (*pbam.RoleBindingList, error) {
+	var bindings []RoleBinding
+	err := p.Select(&bindings, `SELECT * FROM role_binding WHERE xid IN(?);`, xid)
+	if err != nil {
+		return nil, err
+	}
+
+	result := &pbam.RoleBindingList{
+		Value: make([]*pbam.RoleBinding, len(bindings)),
+	}
+	for i, v := range bindings {
+		result.Value[i] = v.ToPbRoleBinding()
+	}
+
+	return result, nil
+}
+
+func (p *Database) ListRoleBindings(nameRegexp string) (*pbam.RoleBindingList, error) {
+	if nameRegexp == "" {
+		nameRegexp = ".*" // all
+	}
+
+	re, err := regexp.Compile(nameRegexp)
+	if err != nil {
+		return nil, err
+	}
+
+	var bindings []RoleBinding
+	err = p.Select(&bindings, `SELECT * FROM role_binding;`)
+	if err != nil {
+		return nil, err
+	}
+
+	result := &pbam.RoleBindingList{
+		Value: make([]*pbam.RoleBinding, len(bindings)),
+	}
+	for i, v := range bindings {
+		if re.MatchString(v.RoleName) {
+			result.Value[i] = v.ToPbRoleBinding()
+		}
+	}
+
+	return result, nil
 }
