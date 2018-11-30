@@ -80,6 +80,10 @@ func (p *Database) GetRoleByRoleName(name string) (*pbam.Role, error) {
 }
 
 func (p *Database) GetRoleByRoleNameRegexp(nameRegexp string) (*pbam.RoleList, error) {
+	if nameRegexp == "" {
+		nameRegexp = ".*" // all
+	}
+
 	re, err := regexp.Compile(nameRegexp)
 	if err != nil {
 		return nil, err

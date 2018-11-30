@@ -5,24 +5,27 @@
 package rabc
 
 import (
-	"sync"
-
+	"openpitrix.io/iam/pkg/am/db"
 	"openpitrix.io/iam/pkg/pb/am"
 )
 
 type rabcDbServer struct {
-	bindings []pbam.RoleBinding
-	roles    []pbam.Role
-
-	sync.Mutex
+	*db.Database
 }
 
-func openDatabase(dbpath string, opt *DBOptions) (Interface, error) {
-	return new(rabcDbServer), nil
+func openDatabase(dbtype, dbpath string) (*rabcDbServer, error) {
+	db, err := db.Open(dbtype, dbpath)
+	if err != nil {
+		return nil, err
+	}
+	p := &rabcDbServer{
+		Database: db,
+	}
+	return p, nil
 }
 
 func (p *rabcDbServer) Close() error {
-	return nil
+	return p.Database.Close()
 }
 
 func (p *rabcDbServer) CanDo(x pbam.Action) bool {

@@ -37,7 +37,7 @@ func (p *rabcFileServer) matchRule(verb, path string, rule *pbam.Rule) bool {
 
 func (p *rabcFileServer) getRoleByName(name string) (role pbam.Role, ok bool) {
 	for _, v := range p.Roles {
-		if v.RoleName == name {
+		if v.Name == name {
 			return v, true
 		}
 	}
@@ -45,7 +45,7 @@ func (p *rabcFileServer) getRoleByName(name string) (role pbam.Role, ok bool) {
 }
 func (p *rabcFileServer) getRoleListByName(name ...string) (results []pbam.Role) {
 	for _, role := range p.Roles {
-		if p.strInStrList(role.RoleName, name) {
+		if p.strInStrList(role.Name, name) {
 			results = append(results, role)
 		}
 	}

@@ -28,14 +28,8 @@ type Interface interface {
 	Close() error
 }
 
-type DBOptions struct {
-	DBType     string // mysql/sqlite3
-	DBEngine   string // InnoDB/...
-	DBEncoding string // utf8/...
-}
-
-func OpenDatabase(dbpath string, opt *DBOptions) (Interface, error) {
-	return openDatabase(dbpath, opt)
+func OpenDatabase(dbtype, dbpath string) (Interface, error) {
+	return openDatabase(dbtype, dbpath)
 }
 
 func OpenFile(jsonpath string) (Interface, error) {
