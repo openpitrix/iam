@@ -31,7 +31,3 @@ type Interface interface {
 func OpenDatabase(dbtype, dbpath string) (Interface, error) {
 	return openDatabase(dbtype, dbpath)
 }
-
-func OpenFile(jsonpath string) (Interface, error) {
-	return openFileServer(jsonpath)
-}
