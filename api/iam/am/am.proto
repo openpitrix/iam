@@ -85,8 +85,7 @@ service AccessManager {
 	rpc ListRoles(RoleNameRegexp) returns (RoleList);
 
 	rpc CreateRoleBinding(RoleBindingList) returns (Bool);
-	rpc DeleteRoleBinding(RoleBindingList) returns (Bool);
-	rpc DeleteAllRoleBindings(XidList) returns (Bool);
+	rpc DeleteRoleBinding(XidList) returns (Bool);
 
 	// check any of xid or role_name can do the action
 	rpc CanDo(Action) returns (Bool);

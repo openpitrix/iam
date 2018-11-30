@@ -10,10 +10,12 @@ require (
 	github.com/fatih/camelcase v1.0.0 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/golang/protobuf v1.2.0
+	github.com/jmoiron/sqlx v1.2.0
 	github.com/koding/multiconfig v0.0.0-20171124222453-69c27309b2d7
 	github.com/urfave/cli v1.20.0
 	golang.org/x/net v0.0.0-20181108082009-03003ca0c849
 	google.golang.org/grpc v1.16.0
 	gopkg.in/yaml.v2 v2.2.1 // indirect
+	openpitrix.io/logger v0.1.0
 	rsc.io/goversion v1.2.0
 )

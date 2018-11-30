@@ -6,93 +6,147 @@
 package db
 
 import (
-	"context"
-	"database/sql"
-	"sync/atomic"
+	"regexp"
 
-	"github.com/pkg/errors"
-	"gopkg.in/gorp.v2"
+	"github.com/jmoiron/sqlx"
 
-	"openpitrix.io/iam/pkg/am/db_spec"
+	"openpitrix.io/iam/pkg/pb/am"
+	"openpitrix.io/logger"
 )
 
 type Database struct {
-	db               *sql.DB
-	dbMap            *gorp.DbMap
-	createTablesDone uint32
+	*sqlx.DB
 }
 
-//
-// Open Access Manager Database.
-//
-// MySQL
-//	dbtype: mysql
-//	dbpath: user:password@tcp(localhost:3306)/dbname
-//
-// Sqlite3
-//	dbtype: sqlite3
-//	dbpath: /tmp/db.bin
-//
-func OpenDatabase(dbtype, dbpath string, opt *Options) (p *Database, err error) {
-	if opt == nil {
-		opt = DefaultOptions(dbtype)
-	}
-
-	if dbtype == "mysql" && opt.ParseTime {
-		dbpath += "?parseTime=true"
-	}
-
-	db, err := sql.Open(dbtype, dbpath)
+func Open(dbtype, dbpath string) (*Database, error) {
+	db, err := sqlx.Open(dbtype, dbpath)
 	if err != nil {
-		err = errors.WithStack(err)
 		return nil, err
 	}
 
-	dialect := gorp.MySQLDialect{
-		Encoding: opt.Encoding,
-		Engine:   opt.Engine,
+	p := &Database{DB: db}
+	if err := p.createTablesIfNotExists(); err != nil {
+		logger.Criticalf(nil, "%v", err)
 	}
 
-	dbMap := &gorp.DbMap{Db: db, Dialect: dialect}
-	for _, v := range db_spec.AllTableSpecList {
-		dbMap.AddTableWithNameAndSchema(v,
-			v.GetTableSchema(dbtype),
-			v.GetTableName(),
+	return p, nil
+}
+
+func (p *Database) createTablesIfNotExists() error {
+	for _, sql := range []string{
+		SqlTableSchema_Role,
+		SqlTableSchema_RoleBinding,
+	} {
+		if _, err := p.Exec(sql); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (p *Database) CreateRole(role *pbam.Role) error {
+	v := NewRoleFrom(role)
+	_, err := p.Exec(`INSERT INTO role (name, rule) VALUES ($1, $2);`, v.Name, v.Rule)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *Database) ModifyRole(role *pbam.Role) error {
+	v := NewRoleFrom(role)
+	_, err := p.Exec(`UPDATE role SET rule = $2 WHERE name = $1;`, v.Name, v.Rule)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *Database) DeleteRoleByName(role *pbam.Role) error {
+	_, err := p.Exec(`DELETE FROM role WHERE name = $1;`, role.Name)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *Database) GetRoleByRoleName(name string) (*pbam.Role, error) {
+	var v Role
+	err := p.Get(&v, `SELECT * FROM role WHERE name=$1;`, name)
+	if err != nil {
+		return nil, err
+	}
+	return v.ToPbRole(), nil
+}
+
+func (p *Database) GetRoleByRoleNameRegexp(nameRegexp string) (*pbam.RoleList, error) {
+	re, err := regexp.Compile(nameRegexp)
+	if err != nil {
+		return nil, err
+	}
+
+	roles := []Role{}
+	err = p.Select(&roles, "SELECT * FROM role;")
+	if err != nil {
+		return nil, err
+	}
+
+	result := &pbam.RoleList{}
+	for _, role := range roles {
+		if re.MatchString(role.Name) {
+			result.Value = append(result.Value, role.ToPbRole())
+		}
+	}
+
+	return result, nil
+}
+
+func (p *Database) GetRoleByXidList(xid ...string) (*pbam.RoleList, error) {
+	var roles []Role
+	err := p.Select(&roles, `
+		SELECT * FROM role,role_binding WHERE
+			role.name=role_binding.role_name AND
+			xid IN(?)
+		;`, xid,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	result := &pbam.RoleList{
+		Value: make([]*pbam.Role, len(roles)),
+	}
+	for i, v := range roles {
+		result.Value[i] = v.ToPbRole()
+	}
+
+	return result, nil
+}
+
+func (p *Database) CreateRoleBinding(bindings *pbam.RoleBindingList) error {
+	/*
+		TODO:
+		tx, err := db.Begin()
+		// check role_name exists
+		err = tx.Exec(...)
+		err = tx.Commit()
+	*/
+	for _, v := range bindings.GetValue() {
+		_, err := p.Exec(
+			`INSERT INTO role_binding (role_name, xid) VALUES ($1, $2);`,
+			v.RoleName, v.Xid,
 		)
+		if err != nil {
+			return err
+		}
 	}
-
-	p = &Database{
-		db:    db,
-		dbMap: dbMap,
-	}
-
-	p.initTables()
-	return
+	return nil
 }
 
-func (p *Database) Close() error {
-	err := p.db.Close()
-	err = errors.WithStack(err)
-	return err
-}
-
-func (p *Database) GetRole(ctx context.Context, id string) (*Role, error) {
-	p.initTables()
-	if v, err := p.dbMap.Get(Role{}, id); err == nil && v != nil {
-		return v.(*Role), nil
-	} else {
-		err = errors.WithStack(err)
-		return nil, err
+func (p *Database) DeleteRoleBinding(xid ...string) error {
+	_, err := p.Exec(`DELETE FROM role_binding WHERE xid IN(?);`, xid)
+	if err != nil {
+		return err
 	}
-}
-
-func (p *Database) initTables() {
-	if atomic.LoadUint32(&p.createTablesDone) == 1 {
-		return
-	}
-	if err := p.dbMap.CreateTablesIfNotExists(); err != nil {
-		//logger.Warningf("CreateTablesIfNotExists: %+v", err)
-		return
-	}
-	atomic.StoreUint32(&p.createTablesDone, 1)
+	return nil
 }
