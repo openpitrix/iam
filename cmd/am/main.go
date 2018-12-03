@@ -17,7 +17,7 @@ import (
 	"openpitrix.io/logger"
 )
 
-func Main() {
+func main() {
 	app := cli.NewApp()
 	app.Name = "am"
 	app.Usage = "am provides am service."
@@ -26,8 +26,6 @@ func Main() {
 	app.UsageText = `am [global options] command [options] [args...]
 
 EXAMPLE:
-   am gen-config
-
    am info
    am can-do
 
@@ -51,7 +49,7 @@ EXAMPLE:
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:   "config",
-			Value:  "am-config.json",
+			Value:  "config.toml",
 			Usage:  "am config file",
 			EnvVar: "OPENPITRIX_AM_CONFIG",
 		},
@@ -64,9 +62,63 @@ EXAMPLE:
 			Hidden: true,
 
 			Action: func(c *cli.Context) {
-				fmt.Println(nil)
 				fmt.Println(version.GetVersion())
 				return
+			},
+		},
+
+		{
+			Name:  "info",
+			Usage: "show server info",
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "json",
+					Usage: "json format",
+				},
+				cli.BoolFlag{
+					Name:  "toml",
+					Usage: "toml format",
+				},
+				cli.BoolFlag{
+					Name:  "yaml",
+					Usage: "yaml format",
+				},
+			},
+
+			Action: func(c *cli.Context) {
+				cfg := config.MustLoad(c.GlobalString("config"))
+				switch {
+				case c.Bool("json"):
+					fmt.Println(cfg.JSONString())
+				case c.Bool("toml"):
+					fmt.Println(cfg.TOMLString())
+				case c.Bool("yaml"):
+					fmt.Println(cfg.YAMLString())
+				default:
+					fmt.Println(cfg.JSONString())
+				}
+				return
+			},
+		},
+
+		{
+			Name:      "can-do",
+			Usage:     "gen default config",
+			ArgsUsage: "GET /api/user/info",
+			Flags: []cli.Flag{
+				cli.StringSliceFlag{
+					Name:  "xid",
+					Usage: "xid list",
+					Value: &cli.StringSlice{"user1", "user2"},
+				},
+				cli.StringFlag{
+					Name:  "role",
+					Usage: "role name",
+					Value: "test",
+				},
+			},
+			Action: func(c *cli.Context) {
+				// TODO
 			},
 		},
 
@@ -74,14 +126,14 @@ EXAMPLE:
 			Name:  "serve",
 			Usage: "run as drone service",
 			Action: func(c *cli.Context) {
-				cfg := config.MustLoadConf(c.GlobalString("config"))
-				if cfg.AM.TlsEnabled {
+				cfg := config.MustLoad(c.GlobalString("config"))
+				if cfg.TlsEnabled {
 					server, err := service.OpenServer(cfg.Mysql.DbType(), cfg.Mysql.GetUrl())
 					if err != nil {
 						logger.Criticalf(nil, "%v", err)
 						os.Exit(1)
 					}
-					err = server.ListenAndServe(fmt.Sprintf(":%d", cfg.AM.Port))
+					err = server.ListenAndServe(fmt.Sprintf(":%d", cfg.Port))
 					if err != nil {
 						logger.Criticalf(nil, "%v", err)
 						os.Exit(1)
@@ -93,9 +145,9 @@ EXAMPLE:
 						os.Exit(1)
 					}
 					err = server.ListenAndServeTLS(
-						fmt.Sprintf(":%d", cfg.AM.Port),
-						cfg.AM.TlsCertFile,
-						cfg.AM.TlsKeyFile,
+						fmt.Sprintf(":%d", cfg.Port),
+						cfg.TlsCertFile,
+						cfg.TlsKeyFile,
 					)
 					if err != nil {
 						logger.Criticalf(nil, "%v", err)

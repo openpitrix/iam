@@ -6,28 +6,29 @@
 package config
 
 import (
+	"bytes"
 	"fmt"
+	"strings"
 
+	"github.com/BurntSushi/toml"
 	"github.com/koding/multiconfig"
+	"gopkg.in/yaml.v2"
 
+	"openpitrix.io/iam/pkg/internal/jsonutil"
 	"openpitrix.io/logger"
 )
 
 type Config struct {
-	*Server
-}
-
-type Server struct {
-	Log   LogConfig
-	Mysql MysqlConfig
-	AM    AMConfig
-}
-
-type AMConfig struct {
 	Port        int    `default:"9115"`
 	TlsEnabled  bool   `default:"false"`
 	TlsCertFile string `default:"server.cert"`
 	TlsKeyFile  string `default:"server.key"`
+
+	Log   LogConfig
+	Mysql MysqlConfig
+}
+
+type AMConfig struct {
 }
 
 type LogConfig struct {
@@ -51,20 +52,73 @@ func (m *MysqlConfig) GetUrl() string {
 	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", m.User, m.Password, m.Host, m.Port, m.Database)
 }
 
-func LoadConf(path string) (*Config, error) {
-	conf := new(Server)
-	if err := multiconfig.NewWithPath(path).Load(conf); err != nil {
+func Load(path string) (*Config, error) {
+	conf := new(Config)
+
+	loader := newWithPath(path)
+	if err := loader.Load(conf); err != nil {
 		return nil, err
 	}
-	return &Config{conf}, nil
+	return conf, nil
 }
 
-func MustLoadConf(path string) *Config {
-	conf := new(Server)
-	if err := multiconfig.NewWithPath(path).Load(conf); err != nil {
-		logger.Criticalf(nil, "%v", err)
+func MustLoad(path string) *Config {
+	conf := new(Config)
+
+	loader := newWithPath(path)
+	if err := loader.Load(conf); err != nil {
+		logger.Criticalf(nil, "%s: %v", path, err)
 		panic(err)
 	}
 
-	return &Config{conf}
+	return conf
+}
+
+func (p *Config) JSONString() string {
+	return string(jsonutil.Encode(p))
+}
+
+func (p *Config) TOMLString() string {
+	buf := new(bytes.Buffer)
+	if err := toml.NewEncoder(buf).Encode(p); err != nil {
+		logger.Criticalf(nil, "%v", err)
+		panic(err)
+	}
+	return buf.String()
+}
+
+func (p *Config) YAMLString() string {
+	data, err := yaml.Marshal(p)
+	if err != nil {
+		logger.Criticalf(nil, "%v", err)
+		panic(err)
+	}
+	return string(data)
+}
+
+func newWithPath(path string) *multiconfig.DefaultLoader {
+	loaders := []multiconfig.Loader{}
+
+	// Read default values defined via tag fields "default"
+	loaders = append(loaders, &multiconfig.TagLoader{})
+
+	// Choose what while is passed
+	if strings.HasSuffix(path, "toml") {
+		loaders = append(loaders, &multiconfig.TOMLLoader{Path: path})
+	}
+
+	if strings.HasSuffix(path, "json") {
+		loaders = append(loaders, &multiconfig.JSONLoader{Path: path})
+	}
+
+	if strings.HasSuffix(path, "yml") || strings.HasSuffix(path, "yaml") {
+		loaders = append(loaders, &multiconfig.YAMLLoader{Path: path})
+	}
+
+	loader := multiconfig.MultiLoader(loaders...)
+
+	d := &multiconfig.DefaultLoader{}
+	d.Loader = loader
+	d.Validator = multiconfig.MultiValidator(&multiconfig.RequiredValidator{})
+	return d
 }
