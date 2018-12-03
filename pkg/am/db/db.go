@@ -63,15 +63,15 @@ func (p *Database) ModifyRole(role *pbam.Role) error {
 	return nil
 }
 
-func (p *Database) DeleteRoleByName(role *pbam.Role) error {
-	_, err := p.Exec(`DELETE FROM role WHERE name = $1;`, role.Name)
+func (p *Database) DeleteRoleByRoleName(name string) error {
+	_, err := p.Exec(`DELETE FROM role WHERE name = $1;`, name)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (p *Database) GetRoleByRoleName(name string) (*pbam.Role, error) {
+func (p *Database) GetRoleByName(name string) (*pbam.Role, error) {
 	var v Role
 	err := p.Get(&v, `SELECT * FROM role WHERE name=$1;`, name)
 	if err != nil {

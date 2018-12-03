@@ -32,7 +32,7 @@ func matchRule(verb, path string, rule *pbam.Rule) bool {
 	return true
 }
 
-func canDoAction(x pbam.Action, rules []*pbam.Rule) bool {
+func canDoAction(x *pbam.Action, rules []*pbam.Rule) bool {
 	for _, rule := range rules {
 		if matchRule(x.Verb, x.Path, rule) {
 			return true

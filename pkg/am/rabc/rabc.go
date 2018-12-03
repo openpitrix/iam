@@ -12,22 +12,22 @@ import (
 type Interface interface {
 	Close() error
 
-	CreateRole(role pbam.Role) error
-	ModifyRole(role pbam.Role) error
+	CreateRole(role *pbam.Role) error
+	ModifyRole(role *pbam.Role) error
 	DeleteRoleByName(name string) error
 
-	GetRoleByRoleName(name string) (*pbam.Role, error)
+	GetRoleByName(name string) (*pbam.Role, error)
 	GetRoleByXidList(xid ...string) (*pbam.RoleList, error)
 	ListRoles(filter *pbam.RoleNameFilter) (*pbam.RoleList, error)
 
-	CreateRoleBinding(x []pbam.RoleBinding) error
-	DeleteRoleBinding(xid []string) error
+	CreateRoleBinding(x *pbam.RoleBindingList) error
+	DeleteRoleBinding(xid ...string) error
 
 	GetRoleBindingByRoleName(name string) (*pbam.RoleBindingList, error)
 	GetRoleBindingByXidList(xid ...string) (*pbam.RoleBindingList, error)
 	ListRoleBindings(filter *pbam.RoleNameFilter) (*pbam.RoleBindingList, error)
 
-	CanDo(x pbam.Action) (bool, error)
+	CanDo(x *pbam.Action) bool
 }
 
 func OpenDatabase(dbtype, dbpath string) (Interface, error) {
