@@ -9,6 +9,8 @@ import (
 	"fmt"
 
 	"github.com/koding/multiconfig"
+
+	"openpitrix.io/logger"
 )
 
 type Config struct {
@@ -22,8 +24,10 @@ type Server struct {
 }
 
 type AMConfig struct {
-	Port     string `default:"9115"`
-	RuleFile string `default:"rabc.json"`
+	Port        int    `default:"9115"`
+	TlsEnabled  bool   `default:"false"`
+	TlsCertFile string `default:"server.cert"`
+	TlsKeyFile  string `default:"server.key"`
 }
 
 type LogConfig struct {
@@ -33,15 +37,18 @@ type LogConfig struct {
 
 type MysqlConfig struct {
 	Host     string `default:"openpitrix-db"`
-	Port     string `default:"3306"`
+	Port     int    `default:"3306"`
 	User     string `default:"root"`
 	Password string `default:"password"`
 	Database string `default:"openpitrix"`
 	Disable  bool   `default:"false"`
 }
 
+func (m *MysqlConfig) DbType() string {
+	return "mysql"
+}
 func (m *MysqlConfig) GetUrl() string {
-	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", m.User, m.Password, m.Host, m.Port, m.Database)
+	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", m.User, m.Password, m.Host, m.Port, m.Database)
 }
 
 func LoadConf(path string) (*Config, error) {
@@ -50,4 +57,14 @@ func LoadConf(path string) (*Config, error) {
 		return nil, err
 	}
 	return &Config{conf}, nil
+}
+
+func MustLoadConf(path string) *Config {
+	conf := new(Server)
+	if err := multiconfig.NewWithPath(path).Load(conf); err != nil {
+		logger.Criticalf(nil, "%v", err)
+		panic(err)
+	}
+
+	return &Config{conf}
 }

@@ -7,12 +7,14 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/urfave/cli"
 
+	"openpitrix.io/iam/pkg/am/config"
+	"openpitrix.io/iam/pkg/am/service"
 	"openpitrix.io/iam/pkg/version"
+	"openpitrix.io/logger"
 )
 
 func Main() {
@@ -58,7 +60,34 @@ EXAMPLE:
 			Name:  "serve",
 			Usage: "run as drone service",
 			Action: func(c *cli.Context) {
-				log.Fatal("TODO")
+				cfg := config.MustLoadConf(c.GlobalString("config"))
+				if cfg.AM.TlsEnabled {
+					server, err := service.OpenServer(cfg.Mysql.DbType(), cfg.Mysql.GetUrl())
+					if err != nil {
+						logger.Criticalf(nil, "%v", err)
+						os.Exit(1)
+					}
+					err = server.ListenAndServe(fmt.Sprintf(":%d", cfg.AM.Port))
+					if err != nil {
+						logger.Criticalf(nil, "%v", err)
+						os.Exit(1)
+					}
+				} else {
+					server, err := service.OpenServer(cfg.Mysql.DbType(), cfg.Mysql.GetUrl())
+					if err != nil {
+						logger.Criticalf(nil, "%v", err)
+						os.Exit(1)
+					}
+					err = server.ListenAndServeTLS(
+						fmt.Sprintf(":%d", cfg.AM.Port),
+						cfg.AM.TlsCertFile,
+						cfg.AM.TlsKeyFile,
+					)
+					if err != nil {
+						logger.Criticalf(nil, "%v", err)
+						os.Exit(1)
+					}
+				}
 			},
 		},
 

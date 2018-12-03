@@ -3,7 +3,7 @@
 // that can be found in the LICENSE file.
 
 // OpenPitrix Access Management service package.
-package am
+package service
 
 import (
 	"context"
