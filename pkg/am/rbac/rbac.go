@@ -2,8 +2,8 @@
 // Use of this source code is governed by a Apache license
 // that can be found in the LICENSE file.
 
-// Package rabc implements rabc with local file and Database.
-package rabc
+// Package rbac implements rbac with Database.
+package rbac
 
 import (
 	"openpitrix.io/iam/pkg/pb/am"
