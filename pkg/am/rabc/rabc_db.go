@@ -9,6 +9,10 @@ import (
 	"openpitrix.io/iam/pkg/pb/am"
 )
 
+var (
+	_ Interface = (*rabcDbServer)(nil)
+)
+
 type rabcDbServer struct {
 	*db.Database
 }
@@ -28,31 +32,23 @@ func (p *rabcDbServer) Close() error {
 	return p.Database.Close()
 }
 
-func (p *rabcDbServer) CanDo(x pbam.Action) bool {
-	panic("TODO")
-}
-
-func (p *rabcDbServer) AllRoles() []pbam.Role {
-	panic("TODO")
-}
-func (p *rabcDbServer) AllRoleBindings() []pbam.RoleBinding {
-	panic("TODO")
-}
-
-func (p *rabcDbServer) GetRoleByName(name string) (role pbam.Role, ok bool) {
-	panic("TODO")
-}
-func (p *rabcDbServer) GetRoleByXid(xid []string) pbam.RoleList {
-	panic("TODO")
-}
-
 func (p *rabcDbServer) CreateRole(role pbam.Role) error {
 	panic("TODO")
 }
 func (p *rabcDbServer) ModifyRole(role pbam.Role) error {
 	panic("TODO")
 }
-func (p *rabcDbServer) DeleteRole(name string) error {
+func (p *rabcDbServer) DeleteRoleByName(name string) error {
+	panic("TODO")
+}
+
+func (p *rabcDbServer) GetRoleByName(name string) (*pbam.Role, error) {
+	panic("TODO")
+}
+func (p *rabcDbServer) GetRoleByXidList(xid ...string) (*pbam.RoleList, error) {
+	panic("TODO")
+}
+func (p *rabcDbServer) ListRoles(filter *pbam.RoleNameFilter) (*pbam.RoleList, error) {
 	panic("TODO")
 }
 
@@ -60,5 +56,19 @@ func (p *rabcDbServer) CreateRoleBinding(x []pbam.RoleBinding) error {
 	panic("TODO")
 }
 func (p *rabcDbServer) DeleteRoleBinding(xid []string) error {
+	panic("TODO")
+}
+
+func (p *rabcDbServer) GetRoleBindingByRoleName(name string) (*pbam.RoleBindingList, error) {
+	panic("TODO")
+}
+func (p *rabcDbServer) GetRoleBindingByXidList(xid ...string) (*pbam.RoleBindingList, error) {
+	panic("TODO")
+}
+func (p *rabcDbServer) ListRoleBindings(filter *pbam.RoleNameFilter) (*pbam.RoleBindingList, error) {
+	panic("TODO")
+}
+
+func (p *rabcDbServer) CanDo(x pbam.Action) (bool, error) {
 	panic("TODO")
 }
