@@ -8,6 +8,7 @@ package db
 import (
 	"regexp"
 
+	"github.com/bmatcuk/doublestar"
 	"github.com/jmoiron/sqlx"
 
 	"openpitrix.io/iam/pkg/pb/am"
@@ -79,27 +80,50 @@ func (p *Database) GetRoleByRoleName(name string) (*pbam.Role, error) {
 	return v.ToPbRole(), nil
 }
 
-func (p *Database) ListRoles(nameRegexp string) (*pbam.RoleList, error) {
-	if nameRegexp == "" {
-		nameRegexp = ".*" // all
-	}
-
-	re, err := regexp.Compile(nameRegexp)
+func (p *Database) ListRoles(filter *pbam.RoleNameFilter) (*pbam.RoleList, error) {
+	var (
+		roles  = []Role{}
+		result = &pbam.RoleList{}
+	)
+	err := p.Select(&roles, "SELECT * FROM role;")
 	if err != nil {
 		return nil, err
 	}
 
-	roles := []Role{}
-	err = p.Select(&roles, "SELECT * FROM role;")
-	if err != nil {
-		return nil, err
+	// if glob pattern
+	if sPathPattern := filter.GetGlobPattern(); sPathPattern != "" {
+		for _, role := range roles {
+			if ok, _ := doublestar.Match(sPathPattern, role.Name); ok {
+				result.Value = append(result.Value, role.ToPbRole())
+			}
+		}
+
+		// fallthrough
 	}
 
-	result := &pbam.RoleList{}
-	for _, role := range roles {
-		if re.MatchString(role.Name) {
+	// if regexp pattern
+	if nameRegexp := filter.GetRegexpPattern(); nameRegexp != "" {
+		re, err := regexp.Compile(nameRegexp)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, role := range roles {
+			if re.MatchString(role.Name) {
+				result.Value = append(result.Value, role.ToPbRole())
+			}
+		}
+
+		// fallthrough
+	}
+
+	// else: all
+	if filter.GetGlobPattern() == "" && filter.GetRegexpPattern() == "" {
+		for _, role := range roles {
 			result.Value = append(result.Value, role.ToPbRole())
 		}
+
+		// fallthrough
 	}
 
 	return result, nil
@@ -189,29 +213,51 @@ func (p *Database) GetRoleBindingByXidList(xid ...string) (*pbam.RoleBindingList
 	return result, nil
 }
 
-func (p *Database) ListRoleBindings(nameRegexp string) (*pbam.RoleBindingList, error) {
-	if nameRegexp == "" {
-		nameRegexp = ".*" // all
-	}
+func (p *Database) ListRoleBindings(filter *pbam.RoleNameFilter) (*pbam.RoleBindingList, error) {
+	var (
+		bindings = []RoleBinding{}
+		result   = &pbam.RoleBindingList{}
+	)
 
-	re, err := regexp.Compile(nameRegexp)
+	err := p.Select(&bindings, `SELECT * FROM role_binding;`)
 	if err != nil {
 		return nil, err
 	}
 
-	var bindings []RoleBinding
-	err = p.Select(&bindings, `SELECT * FROM role_binding;`)
-	if err != nil {
-		return nil, err
-	}
-
-	result := &pbam.RoleBindingList{
-		Value: make([]*pbam.RoleBinding, len(bindings)),
-	}
-	for i, v := range bindings {
-		if re.MatchString(v.RoleName) {
-			result.Value[i] = v.ToPbRoleBinding()
+	// if glob pattern
+	if sPathPattern := filter.GetGlobPattern(); sPathPattern != "" {
+		for _, v := range bindings {
+			if ok, _ := doublestar.Match(sPathPattern, v.RoleName); ok {
+				result.Value = append(result.Value, v.ToPbRoleBinding())
+			}
 		}
+
+		// fallthrough
+	}
+
+	// if regexp pattern
+	if nameRegexp := filter.GetRegexpPattern(); nameRegexp != "" {
+		re, err := regexp.Compile(nameRegexp)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, v := range bindings {
+			if re.MatchString(v.RoleName) {
+				result.Value = append(result.Value, v.ToPbRoleBinding())
+			}
+		}
+
+		// fallthrough
+	}
+
+	// else: all
+	if filter.GetGlobPattern() == "" && filter.GetRegexpPattern() == "" {
+		for _, v := range bindings {
+			result.Value = append(result.Value, v.ToPbRoleBinding())
+		}
+
+		// fallthrough
 	}
 
 	return result, nil

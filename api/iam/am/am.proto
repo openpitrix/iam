@@ -82,14 +82,14 @@ service AccessManager {
 
 	rpc GetRoleByRoleName(String) returns (Role);
 	rpc GetRoleByXidList(XidList) returns (RoleList);
-	rpc ListRoles(RoleNameRegexp) returns (RoleList);
+	rpc ListRoles(RoleNameFilter) returns (RoleList);
 
 	rpc CreateRoleBinding(RoleBindingList) returns (Bool);
 	rpc DeleteRoleBinding(XidList) returns (Bool);
 
 	rpc GetRoleBindingByRoleName(String) returns (RoleBindingList);
 	rpc GetRoleBindingByXidList(XidList) returns (RoleBindingList);
-	rpc ListRoleBindings(RoleNameRegexp) returns (RoleBindingList);
+	rpc ListRoleBindings(RoleNameFilter) returns (RoleBindingList);
 
 	// check any of xid or role_name can do the action
 	rpc CanDo(Action) returns (Bool);
@@ -113,10 +113,13 @@ message XidList {
 	repeated string value = 1;
 }
 
-message RoleNameRegexp {
+message RoleNameFilter {
+	// Glob: See Pattern Syntax
+	string glob_pattern = 1;
+
 	// Use RE2 syntax
 	// See https://github.com/google/re2/wiki/Syntax
-	string value = 1;
+	string regexp_pattern = 2;
 }
 
 // ----------------------------------------------------------------------------
