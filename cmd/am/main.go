@@ -45,9 +45,7 @@ EXAMPLE:
    am load-rbac
    am save-rbac
 
-   am serve
-
-   am tour`
+   am serve`
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
@@ -72,7 +70,7 @@ EXAMPLE:
 
 		{
 			Name:  "info",
-			Usage: "show server info",
+			Usage: "show config",
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  "json",
@@ -161,7 +159,7 @@ EXAMPLE:
 
 		{
 			Name:  "serve",
-			Usage: "run as drone service",
+			Usage: "run as service",
 			Action: func(c *cli.Context) {
 				cfg := config.MustLoad(c.GlobalString("config"))
 				if cfg.TlsEnabled {
@@ -193,14 +191,6 @@ EXAMPLE:
 				}
 			},
 		},
-
-		{
-			Name:  "tour",
-			Usage: "show more examples",
-			Action: func(c *cli.Context) {
-				fmt.Println(tourTopic)
-			},
-		},
 	}
 
 	app.CommandNotFound = func(ctx *cli.Context, command string) {
@@ -209,7 +199,3 @@ EXAMPLE:
 
 	app.Run(os.Args)
 }
-
-const tourTopic = `
-am gen-config
-`
