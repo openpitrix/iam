@@ -6,13 +6,16 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 
 	"github.com/urfave/cli"
 
+	"openpitrix.io/iam/pkg/am/client"
 	"openpitrix.io/iam/pkg/am/config"
 	"openpitrix.io/iam/pkg/am/service"
+	"openpitrix.io/iam/pkg/pb/am"
 	"openpitrix.io/iam/pkg/version"
 	"openpitrix.io/logger"
 )
@@ -103,22 +106,56 @@ EXAMPLE:
 
 		{
 			Name:      "can-do",
-			Usage:     "gen default config",
+			Usage:     "can do action",
 			ArgsUsage: "GET /api/user/info",
 			Flags: []cli.Flag{
+				cli.IntFlag{
+					Name:  "port",
+					Usage: "set host port",
+					Value: 0,
+				},
 				cli.StringSliceFlag{
 					Name:  "xid",
 					Usage: "xid list",
-					Value: &cli.StringSlice{"user1", "user2"},
+					Value: &cli.StringSlice{"user1", "group1"},
 				},
-				cli.StringFlag{
+				cli.StringSliceFlag{
 					Name:  "role",
 					Usage: "role name",
-					Value: "test",
+					Value: &cli.StringSlice{"role1"},
 				},
 			},
 			Action: func(c *cli.Context) {
-				// TODO
+				if c.NArg() < 2 {
+					fmt.Println("args: missing Verb or Path")
+					return
+				}
+				cfg := config.MustLoad(c.GlobalString("config"))
+
+				port := c.Int("port")
+				if port <= 0 {
+					port = cfg.Port
+				}
+
+				client, conn, err := client.DialService(c.String("host"), port)
+				if err != nil {
+					logger.Criticalf(nil, "%v", err)
+					os.Exit(1)
+				}
+				defer conn.Close()
+
+				reply, err := client.CanDo(context.Background(), &pbam.Action{
+					RoleName: c.StringSlice("role"),
+					Xid:      c.StringSlice("xid"),
+					Verb:     c.Args().First(),
+					Path:     c.Args().Get(1),
+				})
+				if err != nil {
+					logger.Criticalf(nil, "%v", err)
+					os.Exit(1)
+				}
+
+				fmt.Println(reply.GetValue())
 			},
 		},
 
