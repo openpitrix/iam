@@ -27,11 +27,25 @@ func Main() {
 
 EXAMPLE:
    am gen-config
+
    am info
-   am list
-   am ping
-   am getv key
+   am can-do
+
+   am list-role
+   am list-role-binding
+
+   am create-role
+   am modifu-role
+   am delete-role
+
+   am create-binding
+   am delete-binding
+
+   am load-rbac
+   am save-rbac
+
    am serve
+
    am tour`
 
 	app.Flags = []cli.Flag{
