@@ -40,19 +40,19 @@ option go_package = "openpitrix.io/iam/pkg/pb/am;pbam";
 // ----------------------------------------------------------------------------
 
 message Action {
-	// 1. check any of role can do the action
+	// 1. check any role can do the action
 	// 2. mapping xid to the roles, then check any role can do the action
 
-	repeated string role_name = 1;
-	repeated string xid = 2; // user_id/group_id/*_id
+	repeated string role_name = 1; //
+	repeated string xid = 2;       // user_id/group_id/*_id
 
-	string verb = 3; // op1/op2/...
-	string path = 4; // url
+	string method = 3;    // GRPC: ServiceName.ServiceMethodName
+	string namespace = 4; // /qingcloud.test
 }
 
 message Rule {
-	string path_pattern = 1;          // See Pattern Syntax
-	repeated string verb_pattern = 2; // '*' is all
+	string method_pattern = 1;             // See Pattern Syntax
+	repeated string namespace_pattern = 2; // See Pattern Syntax
 }
 
 message Role {
