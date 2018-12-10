@@ -50,6 +50,11 @@ message Group {
 	google.protobuf.Timestamp status_time = 11;
 }
 
+message GroupTree {
+	Group self = 1;
+	repeated Group child = 2;
+}
+
 // ----------------------------------------------------------------------------
 // service api
 // ----------------------------------------------------------------------------
@@ -58,8 +63,11 @@ service AccountManager {
 	rpc CreateUser(User) returns (User);
 	rpc CreateGroup(Group) returns (Group);
 
-	rpc GetUser(Id) returns (User);   // include groups
-	rpc GetGroup(Id) returns (Group); // include users
+	rpc GetUser(Id) returns (User);           // include group_id
+
+	rpc GetGroup(Id) returns (Group);         // include users
+	rpc GetRootGroup(Empty) returns (Group);  // include users
+	rpc GetGroupTree(Id) returns (GroupTree); // include users
 
 	rpc ListUesrs(Range) returns (ListUesrsResponse);
 	rpc ListGroups(Range) returns (ListGroupsResponse);
@@ -78,6 +86,9 @@ service AccountManager {
 // service api type
 // ----------------------------------------------------------------------------
 
+message Empty {
+	//
+}
 message Bool {
 	bool value = 1;
 }
