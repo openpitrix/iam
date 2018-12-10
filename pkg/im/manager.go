@@ -38,6 +38,13 @@ func (p *AccountManager) GetUser(ctx context.Context, req *pbim.Id) (*pbim.User,
 func (p *AccountManager) GetGroup(ctx context.Context, req *pbim.Id) (*pbim.Group, error) {
 	panic("TODO")
 }
+func (p *AccountManager) GetRootGroup(ctx context.Context, req *pbim.Empty) (*pbim.Group, error) {
+	panic("TODO")
+}
+
+func (p *AccountManager) GetGroupTree(ctx context.Context, req *pbim.Id) (*pbim.GroupTree, error) {
+	panic("TODO")
+}
 
 func (p *AccountManager) ListUesrs(ctx context.Context, req *pbim.Range) (*pbim.ListUesrsResponse, error) {
 	panic("TODO")

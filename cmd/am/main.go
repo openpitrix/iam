@@ -105,7 +105,7 @@ EXAMPLE:
 		{
 			Name:      "can-do",
 			Usage:     "can do action",
-			ArgsUsage: "GET /api/user/info",
+			ArgsUsage: "Serve.Method /path/to/home",
 			Flags: []cli.Flag{
 				cli.IntFlag{
 					Name:  "port",
@@ -143,10 +143,10 @@ EXAMPLE:
 				defer conn.Close()
 
 				reply, err := client.CanDo(context.Background(), &pbam.Action{
-					RoleName: c.StringSlice("role"),
-					Xid:      c.StringSlice("xid"),
-					Verb:     c.Args().First(),
-					Path:     c.Args().Get(1),
+					RoleName:  c.StringSlice("role"),
+					Xid:       c.StringSlice("xid"),
+					Method:    c.Args().First(),
+					Namespace: c.Args().Get(1),
 				})
 				if err != nil {
 					logger.Criticalf(nil, "%v", err)

@@ -10,21 +10,21 @@ import (
 	"openpitrix.io/iam/pkg/pb/am"
 )
 
-func matchRule(verb, path string, rule *pbam.Rule) bool {
-	// check verb
-	var verbMatched bool
-	for _, pattern := range rule.VerbPattern {
-		if pattern != "*" || pattern == verb {
-			verbMatched = true
-			break
-		}
-	}
-	if !verbMatched {
+func matchRule(method, namespace string, rule *pbam.Rule) bool {
+	// check method
+	if ok, _ := doublestar.Match(rule.MethodPattern, method); !ok {
 		return false
 	}
 
-	// check path
-	if ok, _ := doublestar.Match(rule.PathPattern, path); !ok {
+	// check verb
+	var nsMatched bool
+	for _, pattern := range rule.NamespacePattern {
+		if ok, _ := doublestar.Match(pattern, namespace); !ok {
+			nsMatched = true
+			return false
+		}
+	}
+	if !nsMatched {
 		return false
 	}
 
@@ -34,7 +34,7 @@ func matchRule(verb, path string, rule *pbam.Rule) bool {
 
 func canDoAction(x *pbam.Action, rules []*pbam.Rule) bool {
 	for _, rule := range rules {
-		if matchRule(x.Verb, x.Path, rule) {
+		if matchRule(x.Method, x.Namespace, rule) {
 			return true
 		}
 	}
