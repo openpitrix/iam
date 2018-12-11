@@ -46,7 +46,7 @@ func (m *User) Reset()         { *m = User{} }
 func (m *User) String() string { return proto.CompactTextString(m) }
 func (*User) ProtoMessage()    {}
 func (*User) Descriptor() ([]byte, []int) {
-	return fileDescriptor_im_772693e80cd8266e, []int{0}
+	return fileDescriptor_im_6dc43fce42099b91, []int{0}
 }
 func (m *User) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_User.Unmarshal(m, b)
@@ -154,7 +154,7 @@ func (m *UserList) Reset()         { *m = UserList{} }
 func (m *UserList) String() string { return proto.CompactTextString(m) }
 func (*UserList) ProtoMessage()    {}
 func (*UserList) Descriptor() ([]byte, []int) {
-	return fileDescriptor_im_772693e80cd8266e, []int{1}
+	return fileDescriptor_im_6dc43fce42099b91, []int{1}
 }
 func (m *UserList) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_UserList.Unmarshal(m, b)
@@ -201,7 +201,7 @@ func (m *Group) Reset()         { *m = Group{} }
 func (m *Group) String() string { return proto.CompactTextString(m) }
 func (*Group) ProtoMessage()    {}
 func (*Group) Descriptor() ([]byte, []int) {
-	return fileDescriptor_im_772693e80cd8266e, []int{2}
+	return fileDescriptor_im_6dc43fce42099b91, []int{2}
 }
 func (m *Group) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Group.Unmarshal(m, b)
@@ -303,7 +303,7 @@ func (m *GroupTree) Reset()         { *m = GroupTree{} }
 func (m *GroupTree) String() string { return proto.CompactTextString(m) }
 func (*GroupTree) ProtoMessage()    {}
 func (*GroupTree) Descriptor() ([]byte, []int) {
-	return fileDescriptor_im_772693e80cd8266e, []int{3}
+	return fileDescriptor_im_6dc43fce42099b91, []int{3}
 }
 func (m *GroupTree) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_GroupTree.Unmarshal(m, b)
@@ -347,7 +347,7 @@ func (m *Empty) Reset()         { *m = Empty{} }
 func (m *Empty) String() string { return proto.CompactTextString(m) }
 func (*Empty) ProtoMessage()    {}
 func (*Empty) Descriptor() ([]byte, []int) {
-	return fileDescriptor_im_772693e80cd8266e, []int{4}
+	return fileDescriptor_im_6dc43fce42099b91, []int{4}
 }
 func (m *Empty) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Empty.Unmarshal(m, b)
@@ -378,7 +378,7 @@ func (m *Bool) Reset()         { *m = Bool{} }
 func (m *Bool) String() string { return proto.CompactTextString(m) }
 func (*Bool) ProtoMessage()    {}
 func (*Bool) Descriptor() ([]byte, []int) {
-	return fileDescriptor_im_772693e80cd8266e, []int{5}
+	return fileDescriptor_im_6dc43fce42099b91, []int{5}
 }
 func (m *Bool) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Bool.Unmarshal(m, b)
@@ -416,7 +416,7 @@ func (m *Id) Reset()         { *m = Id{} }
 func (m *Id) String() string { return proto.CompactTextString(m) }
 func (*Id) ProtoMessage()    {}
 func (*Id) Descriptor() ([]byte, []int) {
-	return fileDescriptor_im_772693e80cd8266e, []int{6}
+	return fileDescriptor_im_6dc43fce42099b91, []int{6}
 }
 func (m *Id) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Id.Unmarshal(m, b)
@@ -454,7 +454,7 @@ func (m *IdList) Reset()         { *m = IdList{} }
 func (m *IdList) String() string { return proto.CompactTextString(m) }
 func (*IdList) ProtoMessage()    {}
 func (*IdList) Descriptor() ([]byte, []int) {
-	return fileDescriptor_im_772693e80cd8266e, []int{7}
+	return fileDescriptor_im_6dc43fce42099b91, []int{7}
 }
 func (m *IdList) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_IdList.Unmarshal(m, b)
@@ -494,7 +494,7 @@ func (m *Range) Reset()         { *m = Range{} }
 func (m *Range) String() string { return proto.CompactTextString(m) }
 func (*Range) ProtoMessage()    {}
 func (*Range) Descriptor() ([]byte, []int) {
-	return fileDescriptor_im_772693e80cd8266e, []int{8}
+	return fileDescriptor_im_6dc43fce42099b91, []int{8}
 }
 func (m *Range) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Range.Unmarshal(m, b)
@@ -547,7 +547,7 @@ func (m *Password) Reset()         { *m = Password{} }
 func (m *Password) String() string { return proto.CompactTextString(m) }
 func (*Password) ProtoMessage()    {}
 func (*Password) Descriptor() ([]byte, []int) {
-	return fileDescriptor_im_772693e80cd8266e, []int{9}
+	return fileDescriptor_im_6dc43fce42099b91, []int{9}
 }
 func (m *Password) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Password.Unmarshal(m, b)
@@ -593,7 +593,7 @@ func (m *ListUesrsResponse) Reset()         { *m = ListUesrsResponse{} }
 func (m *ListUesrsResponse) String() string { return proto.CompactTextString(m) }
 func (*ListUesrsResponse) ProtoMessage()    {}
 func (*ListUesrsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_im_772693e80cd8266e, []int{10}
+	return fileDescriptor_im_6dc43fce42099b91, []int{10}
 }
 func (m *ListUesrsResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ListUesrsResponse.Unmarshal(m, b)
@@ -639,7 +639,7 @@ func (m *ListGroupsResponse) Reset()         { *m = ListGroupsResponse{} }
 func (m *ListGroupsResponse) String() string { return proto.CompactTextString(m) }
 func (*ListGroupsResponse) ProtoMessage()    {}
 func (*ListGroupsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_im_772693e80cd8266e, []int{11}
+	return fileDescriptor_im_6dc43fce42099b91, []int{11}
 }
 func (m *ListGroupsResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ListGroupsResponse.Unmarshal(m, b)
@@ -689,7 +689,7 @@ func (m *ModifyUsersRequest) Reset()         { *m = ModifyUsersRequest{} }
 func (m *ModifyUsersRequest) String() string { return proto.CompactTextString(m) }
 func (*ModifyUsersRequest) ProtoMessage()    {}
 func (*ModifyUsersRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_im_772693e80cd8266e, []int{12}
+	return fileDescriptor_im_6dc43fce42099b91, []int{12}
 }
 func (m *ModifyUsersRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ModifyUsersRequest.Unmarshal(m, b)
@@ -766,7 +766,7 @@ func (m *ModifyGroupsRequest) Reset()         { *m = ModifyGroupsRequest{} }
 func (m *ModifyGroupsRequest) String() string { return proto.CompactTextString(m) }
 func (*ModifyGroupsRequest) ProtoMessage()    {}
 func (*ModifyGroupsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_im_772693e80cd8266e, []int{13}
+	return fileDescriptor_im_6dc43fce42099b91, []int{13}
 }
 func (m *ModifyGroupsRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ModifyGroupsRequest.Unmarshal(m, b)
@@ -1377,9 +1377,9 @@ var _AccountManager_serviceDesc = grpc.ServiceDesc{
 	Metadata: "iam/im/im.proto",
 }
 
-func init() { proto.RegisterFile("iam/im/im.proto", fileDescriptor_im_772693e80cd8266e) }
+func init() { proto.RegisterFile("iam/im/im.proto", fileDescriptor_im_6dc43fce42099b91) }
 
-var fileDescriptor_im_772693e80cd8266e = []byte{
+var fileDescriptor_im_6dc43fce42099b91 = []byte{
 	// 1013 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x56, 0x6d, 0x6f, 0xdc, 0x44,
 	0x10, 0xd6, 0xbd, 0xf8, 0x72, 0x37, 0x0e, 0x69, 0xba, 0xad, 0x8a, 0x31, 0xa5, 0x1c, 0x8e, 0x8a,
