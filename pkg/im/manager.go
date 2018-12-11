@@ -35,6 +35,10 @@ func (p *AccountManager) GetUser(ctx context.Context, req *pbim.Id) (*pbim.User,
 	panic("TODO")
 }
 
+func (p *AccountManager) GetUserByGroupId(ctx context.Context, req *pbim.Id) (*pbim.UserList, error) {
+	panic("TODO")
+}
+
 func (p *AccountManager) GetGroup(ctx context.Context, req *pbim.Id) (*pbim.Group, error) {
 	panic("TODO")
 }
