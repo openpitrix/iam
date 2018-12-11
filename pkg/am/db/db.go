@@ -33,6 +33,10 @@ func Open(dbtype, dbpath string) (*Database, error) {
 	return p, nil
 }
 
+func (p *Database) Close() error {
+	return p.DB.Close()
+}
+
 func (p *Database) createTablesIfNotExists() error {
 	for _, sql := range []string{
 		SqlTableSchema_Role,
