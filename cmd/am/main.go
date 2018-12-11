@@ -13,8 +13,8 @@ import (
 	"github.com/urfave/cli"
 
 	"openpitrix.io/iam/pkg/am/client"
-	"openpitrix.io/iam/pkg/am/config"
 	"openpitrix.io/iam/pkg/am/service"
+	"openpitrix.io/iam/pkg/config"
 	"openpitrix.io/iam/pkg/pb/am"
 	"openpitrix.io/iam/pkg/version"
 	"openpitrix.io/logger"
