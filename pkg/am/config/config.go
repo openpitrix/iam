@@ -28,9 +28,6 @@ type Config struct {
 	Mysql MysqlConfig
 }
 
-type AMConfig struct {
-}
-
 type LogConfig struct {
 	Level      string `default:"info"` // debug, info, warn, error, fatal
 	GrpcDetail bool
