@@ -18,36 +18,36 @@ import "iam/im/filter.proto";
 
 message User {
 	string uid = 1;
+	string gid = 2;
 
-	string name = 2;
-	string email = 3;
-	string description = 4;
-	string password = 5;
-	string status = 6;
-	map<string,string> extra = 7;
-
-	repeated string gid = 8;
+	string name = 3;
+	string email = 4;
+	string description = 5;
+	string password = 6;
+	string status = 7;
+	map<string,string> extra = 8;
 
 	google.protobuf.Timestamp create_time = 9;
 	google.protobuf.Timestamp update_time = 10;
 	google.protobuf.Timestamp status_time = 11;
 }
+message UserList {
+	repeated User value = 1;
+}
 
 message Group {
 	string gid = 1;
 	string gid_parent = 2;
-	repeated string gid_child = 3;
 
-	string name = 4;
+	string name = 3;
+	string email = 4;
 	string description = 5;
 	string status = 6;
 	map<string,string> extra = 7;
 
-	repeated string uid = 8;
-
- 	google.protobuf.Timestamp create_time = 9;
-	google.protobuf.Timestamp update_time = 10;
-	google.protobuf.Timestamp status_time = 11;
+ 	google.protobuf.Timestamp create_time = 8;
+	google.protobuf.Timestamp update_time = 9;
+	google.protobuf.Timestamp status_time = 10;
 }
 
 message GroupTree {
@@ -63,11 +63,12 @@ service AccountManager {
 	rpc CreateUser(User) returns (User);
 	rpc CreateGroup(Group) returns (Group);
 
-	rpc GetUser(Id) returns (User);           // include group_id
+	rpc GetUser(Id) returns (User);
+	rpc GetUserByGroupId(Id) returns (UserList);
 
-	rpc GetGroup(Id) returns (Group);         // include users
-	rpc GetRootGroup(Empty) returns (Group);  // include users
-	rpc GetGroupTree(Id) returns (GroupTree); // include users
+	rpc GetGroup(Id) returns (Group);
+	rpc GetRootGroup(Empty) returns (Group);
+	rpc GetGroupTree(Id) returns (GroupTree);
 
 	rpc ListUesrs(Range) returns (ListUesrsResponse);
 	rpc ListGroups(Range) returns (ListGroupsResponse);
