@@ -15,7 +15,7 @@ import (
 )
 
 type User struct {
-	Uid string `db:"uid"`
+	Uid string `db:"uid, primarykey"`
 	Gid string `db:"gid"`
 
 	Name        string `db:"name"`
@@ -31,7 +31,7 @@ type User struct {
 }
 
 type Group struct {
-	Gid       string `db:"gid"`
+	Gid       string `db:"gid, primarykey"`
 	GidParent string `db:"gid_parent"`
 
 	Name        string `db:"name"`

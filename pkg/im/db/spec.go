@@ -7,6 +7,20 @@ package db
 // http://www.mysqltutorial.org/mysql-adjacency-list-tree/
 // http://mikehillyer.com/articles/managing-hierarchical-data-in-mysql/
 
+var _TableSchemaMap = []struct {
+	Name   string
+	Schema string
+	Value  interface{}
+}{
+	{TableName_User, SqlTableSchema_User, User{}},
+	{TableName_Group, SqlTableSchema_Group, Group{}},
+}
+
+const (
+	TableName_User  = `user`
+	TableName_Group = `group`
+)
+
 const SqlTableSchema_User = `
 	CREATE TABLE IF NOT EXISTS user (
 		uid VARCHAR(50) NOT NULL,

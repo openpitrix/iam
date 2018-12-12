@@ -6,32 +6,66 @@
 package db
 
 import (
-	"github.com/jmoiron/sqlx"
+	"database/sql"
+	"strings"
+
+	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/mattn/go-sqlite3"
+	gorp "gopkg.in/gorp.v2"
 
 	"openpitrix.io/iam/pkg/pb/im"
-	"openpitrix.io/logger"
 )
 
+// https://github.com/openpitrix/openpitrix/blob/b3542cadf7c893e3098eb1d5d876d7c16a4a8531/pkg/db/app/app.go
+
 type Database struct {
-	*sqlx.DB
+	db    *sql.DB
+	dbMap *gorp.DbMap
 }
 
 func Open(dbtype, dbpath string) (*Database, error) {
-	db, err := sqlx.Open(dbtype, dbpath)
+	// https://github.com/go-sql-driver/mysql/issues/9
+	if strings.EqualFold(dbtype, "mysql") {
+		dbpath += "?parseTime=true"
+	}
+
+	db, err := sql.Open(dbtype, dbpath)
 	if err != nil {
 		return nil, err
 	}
 
-	p := &Database{DB: db}
-	if err := p.createTablesIfNotExists(); err != nil {
-		logger.Criticalf(nil, "%v", err)
+	var dialect = func() gorp.Dialect {
+		switch {
+		case strings.EqualFold(dbtype, "mysql"):
+			return gorp.MySQLDialect{
+				Encoding: "mysql",
+				Engine:   "utf8",
+			}
+		case strings.EqualFold(dbtype, "postgres"):
+			return gorp.PostgresDialect{}
+		case strings.EqualFold(dbtype, "sqlite3"):
+			return gorp.SqliteDialect{}
+		default:
+			return gorp.SqliteDialect{}
+		}
+	}()
+
+	dbMap := &gorp.DbMap{Db: db, Dialect: dialect}
+	for _, v := range _TableSchemaMap {
+		if _, err := db.Exec(v.Schema); err != nil {
+			return nil, err
+		}
+		dbMap.AddTableWithNameAndSchema(
+			v.Value, v.Schema, v.Name,
+		)
 	}
 
+	p := &Database{db: db, dbMap: dbMap}
 	return p, nil
 }
 
 func (p *Database) Close() error {
-	return p.DB.Close()
+	return p.db.Close()
 }
 
 func (p *Database) createTablesIfNotExists() error {
@@ -39,7 +73,7 @@ func (p *Database) createTablesIfNotExists() error {
 		SqlTableSchema_User,
 		SqlTableSchema_Group,
 	} {
-		if _, err := p.Exec(sql); err != nil {
+		if _, err := p.db.Exec(sql); err != nil {
 			return err
 		}
 	}
@@ -47,6 +81,31 @@ func (p *Database) createTablesIfNotExists() error {
 }
 
 func (p *Database) CreateUser(arg *pbim.User) error {
+	//v := NewUserFrom(arg)
+
+	/*
+			p1 := newPost("Go 1.1 released!", "Lorem ipsum lorem ipsum")
+		    p2 := newPost("Go 1.2 released!", "Lorem ipsum lorem ipsum")
+
+		    // insert rows - auto increment PKs will be set properly after the insert
+		    err = dbmap.Insert(&p1, &p2)
+		    checkErr(err, "Insert failed")
+	*/
+
+	/*
+		_, err := p.Exec(`INSERT INTO user (name, rule) VALUES ($1, $2);`, v.Name, v.Rule)
+		if err != nil {
+			return err
+		}
+		return nil
+
+				v := NewRoleFrom(role)
+			_, err := p.Exec(`INSERT INTO role (name, rule) VALUES ($1, $2);`, v.Name, v.Rule)
+			if err != nil {
+				return err
+			}
+			return nil
+	*/
 	panic("TODO")
 }
 func (p *Database) CreateGroup(arg *pbim.Group) error {
