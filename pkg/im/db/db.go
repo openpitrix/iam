@@ -11,7 +11,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3"
-	gorp "gopkg.in/gorp.v2"
+	"gopkg.in/gorp.v2"
 
 	"openpitrix.io/iam/pkg/pb/im"
 )
