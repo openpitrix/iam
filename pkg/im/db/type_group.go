@@ -32,11 +32,11 @@ type Group struct {
 	Extra_XXX   string            `db:"extra"` // JSON map
 
 	CreateTime     *timestamp.Timestamp `db:"-"`
-	CreateTime_XXX time.Time            `db:"create_time"`
+	CreateTime_XXX *time.Time           `db:"create_time"`
 	UpdateTime     *timestamp.Timestamp `db:"-"`
-	UpdateTime_XXX time.Time            `db:"update_time"`
+	UpdateTime_XXX *time.Time           `db:"update_time"`
 	StatusTime     *timestamp.Timestamp `db:"-"`
-	StatusTime_XXX time.Time            `db:"status_time"`
+	StatusTime_XXX *time.Time           `db:"status_time"`
 }
 
 func NewGroupFrom(src *pbim.Group) *Group {
@@ -58,9 +58,13 @@ func (p *Group) hookPostRead(s gorp.SqlExecutor) error {
 func (p *Group) hookPreWrite(s gorp.SqlExecutor) error {
 	p.Extra_XXX = string(jsonutil.Encode(p.Extra))
 
-	p.CreateTime_XXX, _ = ptypes.Timestamp(p.CreateTime)
-	p.UpdateTime_XXX, _ = ptypes.Timestamp(p.UpdateTime)
-	p.StatusTime_XXX, _ = ptypes.Timestamp(p.StatusTime)
+	p.CreateTime_XXX = new(time.Time)
+	p.UpdateTime_XXX = new(time.Time)
+	p.StatusTime_XXX = new(time.Time)
+
+	*p.CreateTime_XXX, _ = ptypes.Timestamp(p.CreateTime)
+	*p.UpdateTime_XXX, _ = ptypes.Timestamp(p.UpdateTime)
+	*p.StatusTime_XXX, _ = ptypes.Timestamp(p.StatusTime)
 
 	return nil
 }

@@ -37,16 +37,17 @@ message UserList {
 
 message Group {
 	string gid = 1;
+	string gid_parent = 2;
 
-	string name = 2;
-	string email = 3;
-	string description = 4;
-	string status = 5;
-	map<string,string> extra = 6;
+	string name = 3;
+	string email = 4;
+	string description = 5;
+	string status = 6;
+	map<string,string> extra = 7;
 
- 	google.protobuf.Timestamp create_time = 7;
-	google.protobuf.Timestamp update_time = 8;
-	google.protobuf.Timestamp status_time = 9;
+ 	google.protobuf.Timestamp create_time = 8;
+	google.protobuf.Timestamp update_time = 9;
+	google.protobuf.Timestamp status_time = 10;
 }
 
 // ----------------------------------------------------------------------------
