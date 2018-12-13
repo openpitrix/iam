@@ -141,11 +141,27 @@ action_rule:
 service AppManager {
 	rpc CreateApp (CreateAppRequest) returns (CreateAppResponse) {
 		option (google.api.http) = {
-			post: "/api/AppManager.CreateApp"
+			post: "/api/AppManager.CreateApp/{app_org_path=**}"
 			body: "*"
 		};
 	}
 }
+
+message CreateAppRequest {
+	string app_owner_id = 1;  // 用户ID
+	string app_org_path = 2; // App所在的路径
+
+	// 其它参数不参与鉴权
+}
+```
+
+在CreateAppRequest中，org_path对应app所属的组织结构的路径。如果org_path为空的话，则根据user_id查询所属的组织结构的路径。
+
+下面是可能的请求URL的模式：
+
+```
+/api/AppManager.CreateApp?app_owner_id=chai
+/api/AppManager.CreateApp/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix
 ```
 
 因此 ray 通过以下的POST请求完成上面的操作（为chai用户创建一个app）：
@@ -187,6 +203,7 @@ action_rule:
 ```
 uid: ray
 POST /api/AppManager.CreateApp/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix
+POST /api/AppManager.CreateApp?app_owner_id=chai
 ```
 
 因此 iam 模块将放行，交给 AppManager 的服务进行业务处理。
