@@ -1,8 +1,9 @@
 # IAM - 账户和权限
 
-先了解和OpenPitrix业务相关的几个核心概念。
+先了解和OpenPitrix业务相关的几个核心概念。然后以app商店的app增删改查为例，展示了超级用户/应用管理员/普通用户如何通过iam服务进行鉴权。
 
-**组织部门和用户**
+-----
+## 组织部门和用户
 
 ![](./images/iam-group-user.png)
 
@@ -64,7 +65,8 @@ name: chaishushan
 
 目前，三个用户没有任何的操作权限。如果需要给他们配置不同级别的权限，需要给他们赋予具有不同权限的角色。
 
-**角色管理**
+-----
+## 角色管理
 
 ![](./images/iam-role.png)
 
@@ -104,7 +106,8 @@ role_user - 普通用户
 
 其中 role_isv 角色包含的 action_rule_isv_app_adder 规则，在后面的操作权限部分定义。
 
-**操作权限**
+-----
+## 操作权限
 
 ![](./images/iam-role-action-rule.png)
 
@@ -123,6 +126,10 @@ action_rule:
 ```
 
 然后将 `action_rule_isv_app_adder` 操作权限绑定到 `role_isv` 角色。
+
+-----
+
+## 用例1: isv add app
 
 那么对于 ray 用户，他已经被绑定到了 `role_isv` 角色，因此将拥有`action_rule_isv_app_adder` 操作权限。
 
@@ -173,7 +180,7 @@ action_rule:
 同时对名字空间 `$gid/**` 下的资源有操作权限。
 
 将名字空间 `$gid/**` 中的gid展开为 ray 所在的部门组织，最终操作权限对应的名字空间规则为
-`/QingCloud应用中心/内部组织/应用平台开发部/**`
+`/QingCloud应用中心/内部组织/应用平台开发部/**`，其中`**`表示可以跨越路径分割符进行任意匹配。
 
 因此ray具备下面操作的权限：
 
