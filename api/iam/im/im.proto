@@ -37,22 +37,16 @@ message UserList {
 
 message Group {
 	string gid = 1;
-	string gid_parent = 2; // root.gid == root.gid_parent
 
-	string name = 3;
-	string email = 4;
-	string description = 5;
-	string status = 6;
-	map<string,string> extra = 7;
+	string name = 2;
+	string email = 3;
+	string description = 4;
+	string status = 5;
+	map<string,string> extra = 6;
 
- 	google.protobuf.Timestamp create_time = 8;
-	google.protobuf.Timestamp update_time = 9;
-	google.protobuf.Timestamp status_time = 10;
-}
-
-message GroupTree {
-	Group self = 1;
-	repeated Group child = 2;
+ 	google.protobuf.Timestamp create_time = 7;
+	google.protobuf.Timestamp update_time = 8;
+	google.protobuf.Timestamp status_time = 9;
 }
 
 // ----------------------------------------------------------------------------
@@ -60,27 +54,23 @@ message GroupTree {
 // ----------------------------------------------------------------------------
 
 service AccountManager {
-	rpc CreateUser(User) returns (User);
 	rpc CreateGroup(Group) returns (Group);
+	rpc DeleteGroups(IdList) returns (Bool);
 
-	rpc GetUser(Id) returns (User);
-	rpc GetUserByGroupId(Id) returns (UserList);
-
-	rpc GetGroup(Id) returns (Group);
-	rpc GetRootGroup(Empty) returns (Group);
-	rpc GetGroupTree(Id) returns (GroupTree);
+	rpc CreateUser(User) returns (User);
+	rpc DeleteUsers(IdList) returns (Bool);
 
 	rpc ListUesrs(Range) returns (ListUesrsResponse);
 	rpc ListGroups(Range) returns (ListGroupsResponse);
 
+	rpc GetUser(Id) returns (User);
+	rpc GetUserByGroupId(Id) returns (UserList);
 	rpc ModifyUser(ModifyUsersRequest) returns (User);
-	rpc ModifyGroup(ModifyGroupsRequest) returns (Group);
-
 	rpc ComparePassword(Password) returns (Bool);
 	rpc ModifyPassword(Password) returns (Bool);
 
-	rpc DeleteUsers(IdList) returns (Bool);
-	rpc DeleteGroups(IdList) returns (Bool);
+	rpc GetGroup(Id) returns (Group);
+	rpc ModifyGroup(ModifyGroupsRequest) returns (Group);
 }
 
 // ----------------------------------------------------------------------------

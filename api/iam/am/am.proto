@@ -50,24 +50,36 @@ message Action {
 	string namespace = 4; // /qingcloud.test
 }
 
-message Rule {
-	string method_pattern = 1;             // See Pattern Syntax
-	repeated string namespace_pattern = 2; // See Pattern Syntax
+message ActionRule {
+	string name = 1;                       // primary key, read only
+	string method_pattern = 2;             // See Pattern Syntax
+	repeated string namespace_pattern = 3; // See Pattern Syntax
+}
+message ActionRuleList {
+	repeated ActionRule value = 1;
 }
 
 message Role {
 	string name = 1; // primary key, read only
-	repeated Rule rule = 2;
+	repeated ActionRule rule = 2;
 }
 message RoleList {
 	repeated Role value = 1;
 }
 
-message RoleBinding {
+message RoleActionRuleBinding {
+	string role_name = 1;
+	string action_rule_id = 2;
+}
+message RoleActionRuleBindingList {
+	repeated RoleActionRuleBinding value = 1;
+}
+
+message RoleXidBinding {
 	string role_name = 1;
 	string xid = 2;
 }
-message RoleBindingList {
+message RoleXidBindingList {
 	repeated RoleBinding value = 1;
 }
 
@@ -77,19 +89,24 @@ message RoleBindingList {
 
 service AccessManager {
 	rpc CreateRole(Role) returns (Role);
-	rpc ModifyRole(Role) returns (Role);
 	rpc DeleteRoleByName(String) returns (Bool);
 
-	rpc GetRoleByName(String) returns (Role);
-	rpc GetRoleByXidList(XidList) returns (RoleList);
+	rpc CreateActionRule(Role) returns (Role);
+	rpc DeleteActionRuleByName(String) returns (Bool);
+
+	rpc CreateRoleXidBinding(RoleXidBindingList) returns (Bool);
+	rpc DeleteRoleXidBindingByXid(XidList) returns (Bool);
+
 	rpc ListRoles(RoleNameFilter) returns (RoleList);
+	rpc ListActionRules(ActionRuleNameFilter) returns (ActionRuleList);
+	rpc ListXidBindings(RoleNameFilter) returns (RoleXidBindingList);
 
-	rpc CreateRoleBinding(RoleBindingList) returns (Bool);
-	rpc DeleteRoleBinding(XidList) returns (Bool);
+	rpc GetActionRuleByName(String) returns (Role);
+	rpc GetActionRuleByRoleName(String) returns (Role);
+	rpc GetActionRuleByXid(XidList) returns (RoleList);
 
-	rpc GetRoleBindingByRoleName(String) returns (RoleBindingList);
-	rpc GetRoleBindingByXidList(XidList) returns (RoleBindingList);
-	rpc ListRoleBindings(RoleNameFilter) returns (RoleBindingList);
+	rpc GetXidListByRoleName(String) returns (XidList);
+	rpc GetRoleListByByXid(XidList) returns (RoleList);
 
 	// check any of xid or role_name can do the action
 	rpc CanDo(Action) returns (Bool);
@@ -114,6 +131,15 @@ message XidList {
 }
 
 message RoleNameFilter {
+	// Glob: See Pattern Syntax
+	string glob_pattern = 1;
+
+	// Use RE2 syntax
+	// See https://github.com/google/re2/wiki/Syntax
+	string regexp_pattern = 2;
+}
+
+message ActionRuleNameFilter {
 	// Glob: See Pattern Syntax
 	string glob_pattern = 1;
 
