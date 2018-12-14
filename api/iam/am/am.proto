@@ -81,7 +81,7 @@ message RoleXidBinding {
 	string xid = 2;
 }
 message RoleXidBindingList {
-	repeated RoleBinding value = 1;
+	repeated RoleXidBinding value = 1;
 }
 
 // ----------------------------------------------------------------------------
@@ -98,9 +98,9 @@ service AccessManager {
 	rpc CreateRoleXidBinding(RoleXidBindingList) returns (Bool);
 	rpc DeleteRoleXidBindingByXid(XidList) returns (Bool);
 
-	rpc ListRoles(RoleNameFilter) returns (RoleList);
-	rpc ListActionRules(ActionRuleNameFilter) returns (ActionRuleList);
-	rpc ListXidBindings(RoleNameFilter) returns (RoleXidBindingList);
+	rpc ListRoles(NameFilter) returns (RoleList);
+	rpc ListActionRules(NameFilter) returns (ActionRuleList);
+	rpc ListRoleBindings(NameFilter) returns (RoleXidBindingList);
 
 	rpc GetActionRuleByName(String) returns (Role);
 	rpc GetActionRuleByRoleName(String) returns (Role);
@@ -131,7 +131,7 @@ message XidList {
 	repeated string value = 1;
 }
 
-message RoleNameFilter {
+message NameFilter {
 	// Glob: See Pattern Syntax
 	string glob_pattern = 1;
 
@@ -140,13 +140,9 @@ message RoleNameFilter {
 	string regexp_pattern = 2;
 }
 
-message ActionRuleNameFilter {
-	// Glob: See Pattern Syntax
-	string glob_pattern = 1;
-
-	// Use RE2 syntax
-	// See https://github.com/google/re2/wiki/Syntax
-	string regexp_pattern = 2;
+message RoleBindingFilter {
+	NameFilter xid = 1;
+	NameFilter role_name = 2;
 }
 
 // ----------------------------------------------------------------------------
