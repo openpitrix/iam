@@ -418,14 +418,14 @@ role_user  - 普通成员
 
 ```protobuf
 service AppManager {
-	rpc ListApp (ListAppRequest) returns (ListAppResponse) {
+	rpc DescribeApps (DescribeAppsRequest) returns (DescribeAppsResponse) {
 		option (google.api.http) = {
-			get: "/api/AppManager.ListApp/{app_path=**}"
+			get: "/api/AppManager.DescribeApps/{app_path=**}"
 			body: "*"
 		};
 	}
 }
-message DeleteAppRequest {
+message DescribeAppsRequest {
 	string app_path = 1; // App所在的路径
 
 	// 其它参数不参与鉴权
@@ -435,19 +435,61 @@ message DeleteAppRequest {
 reno查全部App列表：
 
 ```
-GET /api/AppManager.ListApp/QingCloud应用中心
+GET /api/AppManager.DescribeApps/QingCloud应用中心
 ```
 
 ray查所在组的App列表：
 
 ```
-GET /api/AppManager.ListApp/QingCloud应用中心/内部组织/应用平台开发部
+GET /api/AppManager.DescribeApps/QingCloud应用中心/内部组织/应用平台开发部
 ```
 
 ray查柴的App列表：
 
 ```
-GET /api/AppManager.ListApp/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai
+GET /api/AppManager.DescribeApps/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai
+```
+
+
+-----
+## 用例4: 修改App信息
+
+服务为：
+
+```protobuf
+service AppManager {
+	rpc ModifyApp (ModifyAppRequest) returns (ModifyAppResponse) {
+		option (google.api.http) = {
+			patch: "/api/AppManager.ModifyAppApp/{app_path=**}"
+			body: "*"
+		};
+	}
+}
+message ModifyAppAppRequest {
+	string app_path = 1; // App所在的路径
+
+	string description = 2; // 描述信息，可以修改
+
+	// 其它参数不参与鉴权
+}
+```
+
+reno修改chai的App信息：
+
+```
+PATCH /api/AppManager.ModifyApp/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app?description=abc
+```
+
+ray修改chai的App信息：
+
+```
+PATCH /api/AppManager.ModifyApp/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app?description=abc
+```
+
+ray修改chai的App信息：
+
+```
+PATCH /api/AppManager.ModifyApp/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app?description=abc
 ```
 
 ----
