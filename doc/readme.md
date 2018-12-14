@@ -56,6 +56,8 @@ client.CreateApp(&pb.CreateAppRequest{
 AppManager服务的实现者，不需要关心是谁调用了这个方法，也不需要关心资源对应的组织部分是否存在。
 因为真正的Rest调用是从Gateway，经过登陆验证、IAM鉴权之后才达到AppManager服务的，因此只要能够调用方法就说明是有权限调用的。
 
+在IAM通过鉴权之后，Gateway需要将用户的user_id信息放到Http请求的头部，AppManager.CreateApp在被执行的时候，可以通过Context参数取到user_id信息。AppManager的实现者可以根据user_id信息进行二次鉴权（业务服务自行决定如何使用user_id）。
+
 AppManager的实现者，需要根据AppPath的信息组织数据，因为后续的删除和修改也是根据同样的AppPath进行操作。
 
 -----
