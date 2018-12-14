@@ -17,9 +17,9 @@ type Interface interface {
 	CreateUserRoleBinding(bind ...*pbam.RoleXidBinding) error
 
 	DeleteGroup(gid ...string) error
-	DeleteUser(gid ...string) error
-	DeleteRole(gid ...string) error
-	DeleteActionRule(gid ...string) error
+	DeleteUser(uid ...string) error
+	DeleteRole(name ...string) error
+	DeleteActionRule(name ...string) error
 	DeleteUserRoleBinding(bind ...*pbam.RoleXidBinding) error
 
 	ModifyGroup(group *pbim.Group) error
