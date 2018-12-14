@@ -3,6 +3,62 @@
 先了解和OpenPitrix业务相关的几个核心概念。然后以app商店的app增删改查为例，展示了超级用户/应用管理员/普通用户如何通过iam服务进行鉴权。
 
 -----
+## 服务的URL规范
+
+OpenPitrix后端服务采用GRPC定义接口，然后通过grpc-gateway映射到URL，对外对应Rest风格的服务。
+
+URL的映射规则如下：
+
+```
+/api/ServiceName.ServiceMethodName/path/to/resource
+```
+
+其中`/api`空间下表示GRPC提供的Rest服务，ServiceName表示服务的名字（序言全局唯一），
+ServiceMethodName表示服务中方法的名字，而`/path/to/resource`表示Rest资源对应的路径。
+
+在OpenPitrix中，Rest资源对应的路径`/path/to/resource`和账户的组织部分是对应的关系。
+比如`/QingCloud应用中心/内部组织/应用平台开发部`部门管理的资源路径也是`/QingCloud应用中心/内部组织/应用平台开发部`。
+
+下面以AppManager服务的CreateApp方法为例，展示如何对应到Rest路径：
+
+```protobuf
+service AppManager {
+	rpc CreateApp (CreateAppRequest) returns (CreateAppResponse) {
+		option (google.api.http) = {
+			post: "/api/AppManager.CreateApp/{app_path=**}"
+			body: "*"
+		};
+	}
+}
+
+message CreateAppRequest {
+	string app_path = 1;
+}
+```
+
+CreateApp方法被映射为`/api/AppManager.CreateApp/{app_path=**}`路径，其中`/api/AppManager.CreateApp/`之后的路径被填充到`CreateAppRequest.app_path`参数中。
+
+因此下面的请求：
+
+```
+POST
+`/api/AppManager.CreateApp/QingCloud应用中心/内部组织/应用平台开发部/chai/simple-app
+```
+
+对应下面的GRPC调用：
+
+```go
+client.CreateApp(&pb.CreateAppRequest{
+	AppPath: "/QingCloud应用中心/内部组织/应用平台开发部/chai/simple-app",
+})
+```
+
+AppManager服务的实现者，不需要关心是谁调用了这个方法，也不需要关心资源对应的组织部分是否存在。
+因为真正的Rest调用是从Gateway，经过登陆验证、IAM鉴权之后才达到AppManager服务的，因此只要能够调用方法就说明是有权限调用的。
+
+AppManager的实现者，需要根据AppPath的信息组织数据，因为后续的删除和修改也是根据同样的AppPath进行操作。
+
+-----
 ## 组织部门和用户
 
 ![](./images/iam-group-user.png)
