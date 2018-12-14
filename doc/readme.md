@@ -129,7 +129,7 @@ action_rule:
 
 -----
 
-## 用例1: isv add app
+## 鉴权流程
 
 那么对于 ray 用户，他已经被绑定到了 `role_isv` 角色，因此将拥有`action_rule_isv_app_adder` 操作权限。
 
@@ -208,3 +208,257 @@ POST /api/AppManager.CreateApp?app_owner_id=chai
 
 因此 iam 模块将放行，交给 AppManager 的服务进行业务处理。
 
+
+-----
+## 用例1: 创建App
+
+假设需要创建以下App资源
+
+```
+/api/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app
+```
+
+系统有3个用户：
+
+1. reno: 超级管理员，所在组为：`/QingCloud应用中心/内部组织`
+2. ray: ISV管理员，所在组为：`/QingCloud应用中心/内部组织/应用平台开发部`
+3. chai: 普通用户，所在组为 `/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix`
+
+创建App对应的服务为：
+
+```protobuf
+service AppManager {
+	rpc CreateApp (CreateAppRequest) returns (CreateAppResponse) {
+		option (google.api.http) = {
+			post: "/api/AppManager.CreateApp/{app_path=**}"
+			body: "*"
+		};
+	}
+}
+
+message CreateAppRequest {
+	string app_path = 1; // App所在的路径
+
+	// 其它参数不参与鉴权
+}
+```
+
+### A，由超级管理员reno创建
+
+```
+POST /api/AppManager.CreateApp/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app
+```
+
+reno被绑定到了role_root角色，角色的操作权限如下：
+
+```
+role_root - 超级管理员
+	action_rule:
+		method_pattern: "/api/*.*"
+		namespace_pattern: [
+			"/**"
+		]
+```
+
+鉴权流程：
+
+1. 验证登陆
+2. 根据uid找到role_root角色
+3. 根据role_root角色获取操作的模式为`/api/*.*`，可以匹配URL中的"/api/AppManager.CreateApp"部分（POST不需要处理）
+4. 数据模式为`/**`，可以匹配 `/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app` 部分
+5. 正常调用AppManager服务（不需要了解IAM的信息）
+
+### B，由商店管理员ray创建
+
+ray被绑定到了role_isv角色，角色的操作权限如下：
+
+```
+role_isv  - 应用服务商
+	action_rule:
+		method_pattern: "/api/*.*"
+		namespace_pattern: [
+			"$gid/**"
+		]
+```
+
+鉴权流程：
+
+1. 验证登陆
+2. 根据uid找到role_isv角色
+3. 根据role_isv角色获取操作的模式为`/api/*.*`，可以匹配URL中的"/api/AppManager.CreateApp"部分（POST不需要处理）
+4. 数据模式为`$gid/**`，将`$gid`展开为ray所在的组，对应`/QingCloud应用中心/内部组织/应用平台开发部/**`，因此可以匹配`/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app` 部分
+5. 正常调用AppManager服务（不需要了解IAM的信息）
+
+### C，由普通用户chai创建
+
+chai被绑定到了role_user角色，角色的操作权限如下：
+
+```
+role_user  - 普通成员
+	action_rule:
+		method_pattern: "/api/*.*"
+		namespace_pattern: [
+			"$gid/$uid/**"
+		]
+```
+
+鉴权流程：
+
+1. 验证登陆
+2. 根据uid找到role_user角色
+3. 根据role_user角色获取操作的模式为`/api/*.*`，可以匹配URL中的"/api/AppManager.CreateApp"部分（POST不需要处理）
+4. 数据模式为`$gid/$uid/**`，将`$gid`和`$uid`用chai所在的组和ID替代，对应`/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/**`，因此可以匹配`/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app` 部分
+5. 正常调用AppManager服务（不需要了解IAM的信息）
+
+-----
+## 用例2: 删除App
+
+假设需要删除以下App资源
+
+```
+/api/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app
+```
+
+系统有3个用户：
+
+1. reno: 超级管理员，所在组为：`/QingCloud应用中心/内部组织`
+2. ray: ISV管理员，所在组为：`/QingCloud应用中心/内部组织/应用平台开发部`
+3. chai: 普通用户，所在组为 `/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix`
+
+删除App对应的服务为：
+
+```protobuf
+service AppManager {
+	rpc DeleteApp (DeleteAppRequest) returns (DeleteAppResponse) {
+		option (google.api.http) = {
+			delete: "/api/AppManager.DeleteApp/{app_path=**}"
+			body: "*"
+		};
+	}
+}
+message DeleteAppRequest {
+	string app_path = 1; // App所在的路径
+
+	// 其它参数不参与鉴权
+}
+```
+
+
+### A，由超级管理员reno删除
+
+```
+DELETE /api/AppManager.DeleteAppRequest/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app
+```
+
+reno被绑定到了role_root角色，角色的操作权限如下：
+
+```
+role_root - 超级管理员
+	action_rule:
+		method_pattern: "/api/*.*"
+		namespace_pattern: [
+			"/**"
+		]
+```
+
+鉴权流程：
+
+1. 验证登陆
+2. 根据uid找到role_root角色
+3. 根据role_root角色获取操作的模式为`/api/*.*`，可以匹配URL中的"/api/AppManager.DeleteAppRequest"部分（DELETE不需要处理）
+4. 数据模式为`/**`，可以匹配 `/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app` 部分
+5. 正常调用AppManager服务（不需要了解IAM的信息）
+
+### B，由商店管理员ray删除
+
+ray被绑定到了role_isv角色，角色的操作权限如下：
+
+```
+role_isv  - 应用服务商
+	action_rule:
+		method_pattern: "/api/*.*"
+		namespace_pattern: [
+			"$gid/**"
+		]
+```
+
+鉴权流程：
+
+1. 验证登陆
+2. 根据uid找到role_isv角色
+3. 根据role_isv角色获取操作的模式为`/api/*.*`，可以匹配URL中的"/api/AppManager.DeleteApp"部分（DELETE不需要处理）
+4. 数据模式为`$gid/**`，将`$gid`展开为ray所在的组，对应`/QingCloud应用中心/内部组织/应用平台开发部/**`，因此可以匹配`/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app` 部分
+5. 正常调用AppManager服务（不需要了解IAM的信息）
+
+### C，由普通用户chai删除
+
+chai被绑定到了role_user角色，角色的操作权限如下：
+
+```
+role_user  - 普通成员
+	action_rule:
+		method_pattern: "/api/*.*"
+		namespace_pattern: [
+			"$gid/$uid/**"
+		]
+```
+
+鉴权流程：
+
+1. 验证登陆
+2. 根据uid找到role_user角色
+3. 根据role_user角色获取操作的模式为`/api/*.*`，可以匹配URL中的"/api/AppManager.CreateApp"部分（DELETE不需要处理）
+4. 数据模式为`$gid/$uid/**`，将`$gid`和`$uid`用chai所在的组和ID替代，对应`/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/**`，因此可以匹配`/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app` 部分
+5. 正常调用AppManager服务（不需要了解IAM的信息）
+
+-----
+## 用例3: 查App列表
+
+服务为：
+
+```protobuf
+service AppManager {
+	rpc ListApp (ListAppRequest) returns (ListAppResponse) {
+		option (google.api.http) = {
+			get: "/api/AppManager.ListApp/{app_path=**}"
+			body: "*"
+		};
+	}
+}
+message DeleteAppRequest {
+	string app_path = 1; // App所在的路径
+
+	// 其它参数不参与鉴权
+}
+```
+
+reno查全部App列表：
+
+```
+GET /api/AppManager.ListApp/QingCloud应用中心
+```
+
+ray查所在组的App列表：
+
+```
+GET /api/AppManager.ListApp/QingCloud应用中心/内部组织/应用平台开发部
+```
+
+ray查柴的App列表：
+
+```
+GET /api/AppManager.ListApp/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai
+```
+
+----
+# AppManager 服务的注意事项
+
+每个App需要保存资源所在的路径，该路径和组织部分的结构要保持一致。
+
+比如chai要创建simple-app应用，根据chai所在的组可以得知应用对应的资源路径为“/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app”。
+
+再组合服务的方法对应的Rest-API得到路径：“/api/AppManager.CreateApp/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app”
+
+从数据库表查App列表时，根据App对应的资源路径做前缀匹配即可。
+
+AppManager只要遵循Rest-API的映射规则，并不需要了解IAM服务。
