@@ -41,5 +41,8 @@ type Interface interface {
 	ListUserRoleBinding(filter *pbam.RoleBindingFilter) ([]*pbam.RoleXidBinding, error)
 
 	ComparePassword(uid, password string) (ok bool, err error)
+
 	CanDoAction(uid, method string, namespace ...string)
+	CanDoActionWithUserNamespace(uid, method string)
+	CanDoActionNoNamespace(uid, method string)
 }
