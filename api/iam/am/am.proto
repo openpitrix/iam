@@ -54,7 +54,6 @@ message ActionRule {
 	string name = 1;                       // primary key, read only
 	string method_pattern = 2;             // See Pattern Syntax
 	repeated string namespace_pattern = 3; // See Pattern Syntax
-	repeated string mixins_rule_name = 4;  // Other rules
 }
 message ActionRuleList {
 	repeated ActionRule value = 1;

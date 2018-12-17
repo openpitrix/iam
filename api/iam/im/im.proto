@@ -71,6 +71,7 @@ service AccountManager {
 	rpc ModifyPassword(Password) returns (Bool);
 
 	rpc GetGroup(Id) returns (Group);
+	rpc GetGroupPath(Id) returns (GroupPath);
 	rpc ModifyGroup(ModifyGroupsRequest) returns (Group);
 }
 
@@ -125,6 +126,11 @@ message ModifyGroupsRequest {
 	google.protobuf.StringValue description = 3;
 	google.protobuf.StringValue status = 4;
 	map<string,string> extra = 5;
+}
+
+message GroupPath {
+	repeated string gid = 1;
+	repeated string name = 2;
 }
 
 // ----------------------------------------------------------------------------
