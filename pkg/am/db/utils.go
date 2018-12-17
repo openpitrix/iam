@@ -11,9 +11,9 @@ import (
 	"openpitrix.io/logger"
 )
 
-func encodeRuleList(x []*pbam.Rule) string {
+func encodeRuleList(x []*pbam.ActionRule) string {
 	if x == nil {
-		x = []*pbam.Rule{}
+		x = []*pbam.ActionRule{}
 	}
 
 	data, err := json.Marshal(x)
@@ -24,12 +24,12 @@ func encodeRuleList(x []*pbam.Rule) string {
 	return string(data)
 }
 
-func decodeRuleList(jsonValue string) []*pbam.Rule {
+func decodeRuleList(jsonValue string) []*pbam.ActionRule {
 	if jsonValue == "" {
-		return []*pbam.Rule{}
+		return []*pbam.ActionRule{}
 	}
 
-	var x []*pbam.Rule
+	var x []*pbam.ActionRule
 	err := json.Unmarshal([]byte(jsonValue), &x)
 	if err != nil {
 		logger.Criticalf(nil, "%v+", err)

@@ -18,15 +18,15 @@ type RoleBinding struct {
 	Xid      string `db:"xid"`
 }
 
-func NewRoleBindingFrom(x *pbam.RoleBinding) *RoleBinding {
+func NewRoleBindingFrom(x *pbam.RoleXidBinding) *RoleBinding {
 	return &RoleBinding{
 		RoleName: x.RoleName,
 		Xid:      x.Xid,
 	}
 }
 
-func (p *RoleBinding) ToPbRoleBinding() *pbam.RoleBinding {
-	return &pbam.RoleBinding{
+func (p *RoleBinding) ToPbRoleBinding() *pbam.RoleXidBinding {
+	return &pbam.RoleXidBinding{
 		RoleName: p.RoleName,
 		Xid:      p.Xid,
 	}

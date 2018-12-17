@@ -18,14 +18,14 @@ type Interface interface {
 
 	GetRoleByName(name string) (*pbam.Role, error)
 	GetRoleByXidList(xid ...string) (*pbam.RoleList, error)
-	ListRoles(filter *pbam.RoleNameFilter) (*pbam.RoleList, error)
+	ListRoles(filter *pbam.NameFilter) (*pbam.RoleList, error)
 
-	CreateRoleBinding(x *pbam.RoleBindingList) error
+	CreateRoleBinding(x *pbam.RoleXidBindingList) error
 	DeleteRoleBinding(xid ...string) error
 
-	GetRoleBindingByRoleName(name string) (*pbam.RoleBindingList, error)
-	GetRoleBindingByXidList(xid ...string) (*pbam.RoleBindingList, error)
-	ListRoleBindings(filter *pbam.RoleNameFilter) (*pbam.RoleBindingList, error)
+	GetRoleBindingByRoleName(name string) (*pbam.RoleXidBindingList, error)
+	GetRoleBindingByXidList(xid ...string) (*pbam.RoleXidBindingList, error)
+	ListRoleBindings(filter *pbam.NameFilter) (*pbam.RoleXidBindingList, error)
 
 	CanDo(x *pbam.Action) bool
 }

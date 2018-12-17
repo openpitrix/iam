@@ -125,7 +125,7 @@ func (p *Database) GetGroup(arg *pbim.Id) (*pbim.Group, error) {
 func (p *Database) GetRootGroup(arg *pbim.Empty) (*pbim.Group, error) {
 	panic("TODO")
 }
-func (p *Database) GetGroupTree(arg *pbim.Id) (*pbim.GroupTree, error) {
+func (p *Database) GetGroupPath(arg *pbim.Id) (*pbim.GroupPath, error) {
 	panic("TODO")
 }
 

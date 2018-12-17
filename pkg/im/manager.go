@@ -46,7 +46,7 @@ func (p *AccountManager) GetRootGroup(ctx context.Context, req *pbim.Empty) (*pb
 	panic("TODO")
 }
 
-func (p *AccountManager) GetGroupTree(ctx context.Context, req *pbim.Id) (*pbim.GroupTree, error) {
+func (p *AccountManager) GetGroupPath(ctx context.Context, req *pbim.Id) (*pbim.GroupPath, error) {
 	panic("TODO")
 }
 

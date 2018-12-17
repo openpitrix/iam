@@ -12,6 +12,49 @@ import (
 	"openpitrix.io/logger"
 )
 
+func (p *Server) CreateActionRule(ctx context.Context, req *pbam.Role) (*pbam.Role, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
+	panic("TODO")
+}
+func (p *Server) DeleteActionRuleByName(ctx context.Context, req *pbam.String) (*pbam.Bool, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
+	panic("TODO")
+}
+
+func (p *Server) GetActionRuleByName(ctx context.Context, req *pbam.String) (*pbam.Role, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
+	panic("TODO")
+}
+func (p *Server) GetActionRuleByRoleName(ctx context.Context, req *pbam.String) (*pbam.Role, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
+	panic("TODO")
+}
+func (p *Server) GetActionRuleByXid(ctx context.Context, req *pbam.XidList) (*pbam.RoleList, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
+	panic("TODO")
+}
+
+func (p *Server) ListActionRules(ctx context.Context, req *pbam.NameFilter) (*pbam.ActionRuleList, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
+	panic("TODO")
+}
+func (p *Server) GetXidListByRoleName(ctx context.Context, req *pbam.String) (*pbam.XidList, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
+	panic("TODO")
+}
+func (p *Server) GetRoleListByByXid(ctx context.Context, req *pbam.XidList) (*pbam.RoleList, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
+	panic("TODO")
+}
+
 func (p *Server) CreateRole(ctx context.Context, req *pbam.Role) (*pbam.Role, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
@@ -42,33 +85,38 @@ func (p *Server) GetRoleByXidList(ctx context.Context, req *pbam.XidList) (*pbam
 	panic("TODO")
 }
 
-func (p *Server) ListRoles(ctx context.Context, req *pbam.RoleNameFilter) (*pbam.RoleList, error) {
+func (p *Server) ListRoles(ctx context.Context, req *pbam.NameFilter) (*pbam.RoleList, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	panic("TODO")
 }
 
-func (p *Server) CreateRoleBinding(ctx context.Context, req *pbam.RoleBindingList) (*pbam.Bool, error) {
+func (p *Server) CreateRoleXidBinding(ctx context.Context, req *pbam.RoleXidBindingList) (*pbam.Bool, error) {
 	panic("TODO")
 }
 
-func (p *Server) DeleteRoleBinding(ctx context.Context, req *pbam.XidList) (*pbam.Bool, error) {
+func (p *Server) DeleteRoleXidBindingByXid(ctx context.Context, req *pbam.XidList) (*pbam.Bool, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	panic("TODO")
 }
 
-func (p *Server) GetRoleBindingByRoleName(ctx context.Context, req *pbam.String) (*pbam.RoleBindingList, error) {
+func (p *Server) GetRoleXidBindingByRoleName(ctx context.Context, req *pbam.String) (*pbam.RoleXidBindingList, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	panic("TODO")
 }
-func (p *Server) GetRoleBindingByXidList(ctx context.Context, req *pbam.XidList) (*pbam.RoleBindingList, error) {
+func (p *Server) GetRoleXidBindingByXidList(ctx context.Context, req *pbam.XidList) (*pbam.RoleXidBindingList, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	panic("TODO")
 }
-func (p *Server) ListRoleBindings(ctx context.Context, req *pbam.RoleNameFilter) (*pbam.RoleBindingList, error) {
+func (p *Server) ListRoleXidBindings(ctx context.Context, req *pbam.NameFilter) (*pbam.RoleXidBindingList, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
+	panic("TODO")
+}
+func (p *Server) ListRoleBindings(ctx context.Context, req *pbam.NameFilter) (*pbam.RoleXidBindingList, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	panic("TODO")

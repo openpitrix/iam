@@ -10,7 +10,7 @@ import (
 	"openpitrix.io/iam/pkg/pb/am"
 )
 
-func matchRule(method, namespace string, rule *pbam.Rule) bool {
+func matchRule(method, namespace string, rule *pbam.ActionRule) bool {
 	// check method
 	if ok, _ := doublestar.Match(rule.MethodPattern, method); !ok {
 		return false
@@ -32,7 +32,7 @@ func matchRule(method, namespace string, rule *pbam.Rule) bool {
 	return true
 }
 
-func canDoAction(x *pbam.Action, rules []*pbam.Rule) bool {
+func canDoAction(x *pbam.Action, rules []*pbam.ActionRule) bool {
 	for _, rule := range rules {
 		if matchRule(x.Method, x.Namespace, rule) {
 			return true

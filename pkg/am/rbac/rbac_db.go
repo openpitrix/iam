@@ -48,24 +48,24 @@ func (p *rabcDbServer) GetRoleByName(name string) (*pbam.Role, error) {
 func (p *rabcDbServer) GetRoleByXidList(xid ...string) (*pbam.RoleList, error) {
 	return p.db.GetRoleByXidList(xid...)
 }
-func (p *rabcDbServer) ListRoles(filter *pbam.RoleNameFilter) (*pbam.RoleList, error) {
+func (p *rabcDbServer) ListRoles(filter *pbam.NameFilter) (*pbam.RoleList, error) {
 	return p.db.ListRoles(filter)
 }
 
-func (p *rabcDbServer) CreateRoleBinding(x *pbam.RoleBindingList) error {
+func (p *rabcDbServer) CreateRoleBinding(x *pbam.RoleXidBindingList) error {
 	return p.db.CreateRoleBinding(x)
 }
 func (p *rabcDbServer) DeleteRoleBinding(xid ...string) error {
 	return p.db.DeleteRoleBinding(xid...)
 }
 
-func (p *rabcDbServer) GetRoleBindingByRoleName(name string) (*pbam.RoleBindingList, error) {
+func (p *rabcDbServer) GetRoleBindingByRoleName(name string) (*pbam.RoleXidBindingList, error) {
 	return p.db.GetRoleBindingByRoleName(name)
 }
-func (p *rabcDbServer) GetRoleBindingByXidList(xid ...string) (*pbam.RoleBindingList, error) {
+func (p *rabcDbServer) GetRoleBindingByXidList(xid ...string) (*pbam.RoleXidBindingList, error) {
 	return p.db.GetRoleBindingByXidList(xid...)
 }
-func (p *rabcDbServer) ListRoleBindings(filter *pbam.RoleNameFilter) (*pbam.RoleBindingList, error) {
+func (p *rabcDbServer) ListRoleBindings(filter *pbam.NameFilter) (*pbam.RoleXidBindingList, error) {
 	return p.db.ListRoleBindings(filter)
 }
 

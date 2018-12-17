@@ -84,7 +84,7 @@ func (p *Database) GetRoleByName(name string) (*pbam.Role, error) {
 	return v.ToPbRole(), nil
 }
 
-func (p *Database) ListRoles(filter *pbam.RoleNameFilter) (*pbam.RoleList, error) {
+func (p *Database) ListRoles(filter *pbam.NameFilter) (*pbam.RoleList, error) {
 	var (
 		roles  = []Role{}
 		result = &pbam.RoleList{}
@@ -155,7 +155,7 @@ func (p *Database) GetRoleByXidList(xid ...string) (*pbam.RoleList, error) {
 	return result, nil
 }
 
-func (p *Database) CreateRoleBinding(bindings *pbam.RoleBindingList) error {
+func (p *Database) CreateRoleBinding(bindings *pbam.RoleXidBindingList) error {
 	/*
 		TODO:
 		tx, err := db.Begin()
@@ -183,15 +183,15 @@ func (p *Database) DeleteRoleBinding(xid ...string) error {
 	return nil
 }
 
-func (p *Database) GetRoleBindingByRoleName(name string) (*pbam.RoleBindingList, error) {
+func (p *Database) GetRoleBindingByRoleName(name string) (*pbam.RoleXidBindingList, error) {
 	var bindings []RoleBinding
 	err := p.Select(&bindings, `SELECT * FROM role_binding WHERE role_name=$1;`, name)
 	if err != nil {
 		return nil, err
 	}
 
-	result := &pbam.RoleBindingList{
-		Value: make([]*pbam.RoleBinding, len(bindings)),
+	result := &pbam.RoleXidBindingList{
+		Value: make([]*pbam.RoleXidBinding, len(bindings)),
 	}
 	for i, v := range bindings {
 		result.Value[i] = v.ToPbRoleBinding()
@@ -200,15 +200,15 @@ func (p *Database) GetRoleBindingByRoleName(name string) (*pbam.RoleBindingList,
 	return result, nil
 }
 
-func (p *Database) GetRoleBindingByXidList(xid ...string) (*pbam.RoleBindingList, error) {
+func (p *Database) GetRoleBindingByXidList(xid ...string) (*pbam.RoleXidBindingList, error) {
 	var bindings []RoleBinding
 	err := p.Select(&bindings, `SELECT * FROM role_binding WHERE xid IN(?);`, xid)
 	if err != nil {
 		return nil, err
 	}
 
-	result := &pbam.RoleBindingList{
-		Value: make([]*pbam.RoleBinding, len(bindings)),
+	result := &pbam.RoleXidBindingList{
+		Value: make([]*pbam.RoleXidBinding, len(bindings)),
 	}
 	for i, v := range bindings {
 		result.Value[i] = v.ToPbRoleBinding()
@@ -217,10 +217,10 @@ func (p *Database) GetRoleBindingByXidList(xid ...string) (*pbam.RoleBindingList
 	return result, nil
 }
 
-func (p *Database) ListRoleBindings(filter *pbam.RoleNameFilter) (*pbam.RoleBindingList, error) {
+func (p *Database) ListRoleBindings(filter *pbam.NameFilter) (*pbam.RoleXidBindingList, error) {
 	var (
 		bindings = []RoleBinding{}
-		result   = &pbam.RoleBindingList{}
+		result   = &pbam.RoleXidBindingList{}
 	)
 
 	err := p.Select(&bindings, `SELECT * FROM role_binding;`)
