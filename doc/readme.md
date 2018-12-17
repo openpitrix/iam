@@ -10,14 +10,14 @@ OpenPitrix后端服务采用GRPC定义接口，然后通过grpc-gateway映射到
 URL的映射规则如下：
 
 ```
-/api/ServiceName.ServiceMethodName/path/to/resource
+/api/ServiceName.ServiceMethodName/group1.group2.group3/user_id
 ```
 
 其中`/api`空间下表示GRPC提供的Rest服务，ServiceName表示服务的名字（序言全局唯一），
-ServiceMethodName表示服务中方法的名字，而`/path/to/resource`表示Rest资源对应的路径。
+ServiceMethodName表示服务中方法的名字，而`/group1.group2.group3/user_id`表示Rest资源对的名字空间。
 
-在OpenPitrix中，Rest资源对应的路径`/path/to/resource`和账户的组织部分是对应的关系。
-比如`/QingCloud应用中心/内部组织/应用平台开发部`部门管理的资源路径也是`/QingCloud应用中心/内部组织/应用平台开发部`。
+在OpenPitrix中，Rest资源对应的路径`/group1.group2.group3/user_id`和账户的组织部分是对应的关系。
+比如`/group1.group2.group3`部门管理的资源路径是`/QingCloud应用中心/内部组织/应用平台开发部`。
 
 下面以AppManager服务的CreateApp方法为例，展示如何对应到Rest路径：
 
@@ -42,16 +42,18 @@ CreateApp方法被映射为`/api/AppManager.CreateApp/{app_path=**}`路径，其
 
 ```
 POST
-`/api/AppManager.CreateApp/QingCloud应用中心/内部组织/应用平台开发部/chai/simple-app
+`/api/AppManager.CreateApp/group1.group2.group3/chai
 ```
 
 对应下面的GRPC调用：
 
 ```go
 client.CreateApp(&pb.CreateAppRequest{
-	AppPath: "/QingCloud应用中心/内部组织/应用平台开发部/chai/simple-app",
+	AppPath: "/group1.group2.group3/chai",
 })
 ```
+
+其中`/group1.group2.group3/chai`对应的资源名字空间可以省略。如果省略了名字空间，那么将根据user对应的默认名字空间填充（这个信息在更上层的`openpitrix/iam`模块保存）。
 
 AppManager服务的实现者，不需要关心是谁调用了这个方法，也不需要关心资源对应的组织部分是否存在。
 因为真正的Rest调用是从Gateway，经过登陆验证、IAM鉴权之后才达到AppManager服务的，因此只要能够调用方法就说明是有权限调用的。
@@ -70,34 +72,47 @@ AppManager的实现者，需要根据AppPath的信息组织数据，因为后续
 group表中有个gid唯一表示了组的位置信息，比如下面每一行为一个组的gid，每个gid对应组织结构中组的路径：
 
 ```
-gid: /QingCloud应用中心
-gid: /QingCloud应用中心/内部组织
-gid: /QingCloud应用中心/内部组织/应用平台开发部
-gid: /QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix
-gid: /QingCloud应用中心/内部组织/应用平台开发部/AppCenter
-gid: /QingCloud应用中心/内部组织/应用平台开发部/KubeSphere
-gid: /QingCloud应用中心/内部组织/云平台Iaas开发部
-gid: /QingCloud应用中心/内部组织/云平台Iaas开发部/...
+{gid:group1, parent_id:group1, name:QingCloud应用中心}
+{gid:group2, parent_id:group1, name:内部组织}
+{gid:group3, parent_id:group2, name:应用平台开发部}
+{gid:group4, parent_id:group3, name:OpenPitrix}
+{gid:group5, parent_id:group3, name:AppCenter}
+{gid:group6, parent_id:group3, name:KubeSphere}
 
-gid: /外部组织
-gid: /外部组织/应用服务商
-gid: /外部组织/普通用户
+{gid:group7, parent_id:group7, name:外部组织}
+{gid:group8, parent_id:group7, name:应用服务商}
+{gid:group9, parent_id:group7, name:普通用户}
+```
+
+上面的数据对应下面的树形组织结构（其中根group0的父亲是自己）。
+
+```
+QingCloud应用中心
+QingCloud应用中心.内部组织
+QingCloud应用中心.内部组织.应用平台开发部
+QingCloud应用中心.内部组织.应用平台开发部.OpenPitrix
+QingCloud应用中心.内部组织.应用平台开发部.AppCenter
+QingCloud应用中心.内部组织.应用平台开发部.KubeSphere
+QingCloud应用中心.内部组织.云平台Iaas开发部
+QingCloud应用中心.内部组织.云平台Iaas开发部.???
+
+外部组织
+外部组织.应用服务商
+外部组织.普通用户
 ```
 
 group表中有个gid_parent唯一表示了父亲组的位置信息。如果gid_parent和gid相同，则表示为根组。比如下面几个组的对应关系：
 
 ```
-# 根
-gid: /
-gid_parent: /
-
 # QingCloud应用中心
-gid: /QingCloud应用中心
-gid_parent: /
+gid: group1
+gid_parent: group1
+path: QingCloud应用中心
 
 # OpenPitrix
-gid: /QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix
-gid_parent: /QingCloud应用中心/内部组织/应用平台开发部
+gid: group1
+gid_parent: group4
+path: QingCloud应用中心.内部组织.应用平台开发部.OpenPitrix
 ```
 
 用户处于组织结构的叶子节点。为了便于管理，OpenPitrix预置了“超级管理员”/“应用服务商”/“普通用户”。为了便于理解，我们假设reno用户拥有“超级管理员”权限，ray用户拥有“应用服务商”权限，而chai用户拥有“普通用户”。
@@ -107,17 +122,17 @@ gid_parent: /QingCloud应用中心/内部组织/应用平台开发部
 ```
 # admin
 uid: reno
-gid: /QingCloud应用中心/内部组织/X
+group_path: QingCloud应用中心.内部组织.X
 name: reno
 
 # isv
 uid: ray
-gid: /QingCloud应用中心/内部组织/应用平台开发部
+group_path: QingCloud应用中心.内部组织.应用平台开发部
 name: ray
 
 # user
 uid: chai
-gid: /QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix
+group_path: QingCloud应用中心.内部组织.应用平台开发部.OpenPitrix
 name: chaishushan
 ```
 
@@ -149,20 +164,19 @@ role_root - 超级管理员
 		]
 role_isv  - 应用服务商
 	action_rule:
-		mixins_rule_name: [
-			"action_rule_isv_app_adder"
+		method_pattern: AppManager.CreateApp
+		namespace_pattern: [
+			"$group_path/**"
 		]
 role_user - 普通用户
 	action_rule:
 		method_pattern: *.*
 		namespace_pattern: [
-			"$gid/$uid/**"
+			"$group_path/$uid/**"
 		]
 ```
 
-在操作规则中`$gid`表示账户所在的组织部门的绝对路径，`$uid`表示账号的ID。
-
-其中 role_isv 角色包含的 action_rule_isv_app_adder 规则，在后面的操作权限部分定义。
+在操作规则中`$group_path`表示账户所在的组织部门的绝对路径，`$uid`表示账号的ID。
 
 -----
 ## 操作权限
@@ -191,7 +205,7 @@ action_rule:
 
 那么对于 ray 用户，他已经被绑定到了 `role_isv` 角色，因此将拥有`action_rule_isv_app_adder` 操作权限。
 
-而 chai 用户所在到部门 `/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix` 是 ray 所在部门 `/QingCloud应用中心/内部组织/应用平台开发部` 的子部门。因此 ray 可以新建一个 app 应用，并将 app 放到 chai 用户对应到资源空间下面。
+而 chai 用户所在到部门 `QingCloud应用中心.内部组织.应用平台开发部.OpenPitrix` 是 ray 所在部门 `QingCloud应用中心.内部组织.应用平台开发部` 的子部门。因此 ray 可以新建一个 app 应用，并将 app 放到 chai 用户对应到资源空间下面。
 
 首先为AppManager服务的每个方法映射一个唯一到URL：
 
@@ -219,14 +233,14 @@ message CreateAppRequest {
 
 ```
 /api/AppManager.CreateApp?app_owner_id=chai
-/api/AppManager.CreateApp/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix
+/api/AppManager.CreateApp/group1.group2.group3.group4/chai
 ```
 
 因此 ray 通过以下的POST请求完成上面的操作（为chai用户创建一个app）：
 
 ```
 uid: ray
-POST /api/AppManager.CreateApp/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix
+POST /api/AppManager.CreateApp/group1.group2.group3.group4/chai
 ```
 
 在OpenPitrix系统到gateway服务收到 ray 上述到请求之后：
@@ -246,21 +260,21 @@ action_rule:
 	name: action_rule_isv_app_adder
 	method_pattern: AppManager.CreateApp
 	namespace_pattern: [
-		"$gid/**"
+		"$group_path/**"
 	]
 ```
 
 那么说明 ray 用户绑定的 role_isv 角色拥有 AppManager.CreateApp 服务方法的调用权限，
-同时对名字空间 `$gid/**` 下的资源有操作权限。
+同时对名字空间 `$group_path/**` 下的资源有操作权限。
 
-将名字空间 `$gid/**` 中的gid展开为 ray 所在的部门组织，最终操作权限对应的名字空间规则为
-`/QingCloud应用中心/内部组织/应用平台开发部/**`，其中`**`表示可以跨越路径分割符进行任意匹配。
+将名字空间 `$group_path/**` 中的gid展开为 ray 所在的部门组织，最终操作权限对应的名字空间规则为
+`/group1.group2.group3.group4/**`，其中`**`表示可以跨越路径分割符进行任意匹配。
 
 因此ray具备下面操作的权限：
 
 ```
 uid: ray
-POST /api/AppManager.CreateApp/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix
+POST /api/AppManager.CreateApp/group1.group2.group3.group4
 POST /api/AppManager.CreateApp?app_owner_id=chai
 ```
 
@@ -273,7 +287,7 @@ POST /api/AppManager.CreateApp?app_owner_id=chai
 假设需要创建以下App资源
 
 ```
-/api/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app
+/api/QingCloud应用中心/group1.group2.group3.group4/chai/simple-app
 ```
 
 系统有3个用户：
@@ -304,7 +318,7 @@ message CreateAppRequest {
 ### A，由超级管理员reno创建
 
 ```
-POST /api/AppManager.CreateApp/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app
+POST /api/AppManager.CreateApp/group1.group2.group3.group4/chai/simple-app
 ```
 
 reno被绑定到了role_root角色，角色的操作权限如下：
@@ -323,7 +337,7 @@ role_root - 超级管理员
 1. 验证登陆
 2. 根据uid找到role_root角色
 3. 根据role_root角色获取操作的模式为`/api/*.*`，可以匹配URL中的"/api/AppManager.CreateApp"部分（POST不需要处理）
-4. 数据模式为`/**`，可以匹配 `/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app` 部分
+4. 数据模式为`/**`，可以匹配 `/group1.group2.group3.group4/chai/simple-app` 部分
 5. 正常调用AppManager服务（不需要了解IAM的信息）
 
 ### B，由商店管理员ray创建
@@ -344,7 +358,7 @@ role_isv  - 应用服务商
 1. 验证登陆
 2. 根据uid找到role_isv角色
 3. 根据role_isv角色获取操作的模式为`/api/*.*`，可以匹配URL中的"/api/AppManager.CreateApp"部分（POST不需要处理）
-4. 数据模式为`$gid/**`，将`$gid`展开为ray所在的组，对应`/QingCloud应用中心/内部组织/应用平台开发部/**`，因此可以匹配`/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app` 部分
+4. 数据模式为`$gid/**`，将`$gid`展开为ray所在的组，对应`/group1.group2.group3.group4/**`，因此可以匹配`/group1.group2.group3.group4/chai/simple-app` 部分
 5. 正常调用AppManager服务（不需要了解IAM的信息）
 
 ### C，由普通用户chai创建
@@ -365,7 +379,7 @@ role_user  - 普通成员
 1. 验证登陆
 2. 根据uid找到role_user角色
 3. 根据role_user角色获取操作的模式为`/api/*.*`，可以匹配URL中的"/api/AppManager.CreateApp"部分（POST不需要处理）
-4. 数据模式为`$gid/$uid/**`，将`$gid`和`$uid`用chai所在的组和ID替代，对应`/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/**`，因此可以匹配`/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app` 部分
+4. 数据模式为`$gid/$uid/**`，将`$gid`和`$uid`用chai所在的组和ID替代，对应`/group1.group2.group3.group4/chai/**`，因此可以匹配`/group1.group2.group3.group4/chai/simple-app` 部分
 5. 正常调用AppManager服务（不需要了解IAM的信息）
 
 -----
@@ -374,7 +388,7 @@ role_user  - 普通成员
 假设需要删除以下App资源
 
 ```
-/api/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app
+/group1.group2.group3.group4/chai/simple-app
 ```
 
 系统有3个用户：
@@ -405,7 +419,7 @@ message DeleteAppRequest {
 ### A，由超级管理员reno删除
 
 ```
-DELETE /api/AppManager.DeleteAppRequest/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app
+DELETE /api/AppManager.DeleteAppRequest/group1.group2.group3.group4/chai/simple-app
 ```
 
 reno被绑定到了role_root角色，角色的操作权限如下：
@@ -424,7 +438,7 @@ role_root - 超级管理员
 1. 验证登陆
 2. 根据uid找到role_root角色
 3. 根据role_root角色获取操作的模式为`/api/*.*`，可以匹配URL中的"/api/AppManager.DeleteAppRequest"部分（DELETE不需要处理）
-4. 数据模式为`/**`，可以匹配 `/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app` 部分
+4. 数据模式为`/**`，可以匹配 `/group1.group2.group3.group4/chai/simple-app` 部分
 5. 正常调用AppManager服务（不需要了解IAM的信息）
 
 ### B，由商店管理员ray删除
@@ -445,7 +459,7 @@ role_isv  - 应用服务商
 1. 验证登陆
 2. 根据uid找到role_isv角色
 3. 根据role_isv角色获取操作的模式为`/api/*.*`，可以匹配URL中的"/api/AppManager.DeleteApp"部分（DELETE不需要处理）
-4. 数据模式为`$gid/**`，将`$gid`展开为ray所在的组，对应`/QingCloud应用中心/内部组织/应用平台开发部/**`，因此可以匹配`/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app` 部分
+4. 数据模式为`$gid/**`，将`$gid`展开为ray所在的组，对应`/group1.group2.group3.group4/**`，因此可以匹配`/group1.group2.group3.group4/chai/simple-app` 部分
 5. 正常调用AppManager服务（不需要了解IAM的信息）
 
 ### C，由普通用户chai删除
@@ -466,7 +480,7 @@ role_user  - 普通成员
 1. 验证登陆
 2. 根据uid找到role_user角色
 3. 根据role_user角色获取操作的模式为`/api/*.*`，可以匹配URL中的"/api/AppManager.CreateApp"部分（DELETE不需要处理）
-4. 数据模式为`$gid/$uid/**`，将`$gid`和`$uid`用chai所在的组和ID替代，对应`/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/**`，因此可以匹配`/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app` 部分
+4. 数据模式为`$gid/$uid/**`，将`$gid`和`$uid`用chai所在的组和ID替代，对应`/group1.group2.group3.group4/chai/**`，因此可以匹配`/group1.group2.group3.group4/chai/simple-app` 部分
 5. 正常调用AppManager服务（不需要了解IAM的信息）
 
 -----
@@ -493,21 +507,22 @@ message DescribeAppsRequest {
 reno查全部App列表：
 
 ```
-GET /api/AppManager.DescribeApps/QingCloud应用中心
+GET /api/AppManager.DescribeApps/group1
 ```
 
 ray查所在组的App列表：
 
 ```
-GET /api/AppManager.DescribeApps/QingCloud应用中心/内部组织/应用平台开发部
+GET /api/AppManager.DescribeApps/group1.group2.group3
 ```
 
-ray查柴的App列表：
+ray查chai的App列表：
 
 ```
-GET /api/AppManager.DescribeApps/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai
+GET /api/AppManager.DescribeApps/group1.group2.group3.group4/chai
 ```
 
+每个用户如果省略了资源的名字空间，那么用默认最大的权限空间路径来填充。
 
 -----
 ## 用例4: 修改App信息
@@ -535,19 +550,19 @@ message ModifyAppAppRequest {
 reno修改chai的App信息：
 
 ```
-PATCH /api/AppManager.ModifyApp/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app?description=abc
+PATCH /api/AppManager.ModifyApp/group1.group2.group3.group4/chai/simple-app?description=abc
 ```
 
 ray修改chai的App信息：
 
 ```
-PATCH /api/AppManager.ModifyApp/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app?description=abc
+PATCH /api/AppManager.ModifyApp/group1.group2.group3.group4/chai/simple-app?description=abc
 ```
 
 ray修改chai的App信息：
 
 ```
-PATCH /api/AppManager.ModifyApp/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app?description=abc
+PATCH /api/AppManager.ModifyApp/group1.group2.group3.group4/chai/simple-app?description=abc
 ```
 
 ----
@@ -555,9 +570,9 @@ PATCH /api/AppManager.ModifyApp/QingCloud应用中心/内部组织/应用平台�
 
 每个App需要保存资源所在的路径，该路径和组织部分的结构要保持一致。
 
-比如chai要创建simple-app应用，根据chai所在的组可以得知应用对应的资源路径为“/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app”。
+比如chai要创建simple-app应用，根据chai所在的组可以得知应用对应的资源路径为“/group1.group2.group3.group4/chai/simple-app”。
 
-再组合服务的方法对应的Rest-API得到路径：“/api/AppManager.CreateApp/QingCloud应用中心/内部组织/应用平台开发部/OpenPitrix/chai/simple-app”
+再组合服务的方法对应的Rest-API得到路径：“/api/AppManager.CreateApp/group1.group2.group3.group4/chai/simple-app”
 
 从数据库表查App列表时，根据App对应的资源路径做前缀匹配即可。
 
