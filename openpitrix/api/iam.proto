@@ -63,11 +63,10 @@ message Group {
 message User {
 	string uid = 1;
 	string gid = 2;
+	string role_id = 3;
+	string resource_namespace = 4;
 
-	string name = 3;
-	string role = 4; // role type
-	string resource_namespace = 5;
-
+	string name = 5;
 	string email = 6;
 	string description = 7;
 	string password = 8;
@@ -109,7 +108,7 @@ message Action {
 
 // For ModifyXXX
 // if message.field is spacestring, set it empty string value.
-// if message.field is empty string, set it NULL.
+// if message.field is empty string, ignore it.
 //
 // https://github.com/chai2010/spacestring
 
@@ -242,9 +241,6 @@ service IAMManager {
 // service api type
 // ----------------------------------------------------------------------------
 
-message Empty {
-	//
-}
 message Bool {
 	bool value = 1;
 }
@@ -256,7 +252,7 @@ message Id {
 message IdList {
 	int32 total = 1;
 	int32 offset = 2;
-	repeated string value = 3;
+	repeated Id value = 3;
 }
 message GroupList {
 	int32 total = 1;
@@ -266,24 +262,25 @@ message GroupList {
 message UserList {
 	int32 total = 1;
 	int32 offset = 2;
-	repeated string value = 3;
+	repeated User value = 3;
 }
 message RoleList {
 	int32 total = 1;
 	int32 offset = 2;
-	repeated string value = 3;
+	repeated Role value = 3;
 }
 message ActionRuleList {
 	int32 total = 1;
 	int32 offset = 2;
-	repeated string value = 3;
+	repeated ActionRule value = 3;
 }
 
 message Range {
-	map<string,FieldValidator> filter = 1;
-	int32 offset = 2;
-	int32 limit = 3;
-	string namespace = 4;
+	string namespace = 1;
+	map<string,FieldValidator> filter = 2;
+
+	int32 offset = 3;
+	int32 limit = 4;
 }
 
 // ----------------------------------------------------------------------------
