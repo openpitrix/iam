@@ -98,9 +98,9 @@ message ActionRule {
 }
 
 message Action {
-	repeated string uid = 1; // uid_1234
-	string method = 2;       // GRPC: ServiceName.ServiceMethodName
-	string namespace = 3;    // qingcloud.test
+	string uid = 1;       // uid_1234
+	string method = 2;    // GRPC: ServiceName.ServiceMethodName
+	string namespace = 3; // qingcloud.test
 }
 
 // ----------------------------------------------------------------------------
@@ -122,22 +122,22 @@ service IAMManager {
 	}
 	rpc DeleteGroups(IdList) returns (Bool) {
 		option (google.api.http) = {
-			post: "/api/IAMManager.DeleteGroups"
+			delete: "/api/IAMManager.DeleteGroups"
 		};
 	}
 	rpc ModifyGroup(Group) returns (Group) {
 		option (google.api.http) = {
-			post: "/api/IAMManager.ModifyGroup"
+			patch: "/api/IAMManager.ModifyGroup"
 		};
 	}
 	rpc DescribeGroups(Range) returns (GroupList) {
 		option (google.api.http) = {
-			post: "/api/IAMManager.DescribeGroups"
+			get: "/api/IAMManager.DescribeGroups/{namespace=**}"
 		};
 	}
 	rpc GetGroup(Id) returns (Group) {
 		option (google.api.http) = {
-			post: "/api/IAMManager.GetGroup"
+			get: "/api/IAMManager.GetGroup/{id}"
 		};
 	}
 
@@ -148,22 +148,22 @@ service IAMManager {
 	}
 	rpc DeleteUsers(IdList) returns (Bool) {
 		option (google.api.http) = {
-			post: "/api/IAMManager.DeleteUsers"
+			delete: "/api/IAMManager.DeleteUsers"
 		};
 	}
 	rpc ModifyUser(User) returns (User) {
 		option (google.api.http) = {
-			post: "/api/IAMManager.ModifyUser"
+			patch: "/api/IAMManager.ModifyUser"
 		};
 	}
 	rpc DescribeUsers(Range) returns (UserList) {
 		option (google.api.http) = {
-			post: "/api/IAMManager.DescribeUsers"
+			get: "/api/IAMManager.DescribeUsers/{namespace=**}"
 		};
 	}
 	rpc GetUser(Id) returns (User) {
 		option (google.api.http) = {
-			post: "/api/IAMManager.CreateGroup"
+			get: "/api/IAMManager.GetUser/{id}"
 		};
 	}
 
@@ -174,22 +174,22 @@ service IAMManager {
 	}
 	rpc DeleteRole(IdList) returns (Bool) {
 		option (google.api.http) = {
-			post: "/api/IAMManager.DeleteRole"
+			delete: "/api/IAMManager.DeleteRole"
 		};
 	}
 	rpc ModifyRole(Role) returns (Role) {
 		option (google.api.http) = {
-			post: "/api/IAMManager.ModifyRole"
+			patch: "/api/IAMManager.ModifyRole"
 		};
 	}
 	rpc DescribeRoles(Range) returns (RoleList) {
 		option (google.api.http) = {
-			post: "/api/IAMManager.DescribeRoles"
+			get: "/api/IAMManager.DescribeRoles/{namespace=**}"
 		};
 	}
 	rpc GetRole(Id) returns (Role) {
 		option (google.api.http) = {
-			post: "/api/IAMManager.GetRole"
+			get: "/api/IAMManager.GetRole/{id}"
 		};
 	}
 
@@ -200,22 +200,22 @@ service IAMManager {
 	}
 	rpc DeleteActionRule(IdList) returns (Bool) {
 		option (google.api.http) = {
-			post: "/api/IAMManager.DeleteActionRule"
+			delete: "/api/IAMManager.DeleteActionRule"
 		};
 	}
 	rpc ModifyActionRule(ActionRule) returns (ActionRule) {
 		option (google.api.http) = {
-			post: "/api/IAMManager.ModifyActionRule"
+			patch: "/api/IAMManager.ModifyActionRule"
 		};
 	}
 	rpc DescribeActionRules(Range) returns (ActionRuleList) {
 		option (google.api.http) = {
-			post: "/api/IAMManager.DescribeActionRules"
+			get: "/api/IAMManager.DescribeActionRules/{namespace=**}"
 		};
 	}
 	rpc GetActionRule(Id) returns (ActionRule) {
 		option (google.api.http) = {
-			post: "/api/IAMManager.GetActionRule"
+			get: "/api/IAMManager.GetActionRule/{id}"
 		};
 	}
 
@@ -233,7 +233,7 @@ service IAMManager {
 	// check any of xid or role_name can do the action
 	rpc CanDo(Action) returns (Bool) {
 		option (google.api.http) = {
-			post: "/api/IAMManager.CanDo"
+			get: "/api/IAMManager.CanDo/{uid}/{method}/{namespace=**}"
 		};
 	}
 }
@@ -283,6 +283,7 @@ message Range {
 	map<string,FieldValidator> filter = 1;
 	int32 offset = 2;
 	int32 limit = 3;
+	string namespace = 4;
 }
 
 // ----------------------------------------------------------------------------
