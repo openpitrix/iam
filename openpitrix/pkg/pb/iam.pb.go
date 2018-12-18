@@ -7,6 +7,12 @@ import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
 import timestamp "github.com/golang/protobuf/ptypes/timestamp"
+import _ "google.golang.org/genproto/googleapis/api/annotations"
+
+import (
+	context "golang.org/x/net/context"
+	grpc "google.golang.org/grpc"
+)
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -39,7 +45,7 @@ func (m *Group) Reset()         { *m = Group{} }
 func (m *Group) String() string { return proto.CompactTextString(m) }
 func (*Group) ProtoMessage()    {}
 func (*Group) Descriptor() ([]byte, []int) {
-	return fileDescriptor_iam_55e7dd0bb80d3225, []int{0}
+	return fileDescriptor_iam_f6306bb8e3472e93, []int{0}
 }
 func (m *Group) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Group.Unmarshal(m, b)
@@ -152,7 +158,7 @@ func (m *User) Reset()         { *m = User{} }
 func (m *User) String() string { return proto.CompactTextString(m) }
 func (*User) ProtoMessage()    {}
 func (*User) Descriptor() ([]byte, []int) {
-	return fileDescriptor_iam_55e7dd0bb80d3225, []int{1}
+	return fileDescriptor_iam_f6306bb8e3472e93, []int{1}
 }
 func (m *User) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_User.Unmarshal(m, b)
@@ -263,66 +269,6 @@ func (m *User) GetStatusTime() *timestamp.Timestamp {
 	return nil
 }
 
-type Role struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *Role) Reset()         { *m = Role{} }
-func (m *Role) String() string { return proto.CompactTextString(m) }
-func (*Role) ProtoMessage()    {}
-func (*Role) Descriptor() ([]byte, []int) {
-	return fileDescriptor_iam_55e7dd0bb80d3225, []int{2}
-}
-func (m *Role) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Role.Unmarshal(m, b)
-}
-func (m *Role) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Role.Marshal(b, m, deterministic)
-}
-func (dst *Role) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Role.Merge(dst, src)
-}
-func (m *Role) XXX_Size() int {
-	return xxx_messageInfo_Role.Size(m)
-}
-func (m *Role) XXX_DiscardUnknown() {
-	xxx_messageInfo_Role.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Role proto.InternalMessageInfo
-
-type ActionRule struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *ActionRule) Reset()         { *m = ActionRule{} }
-func (m *ActionRule) String() string { return proto.CompactTextString(m) }
-func (*ActionRule) ProtoMessage()    {}
-func (*ActionRule) Descriptor() ([]byte, []int) {
-	return fileDescriptor_iam_55e7dd0bb80d3225, []int{3}
-}
-func (m *ActionRule) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ActionRule.Unmarshal(m, b)
-}
-func (m *ActionRule) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ActionRule.Marshal(b, m, deterministic)
-}
-func (dst *ActionRule) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ActionRule.Merge(dst, src)
-}
-func (m *ActionRule) XXX_Size() int {
-	return xxx_messageInfo_ActionRule.Size(m)
-}
-func (m *ActionRule) XXX_DiscardUnknown() {
-	xxx_messageInfo_ActionRule.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ActionRule proto.InternalMessageInfo
-
 type UserPassword struct {
 	Uid                  string   `protobuf:"bytes,1,opt,name=uid,proto3" json:"uid,omitempty"`
 	Password             string   `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
@@ -335,7 +281,7 @@ func (m *UserPassword) Reset()         { *m = UserPassword{} }
 func (m *UserPassword) String() string { return proto.CompactTextString(m) }
 func (*UserPassword) ProtoMessage()    {}
 func (*UserPassword) Descriptor() ([]byte, []int) {
-	return fileDescriptor_iam_55e7dd0bb80d3225, []int{4}
+	return fileDescriptor_iam_f6306bb8e3472e93, []int{2}
 }
 func (m *UserPassword) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_UserPassword.Unmarshal(m, b)
@@ -369,7 +315,126 @@ func (m *UserPassword) GetPassword() string {
 	return ""
 }
 
+type Role struct {
+	Id                   string   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name                 string   `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	RuleId               []string `protobuf:"bytes,3,rep,name=rule_id,json=ruleId,proto3" json:"rule_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *Role) Reset()         { *m = Role{} }
+func (m *Role) String() string { return proto.CompactTextString(m) }
+func (*Role) ProtoMessage()    {}
+func (*Role) Descriptor() ([]byte, []int) {
+	return fileDescriptor_iam_f6306bb8e3472e93, []int{3}
+}
+func (m *Role) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Role.Unmarshal(m, b)
+}
+func (m *Role) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Role.Marshal(b, m, deterministic)
+}
+func (dst *Role) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Role.Merge(dst, src)
+}
+func (m *Role) XXX_Size() int {
+	return xxx_messageInfo_Role.Size(m)
+}
+func (m *Role) XXX_DiscardUnknown() {
+	xxx_messageInfo_Role.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Role proto.InternalMessageInfo
+
+func (m *Role) GetId() string {
+	if m != nil {
+		return m.Id
+	}
+	return ""
+}
+
+func (m *Role) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *Role) GetRuleId() []string {
+	if m != nil {
+		return m.RuleId
+	}
+	return nil
+}
+
+type ActionRule struct {
+	Id                   string   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name                 string   `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	MethodPattern        string   `protobuf:"bytes,3,opt,name=method_pattern,json=methodPattern,proto3" json:"method_pattern,omitempty"`
+	NamespacePattern     []string `protobuf:"bytes,4,rep,name=namespace_pattern,json=namespacePattern,proto3" json:"namespace_pattern,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *ActionRule) Reset()         { *m = ActionRule{} }
+func (m *ActionRule) String() string { return proto.CompactTextString(m) }
+func (*ActionRule) ProtoMessage()    {}
+func (*ActionRule) Descriptor() ([]byte, []int) {
+	return fileDescriptor_iam_f6306bb8e3472e93, []int{4}
+}
+func (m *ActionRule) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ActionRule.Unmarshal(m, b)
+}
+func (m *ActionRule) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ActionRule.Marshal(b, m, deterministic)
+}
+func (dst *ActionRule) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ActionRule.Merge(dst, src)
+}
+func (m *ActionRule) XXX_Size() int {
+	return xxx_messageInfo_ActionRule.Size(m)
+}
+func (m *ActionRule) XXX_DiscardUnknown() {
+	xxx_messageInfo_ActionRule.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ActionRule proto.InternalMessageInfo
+
+func (m *ActionRule) GetId() string {
+	if m != nil {
+		return m.Id
+	}
+	return ""
+}
+
+func (m *ActionRule) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *ActionRule) GetMethodPattern() string {
+	if m != nil {
+		return m.MethodPattern
+	}
+	return ""
+}
+
+func (m *ActionRule) GetNamespacePattern() []string {
+	if m != nil {
+		return m.NamespacePattern
+	}
+	return nil
+}
+
 type Action struct {
+	Uid                  []string `protobuf:"bytes,1,rep,name=uid,proto3" json:"uid,omitempty"`
+	Method               string   `protobuf:"bytes,2,opt,name=method,proto3" json:"method,omitempty"`
+	Namespace            string   `protobuf:"bytes,3,opt,name=namespace,proto3" json:"namespace,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -379,7 +444,7 @@ func (m *Action) Reset()         { *m = Action{} }
 func (m *Action) String() string { return proto.CompactTextString(m) }
 func (*Action) ProtoMessage()    {}
 func (*Action) Descriptor() ([]byte, []int) {
-	return fileDescriptor_iam_55e7dd0bb80d3225, []int{5}
+	return fileDescriptor_iam_f6306bb8e3472e93, []int{5}
 }
 func (m *Action) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Action.Unmarshal(m, b)
@@ -399,6 +464,27 @@ func (m *Action) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Action proto.InternalMessageInfo
 
+func (m *Action) GetUid() []string {
+	if m != nil {
+		return m.Uid
+	}
+	return nil
+}
+
+func (m *Action) GetMethod() string {
+	if m != nil {
+		return m.Method
+	}
+	return ""
+}
+
+func (m *Action) GetNamespace() string {
+	if m != nil {
+		return m.Namespace
+	}
+	return ""
+}
+
 type Empty struct {
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -409,7 +495,7 @@ func (m *Empty) Reset()         { *m = Empty{} }
 func (m *Empty) String() string { return proto.CompactTextString(m) }
 func (*Empty) ProtoMessage()    {}
 func (*Empty) Descriptor() ([]byte, []int) {
-	return fileDescriptor_iam_55e7dd0bb80d3225, []int{6}
+	return fileDescriptor_iam_f6306bb8e3472e93, []int{6}
 }
 func (m *Empty) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Empty.Unmarshal(m, b)
@@ -440,7 +526,7 @@ func (m *Bool) Reset()         { *m = Bool{} }
 func (m *Bool) String() string { return proto.CompactTextString(m) }
 func (*Bool) ProtoMessage()    {}
 func (*Bool) Descriptor() ([]byte, []int) {
-	return fileDescriptor_iam_55e7dd0bb80d3225, []int{7}
+	return fileDescriptor_iam_f6306bb8e3472e93, []int{7}
 }
 func (m *Bool) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Bool.Unmarshal(m, b)
@@ -478,7 +564,7 @@ func (m *Id) Reset()         { *m = Id{} }
 func (m *Id) String() string { return proto.CompactTextString(m) }
 func (*Id) ProtoMessage()    {}
 func (*Id) Descriptor() ([]byte, []int) {
-	return fileDescriptor_iam_55e7dd0bb80d3225, []int{8}
+	return fileDescriptor_iam_f6306bb8e3472e93, []int{8}
 }
 func (m *Id) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Id.Unmarshal(m, b)
@@ -518,7 +604,7 @@ func (m *IdList) Reset()         { *m = IdList{} }
 func (m *IdList) String() string { return proto.CompactTextString(m) }
 func (*IdList) ProtoMessage()    {}
 func (*IdList) Descriptor() ([]byte, []int) {
-	return fileDescriptor_iam_55e7dd0bb80d3225, []int{9}
+	return fileDescriptor_iam_f6306bb8e3472e93, []int{9}
 }
 func (m *IdList) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_IdList.Unmarshal(m, b)
@@ -572,7 +658,7 @@ func (m *GroupList) Reset()         { *m = GroupList{} }
 func (m *GroupList) String() string { return proto.CompactTextString(m) }
 func (*GroupList) ProtoMessage()    {}
 func (*GroupList) Descriptor() ([]byte, []int) {
-	return fileDescriptor_iam_55e7dd0bb80d3225, []int{10}
+	return fileDescriptor_iam_f6306bb8e3472e93, []int{10}
 }
 func (m *GroupList) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_GroupList.Unmarshal(m, b)
@@ -626,7 +712,7 @@ func (m *UserList) Reset()         { *m = UserList{} }
 func (m *UserList) String() string { return proto.CompactTextString(m) }
 func (*UserList) ProtoMessage()    {}
 func (*UserList) Descriptor() ([]byte, []int) {
-	return fileDescriptor_iam_55e7dd0bb80d3225, []int{11}
+	return fileDescriptor_iam_f6306bb8e3472e93, []int{11}
 }
 func (m *UserList) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_UserList.Unmarshal(m, b)
@@ -680,7 +766,7 @@ func (m *RoleList) Reset()         { *m = RoleList{} }
 func (m *RoleList) String() string { return proto.CompactTextString(m) }
 func (*RoleList) ProtoMessage()    {}
 func (*RoleList) Descriptor() ([]byte, []int) {
-	return fileDescriptor_iam_55e7dd0bb80d3225, []int{12}
+	return fileDescriptor_iam_f6306bb8e3472e93, []int{12}
 }
 func (m *RoleList) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RoleList.Unmarshal(m, b)
@@ -734,7 +820,7 @@ func (m *ActionRuleList) Reset()         { *m = ActionRuleList{} }
 func (m *ActionRuleList) String() string { return proto.CompactTextString(m) }
 func (*ActionRuleList) ProtoMessage()    {}
 func (*ActionRuleList) Descriptor() ([]byte, []int) {
-	return fileDescriptor_iam_55e7dd0bb80d3225, []int{13}
+	return fileDescriptor_iam_f6306bb8e3472e93, []int{13}
 }
 func (m *ActionRuleList) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ActionRuleList.Unmarshal(m, b)
@@ -788,7 +874,7 @@ func (m *Range) Reset()         { *m = Range{} }
 func (m *Range) String() string { return proto.CompactTextString(m) }
 func (*Range) ProtoMessage()    {}
 func (*Range) Descriptor() ([]byte, []int) {
-	return fileDescriptor_iam_55e7dd0bb80d3225, []int{14}
+	return fileDescriptor_iam_f6306bb8e3472e93, []int{14}
 }
 func (m *Range) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Range.Unmarshal(m, b)
@@ -832,9 +918,9 @@ func (m *Range) GetLimit() int32 {
 func init() {
 	proto.RegisterType((*Group)(nil), "openpitrix.iam.Group")
 	proto.RegisterType((*User)(nil), "openpitrix.iam.User")
+	proto.RegisterType((*UserPassword)(nil), "openpitrix.iam.UserPassword")
 	proto.RegisterType((*Role)(nil), "openpitrix.iam.Role")
 	proto.RegisterType((*ActionRule)(nil), "openpitrix.iam.ActionRule")
-	proto.RegisterType((*UserPassword)(nil), "openpitrix.iam.UserPassword")
 	proto.RegisterType((*Action)(nil), "openpitrix.iam.Action")
 	proto.RegisterType((*Empty)(nil), "openpitrix.iam.Empty")
 	proto.RegisterType((*Bool)(nil), "openpitrix.iam.Bool")
@@ -848,66 +934,882 @@ func init() {
 	proto.RegisterMapType((map[string]*FieldValidator)(nil), "openpitrix.iam.Range.FilterEntry")
 }
 
-func init() { proto.RegisterFile("iam.proto", fileDescriptor_iam_55e7dd0bb80d3225) }
+// Reference imports to suppress errors if they are not otherwise used.
+var _ context.Context
+var _ grpc.ClientConn
 
-var fileDescriptor_iam_55e7dd0bb80d3225 = []byte{
-	// 921 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x96, 0xdd, 0x6e, 0xdb, 0x36,
-	0x14, 0xc7, 0x61, 0xd9, 0x52, 0xec, 0x63, 0xc7, 0xcb, 0x88, 0x34, 0xd0, 0xb4, 0xa2, 0xcb, 0x74,
-	0x31, 0x04, 0x18, 0x66, 0x03, 0xe9, 0x0a, 0x64, 0x4d, 0x81, 0xb6, 0xf9, 0x68, 0x90, 0xae, 0x09,
-	0x06, 0xa1, 0x1d, 0xb0, 0xdd, 0x14, 0xb4, 0x45, 0x7b, 0x44, 0x24, 0x53, 0xa0, 0xa8, 0x6d, 0x7e,
-	0xb4, 0x01, 0x7b, 0x83, 0x3d, 0xc7, 0xde, 0xa3, 0xe0, 0xa1, 0x64, 0x2b, 0xb6, 0x9c, 0xc6, 0x49,
-	0xae, 0xa2, 0x73, 0x0e, 0xcf, 0x07, 0x7f, 0x7f, 0x92, 0x0e, 0xb4, 0x38, 0x8d, 0x7b, 0x89, 0x14,
-	0x4a, 0x90, 0xae, 0x48, 0xd8, 0x24, 0xe1, 0x4a, 0xf2, 0xbf, 0x7b, 0x9c, 0xc6, 0xde, 0x37, 0x63,
-	0x21, 0xc6, 0x11, 0xeb, 0x63, 0x74, 0x90, 0x8d, 0xfa, 0x8a, 0xc7, 0x2c, 0x55, 0x34, 0x4e, 0x4c,
-	0x82, 0xd7, 0x19, 0xf1, 0x48, 0x31, 0x69, 0x2c, 0xff, 0x7f, 0x0b, 0xec, 0x33, 0x29, 0xb2, 0x84,
-	0x6c, 0x41, 0x7d, 0xcc, 0x43, 0xb7, 0xb6, 0x5b, 0xdb, 0x6b, 0x05, 0xfa, 0x93, 0x10, 0x68, 0x4c,
-	0x68, 0xcc, 0x5c, 0x0b, 0x5d, 0xf8, 0xad, 0x7d, 0x09, 0x55, 0x7f, 0xb8, 0x75, 0xe3, 0xd3, 0xdf,
-	0xe4, 0x6b, 0x68, 0xe9, 0xbf, 0x1f, 0x71, 0x71, 0x03, 0x03, 0x4d, 0xed, 0xb8, 0xd4, 0x09, 0xdb,
-	0x60, 0xb3, 0x98, 0xf2, 0xc8, 0xb5, 0x31, 0x60, 0x0c, 0xb2, 0x0b, 0xed, 0x90, 0xa5, 0x43, 0xc9,
-	0x13, 0xc5, 0xc5, 0xc4, 0x75, 0x30, 0x56, 0x76, 0x91, 0x1d, 0x70, 0x52, 0x45, 0x55, 0x96, 0xba,
-	0x1b, 0x18, 0xcc, 0x2d, 0x72, 0x08, 0xed, 0xa1, 0x64, 0x54, 0xb1, 0x8f, 0x7a, 0x63, 0x6e, 0x73,
-	0xb7, 0xb6, 0xd7, 0xde, 0xf7, 0x7a, 0x66, 0xd7, 0xbd, 0x62, 0xd7, 0xbd, 0xf7, 0xc5, 0xae, 0x03,
-	0x30, 0xcb, 0xb5, 0x43, 0x27, 0x67, 0x49, 0x38, 0x4b, 0x6e, 0x7d, 0x3e, 0xd9, 0x2c, 0x2f, 0x92,
-	0xcd, 0x0c, 0x26, 0x19, 0x3e, 0x9f, 0x6c, 0x96, 0x6b, 0x87, 0xff, 0x6f, 0x1d, 0x1a, 0x1f, 0x52,
-	0x26, 0x35, 0xe6, 0x6c, 0x8e, 0x39, 0xe3, 0x61, 0x01, 0xde, 0x5a, 0x06, 0x5f, 0xbf, 0x0e, 0x5e,
-	0x8a, 0xa8, 0xe0, 0x8b, 0xdf, 0xe4, 0x07, 0x20, 0x92, 0xa5, 0x22, 0x93, 0x43, 0x86, 0xf0, 0xd3,
-	0x84, 0x0e, 0x59, 0x0e, 0xfa, 0xcb, 0x22, 0x72, 0x59, 0x04, 0xe6, 0x52, 0x38, 0x37, 0x48, 0xb1,
-	0xb1, 0x2c, 0x85, 0x07, 0xcd, 0x84, 0xa6, 0xe9, 0x5f, 0x42, 0x86, 0xc8, 0x1b, 0xe5, 0x35, 0x76,
-	0x49, 0xa6, 0xd6, 0x35, 0x99, 0x76, 0xc0, 0x11, 0xa3, 0x11, 0x1f, 0x1a, 0x4e, 0xad, 0x20, 0xb7,
-	0x16, 0xe5, 0x6b, 0xdf, 0x47, 0xbe, 0xce, 0x7d, 0xe4, 0xdb, 0x5c, 0x4b, 0x3e, 0x07, 0x1a, 0x81,
-	0x88, 0x98, 0xdf, 0x01, 0x78, 0x3d, 0xd4, 0x50, 0x82, 0x2c, 0x62, 0xfe, 0x0b, 0xe8, 0x68, 0x4d,
-	0x7f, 0x29, 0x60, 0x2c, 0x6b, 0x5b, 0x46, 0x67, 0x5d, 0x47, 0xe7, 0x37, 0xc1, 0x31, 0xb5, 0xfc,
-	0x0d, 0xb0, 0x4f, 0xe3, 0x44, 0x4d, 0xfd, 0xc7, 0xd0, 0x38, 0x12, 0x22, 0xd2, 0x4a, 0xfd, 0x49,
-	0xa3, 0x8c, 0x61, 0xa9, 0x66, 0x60, 0x0c, 0x7f, 0x1b, 0xac, 0xf3, 0x90, 0x74, 0xc1, 0x9a, 0xf5,
-	0xb0, 0x78, 0xe8, 0xbf, 0x03, 0xe7, 0x3c, 0x7c, 0xc7, 0x53, 0xa5, 0xb3, 0x94, 0x50, 0x34, 0xc2,
-	0xa0, 0x1d, 0x18, 0x23, 0x57, 0x22, 0x65, 0x0a, 0x07, 0xb0, 0x83, 0xdc, 0x9a, 0xf7, 0xa8, 0xef,
-	0xd6, 0xf5, 0x69, 0x30, 0x3d, 0x46, 0xd0, 0xc2, 0xe7, 0xe0, 0x0e, 0x05, 0xbf, 0x2f, 0x17, 0x6c,
-	0xef, 0x3f, 0xea, 0x5d, 0x7f, 0x99, 0x7a, 0x58, 0xb7, 0xe8, 0x73, 0x09, 0x4d, 0x8d, 0xee, 0xc1,
-	0xe6, 0xbe, 0x84, 0xa6, 0x16, 0xe8, 0xc1, 0xea, 0xbd, 0x87, 0xee, 0x5c, 0xe8, 0x07, 0xab, 0xfa,
-	0x5f, 0x0d, 0xec, 0x80, 0x4e, 0xc6, 0x8c, 0xfc, 0x04, 0x8e, 0x79, 0x87, 0xdd, 0x1a, 0xd2, 0xfa,
-	0x76, 0x91, 0x16, 0x2e, 0xeb, 0xbd, 0xc1, 0x35, 0xa7, 0x13, 0x25, 0xa7, 0x41, 0x9e, 0x70, 0x53,
-	0xcb, 0x88, 0xc7, 0x5c, 0xe1, 0xb3, 0x61, 0x07, 0xc6, 0xf0, 0x7e, 0x83, 0x76, 0xa9, 0x88, 0x3e,
-	0xa2, 0x57, 0x6c, 0x5a, 0x1c, 0xd1, 0x2b, 0x36, 0x25, 0x3f, 0x16, 0x93, 0x5a, 0x78, 0x23, 0x9e,
-	0x2c, 0x0e, 0xf2, 0x86, 0xb3, 0x28, 0xfc, 0x95, 0x46, 0x3c, 0xa4, 0x4a, 0xc8, 0x7c, 0x27, 0xcf,
-	0xad, 0x83, 0xda, 0xfe, 0x3f, 0x6d, 0x80, 0xf3, 0xd7, 0x17, 0x17, 0x74, 0x42, 0xc7, 0x4c, 0xea,
-	0x0b, 0x76, 0x8c, 0x77, 0xd5, 0xfc, 0x9e, 0x54, 0xeb, 0xef, 0x55, 0xbb, 0xc9, 0x0b, 0xe8, 0x9c,
-	0xb0, 0x88, 0xe5, 0xc9, 0x29, 0xd9, 0x59, 0x5c, 0x66, 0xce, 0xb8, 0xb7, 0xbd, 0xe8, 0xc7, 0xfb,
-	0x72, 0x08, 0xed, 0x0b, 0x11, 0xf2, 0xd1, 0xf4, 0x2e, 0xad, 0x8f, 0xa0, 0x7b, 0x82, 0xaf, 0xdd,
-	0xa0, 0x68, 0xfe, 0xa8, 0x52, 0x0c, 0xef, 0xab, 0xca, 0x7c, 0x3c, 0x1c, 0xcf, 0xa0, 0x79, 0xc6,
-	0x94, 0xa9, 0x47, 0x96, 0x47, 0x5f, 0xd5, 0xfa, 0x00, 0xc0, 0x20, 0xc3, 0x9f, 0x86, 0xa5, 0xbd,
-	0x69, 0xaf, 0x57, 0xe9, 0xd5, 0x3b, 0x36, 0xbc, 0xb4, 0xb5, 0x2e, 0xae, 0x03, 0x00, 0x83, 0x6b,
-	0xed, 0xb6, 0xaf, 0x60, 0xb3, 0x60, 0xf5, 0x81, 0xa5, 0x72, 0x25, 0x2a, 0xb7, 0x2a, 0x1b, 0x49,
-	0x3d, 0x85, 0x8d, 0x33, 0xa6, 0xb0, 0x58, 0x15, 0xa8, 0xea, 0xb6, 0x33, 0x4e, 0xfa, 0x8e, 0x2f,
-	0x0f, 0xac, 0xbd, 0x5e, 0xa5, 0x97, 0x3c, 0x07, 0x30, 0x9c, 0xd0, 0xba, 0x23, 0xa6, 0xb5, 0xbb,
-	0xbe, 0xd4, 0xa7, 0xd9, 0x60, 0x42, 0xfb, 0xb6, 0x94, 0x66, 0x4f, 0x98, 0xa1, 0x84, 0xb9, 0xb7,
-	0xa2, 0x84, 0x2b, 0xdf, 0xc2, 0x96, 0xa1, 0x34, 0x7f, 0xb9, 0x88, 0xb7, 0xb8, 0x72, 0x1e, 0xf3,
-	0x6e, 0x88, 0x91, 0x57, 0xb0, 0x65, 0xb8, 0x95, 0x7c, 0xeb, 0xd1, 0x7b, 0x0b, 0x5b, 0x86, 0xde,
-	0x03, 0x4c, 0xf3, 0x33, 0x90, 0x82, 0x67, 0xc9, 0xbb, 0x82, 0xea, 0x93, 0xd5, 0x85, 0x90, 0xed,
-	0x4b, 0xd8, 0x3c, 0x63, 0xaa, 0x54, 0xa7, 0x8a, 0xf0, 0x4d, 0xd3, 0x9c, 0xc2, 0x17, 0xc7, 0x22,
-	0x4e, 0xa8, 0x64, 0xb3, 0x5f, 0xfe, 0xc7, 0x55, 0xc7, 0xb6, 0x88, 0xae, 0x00, 0x74, 0x02, 0x5d,
-	0x03, 0xe8, 0x5e, 0x55, 0x9e, 0x81, 0x7d, 0x4c, 0x27, 0x27, 0x62, 0x59, 0x1d, 0x33, 0x71, 0x75,
-	0xda, 0xd1, 0xde, 0xef, 0xdf, 0x95, 0xdd, 0xa2, 0xcf, 0x69, 0xdc, 0x9f, 0x7b, 0xfa, 0xc9, 0xd5,
-	0xb8, 0x9f, 0x0c, 0x0e, 0x93, 0xc1, 0xc0, 0xc1, 0x7f, 0x8d, 0x9e, 0x7e, 0x0a, 0x00, 0x00, 0xff,
-	0xff, 0xfd, 0xad, 0xe3, 0x15, 0x74, 0x0c, 0x00, 0x00,
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the grpc package it is being compiled against.
+const _ = grpc.SupportPackageIsVersion4
+
+// IAMManagerClient is the client API for IAMManager service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type IAMManagerClient interface {
+	CreateGroup(ctx context.Context, in *Group, opts ...grpc.CallOption) (*Group, error)
+	DeleteGroups(ctx context.Context, in *IdList, opts ...grpc.CallOption) (*Bool, error)
+	ModifyGroup(ctx context.Context, in *Group, opts ...grpc.CallOption) (*Group, error)
+	DescribeGroups(ctx context.Context, in *Range, opts ...grpc.CallOption) (*GroupList, error)
+	GetGroup(ctx context.Context, in *Id, opts ...grpc.CallOption) (*Group, error)
+	CreateUser(ctx context.Context, in *User, opts ...grpc.CallOption) (*User, error)
+	DeleteUsers(ctx context.Context, in *IdList, opts ...grpc.CallOption) (*Bool, error)
+	ModifyUser(ctx context.Context, in *User, opts ...grpc.CallOption) (*User, error)
+	DescribeUsers(ctx context.Context, in *Range, opts ...grpc.CallOption) (*UserList, error)
+	GetUser(ctx context.Context, in *Id, opts ...grpc.CallOption) (*User, error)
+	CreateRole(ctx context.Context, in *Role, opts ...grpc.CallOption) (*Role, error)
+	DeleteRole(ctx context.Context, in *IdList, opts ...grpc.CallOption) (*Bool, error)
+	ModifyRole(ctx context.Context, in *Role, opts ...grpc.CallOption) (*Role, error)
+	DescribeRoles(ctx context.Context, in *Range, opts ...grpc.CallOption) (*RoleList, error)
+	GetRole(ctx context.Context, in *Id, opts ...grpc.CallOption) (*Role, error)
+	CreateActionRule(ctx context.Context, in *ActionRule, opts ...grpc.CallOption) (*ActionRule, error)
+	DeleteActionRule(ctx context.Context, in *IdList, opts ...grpc.CallOption) (*Bool, error)
+	ModifyActionRule(ctx context.Context, in *ActionRule, opts ...grpc.CallOption) (*ActionRule, error)
+	DescribeActionRules(ctx context.Context, in *Range, opts ...grpc.CallOption) (*ActionRuleList, error)
+	GetActionRule(ctx context.Context, in *Id, opts ...grpc.CallOption) (*ActionRule, error)
+	ComparePassword(ctx context.Context, in *UserPassword, opts ...grpc.CallOption) (*Bool, error)
+	ModifyPassword(ctx context.Context, in *UserPassword, opts ...grpc.CallOption) (*Bool, error)
+	// check any of xid or role_name can do the action
+	CanDo(ctx context.Context, in *Action, opts ...grpc.CallOption) (*Bool, error)
+}
+
+type iAMManagerClient struct {
+	cc *grpc.ClientConn
+}
+
+func NewIAMManagerClient(cc *grpc.ClientConn) IAMManagerClient {
+	return &iAMManagerClient{cc}
+}
+
+func (c *iAMManagerClient) CreateGroup(ctx context.Context, in *Group, opts ...grpc.CallOption) (*Group, error) {
+	out := new(Group)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.IAMManager/CreateGroup", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iAMManagerClient) DeleteGroups(ctx context.Context, in *IdList, opts ...grpc.CallOption) (*Bool, error) {
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.IAMManager/DeleteGroups", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iAMManagerClient) ModifyGroup(ctx context.Context, in *Group, opts ...grpc.CallOption) (*Group, error) {
+	out := new(Group)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.IAMManager/ModifyGroup", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iAMManagerClient) DescribeGroups(ctx context.Context, in *Range, opts ...grpc.CallOption) (*GroupList, error) {
+	out := new(GroupList)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.IAMManager/DescribeGroups", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iAMManagerClient) GetGroup(ctx context.Context, in *Id, opts ...grpc.CallOption) (*Group, error) {
+	out := new(Group)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.IAMManager/GetGroup", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iAMManagerClient) CreateUser(ctx context.Context, in *User, opts ...grpc.CallOption) (*User, error) {
+	out := new(User)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.IAMManager/CreateUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iAMManagerClient) DeleteUsers(ctx context.Context, in *IdList, opts ...grpc.CallOption) (*Bool, error) {
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.IAMManager/DeleteUsers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iAMManagerClient) ModifyUser(ctx context.Context, in *User, opts ...grpc.CallOption) (*User, error) {
+	out := new(User)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.IAMManager/ModifyUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iAMManagerClient) DescribeUsers(ctx context.Context, in *Range, opts ...grpc.CallOption) (*UserList, error) {
+	out := new(UserList)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.IAMManager/DescribeUsers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iAMManagerClient) GetUser(ctx context.Context, in *Id, opts ...grpc.CallOption) (*User, error) {
+	out := new(User)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.IAMManager/GetUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iAMManagerClient) CreateRole(ctx context.Context, in *Role, opts ...grpc.CallOption) (*Role, error) {
+	out := new(Role)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.IAMManager/CreateRole", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iAMManagerClient) DeleteRole(ctx context.Context, in *IdList, opts ...grpc.CallOption) (*Bool, error) {
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.IAMManager/DeleteRole", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iAMManagerClient) ModifyRole(ctx context.Context, in *Role, opts ...grpc.CallOption) (*Role, error) {
+	out := new(Role)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.IAMManager/ModifyRole", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iAMManagerClient) DescribeRoles(ctx context.Context, in *Range, opts ...grpc.CallOption) (*RoleList, error) {
+	out := new(RoleList)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.IAMManager/DescribeRoles", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iAMManagerClient) GetRole(ctx context.Context, in *Id, opts ...grpc.CallOption) (*Role, error) {
+	out := new(Role)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.IAMManager/GetRole", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iAMManagerClient) CreateActionRule(ctx context.Context, in *ActionRule, opts ...grpc.CallOption) (*ActionRule, error) {
+	out := new(ActionRule)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.IAMManager/CreateActionRule", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iAMManagerClient) DeleteActionRule(ctx context.Context, in *IdList, opts ...grpc.CallOption) (*Bool, error) {
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.IAMManager/DeleteActionRule", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iAMManagerClient) ModifyActionRule(ctx context.Context, in *ActionRule, opts ...grpc.CallOption) (*ActionRule, error) {
+	out := new(ActionRule)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.IAMManager/ModifyActionRule", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iAMManagerClient) DescribeActionRules(ctx context.Context, in *Range, opts ...grpc.CallOption) (*ActionRuleList, error) {
+	out := new(ActionRuleList)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.IAMManager/DescribeActionRules", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iAMManagerClient) GetActionRule(ctx context.Context, in *Id, opts ...grpc.CallOption) (*ActionRule, error) {
+	out := new(ActionRule)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.IAMManager/GetActionRule", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iAMManagerClient) ComparePassword(ctx context.Context, in *UserPassword, opts ...grpc.CallOption) (*Bool, error) {
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.IAMManager/ComparePassword", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iAMManagerClient) ModifyPassword(ctx context.Context, in *UserPassword, opts ...grpc.CallOption) (*Bool, error) {
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.IAMManager/ModifyPassword", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iAMManagerClient) CanDo(ctx context.Context, in *Action, opts ...grpc.CallOption) (*Bool, error) {
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.IAMManager/CanDo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// IAMManagerServer is the server API for IAMManager service.
+type IAMManagerServer interface {
+	CreateGroup(context.Context, *Group) (*Group, error)
+	DeleteGroups(context.Context, *IdList) (*Bool, error)
+	ModifyGroup(context.Context, *Group) (*Group, error)
+	DescribeGroups(context.Context, *Range) (*GroupList, error)
+	GetGroup(context.Context, *Id) (*Group, error)
+	CreateUser(context.Context, *User) (*User, error)
+	DeleteUsers(context.Context, *IdList) (*Bool, error)
+	ModifyUser(context.Context, *User) (*User, error)
+	DescribeUsers(context.Context, *Range) (*UserList, error)
+	GetUser(context.Context, *Id) (*User, error)
+	CreateRole(context.Context, *Role) (*Role, error)
+	DeleteRole(context.Context, *IdList) (*Bool, error)
+	ModifyRole(context.Context, *Role) (*Role, error)
+	DescribeRoles(context.Context, *Range) (*RoleList, error)
+	GetRole(context.Context, *Id) (*Role, error)
+	CreateActionRule(context.Context, *ActionRule) (*ActionRule, error)
+	DeleteActionRule(context.Context, *IdList) (*Bool, error)
+	ModifyActionRule(context.Context, *ActionRule) (*ActionRule, error)
+	DescribeActionRules(context.Context, *Range) (*ActionRuleList, error)
+	GetActionRule(context.Context, *Id) (*ActionRule, error)
+	ComparePassword(context.Context, *UserPassword) (*Bool, error)
+	ModifyPassword(context.Context, *UserPassword) (*Bool, error)
+	// check any of xid or role_name can do the action
+	CanDo(context.Context, *Action) (*Bool, error)
+}
+
+func RegisterIAMManagerServer(s *grpc.Server, srv IAMManagerServer) {
+	s.RegisterService(&_IAMManager_serviceDesc, srv)
+}
+
+func _IAMManager_CreateGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Group)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IAMManagerServer).CreateGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.IAMManager/CreateGroup",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IAMManagerServer).CreateGroup(ctx, req.(*Group))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IAMManager_DeleteGroups_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdList)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IAMManagerServer).DeleteGroups(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.IAMManager/DeleteGroups",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IAMManagerServer).DeleteGroups(ctx, req.(*IdList))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IAMManager_ModifyGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Group)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IAMManagerServer).ModifyGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.IAMManager/ModifyGroup",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IAMManagerServer).ModifyGroup(ctx, req.(*Group))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IAMManager_DescribeGroups_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Range)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IAMManagerServer).DescribeGroups(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.IAMManager/DescribeGroups",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IAMManagerServer).DescribeGroups(ctx, req.(*Range))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IAMManager_GetGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Id)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IAMManagerServer).GetGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.IAMManager/GetGroup",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IAMManagerServer).GetGroup(ctx, req.(*Id))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IAMManager_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(User)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IAMManagerServer).CreateUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.IAMManager/CreateUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IAMManagerServer).CreateUser(ctx, req.(*User))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IAMManager_DeleteUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdList)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IAMManagerServer).DeleteUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.IAMManager/DeleteUsers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IAMManagerServer).DeleteUsers(ctx, req.(*IdList))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IAMManager_ModifyUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(User)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IAMManagerServer).ModifyUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.IAMManager/ModifyUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IAMManagerServer).ModifyUser(ctx, req.(*User))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IAMManager_DescribeUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Range)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IAMManagerServer).DescribeUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.IAMManager/DescribeUsers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IAMManagerServer).DescribeUsers(ctx, req.(*Range))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IAMManager_GetUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Id)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IAMManagerServer).GetUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.IAMManager/GetUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IAMManagerServer).GetUser(ctx, req.(*Id))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IAMManager_CreateRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Role)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IAMManagerServer).CreateRole(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.IAMManager/CreateRole",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IAMManagerServer).CreateRole(ctx, req.(*Role))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IAMManager_DeleteRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdList)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IAMManagerServer).DeleteRole(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.IAMManager/DeleteRole",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IAMManagerServer).DeleteRole(ctx, req.(*IdList))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IAMManager_ModifyRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Role)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IAMManagerServer).ModifyRole(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.IAMManager/ModifyRole",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IAMManagerServer).ModifyRole(ctx, req.(*Role))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IAMManager_DescribeRoles_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Range)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IAMManagerServer).DescribeRoles(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.IAMManager/DescribeRoles",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IAMManagerServer).DescribeRoles(ctx, req.(*Range))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IAMManager_GetRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Id)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IAMManagerServer).GetRole(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.IAMManager/GetRole",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IAMManagerServer).GetRole(ctx, req.(*Id))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IAMManager_CreateActionRule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ActionRule)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IAMManagerServer).CreateActionRule(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.IAMManager/CreateActionRule",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IAMManagerServer).CreateActionRule(ctx, req.(*ActionRule))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IAMManager_DeleteActionRule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdList)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IAMManagerServer).DeleteActionRule(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.IAMManager/DeleteActionRule",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IAMManagerServer).DeleteActionRule(ctx, req.(*IdList))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IAMManager_ModifyActionRule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ActionRule)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IAMManagerServer).ModifyActionRule(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.IAMManager/ModifyActionRule",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IAMManagerServer).ModifyActionRule(ctx, req.(*ActionRule))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IAMManager_DescribeActionRules_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Range)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IAMManagerServer).DescribeActionRules(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.IAMManager/DescribeActionRules",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IAMManagerServer).DescribeActionRules(ctx, req.(*Range))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IAMManager_GetActionRule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Id)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IAMManagerServer).GetActionRule(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.IAMManager/GetActionRule",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IAMManagerServer).GetActionRule(ctx, req.(*Id))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IAMManager_ComparePassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserPassword)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IAMManagerServer).ComparePassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.IAMManager/ComparePassword",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IAMManagerServer).ComparePassword(ctx, req.(*UserPassword))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IAMManager_ModifyPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserPassword)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IAMManagerServer).ModifyPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.IAMManager/ModifyPassword",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IAMManagerServer).ModifyPassword(ctx, req.(*UserPassword))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IAMManager_CanDo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Action)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IAMManagerServer).CanDo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.IAMManager/CanDo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IAMManagerServer).CanDo(ctx, req.(*Action))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _IAMManager_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "openpitrix.iam.IAMManager",
+	HandlerType: (*IAMManagerServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateGroup",
+			Handler:    _IAMManager_CreateGroup_Handler,
+		},
+		{
+			MethodName: "DeleteGroups",
+			Handler:    _IAMManager_DeleteGroups_Handler,
+		},
+		{
+			MethodName: "ModifyGroup",
+			Handler:    _IAMManager_ModifyGroup_Handler,
+		},
+		{
+			MethodName: "DescribeGroups",
+			Handler:    _IAMManager_DescribeGroups_Handler,
+		},
+		{
+			MethodName: "GetGroup",
+			Handler:    _IAMManager_GetGroup_Handler,
+		},
+		{
+			MethodName: "CreateUser",
+			Handler:    _IAMManager_CreateUser_Handler,
+		},
+		{
+			MethodName: "DeleteUsers",
+			Handler:    _IAMManager_DeleteUsers_Handler,
+		},
+		{
+			MethodName: "ModifyUser",
+			Handler:    _IAMManager_ModifyUser_Handler,
+		},
+		{
+			MethodName: "DescribeUsers",
+			Handler:    _IAMManager_DescribeUsers_Handler,
+		},
+		{
+			MethodName: "GetUser",
+			Handler:    _IAMManager_GetUser_Handler,
+		},
+		{
+			MethodName: "CreateRole",
+			Handler:    _IAMManager_CreateRole_Handler,
+		},
+		{
+			MethodName: "DeleteRole",
+			Handler:    _IAMManager_DeleteRole_Handler,
+		},
+		{
+			MethodName: "ModifyRole",
+			Handler:    _IAMManager_ModifyRole_Handler,
+		},
+		{
+			MethodName: "DescribeRoles",
+			Handler:    _IAMManager_DescribeRoles_Handler,
+		},
+		{
+			MethodName: "GetRole",
+			Handler:    _IAMManager_GetRole_Handler,
+		},
+		{
+			MethodName: "CreateActionRule",
+			Handler:    _IAMManager_CreateActionRule_Handler,
+		},
+		{
+			MethodName: "DeleteActionRule",
+			Handler:    _IAMManager_DeleteActionRule_Handler,
+		},
+		{
+			MethodName: "ModifyActionRule",
+			Handler:    _IAMManager_ModifyActionRule_Handler,
+		},
+		{
+			MethodName: "DescribeActionRules",
+			Handler:    _IAMManager_DescribeActionRules_Handler,
+		},
+		{
+			MethodName: "GetActionRule",
+			Handler:    _IAMManager_GetActionRule_Handler,
+		},
+		{
+			MethodName: "ComparePassword",
+			Handler:    _IAMManager_ComparePassword_Handler,
+		},
+		{
+			MethodName: "ModifyPassword",
+			Handler:    _IAMManager_ModifyPassword_Handler,
+		},
+		{
+			MethodName: "CanDo",
+			Handler:    _IAMManager_CanDo_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "iam.proto",
+}
+
+func init() { proto.RegisterFile("iam.proto", fileDescriptor_iam_f6306bb8e3472e93) }
+
+var fileDescriptor_iam_f6306bb8e3472e93 = []byte{
+	// 1175 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x57, 0xdb, 0x6e, 0xdb, 0x46,
+	0x10, 0x85, 0xae, 0x96, 0x46, 0xb6, 0xaa, 0xb0, 0xbe, 0x28, 0x8c, 0x6c, 0x2b, 0x9b, 0x3a, 0x35,
+	0x60, 0x54, 0x02, 0xdc, 0x3e, 0xb4, 0x4d, 0x5f, 0x12, 0x3b, 0x31, 0x0c, 0xc4, 0x86, 0x41, 0xb8,
+	0x57, 0x04, 0xb5, 0x57, 0xe2, 0x4a, 0x61, 0xcc, 0x1b, 0xc8, 0x55, 0x5b, 0xbd, 0x16, 0xfd, 0x83,
+	0xfe, 0x42, 0x3f, 0xa3, 0x7f, 0xd0, 0xc7, 0xfe, 0x42, 0xfb, 0x1f, 0xc5, 0xce, 0x92, 0x22, 0xc5,
+	0x8b, 0x2f, 0xb5, 0xf2, 0x64, 0xce, 0xcc, 0xce, 0x39, 0x33, 0x73, 0x86, 0x5c, 0x0b, 0xea, 0x06,
+	0xb5, 0x7a, 0xae, 0xe7, 0x70, 0x47, 0x69, 0x3a, 0x2e, 0xb3, 0x5d, 0x83, 0x7b, 0xc6, 0x2f, 0x3d,
+	0x83, 0x5a, 0xea, 0xf6, 0xd8, 0x71, 0xc6, 0x26, 0xeb, 0x63, 0x74, 0x30, 0x19, 0xf5, 0xb9, 0x61,
+	0x31, 0x9f, 0x53, 0xcb, 0x95, 0x09, 0x6a, 0x27, 0x38, 0x40, 0x5d, 0xa3, 0x4f, 0x6d, 0xdb, 0xe1,
+	0x94, 0x1b, 0x8e, 0xed, 0x07, 0xd1, 0xe5, 0x91, 0x61, 0x72, 0xe6, 0x49, 0x8b, 0xfc, 0x5b, 0x84,
+	0xca, 0x91, 0xe7, 0x4c, 0x5c, 0xa5, 0x05, 0xa5, 0xb1, 0xa1, 0xb7, 0x0b, 0xdd, 0xc2, 0x6e, 0x5d,
+	0x13, 0x8f, 0x8a, 0x02, 0x65, 0x9b, 0x5a, 0xac, 0x5d, 0x44, 0x17, 0x3e, 0x0b, 0x9f, 0x4b, 0xf9,
+	0xdb, 0x76, 0x49, 0xfa, 0xc4, 0xb3, 0xf2, 0x08, 0xea, 0xe2, 0xef, 0x05, 0x1e, 0x2e, 0x63, 0xa0,
+	0x26, 0x1c, 0xa7, 0x22, 0x61, 0x15, 0x2a, 0xcc, 0xa2, 0x86, 0xd9, 0xae, 0x60, 0x40, 0x1a, 0x4a,
+	0x17, 0x1a, 0x3a, 0xf3, 0x87, 0x9e, 0xe1, 0x8a, 0xd2, 0xda, 0x55, 0x8c, 0xc5, 0x5d, 0xca, 0x3a,
+	0x54, 0x7d, 0x4e, 0xf9, 0xc4, 0x6f, 0x2f, 0x61, 0x30, 0xb0, 0x94, 0x67, 0xd0, 0x18, 0x7a, 0x8c,
+	0x72, 0x76, 0x21, 0xda, 0x6e, 0xd7, 0xba, 0x85, 0xdd, 0xc6, 0xbe, 0xda, 0x93, 0x2d, 0xf7, 0xc2,
+	0x99, 0xf4, 0xce, 0xc3, 0x99, 0x68, 0x20, 0x8f, 0x0b, 0x87, 0x48, 0x9e, 0xb8, 0xfa, 0x2c, 0xb9,
+	0x7e, 0x73, 0xb2, 0x3c, 0x1e, 0x26, 0xcb, 0x1a, 0x64, 0x32, 0xdc, 0x9c, 0x2c, 0x8f, 0x0b, 0x07,
+	0xf9, 0xb3, 0x04, 0xe5, 0xaf, 0x7d, 0xe6, 0x89, 0x31, 0x4f, 0xa2, 0x31, 0x4f, 0x0c, 0x3d, 0x1c,
+	0x7c, 0x31, 0x3d, 0xf8, 0xd2, 0xfc, 0xe0, 0x3d, 0xc7, 0x0c, 0xe7, 0x8b, 0xcf, 0xca, 0x27, 0xa0,
+	0x78, 0xcc, 0x77, 0x26, 0xde, 0x90, 0xe1, 0xf0, 0x7d, 0x97, 0x0e, 0x59, 0x30, 0xe8, 0x07, 0x61,
+	0xe4, 0x34, 0x0c, 0x44, 0x52, 0x54, 0xaf, 0x91, 0x62, 0x29, 0x2d, 0x85, 0x0a, 0x35, 0x97, 0xfa,
+	0xfe, 0xcf, 0x8e, 0xa7, 0xe3, 0xbc, 0x51, 0x5e, 0x69, 0xc7, 0x64, 0xaa, 0xcf, 0xc9, 0xb4, 0x0e,
+	0x55, 0x67, 0x34, 0x32, 0x86, 0x72, 0x4e, 0x75, 0x2d, 0xb0, 0x92, 0xf2, 0x35, 0xee, 0x23, 0xdf,
+	0xf2, 0x7d, 0xe4, 0x5b, 0xb9, 0x93, 0x7c, 0x5f, 0xc1, 0xb2, 0x50, 0xef, 0x2c, 0x6c, 0x3b, 0xad,
+	0x62, 0x7c, 0x48, 0xc5, 0xf9, 0x21, 0x91, 0x03, 0x28, 0x6b, 0x42, 0xaf, 0x26, 0x14, 0x67, 0x49,
+	0xc5, 0x9c, 0x17, 0x6c, 0x03, 0x96, 0xbc, 0x89, 0xc9, 0x2e, 0x0c, 0xbd, 0x5d, 0xea, 0x96, 0xc4,
+	0xe4, 0x84, 0x79, 0xac, 0x93, 0xdf, 0x0a, 0x00, 0xcf, 0x87, 0x42, 0x10, 0x6d, 0x72, 0x4b, 0xac,
+	0x1d, 0x68, 0x5a, 0x8c, 0xbf, 0x75, 0xf4, 0x0b, 0x97, 0x72, 0xce, 0x3c, 0x3b, 0xd8, 0xa8, 0x15,
+	0xe9, 0x3d, 0x93, 0x4e, 0x65, 0x0f, 0x1e, 0xcc, 0xb6, 0x67, 0x76, 0xb2, 0x8c, 0xe4, 0xad, 0x59,
+	0x20, 0x38, 0x4c, 0xce, 0xa0, 0x2a, 0xab, 0x88, 0x66, 0x50, 0x0a, 0x67, 0xb0, 0x0e, 0x55, 0x89,
+	0x1c, 0x54, 0x11, 0x58, 0x4a, 0x07, 0xea, 0xd1, 0x7a, 0xca, 0x12, 0x22, 0x07, 0x59, 0x82, 0xca,
+	0x4b, 0xcb, 0xe5, 0x53, 0xd2, 0x81, 0xf2, 0x0b, 0xc7, 0x31, 0xc5, 0x9e, 0xfe, 0x44, 0xcd, 0x09,
+	0xc3, 0xee, 0x6a, 0x9a, 0x34, 0xc8, 0x2a, 0x14, 0x8f, 0xf5, 0x64, 0xdb, 0xe4, 0x35, 0x54, 0x8f,
+	0xf5, 0xd7, 0x86, 0xcf, 0x45, 0x16, 0x77, 0x38, 0x35, 0x31, 0x58, 0xd1, 0xa4, 0x11, 0xec, 0xa1,
+	0xcf, 0x38, 0x96, 0x54, 0xd1, 0x02, 0x2b, 0xe2, 0x90, 0x43, 0x0e, 0x38, 0x46, 0x50, 0xc7, 0x8f,
+	0xe1, 0xff, 0x00, 0xdc, 0x8b, 0x03, 0x36, 0xf6, 0xd7, 0x7a, 0xf3, 0x5f, 0xed, 0x1e, 0xe2, 0x86,
+	0x3c, 0xa7, 0x50, 0x13, 0xeb, 0xb4, 0xb0, 0xba, 0x4f, 0xa1, 0x26, 0x16, 0x6c, 0x61, 0x78, 0xe7,
+	0xd0, 0x8c, 0x56, 0x6d, 0x61, 0xa8, 0x7f, 0x15, 0xa0, 0xa2, 0x51, 0x7b, 0xcc, 0x94, 0x2f, 0xa0,
+	0x2a, 0x6f, 0x21, 0xdc, 0x9e, 0xc6, 0xfe, 0xe3, 0xe4, 0xb4, 0xf0, 0x58, 0xef, 0x15, 0x9e, 0x79,
+	0x69, 0x73, 0x6f, 0xaa, 0x05, 0x09, 0xd7, 0x51, 0x9a, 0x86, 0x65, 0x70, 0xdc, 0xaf, 0x8a, 0x26,
+	0x0d, 0xf5, 0x7b, 0x68, 0xc4, 0x40, 0xc4, 0xca, 0x5e, 0xb1, 0x69, 0xf8, 0xda, 0x5e, 0xb1, 0xa9,
+	0xf2, 0x59, 0x58, 0x69, 0x11, 0xbf, 0x07, 0x5b, 0xc9, 0x42, 0x5e, 0x19, 0xcc, 0xd4, 0xbf, 0xa1,
+	0xa6, 0xa1, 0x53, 0xee, 0x78, 0x41, 0x27, 0x5f, 0x16, 0x3f, 0x2f, 0xec, 0xff, 0xa1, 0x00, 0x1c,
+	0x3f, 0x3f, 0x39, 0xa1, 0x36, 0x1d, 0x33, 0x4f, 0xb9, 0x84, 0xc6, 0x01, 0x7e, 0xa9, 0xe4, 0x6d,
+	0x9a, 0xad, 0xbf, 0x9a, 0xed, 0x26, 0x4f, 0x7e, 0xfd, 0xfb, 0x9f, 0xdf, 0x8b, 0x9b, 0xe4, 0x11,
+	0xde, 0xd9, 0x11, 0x6a, 0x2f, 0x0e, 0x39, 0x80, 0xe5, 0x43, 0x66, 0xb2, 0xc0, 0xf4, 0x95, 0xf5,
+	0x24, 0x96, 0x7c, 0x11, 0xd4, 0xd5, 0xa4, 0x5f, 0xbc, 0x54, 0xe4, 0x23, 0xa4, 0xd8, 0x22, 0x9d,
+	0x24, 0xc5, 0x1c, 0xe6, 0x25, 0x34, 0x4e, 0x1c, 0xdd, 0x18, 0x4d, 0x17, 0xda, 0x45, 0x1c, 0xf2,
+	0x1d, 0x34, 0x0f, 0xf1, 0x6e, 0x19, 0x84, 0x9c, 0x6b, 0x99, 0xe2, 0xab, 0x0f, 0x33, 0x49, 0x44,
+	0x87, 0xe4, 0x29, 0x12, 0x75, 0xc9, 0x56, 0xba, 0x97, 0x39, 0xe4, 0x6f, 0xa1, 0x76, 0xc4, 0xb8,
+	0xe4, 0x55, 0xd2, 0xd3, 0xca, 0xeb, 0xa3, 0x8b, 0xf0, 0x2a, 0x69, 0x27, 0xe1, 0x67, 0x60, 0x6f,
+	0x00, 0xa4, 0x32, 0x78, 0xa5, 0xa7, 0x06, 0x2e, 0xbc, 0x6a, 0xa6, 0x97, 0x10, 0xc4, 0xee, 0x10,
+	0x35, 0x5b, 0x69, 0xc4, 0xbb, 0x84, 0x86, 0x14, 0x45, 0x58, 0x77, 0xd5, 0x39, 0x57, 0x84, 0x38,
+	0xe4, 0x1b, 0x00, 0xa9, 0xc9, 0xe2, 0xea, 0x8f, 0xe1, 0x8d, 0x61, 0x25, 0x14, 0x42, 0xd2, 0xe5,
+	0x28, 0xdc, 0xce, 0x62, 0x40, 0x81, 0x77, 0x90, 0x65, 0x9b, 0x6c, 0xe6, 0x09, 0x2c, 0x71, 0xbf,
+	0x83, 0xa5, 0x23, 0xc6, 0x91, 0x33, 0x4b, 0xde, 0xec, 0x0e, 0x6e, 0xf5, 0xae, 0xcd, 0x04, 0xc6,
+	0x7b, 0x3b, 0x05, 0x24, 0xbc, 0x6a, 0xa6, 0xf7, 0x26, 0x81, 0x11, 0xef, 0x47, 0x00, 0xa9, 0x06,
+	0x5a, 0x77, 0xd3, 0x37, 0x17, 0x3f, 0x86, 0x38, 0x93, 0x77, 0x71, 0xd5, 0xc7, 0xf0, 0x62, 0xf2,
+	0x0a, 0xfb, 0xf6, 0xf2, 0x86, 0x57, 0xd4, 0xcd, 0xf2, 0x4a, 0xdc, 0x73, 0x94, 0x17, 0x39, 0x6f,
+	0x25, 0x2f, 0x76, 0xb0, 0x8d, 0xd8, 0x0f, 0xc9, 0x46, 0xc6, 0xcb, 0x8b, 0x50, 0x1c, 0x5a, 0x52,
+	0x8a, 0xd8, 0x3f, 0x53, 0x6a, 0x12, 0x2a, 0x8a, 0xa9, 0xd7, 0xc4, 0xc8, 0x2e, 0x92, 0x11, 0xd2,
+	0xcd, 0x16, 0x3b, 0xc6, 0xf0, 0x0e, 0x5a, 0x52, 0xa0, 0x98, 0xef, 0x6e, 0xc2, 0xe7, 0x72, 0xa5,
+	0x70, 0x39, 0xb4, 0xa4, 0x5c, 0xef, 0xb3, 0xc3, 0x14, 0xc3, 0x14, 0x3e, 0x0c, 0xe5, 0x8b, 0xbc,
+	0xb9, 0xcb, 0xb1, 0x95, 0xcf, 0x89, 0x2b, 0xb2, 0x87, 0xbc, 0x3b, 0xe4, 0x49, 0xde, 0x8a, 0xc4,
+	0x39, 0x46, 0xb0, 0x72, 0xc4, 0x78, 0xac, 0x96, 0xac, 0x75, 0xb9, 0xae, 0xcb, 0xdc, 0x85, 0x9c,
+	0x87, 0xb5, 0xe1, 0x83, 0x03, 0xc7, 0x72, 0xa9, 0xc7, 0x66, 0x3f, 0x04, 0x3a, 0x59, 0xdf, 0x98,
+	0x30, 0x9a, 0xa3, 0xe4, 0xc7, 0xc8, 0xf6, 0x98, 0x6c, 0xa7, 0xb6, 0x26, 0x01, 0x6e, 0x42, 0x53,
+	0x8e, 0xf9, 0x5e, 0x74, 0xb9, 0xb7, 0x65, 0x02, 0xfb, 0x1c, 0x2a, 0x07, 0xd4, 0x3e, 0x74, 0xd2,
+	0x7b, 0x29, 0x47, 0x90, 0x03, 0xbf, 0x89, 0xf0, 0x1b, 0x64, 0x2d, 0xd5, 0x8d, 0x00, 0x7b, 0xb1,
+	0xfb, 0xc3, 0xd3, 0x78, 0x96, 0xd3, 0x37, 0xa8, 0xd5, 0x8f, 0x3c, 0x7d, 0xf7, 0x6a, 0xdc, 0x77,
+	0x07, 0xcf, 0xdc, 0xc1, 0xa0, 0x8a, 0xbf, 0xc1, 0x3e, 0xfd, 0x2f, 0x00, 0x00, 0xff, 0xff, 0x16,
+	0xba, 0xcd, 0xd4, 0xfb, 0x10, 0x00, 0x00,
 }

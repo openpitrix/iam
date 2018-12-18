@@ -9,7 +9,35 @@ package openpitrix.iam;
 option go_package = "openpitrix.io/iam/openpitrix/pkg/pb;pb";
 
 import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
 import "filter.proto";
+
+// ----------------------------------------------------------------------------
+// The Pattern Syntax
+// ----------------------------------------------------------------------------
+
+// The pattern syntax is:
+//
+//	pattern:
+//	{ term }
+//	term:
+//		'*'         matches any sequence of non-Separator characters
+//		'**'        matches any sequence of characters, include path separators.
+//		'?'         matches any single non-Separator character
+//		'[' [ '^' ] { character-range } ']'
+//		            character class (must be non-empty)
+//		c           matches character c (c != '*', '?', '\\', '[')
+//		'\\' c      matches character c
+//
+//	character-range:
+//		c           matches character c (c != '\\', '-', ']')
+//		'\\' c      matches character c
+//		lo '-' hi   matches character c for lo <= c <= hi
+//
+// See https://godoc.org/path/filepath#Match
+// See https://github.com/bmatcuk/doublestar
+//
+// Examples: https://golang.org/src/path/filepath/match_test.go
 
 // ----------------------------------------------------------------------------
 // basic type
@@ -50,21 +78,29 @@ message User {
 	google.protobuf.Timestamp update_time = 12;
 	google.protobuf.Timestamp status_time = 13;
 }
-
-message Role {
-	//
-}
-
-message ActionRule {
-	//
-}
-
 message UserPassword {
 	string uid = 1;
 	string password = 2;
 }
+
+message Role {
+	string id = 1;
+	string name = 2;
+	repeated string rule_id = 3;
+}
+
+message ActionRule {
+	string id = 1;
+	string name = 2;
+
+	string method_pattern = 3;             // See Pattern Syntax
+	repeated string namespace_pattern = 4; // See Pattern Syntax
+}
+
 message Action {
-	//
+	repeated string uid = 1; // uid_1234
+	string method = 2;       // GRPC: ServiceName.ServiceMethodName
+	string namespace = 3;    // qingcloud.test
 }
 
 // ----------------------------------------------------------------------------
@@ -79,35 +115,127 @@ message Action {
 
 // Identity and Access Management System for OpenPitrix.
 service IAMManager {
-	rpc CreateGroup(Group) returns (Group);
-	rpc DeleteGroups(IdList) returns (Bool);
-	rpc ModifyGroup(Group) returns (Group);
-	rpc DescribeGroups(Range) returns (GroupList);
-	rpc GetGroup(Id) returns (Group);
+	rpc CreateGroup(Group) returns (Group) {
+		option (google.api.http) = {
+			post: "/api/IAMManager.CreateGroup"
+		};
+	}
+	rpc DeleteGroups(IdList) returns (Bool) {
+		option (google.api.http) = {
+			post: "/api/IAMManager.DeleteGroups"
+		};
+	}
+	rpc ModifyGroup(Group) returns (Group) {
+		option (google.api.http) = {
+			post: "/api/IAMManager.ModifyGroup"
+		};
+	}
+	rpc DescribeGroups(Range) returns (GroupList) {
+		option (google.api.http) = {
+			post: "/api/IAMManager.DescribeGroups"
+		};
+	}
+	rpc GetGroup(Id) returns (Group) {
+		option (google.api.http) = {
+			post: "/api/IAMManager.GetGroup"
+		};
+	}
 
-	rpc CreateUser(User) returns (User);
-	rpc DeleteUsers(IdList) returns (Bool);
-	rpc ModifyUser(User) returns (User);
-	rpc DescribeUesrs(Range) returns (UserList);
-	rpc GetUser(Id) returns (User);
+	rpc CreateUser(User) returns (User) {
+		option (google.api.http) = {
+			post: "/api/IAMManager.CreateUser"
+		};
+	}
+	rpc DeleteUsers(IdList) returns (Bool) {
+		option (google.api.http) = {
+			post: "/api/IAMManager.DeleteUsers"
+		};
+	}
+	rpc ModifyUser(User) returns (User) {
+		option (google.api.http) = {
+			post: "/api/IAMManager.ModifyUser"
+		};
+	}
+	rpc DescribeUsers(Range) returns (UserList) {
+		option (google.api.http) = {
+			post: "/api/IAMManager.DescribeUsers"
+		};
+	}
+	rpc GetUser(Id) returns (User) {
+		option (google.api.http) = {
+			post: "/api/IAMManager.CreateGroup"
+		};
+	}
 
-	rpc CreateRole(Role) returns (Role);
-	rpc DeleteRole(IdList) returns (Bool);
-	rpc ModifyRole(Role) returns (Role);
-	rpc DescribeRole(Range) returns (RoleList);
-	rpc GetRole(Id) returns (Role);
+	rpc CreateRole(Role) returns (Role) {
+		option (google.api.http) = {
+			post: "/api/IAMManager.CreateRole"
+		};
+	}
+	rpc DeleteRole(IdList) returns (Bool) {
+		option (google.api.http) = {
+			post: "/api/IAMManager.DeleteRole"
+		};
+	}
+	rpc ModifyRole(Role) returns (Role) {
+		option (google.api.http) = {
+			post: "/api/IAMManager.ModifyRole"
+		};
+	}
+	rpc DescribeRoles(Range) returns (RoleList) {
+		option (google.api.http) = {
+			post: "/api/IAMManager.DescribeRoles"
+		};
+	}
+	rpc GetRole(Id) returns (Role) {
+		option (google.api.http) = {
+			post: "/api/IAMManager.GetRole"
+		};
+	}
 
-	rpc CreateActionRule(ActionRule) returns (ActionRule);
-	rpc DeleteActionRule(IdList) returns (Bool);
-	rpc ModifyActionRule(ActionRule) returns (ActionRule);
-	rpc DescribeActionRule(Range) returns (ActionRuleList);
-	rpc GetActionRule(Id) returns (ActionRule);
+	rpc CreateActionRule(ActionRule) returns (ActionRule) {
+		option (google.api.http) = {
+			post: "/api/IAMManager.CreateActionRule"
+		};
+	}
+	rpc DeleteActionRule(IdList) returns (Bool) {
+		option (google.api.http) = {
+			post: "/api/IAMManager.DeleteActionRule"
+		};
+	}
+	rpc ModifyActionRule(ActionRule) returns (ActionRule) {
+		option (google.api.http) = {
+			post: "/api/IAMManager.ModifyActionRule"
+		};
+	}
+	rpc DescribeActionRules(Range) returns (ActionRuleList) {
+		option (google.api.http) = {
+			post: "/api/IAMManager.DescribeActionRules"
+		};
+	}
+	rpc GetActionRule(Id) returns (ActionRule) {
+		option (google.api.http) = {
+			post: "/api/IAMManager.GetActionRule"
+		};
+	}
 
-	rpc ComparePassword(UserPassword) returns (Bool);
-	rpc ModifyPassword(UserPassword) returns (Bool);
+	rpc ComparePassword(UserPassword) returns (Bool) {
+		option (google.api.http) = {
+			post: "/api/IAMManager.ComparePassword"
+		};
+	}
+	rpc ModifyPassword(UserPassword) returns (Bool) {
+		option (google.api.http) = {
+			post: "/api/IAMManager.ModifyPassword"
+		};
+	}
 
 	// check any of xid or role_name can do the action
-	rpc CanDo(Action) returns (Bool);
+	rpc CanDo(Action) returns (Bool) {
+		option (google.api.http) = {
+			post: "/api/IAMManager.CanDo"
+		};
+	}
 }
 
 // ----------------------------------------------------------------------------
