@@ -276,11 +276,12 @@ message ActionRuleList {
 }
 
 message Range {
-	string namespace = 1;
-	map<string,FieldValidator> filter = 2;
+	string uid = 1;
+	string namespace = 2;
+	map<string,FieldValidator> filter = 3;
 
-	int32 offset = 3;
-	int32 limit = 4;
+	int32 offset = 4;
+	int32 limit = 5;
 }
 
 // ----------------------------------------------------------------------------
