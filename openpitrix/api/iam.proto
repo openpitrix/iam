@@ -7,3 +7,156 @@ syntax = "proto3";
 package openpitrix.iam;
 
 option go_package = "openpitrix.io/iam/openpitrix/pkg/pb;pb";
+
+import "google/protobuf/timestamp.proto";
+import "filter.proto";
+
+// ----------------------------------------------------------------------------
+// basic type
+// ----------------------------------------------------------------------------
+
+message Group {
+	string gid = 1;
+	string name = 2;
+
+	string path = 3;
+	string path_name = 4;
+
+	string email = 5;
+	string description = 6;
+
+	string status = 7;
+
+	google.protobuf.Timestamp create_time = 8;
+	google.protobuf.Timestamp update_time = 9;
+	google.protobuf.Timestamp status_time = 10;
+}
+
+message User {
+	string uid = 1;
+	string gid = 2;
+
+	string name = 3;
+	string role = 4; // role type
+	string resource_namespace = 5;
+
+	string email = 6;
+	string description = 7;
+	string password = 8;
+	string status = 9;
+	string office = 10;
+
+	google.protobuf.Timestamp create_time = 11;
+	google.protobuf.Timestamp update_time = 12;
+	google.protobuf.Timestamp status_time = 13;
+}
+
+message Role {
+	//
+}
+
+message ActionRule {
+	//
+}
+
+message UserPassword {
+	string uid = 1;
+	string password = 2;
+}
+message Action {
+	//
+}
+
+// ----------------------------------------------------------------------------
+// service api
+// ----------------------------------------------------------------------------
+
+// For ModifyXXX
+// if message.field is spacestring, set it empty string value.
+// if message.field is empty string, set it NULL.
+//
+// https://github.com/chai2010/spacestring
+
+// Identity and Access Management System for OpenPitrix.
+service IAMManager {
+	rpc CreateGroup(Group) returns (Group);
+	rpc DeleteGroups(IdList) returns (Bool);
+	rpc ModifyGroup(Group) returns (Group);
+	rpc DescribeGroups(Range) returns (GroupList);
+	rpc GetGroup(Id) returns (Group);
+
+	rpc CreateUser(User) returns (User);
+	rpc DeleteUsers(IdList) returns (Bool);
+	rpc ModifyUser(User) returns (User);
+	rpc DescribeUesrs(Range) returns (UserList);
+	rpc GetUser(Id) returns (User);
+
+	rpc CreateRole(Role) returns (Role);
+	rpc DeleteRole(IdList) returns (Bool);
+	rpc ModifyRole(Role) returns (Role);
+	rpc DescribeRole(Range) returns (RoleList);
+	rpc GetRole(Id) returns (Role);
+
+	rpc CreateActionRule(ActionRule) returns (ActionRule);
+	rpc DeleteActionRule(IdList) returns (Bool);
+	rpc ModifyActionRule(ActionRule) returns (ActionRule);
+	rpc DescribeActionRule(Range) returns (ActionRuleList);
+	rpc GetActionRule(Id) returns (ActionRule);
+
+	rpc ComparePassword(UserPassword) returns (Bool);
+	rpc ModifyPassword(UserPassword) returns (Bool);
+
+	// check any of xid or role_name can do the action
+	rpc CanDo(Action) returns (Bool);
+}
+
+// ----------------------------------------------------------------------------
+// service api type
+// ----------------------------------------------------------------------------
+
+message Empty {
+	//
+}
+message Bool {
+	bool value = 1;
+}
+
+message Id {
+	string id = 1;
+}
+
+message IdList {
+	int32 total = 1;
+	int32 offset = 2;
+	repeated string value = 3;
+}
+message GroupList {
+	int32 total = 1;
+	int32 offset = 2;
+	repeated Group value = 3;
+}
+message UserList {
+	int32 total = 1;
+	int32 offset = 2;
+	repeated string value = 3;
+}
+message RoleList {
+	int32 total = 1;
+	int32 offset = 2;
+	repeated string value = 3;
+}
+message ActionRuleList {
+	int32 total = 1;
+	int32 offset = 2;
+	repeated string value = 3;
+}
+
+message Range {
+	map<string,FieldValidator> filter = 1;
+	int32 offset = 2;
+	int32 limit = 3;
+}
+
+// ----------------------------------------------------------------------------
+// END
+// ----------------------------------------------------------------------------
