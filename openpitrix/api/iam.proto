@@ -55,8 +55,8 @@ message Action {
 }
 
 message ActionList {
-	int32 total_count = 1;
-	repeated Action value = 3;
+	repeated Action value = 1;
+	int32 total_count = 2;
 }
 
 // ----------------------------------------------------------------------------
@@ -74,10 +74,6 @@ message Role {
 	google.protobuf.Timestamp create_time = 7;
 	google.protobuf.Timestamp update_time = 8;
 }
-message RoleList {
-	int32 total_count = 1;
-	repeated Role value = 2;
-}
 
 message CreateRoleRequest {
 	RequestHeader head = 1;
@@ -85,6 +81,7 @@ message CreateRoleRequest {
 }
 message CreateRoleResponse {
 	ResponseHeader head = 1;
+	string role_id = 2;
 }
 
 message DeleteRoleRequest {
@@ -93,14 +90,16 @@ message DeleteRoleRequest {
 }
 message DeleteRoleResponse {
 	ResponseHeader head = 1;
+	repeated string role_id = 2;
 }
 
 message ModifyRoleRequest {
 	RequestHeader head = 1;
 	Role value = 2;
 }
-message  ModifyRoleResponse {
+message ModifyRoleResponse {
 	ResponseHeader head = 1;
+	string role_id = 2;
 }
 
 message GetRoleRequest {
@@ -118,7 +117,8 @@ message DescribeRolesRequest {
 }
 message DescribeRolesResponse {
 	ResponseHeader head = 1;
-	RoleList value = 2;
+	repeated Role value = 2;
+	int32 total_count = 3;
 }
 
 // ----------------------------------------------------------------------------
@@ -131,9 +131,10 @@ message RoleModuleBinding {
 	string module_id = 3;
 	string data_level = 4 ;
 	string enabled_actions = 5; // 001:createapp, 002:modifyapp
+	string owner = 8 ;
+
 	google.protobuf.Timestamp create_time = 6;
 	google.protobuf.Timestamp update_time = 7;
-	string owner = 8 ;
 }
 
 message ModifyRoleModuleBindingsRequest {
@@ -161,10 +162,6 @@ message Group {
 	google.protobuf.Timestamp create_time = 7;
 	google.protobuf.Timestamp update_time = 8;
 }
-message GroupList {
-	int32 total_count = 1;
-	repeated Group value = 3;
-}
 
 message CreateGroupRequest {
 	RequestHeader head = 1;
@@ -172,29 +169,32 @@ message CreateGroupRequest {
 }
 message CreateGroupResponse {
 	ResponseHeader head = 1;
+	string group_id = 2;
 }
 
 message DeleteGroupsRequest {
 	RequestHeader head = 1;
 	repeated string group_id = 2;
 }
-message  DeleteGroupsResponse {
+message DeleteGroupsResponse {
 	ResponseHeader head = 1;
+	repeated string group_id = 2;
 }
 
-message  ModifyGroupRequest {
+message ModifyGroupRequest {
 	RequestHeader head = 1;
 	Group value = 2;
 }
-message  ModifyGroupResponse {
+message ModifyGroupResponse {
 	ResponseHeader head = 1;
+	string group_id = 2;
 }
 
 message GetGroupRequest {
 	RequestHeader head = 1;
 	string group_id = 2;
 }
-message  GetGroupResponse {
+message GetGroupResponse {
 	ResponseHeader head = 1;
 	Group value = 2;
 }
@@ -205,7 +205,8 @@ message DescribeGroupsRequest {
 }
 message DescribeGroupsResponse {
 	ResponseHeader head = 1;
-	GroupList value = 2;
+	repeated Group value = 2;
+	int32 total_count = 3;
 }
 
 // ----------------------------------------------------------------------------
@@ -237,41 +238,38 @@ message UserPassword {
 	string password = 2;
 }
 
-message UserList {
-	int32 total_count = 1;
-	repeated User value = 3;
-}
-
 message CreateUserRequest {
 	RequestHeader head = 1;
 	User value = 2;
 }
 message CreateUserResponse {
 	ResponseHeader head = 1;
+	string user_id = 2;
 }
 
 message DeleteUsersRequest {
 	RequestHeader head = 1;
 	repeated string user_id = 2;
 }
-message  DeleteUsersResponse {
+message DeleteUsersResponse {
 	ResponseHeader head = 1;
 	repeated string user_id = 2;
 }
 
-message  ModifyUserRequest {
+message ModifyUserRequest {
 	RequestHeader head = 1;
 	User value = 2;
 }
-message  ModifyUserResponse {
+message ModifyUserResponse {
 	ResponseHeader head = 1;
+	string user_id = 2;
 }
 
 message GetUserRequest {
 	RequestHeader head = 1;
 	string user_id = 2;
 }
-message  GetUserResponse {
+message GetUserResponse {
 	ResponseHeader head = 1;
 	User value = 2;
 }
@@ -282,7 +280,8 @@ message DescribeUsersRequest {
 }
 message DescribeUsersResponse {
 	ResponseHeader head = 1;
-	UserList value = 2;
+	repeated User value = 2;
+	int32 total_count = 3;
 }
 
 // ----------------------------------------------------------------------------
@@ -296,14 +295,15 @@ message CanDoActionRequest{
 }
 message CanDoActionResponse {
 	ResponseHeader head = 1;
+	bool ok = 2;
 }
 
 message GetOwnerPathRequest{
-	string user_id = 1;
+	ResponseHeader head = 1;
 	string method = 2;
 }
 message GetAccessPathRequest{
-	string user_id = 1;
+	ResponseHeader head = 1;
 	string method = 2;
 }
 
@@ -312,21 +312,25 @@ message GetAccessPathRequest{
 // ----------------------------------------------------------------------------
 
 service IAMManager {
-	//**************************************************************
-	//1.Action
-	//action的数据不走数据权限，直接拿到全部
+	// -------------------------------------------------------------
+	// 1.Action
+	// action的数据不走数据权限，直接拿到全部
+	// -------------------------------------------------------------
+
 	rpc DescribeActions(Range) returns (ActionList) {
 		option (google.api.http) = {
 			get: "/static/IAMManager.DescribeActions"
 		};
 	}
 
-	//**************************************************************
-	//2.Role
-	//insert Role 从request里面拿到group_path到字段owner_path里。
+	// -------------------------------------------------------------
+	// 2.Role
+	// insert Role 从request里面拿到group_path到字段owner_path里。
+	// -------------------------------------------------------------
+
 	rpc CreateRole(CreateRoleRequest) returns (CreateRoleResponse) {
 		option (google.api.http) = {
-			post: "/api/IAMManager.CreateRole/{head.user_id=*}"
+			post: "/api/IAMManager.CreateRole/{head.user_id}"
 			body: "*"
 		};
 	}
@@ -334,93 +338,99 @@ service IAMManager {
 	//并且Role对应的Feature和Action表数据也要清理掉
 	rpc DeleteRole(DeleteRoleRequest) returns (DeleteRoleResponse) {
 		option (google.api.http) = {
-			delete: "/api/IAMManager.DeleteRole/{head.user_id=*}"
+			delete: "/api/IAMManager.DeleteRole/{head.user_id}"
 		};
 	}
 
 	rpc ModifyRole(ModifyRoleRequest) returns (ModifyRoleResponse) {
 		option (google.api.http) = {
-			patch: "/api/IAMManager.ModifyRole/{head.user_id=*}"
+			patch: "/api/IAMManager.ModifyRole/{head.user_id}"
 		};
 	}
 	rpc GetRole(GetRoleRequest) returns (GetRoleResponse) {
 		option (google.api.http) = {
-			get: "/api/IAMManager.GetRole/{head.user_id=*}"
+			get: "/api/IAMManager.GetRole/{head.user_id}"
 		};
 	}
 
 	rpc DescribeRoles(DescribeRolesRequest) returns (DescribeRolesResponse) {
 		option (google.api.http) = {
-			get: "/api/IAMManager.DescribeRoles/{head.user_id=*}"
+			get: "/api/IAMManager.DescribeRoles/{head.user_id}"
 		};
 	}
 
 
-	//**************************************************************
-	//3.RoleModuleBinding
+	// -------------------------------------------------------------
+	// 3.RoleModuleBinding
+	// -------------------------------------------------------------
+
 	rpc ModifyRoleModuleBindings(ModifyRoleModuleBindingsRequest) returns (ModifyRoleModuleBindingsResponse) {
 		option (google.api.http) = {
-			post: "/api/IAMManager.ModifyRoleModuleBindings/{head.user_id=*}"
+			post: "/api/IAMManager.ModifyRoleModuleBindings/{head.user_id}"
 		};
 	}
 
-	//**************************************************************
-	//4.Group
+	// -------------------------------------------------------------
+	// 4.Group
+	// -------------------------------------------------------------
+
 	rpc CreateGroup(CreateGroupRequest) returns (CreateGroupResponse) {
 		option (google.api.http) = {
-			post: "/api/IAMManager.CreateGroup/{head.user_id=*}"
+			post: "/api/IAMManager.CreateGroup/{head.user_id}"
 		};
 	}
 
 	rpc DeleteGroups(DeleteGroupsRequest) returns (DeleteGroupsResponse) {
 		option (google.api.http) = {
-			delete: "/api/IAMManager.DeleteGroups/{head.user_id=*}"
+			delete: "/api/IAMManager.DeleteGroups/{head.user_id}"
 		};
 	}
 
 	rpc ModifyGroup(ModifyGroupRequest) returns (ModifyGroupResponse) {
 		option (google.api.http) = {
-			patch: "/api/IAMManager.ModifyGroup/{head.user_id=*}"
+			patch: "/api/IAMManager.ModifyGroup/{head.user_id}"
 		};
 	}
 
 	rpc GetGroup(GetGroupRequest) returns (GetGroupResponse) {
 		option (google.api.http) = {
-			get: "/api/IAMManager.GetGroup/{head.user_id=*}"
+			get: "/api/IAMManager.GetGroup/{head.user_id}"
 		};
 	}
 
 	rpc DescribeGroups(DescribeGroupsRequest) returns (DescribeGroupsResponse) {
 		option (google.api.http) = {
-			get: "/api/IAMManager.DescribeGroups/{head.user_id=*}"
+			get: "/api/IAMManager.DescribeGroups/{head.user_id}"
 		};
 	}
 
-	//**************************************************************
-	//5.User
+	// -------------------------------------------------------------
+	// 5.User
+	// -------------------------------------------------------------
+
 	rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {
 		option (google.api.http) = {
-			post: "/api/IAMManager.CreateUser/{head.user_id=*}"
+			post: "/api/IAMManager.CreateUser/{head.user_id}"
 		};
 	}
 	rpc DeleteUsers(DeleteUsersRequest) returns (DeleteUsersResponse) {
 		option (google.api.http) = {
-			delete: "/api/IAMManager.DeleteUsers/{head.user_id=*}"
+			delete: "/api/IAMManager.DeleteUsers/{head.user_id}"
 		};
 	}
 	rpc ModifyUser(ModifyUserRequest) returns (ModifyUserResponse) {
 		option (google.api.http) = {
-			patch: "/api/IAMManager.ModifyUser/{head.user_id=*}"
+			patch: "/api/IAMManager.ModifyUser/{head.user_id}"
 		};
 	}
 	rpc DescribeUsers(DescribeUsersRequest) returns (DescribeUsersResponse) {
 		option (google.api.http) = {
-			get: "/api/IAMManager.DescribeUsers/{head.user_id=*}"
+			get: "/api/IAMManager.DescribeUsers/{head.user_id}"
 		};
 	}
 	rpc GetUser(GetUserRequest) returns (GetUserResponse) {
 		option (google.api.http) = {
-			get: "/api/IAMManager.GetUser/{head.user_id=*}"
+			get: "/api/IAMManager.GetUser/{head.user_id}"
 		};
 	}
 
@@ -436,27 +446,29 @@ service IAMManager {
 	}
 
 
-	//**************************************************************
-	//7.other
-	//通过user_id, 关联user和group得到group path，并且需要在group path后加上user_id.
-	//group1.group2.group3:Jo
+	// -------------------------------------------------------------
+	// 7.other
+	// 通过user_id, 关联user和group得到group path，并且需要在group path后加上user_id.
+	// group1.group2.group3:Jo
+	// -------------------------------------------------------------
+
 	rpc GetOwnerPath(GetOwnerPathRequest) returns (String) {
 		option (google.api.http) = {
-			post: "/api/IAMManager.GetOwnerPath/{user_id=*}"
+			post: "/api/IAMManager.GetOwnerPath/{head.user_id}"
 		};
 	}
 
-	//通过user_id,关联user,group,role,role_feature_binding，根据datalevel来处理group_path,得到access_path.
+	// 通过user_id,关联user,group,role,role_feature_binding，
+	// 根据datalevel来处理group_path,得到access_path.
 	rpc GetAccessPath(GetAccessPathRequest) returns (String) {
 		option (google.api.http) = {
-			post: "/api/IAMManager.GetAccessPath/{user_id=*}"
+			post: "/api/IAMManager.GetAccessPath/{head.user_id}"
 		};
 	}
 
-
 	// check any of xid or role_name can do the action
-	//	通过登录用户的user_id, method 判断用户是否有权限执行业务模块的具体功能。
-	rpc CanDoAction(CanDoActionRequest) returns (CanDoActionResponse)  ;
+	// 通过登录用户的user_id, method 判断用户是否有权限执行业务模块的具体功能。
+	rpc CanDoAction(CanDoActionRequest) returns (CanDoActionResponse);
 }
 
 // ----------------------------------------------------------------------------
