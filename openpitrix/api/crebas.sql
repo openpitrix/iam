@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2018/12/21 11:35:09                          */
+/* Created on:     2018/12/21 11:52:29                          */
 /*==============================================================*/
 
 
@@ -30,7 +30,7 @@ create table action
    description          varchar(100),
    primary key (action_id)
 );
-
+ 
 
 /*==============================================================*/
 /* Table: feature                                               */
@@ -95,10 +95,8 @@ create table role_module_binding
    binding_id           varchar(50) not null,
    role_id              varchar(50),
    module_id            varchar(50),
-   data_level           varchar(50) comment '1 所有数据 2 本部门内 3 仅个人',
-   enabled_actions      text comment 'enabled 里面对应具体的action
-            $* 或者什么特殊字符表示这个module_id 下全部action
-            如果不是全部， 就是action1,action2,action3 这种逗号分割',
+   data_level           varchar(50) comment 'all,department,onlyself',
+   enabled_actions      text comment 'enabled_actions includes specific actions，$* means all the actions under the module_id, if not, it should be action_id strings with comma',
    create_time          timestamp,
    update_time          timestamp,
    owner                varchar(50),
