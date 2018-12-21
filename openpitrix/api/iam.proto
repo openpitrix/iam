@@ -171,7 +171,7 @@ message ModifyRoleModuleBindingsRequest{
 }
 message ModifyRoleModuleBindingsResponse{
 	ResponseHeader head=1;
-	Bool susscess=2;
+	Bool ok=2;
 
 }
 
