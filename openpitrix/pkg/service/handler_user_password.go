@@ -5,20 +5,14 @@
 package service
 
 import (
-	"net/http"
+	"context"
 
-	"google.golang.org/grpc"
+	"openpitrix.io/iam/openpitrix/pkg/pb"
 )
 
-type Server struct {
-	webServer  *http.Server
-	grpcServer *grpc.Server
-}
-
-func OpenServer(dbtype, dbpath string) (*Server, error) {
+func (p *Server) ComparePassword(context.Context, *pb.UserPassword) (*pb.Bool, error) {
 	panic("TODO")
 }
-
-func (p *Server) Close() error {
+func (p *Server) ModifyPassword(context.Context, *pb.UserPassword) (*pb.Bool, error) {
 	panic("TODO")
 }
