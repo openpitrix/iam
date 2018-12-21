@@ -11,11 +11,13 @@ require (
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/go-sql-driver/mysql v1.4.0
 	github.com/golang/protobuf v1.2.0
+	github.com/grpc-ecosystem/grpc-gateway v1.6.2
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/koding/multiconfig v0.0.0-20171124222453-69c27309b2d7
 	github.com/mattn/go-sqlite3 v1.9.0
 	github.com/urfave/cli v1.20.0
 	golang.org/x/net v0.0.0-20181108082009-03003ca0c849
+	google.golang.org/genproto v0.0.0-20180817151627-c66870c02cf8
 	google.golang.org/grpc v1.16.0
 	gopkg.in/gorp.v2 v2.0.0
 	gopkg.in/yaml.v2 v2.2.1
