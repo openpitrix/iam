@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2018/12/21 10:39:37                          */
+/* Created on:     2018/12/21 11:03:20                          */
 /*==============================================================*/
 
 
@@ -106,7 +106,7 @@ create table role
    role_id              varchar(50) not null,
    role_name            varchar(200),
    description          varchar(255),
-   portal               varchar(50) comment '¹ÜÀíÔ±£¬ISV£¬¿ª·¢Õß£¬ÆÕÍ¨ÓÃ»§',
+   portal               varchar(50) comment 'ç®¡ç†å‘˜ï¼ŒISVï¼Œå¼€å‘è€…ï¼Œæ™®é€šç”¨æˆ·',
    create_time          timestamp,
    update_time          timestamp,
    owner                varchar(50),
@@ -121,11 +121,11 @@ create table role_feature_binding
 (
    binding_id           varchar(50) not null,
    role_id              varchar(50),
-   feature_id           varchar(50),
-   data_level           varchar(50) comment '1 ËùÓĞÊı¾İ 2 ±¾²¿ÃÅÄÚ 3 ½ö¸öÈË',
-   enabled_actions      text comment 'enabled ÀïÃæ¶ÔÓ¦¾ßÌåµÄaction
-            $* »òÕßÊ²Ã´ÌØÊâ×Ö·û±íÊ¾Õâ¸ömodule_id ÏÂÈ«²¿action
-            Èç¹û²»ÊÇÈ«²¿£¬ ¾ÍÊÇaction1,action2,action3 ÕâÖÖ¶ººÅ·Ö¸î',
+   module_id            varchar(50),
+   data_level           varchar(50) comment '1 æ‰€æœ‰æ•°æ® 2 æœ¬éƒ¨é—¨å†… 3 ä»…ä¸ªäºº',
+   enabled_actions      text comment 'enabled é‡Œé¢å¯¹åº”å…·ä½“çš„action
+            $* æˆ–è€…ä»€ä¹ˆç‰¹æ®Šå­—ç¬¦è¡¨ç¤ºè¿™ä¸ªmodule_id ä¸‹å…¨éƒ¨action
+            å¦‚æœä¸æ˜¯å…¨éƒ¨ï¼Œ å°±æ˜¯action1,action2,action3 è¿™ç§é€—å·åˆ†å‰²',
    create_time          timestamp,
    update_time          timestamp,
    owner                varchar(50),
@@ -166,8 +166,8 @@ alter table feature add constraint FK_Reference_8 foreign key (module_id)
 alter table op_group add constraint FK_Reference_9 foreign key (parent_group_id)
       references op_group (group_id) on delete restrict on update restrict;
 
-alter table role_feature_binding add constraint FK_Reference_12 foreign key (feature_id)
-      references feature (feature_id) on delete restrict on update restrict;
+alter table role_feature_binding add constraint FK_Reference_11 foreign key (module_id)
+      references module (module_id) on delete restrict on update restrict;
 
 alter table role_feature_binding add constraint FK_Reference_5 foreign key (role_id)
       references role (role_id) on delete restrict on update restrict;
