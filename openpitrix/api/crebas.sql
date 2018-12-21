@@ -1,14 +1,10 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2018/12/21 11:03:20                          */
+/* Created on:     2018/12/21 11:35:09                          */
 /*==============================================================*/
 
 
-drop table if exists action;
-
-drop table if exists biz_app;
-
-drop table if exists biz_runtime;
+drop table if exists action; 
 
 drop table if exists feature;
 
@@ -18,7 +14,7 @@ drop table if exists op_group;
 
 drop table if exists role;
 
-drop table if exists role_feature_binding;
+drop table if exists role_module_binding;
 
 drop table if exists user;
 
@@ -35,29 +31,6 @@ create table action
    primary key (action_id)
 );
 
-/*==============================================================*/
-/* Table: biz_app                                               */
-/*==============================================================*/
-create table biz_app
-(
-   app_id               varchar(50) not null,
-   app_name             varchar(50),
-   owner                varchar(50),
-   owner_path           varchar(50),
-   primary key (app_id)
-);
-
-/*==============================================================*/
-/* Table: biz_runtime                                           */
-/*==============================================================*/
-create table biz_runtime
-(
-   runtime_id           varchar(50) not null,
-   runtime_name         varchar(50),
-   owner                varchar(50),
-   owmer_path           varchar(50),
-   primary key (runtime_id)
-);
 
 /*==============================================================*/
 /* Table: feature                                               */
@@ -106,7 +79,7 @@ create table role
    role_id              varchar(50) not null,
    role_name            varchar(200),
    description          varchar(255),
-   portal               varchar(50) comment '管理员，ISV，开发者，普通用户',
+   portal               varchar(50) comment ' admin,isv,dev,normal',
    create_time          timestamp,
    update_time          timestamp,
    owner                varchar(50),
@@ -115,9 +88,9 @@ create table role
 );
 
 /*==============================================================*/
-/* Table: role_feature_binding                                  */
+/* Table: role_module_binding                                   */
 /*==============================================================*/
-create table role_feature_binding
+create table role_module_binding
 (
    binding_id           varchar(50) not null,
    role_id              varchar(50),
@@ -166,10 +139,10 @@ alter table feature add constraint FK_Reference_8 foreign key (module_id)
 alter table op_group add constraint FK_Reference_9 foreign key (parent_group_id)
       references op_group (group_id) on delete restrict on update restrict;
 
-alter table role_feature_binding add constraint FK_Reference_11 foreign key (module_id)
+alter table role_module_binding add constraint FK_Reference_11 foreign key (module_id)
       references module (module_id) on delete restrict on update restrict;
 
-alter table role_feature_binding add constraint FK_Reference_5 foreign key (role_id)
+alter table role_module_binding add constraint FK_Reference_5 foreign key (role_id)
       references role (role_id) on delete restrict on update restrict;
 
 alter table user add constraint FK_Reference_6 foreign key (group_id)
