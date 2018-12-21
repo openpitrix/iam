@@ -13,33 +13,6 @@ import "google/api/annotations.proto";
 import "filter.proto";
 
 // ----------------------------------------------------------------------------
-// The Pattern Syntax
-// ----------------------------------------------------------------------------
-
-// The pattern syntax is:
-//
-//	pattern:
-//	{ term }
-//	term:
-//		'*'         matches any sequence of non-Separator characters
-//		'**'        matches any sequence of characters, include path separators.
-//		'?'         matches any single non-Separator character
-//		'[' [ '^' ] { character-range } ']'
-//		            character class (must be non-empty)
-//		c           matches character c (c != '*', '?', '\\', '[')
-//		'\\' c      matches character c
-//
-//	character-range:
-//		c           matches character c (c != '\\', '-', ']')
-//		'\\' c      matches character c
-//		lo '-' hi   matches character c for lo <= c <= hi
-//
-// See https://godoc.org/path/filepath#Match
-// See https://github.com/bmatcuk/doublestar
-//
-// Examples: https://golang.org/src/path/filepath/match_test.go
-
-// ----------------------------------------------------------------------------
 // basic type
 // ----------------------------------------------------------------------------
 
@@ -64,7 +37,7 @@ message User {
 	string uid = 1;
 	string gid = 2;
 	string role_id = 3;
-	string resource_namespace = 4;
+	//map<string,string> org_path = 4;
 
 	string name = 5;
 	string email = 6;
@@ -92,8 +65,8 @@ message ActionRule {
 	string id = 1;
 	string name = 2;
 
-	string method_pattern = 3;             // See Pattern Syntax
-	repeated string namespace_pattern = 4; // See Pattern Syntax
+	string method = 3;
+	DataLevel data_level = 4;
 }
 
 message Action {
@@ -122,6 +95,9 @@ service IAMManager {
 	rpc DeleteGroups(IdList) returns (Bool) {
 		option (google.api.http) = {
 			delete: "/api/IAMManager.DeleteGroups"
+		};
+		option (op.api) = {
+			org_path: "/api/IAMManager.DeleteGroups"
 		};
 	}
 	rpc ModifyGroup(Group) returns (Group) {
@@ -240,6 +216,12 @@ service IAMManager {
 // ----------------------------------------------------------------------------
 // service api type
 // ----------------------------------------------------------------------------
+
+enum DataLevel {
+	User = 0;
+	Group = 1;
+	Root = 2;
+}
 
 message Bool {
 	bool value = 1;
