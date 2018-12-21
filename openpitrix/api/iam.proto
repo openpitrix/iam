@@ -153,8 +153,8 @@ message DescribeRolesResponse{
 
 
 // ----------------------------------------------------------------------------
-//3.RoleFeatureBinding
-message RoleFeatureBinding {
+//3.RoleModuleBinding
+message RoleModuleBinding {
 	string binding_id = 1;
 	string role_id = 2;
 	string module_id = 3;
@@ -165,11 +165,11 @@ message RoleFeatureBinding {
 	string owner = 8 ;
 }
 
-message ModifyRoleFeatureBindingsRequest{
+message ModifyRoleModuleBindingsRequest{
 	ResponseHeader head=1;
-	RoleFeatureBinding binding=2;
+	RoleModuleBinding binding=2;
 }
-message ModifyRoleFeatureBindingsResponse{
+message ModifyRoleModuleBindingsResponse{
 	ResponseHeader head=1;
 	Bool susscess=2;
 
@@ -385,10 +385,10 @@ service IAMManager {
 
 
 	//**************************************************************
-	//3.RoleFeatureBinding
-	rpc ModifyRoleFeatureBindings(ModifyRoleFeatureBindingsRequest) returns (ModifyRoleFeatureBindingsResponse) {
+	//3.RoleModuleBinding
+	rpc ModifyRoleModuleBindings(ModifyRoleModuleBindingsRequest) returns (ModifyRoleModuleBindingsResponse) {
 		option (google.api.http) = {
-			post: "/api/IAMManager.ModifyRoleFeatureBindings/{head.user_id=*}"
+			post: "/api/IAMManager.ModifyRoleModuleBindings/{head.user_id=*}"
 		};
 	}
 
