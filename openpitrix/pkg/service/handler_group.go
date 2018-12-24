@@ -10,8 +10,8 @@ import (
 	"openpitrix.io/iam/openpitrix/pkg/pb"
 )
 
-func (p *Server) CreateGroup(context.Context, *pb.CreateGroupRequest) (*pb.CreateGroupResponse, error) {
-	panic("TODO")
+func (p *Server) CreateGroup(ctx context.Context, req *pb.CreateGroupRequest) (*pb.CreateGroupResponse, error) {
+	return p.db.CreateGroup(ctx, req)
 }
 func (p *Server) DeleteGroups(context.Context, *pb.DeleteGroupsRequest) (*pb.DeleteGroupsResponse, error) {
 	panic("TODO")
