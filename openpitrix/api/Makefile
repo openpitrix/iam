@@ -7,7 +7,7 @@ GOPATH:=$(shell go env GOPATH)
 
 PBFILES=$(sort $(wildcard *.proto))
 
-PROTOC_FLAGS:=-I. -Ithird_party/googleapis
+PROTOC_FLAGS:=-I. -Ithird_party/googleapis -Ithird_party
 
 generate: Makefile
 	@mkdir -p ../pkg/pb

@@ -10,6 +10,7 @@ option go_package = "openpitrix.io/iam/openpitrix/pkg/pb;pb";
 
 import "google/protobuf/timestamp.proto";
 import "google/api/annotations.proto";
+import "github.com/mwitkow/go-proto-validators/validator.proto";
 
 import "filter.proto";
 
