@@ -37,6 +37,8 @@ func pkgGetTableFiledNamesAndValues(v interface{}) (names []string, values []int
 			}
 		}
 
+		// TODO(chai): support pb.Timestamp
+
 		names = append(names, db_field_name)
 		values = append(values, db_field_value)
 	}

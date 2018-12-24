@@ -4,6 +4,32 @@
 
 package service
 
+import (
+	"github.com/golang/protobuf/proto"
+
+	"openpitrix.io/iam/openpitrix/pkg/pb"
+)
+
+type dbTableSchema struct {
+	TableName      string
+	PrimaryKeyName string
+}
+
+var dbTableSchemaMap = map[proto.Message]dbTableSchema{
+	&pb.Group{}: dbTableSchema{
+		TableName:      "op_group",
+		PrimaryKeyName: "group_id",
+	},
+	&pb.User{}: dbTableSchema{
+		TableName:      "user",
+		PrimaryKeyName: "user_id",
+	},
+	&pb.Role{}: dbTableSchema{
+		TableName:      "role",
+		PrimaryKeyName: "role_id",
+	},
+}
+
 const dbInitSql = `
 CREATE TABLE IF NOT EXISTS action (
 	action_id            varchar(50) not null,

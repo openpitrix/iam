@@ -6,23 +6,14 @@ package service
 
 import (
 	"fmt"
-	"reflect"
 	"strings"
 )
 
-func pkgBuildSql_InsertInto(v interface{}) (sql string, values []interface{}) {
+func pkgBuildSql_InsertInto(tableName string, v interface{}) (sql string, values []interface{}) {
 	names, values := pkgGetTableFiledNamesAndValues(v)
 	if len(names) == 0 {
 		return "", nil
 	}
-
-	tableName := func() string { // table name
-		if t := reflect.TypeOf(v); t.Kind() == reflect.Ptr {
-			return strings.ToLower(t.Elem().Name())
-		} else {
-			return strings.ToLower(t.Name())
-		}
-	}()
 
 	tableFieldName := strings.Join(names, ",")
 
@@ -50,4 +41,24 @@ func pkgBuildSql_InsertInto(v interface{}) (sql string, values []interface{}) {
 	)
 
 	return
+}
+
+func pkgBuildSql_Delete(tableName, primaryKeyName string, key ...string) (sql string) {
+	primaryKeyValues := func() string {
+		var b strings.Builder
+		for i := 0; i < len(key); i++ {
+			if i == 0 {
+				fmt.Fprintf(&b, `"%s"`, key[i])
+			} else {
+				fmt.Fprintf(&b, `,"%s"`, key[i])
+			}
+		}
+		return b.String()
+	}()
+
+	// delete * from group where group_id in ("group1","group2")
+	return fmt.Sprintf(
+		"DELETE * FROM %s WHERE %s IN (%s)",
+		tableName, primaryKeyName, primaryKeyValues,
+	)
 }

@@ -18,7 +18,10 @@ func (p *Database) CreateGroup(ctx context.Context, req *pb.CreateGroupRequest) 
 		return nil, err
 	}
 
-	sql, values := pkgBuildSql_InsertInto(req.GetValue())
+	sql, values := pkgBuildSql_InsertInto(
+		dbTableSchemaMap[&pb.Group{}].TableName,
+		req.GetValue(),
+	)
 	if len(values) == 0 {
 		err := status.Errorf(codes.InvalidArgument, "empty field")
 		return nil, err
