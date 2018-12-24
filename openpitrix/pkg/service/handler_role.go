@@ -10,8 +10,8 @@ import (
 	"openpitrix.io/iam/openpitrix/pkg/pb"
 )
 
-func (p *Server) CreateRole(context.Context, *pb.CreateRoleRequest) (*pb.CreateRoleResponse, error) {
-	panic("TODO")
+func (p *Server) CreateRole(ctx context.Context, req *pb.CreateRoleRequest) (*pb.CreateRoleResponse, error) {
+	return p.db.CreateRole(ctx, req)
 }
 
 func (p *Server) DeleteRole(context.Context, *pb.DeleteRoleRequest) (*pb.DeleteRoleResponse, error) {
