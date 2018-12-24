@@ -13,8 +13,8 @@ import (
 func (p *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 	return p.db.CreateUser(ctx, req)
 }
-func (p *Server) DeleteUsers(context.Context, *pb.DeleteUsersRequest) (*pb.DeleteUsersResponse, error) {
-	panic("TODO")
+func (p *Server) DeleteUsers(ctx context.Context, req *pb.DeleteUsersRequest) (*pb.DeleteUsersResponse, error) {
+	return p.db.DeleteUsers(ctx, req)
 }
 func (p *Server) ModifyUser(context.Context, *pb.ModifyUserRequest) (*pb.ModifyUserResponse, error) {
 	panic("TODO")

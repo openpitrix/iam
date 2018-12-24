@@ -13,8 +13,8 @@ import (
 func (p *Server) CreateGroup(ctx context.Context, req *pb.CreateGroupRequest) (*pb.CreateGroupResponse, error) {
 	return p.db.CreateGroup(ctx, req)
 }
-func (p *Server) DeleteGroups(context.Context, *pb.DeleteGroupsRequest) (*pb.DeleteGroupsResponse, error) {
-	panic("TODO")
+func (p *Server) DeleteGroups(ctx context.Context, req *pb.DeleteGroupsRequest) (*pb.DeleteGroupsResponse, error) {
+	return p.db.DeleteGroups(ctx, req)
 }
 func (p *Server) ModifyGroup(context.Context, *pb.ModifyGroupRequest) (*pb.ModifyGroupResponse, error) {
 	panic("TODO")
