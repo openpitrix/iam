@@ -16,6 +16,9 @@ generate: Makefile
 	# grpc service
 	protoc $(PROTOC_FLAGS) --go_out=plugins=grpc:$(GOPATH)/src ${PBFILES}
 
+	# govalidators
+	protoc $(PROTOC_FLAGS) --govalidators_out=$(GOPATH)/src ${PBFILES}
+
 	# gateway
 	protoc $(PROTOC_FLAGS) --grpc-gateway_out=../pkg/pb ${PBFILES}
 
