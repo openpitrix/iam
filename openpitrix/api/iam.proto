@@ -334,8 +334,9 @@ service IAMManager {
 			body: "*"
 		};
 	}
-	//注意：删除的时候注意需要递归删除，对应的role id list 的role包含的user的role_id 要修改为空，
-	//并且Role对应的Feature和Action表数据也要清理掉
+
+	// 注意：删除的时候注意需要递归删除，对应的role id list 的role包含的user的role_id 要修改为空，
+	// 并且Role对应的Feature和Action表数据也要清理掉
 	rpc DeleteRole(DeleteRoleRequest) returns (DeleteRoleResponse) {
 		option (google.api.http) = {
 			delete: "/api/IAMManager.DeleteRole/{head.user_id}"

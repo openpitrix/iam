@@ -7,8 +7,9 @@ module openpitrix.io/iam
 require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/bmatcuk/doublestar v1.1.1
+	github.com/chai2010/spacestring v1.0.0
 	github.com/fatih/camelcase v1.0.0 // indirect
-	github.com/fatih/structs v1.1.0 // indirect
+	github.com/fatih/structs v1.1.0
 	github.com/go-sql-driver/mysql v1.4.0
 	github.com/golang/protobuf v1.2.0
 	github.com/grpc-ecosystem/grpc-gateway v1.6.2
