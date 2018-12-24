@@ -43,8 +43,27 @@ func (p *Database) CreateGroup(ctx context.Context, req *pb.CreateGroupRequest) 
 	return reply, nil
 }
 
-func (p *Database) DeleteGroups(context.Context, *pb.DeleteGroupsRequest) (*pb.DeleteGroupsResponse, error) {
-	panic("TODO")
+func (p *Database) DeleteGroups(ctx context.Context, req *pb.DeleteGroupsRequest) (*pb.DeleteGroupsResponse, error) {
+	sql := pkgBuildSql_Delete(
+		dbSpec.GroupTableName, dbSpec.GroupPrimaryKeyName,
+		req.GroupId...,
+	)
+
+	_, err := p.DB.ExecContext(ctx, sql)
+	if err != nil {
+		return nil, err
+	}
+
+	reply := &pb.DeleteGroupsResponse{
+		Head: &pb.ResponseHeader{
+			UserId:     req.GetHead().GetUserId(),
+			OwnerPath:  "", // TODO
+			AccessPath: "", // TODO
+		},
+		GroupId: req.GroupId,
+	}
+
+	return reply, nil
 }
 func (p *Database) ModifyGroup(context.Context, *pb.ModifyGroupRequest) (*pb.ModifyGroupResponse, error) {
 	panic("TODO")
