@@ -19,7 +19,7 @@ func (p *Database) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*
 	}
 
 	sql, values := pkgBuildSql_InsertInto(
-		dbTableSchemaMap[&pb.Group{}].TableName,
+		dbSpec.UserTableName,
 		req.GetValue(),
 	)
 	if len(values) == 0 {

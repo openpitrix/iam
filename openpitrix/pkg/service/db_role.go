@@ -19,7 +19,7 @@ func (p *Database) CreateRole(ctx context.Context, req *pb.CreateRoleRequest) (*
 	}
 
 	sql, values := pkgBuildSql_InsertInto(
-		dbTableSchemaMap[&pb.Group{}].TableName,
+		dbSpec.RoleTableName,
 		req.GetValue(),
 	)
 	if len(values) == 0 {

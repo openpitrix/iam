@@ -19,7 +19,7 @@ func (p *Database) CreateGroup(ctx context.Context, req *pb.CreateGroupRequest) 
 	}
 
 	sql, values := pkgBuildSql_InsertInto(
-		dbTableSchemaMap[&pb.Group{}].TableName,
+		dbSpec.GroupTableName,
 		req.GetValue(),
 	)
 	if len(values) == 0 {

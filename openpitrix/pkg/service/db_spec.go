@@ -4,30 +4,40 @@
 
 package service
 
-import (
-	"github.com/golang/protobuf/proto"
+var dbSpec = struct {
+	InitSql    string
+	TableNames []string
 
-	"openpitrix.io/iam/openpitrix/pkg/pb"
-)
+	GroupTableName      string
+	GroupPrimaryKeyName string
 
-type dbTableSchema struct {
-	TableName      string
-	PrimaryKeyName string
-}
+	UserTableName      string
+	UserPrimaryKeyName string
 
-var dbTableSchemaMap = map[proto.Message]dbTableSchema{
-	&pb.Group{}: dbTableSchema{
-		TableName:      "op_group",
-		PrimaryKeyName: "group_id",
+	RoleTableName      string
+	RolePrimaryKeyName string
+
+	// TODO: missing tables
+}{
+	InitSql: dbInitSql,
+	TableNames: []string{
+		"action",
+		"feature",
+		"module",
+		"op_group",
+		"role",
+		"role_module_binding",
+		"user",
 	},
-	&pb.User{}: dbTableSchema{
-		TableName:      "user",
-		PrimaryKeyName: "user_id",
-	},
-	&pb.Role{}: dbTableSchema{
-		TableName:      "role",
-		PrimaryKeyName: "role_id",
-	},
+
+	GroupTableName:      "op_group",
+	GroupPrimaryKeyName: "group_id",
+
+	UserTableName:      "user",
+	UserPrimaryKeyName: "user_id",
+
+	RoleTableName:      "role_id",
+	RolePrimaryKeyName: "role_id",
 }
 
 const dbInitSql = `
