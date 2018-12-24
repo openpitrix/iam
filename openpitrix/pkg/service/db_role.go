@@ -43,7 +43,7 @@ func (p *Database) CreateRole(ctx context.Context, req *pb.CreateRoleRequest) (*
 	return reply, nil
 }
 
-func (p *Database) DeleteRole(ctx context.Context, req *pb.DeleteRoleRequest) (*pb.DeleteRoleResponse, error) {
+func (p *Database) DeleteRoles(ctx context.Context, req *pb.DeleteRolesRequest) (*pb.DeleteRolesResponse, error) {
 	sql := pkgBuildSql_Delete(
 		dbSpec.RoleTableName, dbSpec.RolePrimaryKeyName,
 		req.RoleId...,
@@ -54,7 +54,7 @@ func (p *Database) DeleteRole(ctx context.Context, req *pb.DeleteRoleRequest) (*
 		return nil, err
 	}
 
-	reply := &pb.DeleteRoleResponse{
+	reply := &pb.DeleteRolesResponse{
 		Head: &pb.ResponseHeader{
 			UserId:     req.GetHead().GetUserId(),
 			OwnerPath:  "", // TODO

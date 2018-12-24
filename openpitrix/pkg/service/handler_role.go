@@ -14,7 +14,7 @@ func (p *Server) CreateRole(ctx context.Context, req *pb.CreateRoleRequest) (*pb
 	return p.db.CreateRole(ctx, req)
 }
 
-func (p *Server) DeleteRole(context.Context, *pb.DeleteRoleRequest) (*pb.DeleteRoleResponse, error) {
+func (p *Server) DeleteRoles(context.Context, *pb.DeleteRolesRequest) (*pb.DeleteRolesResponse, error) {
 	panic("TODO")
 }
 func (p *Server) ModifyRole(context.Context, *pb.ModifyRoleRequest) (*pb.ModifyRoleResponse, error) {

@@ -85,11 +85,11 @@ message CreateRoleResponse {
 	string role_id = 2;
 }
 
-message DeleteRoleRequest {
+message DeleteRolesRequest {
 	RequestHeader head = 1 [(validator.field) = {msg_exists: true}];
 	repeated string role_id = 2;
 }
-message DeleteRoleResponse {
+message DeleteRolesResponse {
 	ResponseHeader head = 1 [(validator.field) = {msg_exists: true}];
 	repeated string role_id = 2;
 }
@@ -338,7 +338,7 @@ service IAMManager {
 
 	// 注意：删除的时候注意需要递归删除，对应的role id list 的role包含的user的role_id 要修改为空，
 	// 并且Role对应的Feature和Action表数据也要清理掉
-	rpc DeleteRole(DeleteRoleRequest) returns (DeleteRoleResponse) {
+	rpc DeleteRoles(DeleteRolesRequest) returns (DeleteRolesResponse) {
 		option (google.api.http) = {
 			delete: "/api/IAMManager.DeleteRole/{head.user_id}"
 		};

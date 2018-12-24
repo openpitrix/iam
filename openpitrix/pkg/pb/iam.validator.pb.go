@@ -125,7 +125,7 @@ func (this *CreateRoleResponse) Validate() error {
 	}
 	return nil
 }
-func (this *DeleteRoleRequest) Validate() error {
+func (this *DeleteRolesRequest) Validate() error {
 	if nil == this.Head {
 		return go_proto_validators.FieldError("Head", fmt.Errorf("message must exist"))
 	}
@@ -136,7 +136,7 @@ func (this *DeleteRoleRequest) Validate() error {
 	}
 	return nil
 }
-func (this *DeleteRoleResponse) Validate() error {
+func (this *DeleteRolesResponse) Validate() error {
 	if nil == this.Head {
 		return go_proto_validators.FieldError("Head", fmt.Errorf("message must exist"))
 	}

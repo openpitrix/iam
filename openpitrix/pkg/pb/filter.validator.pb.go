@@ -20,8 +20,8 @@ It has these top-level messages:
 	Role
 	CreateRoleRequest
 	CreateRoleResponse
-	DeleteRoleRequest
-	DeleteRoleResponse
+	DeleteRolesRequest
+	DeleteRolesResponse
 	ModifyRoleRequest
 	ModifyRoleResponse
 	GetRoleRequest
