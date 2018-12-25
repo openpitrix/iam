@@ -33,7 +33,7 @@ var (
 )
 
 func request_IAMManager_DescribeActions_0(ctx context.Context, marshaler runtime.Marshaler, client IAMManagerClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq Range
+	var protoReq DescribeActionsRequest
 	var metadata runtime.ServerMetadata
 
 	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_IAMManager_DescribeActions_0); err != nil {

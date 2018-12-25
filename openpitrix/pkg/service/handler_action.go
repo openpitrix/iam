@@ -10,7 +10,7 @@ import (
 	"openpitrix.io/iam/openpitrix/pkg/pb"
 )
 
-func (p *Server) DescribeActions(context.Context, *pb.Range) (*pb.ActionList, error) {
+func (p *Server) DescribeActions(context.Context, *pb.DescribeActionsRequest) (*pb.DescribeActionsResponse, error) {
 	panic("TODO")
 }
 

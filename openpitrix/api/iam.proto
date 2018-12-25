@@ -12,8 +12,6 @@ import "google/protobuf/timestamp.proto";
 import "google/api/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 
-import "filter.proto";
-
 // ----------------------------------------------------------------------------
 // basic type
 // ----------------------------------------------------------------------------
@@ -25,12 +23,6 @@ message ResponseHeader {
 	string user_id = 1 [(validator.field) = {regex: "^[a-z]+$"}];
 	string owner_path = 2 [(validator.field) = {regex: "^[a-z]+$"}];
 	string access_path = 3 [(validator.field) = {regex: "^[a-z]+$"}];
-}
-
-message Range {
-	map<string,FieldValidator> filter = 1;
-	int32 offset = 2;
-	int32 limit = 3;
 }
 
 message Bool {
@@ -50,12 +42,16 @@ message Action {
 	string method = 3 [(validator.field) = {regex: "^[a-z]+$"}];
 	string description = 4;
 	string feature_id = 5;
-	string feature_name = 6 ;
-	string module_id = 7 ;
-	string module_name = 8 ;
+	string feature_name = 6;
+	string module_id = 7;
+	string module_name = 8;
 }
 
-message ActionList {
+message DescribeActionsRequest {
+	int32 offset = 1;
+	int32 limit = 2;
+}
+message DescribeActionsResponse {
 	repeated Action value = 1;
 	int32 total_count = 2;
 }
@@ -68,8 +64,8 @@ message Role {
 	string role_id = 1 [(validator.field) = {regex: "^[a-z]+$"}];
 	string role_name = 2;
 	string description = 3;
-	string portal = 4 ;
-	string owner = 5 ;
+	string portal = 4;
+	string owner = 5;
 	string owner_path = 6;
 
 	google.protobuf.Timestamp create_time = 7;
@@ -114,7 +110,12 @@ message GetRoleResponse {
 
 message DescribeRolesRequest {
 	RequestHeader head = 1 [(validator.field) = {msg_exists: true}];
-	Range range = 2;
+
+	map<string,string> key_word = 2; // x.key == word
+	string search_word = 3;          // x.[...] LIKE search_word
+
+	int32 offset = 4;
+	int32 limit = 5;
 }
 message DescribeRolesResponse {
 	ResponseHeader head = 1 [(validator.field) = {msg_exists: true}];
@@ -130,9 +131,9 @@ message RoleModuleBinding {
 	string binding_id = 1 [(validator.field) = {regex: "^[a-z]+$"}];
 	string role_id = 2 [(validator.field) = {regex: "^[a-z]+$"}];
 	string module_id = 3 [(validator.field) = {regex: "^[a-z]+$"}];
-	string data_level = 4 ;
+	string data_level = 4;
 	string enabled_actions = 5; // 001:createapp, 002:modifyapp
-	string owner = 8 ;
+	string owner = 8;
 
 	google.protobuf.Timestamp create_time = 6;
 	google.protobuf.Timestamp update_time = 7;
@@ -157,8 +158,8 @@ message Group {
 	string group_path = 4;
 	string level = 5;
 	string seq_order = 6;
-	string owner = 9 ;
-	string owner_path = 10 ;
+	string owner = 9;
+	string owner_path = 10;
 
 	google.protobuf.Timestamp create_time = 7;
 	google.protobuf.Timestamp update_time = 8;
@@ -202,7 +203,12 @@ message GetGroupResponse {
 
 message DescribeGroupsRequest {
 	RequestHeader head = 1 [(validator.field) = {msg_exists: true}];
-	Range range = 2;
+
+	map<string,string> key_word = 2; // x.key == word
+	string search_word = 3;          // x.[...] LIKE search_word
+
+	int32 offset = 4;
+	int32 limit = 5;
 }
 message DescribeGroupsResponse {
 	ResponseHeader head = 1 [(validator.field) = {msg_exists: true}];
@@ -226,8 +232,8 @@ message User {
 	string old_password = 9;
 	string description = 10;
 	string status = 11;
-	string owner = 15 ;
-	string owner_path = 16 ;
+	string owner = 15;
+	string owner_path = 16;
 
 	google.protobuf.Timestamp create_time = 12;
 	google.protobuf.Timestamp status_time = 13;
@@ -277,7 +283,12 @@ message GetUserResponse {
 
 message DescribeUsersRequest {
 	RequestHeader head = 1 [(validator.field) = {msg_exists: true}];
-	Range range = 2;
+
+	map<string,string> key_word = 2; // x.key == word
+	string search_word = 3;          // x.[...] LIKE search_word
+
+	int32 offset = 4;
+	int32 limit = 5;
 }
 message DescribeUsersResponse {
 	ResponseHeader head = 1 [(validator.field) = {msg_exists: true}];
@@ -318,7 +329,7 @@ service IAMManager {
 	// action的数据不走数据权限，直接拿到全部
 	// -------------------------------------------------------------
 
-	rpc DescribeActions(Range) returns (ActionList) {
+	rpc DescribeActions(DescribeActionsRequest) returns (DescribeActionsResponse) {
 		option (google.api.http) = {
 			get: "/static/IAMManager.DescribeActions"
 		};
