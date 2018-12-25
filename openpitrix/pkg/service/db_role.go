@@ -6,6 +6,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -87,8 +88,28 @@ func (p *Database) ModifyRole(ctx context.Context, req *pb.ModifyRoleRequest) (*
 
 	return reply, nil
 }
-func (p *Database) GetRole(context.Context, *pb.GetRoleRequest) (*pb.GetRoleResponse, error) {
-	panic("TODO")
+func (p *Database) GetRole(ctx context.Context, req *pb.GetRoleRequest) (*pb.GetRoleResponse, error) {
+	var sql = fmt.Sprintf(
+		"SELECT * FROM %s WHERE %s=$1",
+		dbSpec.RoleTableName,
+		dbSpec.RolePrimaryKeyName,
+	)
+	var value pb.Role
+	err := p.DB.Get(&value, sql, req.GetRoleId())
+	if err != nil {
+		return nil, err
+	}
+
+	reply := &pb.GetRoleResponse{
+		Head: &pb.ResponseHeader{
+			UserId:     req.GetHead().GetUserId(),
+			OwnerPath:  "", // TODO
+			AccessPath: "", // TODO
+		},
+		Value: &value,
+	}
+
+	return reply, nil
 }
 func (p *Database) DescribeRoles(context.Context, *pb.DescribeRolesRequest) (*pb.DescribeRolesResponse, error) {
 	panic("TODO")

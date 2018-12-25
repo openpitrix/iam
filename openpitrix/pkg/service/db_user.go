@@ -6,6 +6,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -86,9 +87,29 @@ func (p *Database) ModifyUser(ctx context.Context, req *pb.ModifyUserRequest) (*
 
 	return reply, nil
 }
-func (p *Database) DescribeUsers(context.Context, *pb.DescribeUsersRequest) (*pb.DescribeUsersResponse, error) {
-	panic("TODO")
+func (p *Database) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUserResponse, error) {
+	var sql = fmt.Sprintf(
+		"SELECT * FROM %s WHERE %s=$1",
+		dbSpec.UserTableName,
+		dbSpec.UserPrimaryKeyName,
+	)
+	var value pb.User
+	err := p.DB.Get(&value, sql, req.GetUserId())
+	if err != nil {
+		return nil, err
+	}
+
+	reply := &pb.GetUserResponse{
+		Head: &pb.ResponseHeader{
+			UserId:     req.GetHead().GetUserId(),
+			OwnerPath:  "", // TODO
+			AccessPath: "", // TODO
+		},
+		Value: &value,
+	}
+
+	return reply, nil
 }
-func (p *Database) GetUser(context.Context, *pb.GetUserRequest) (*pb.GetUserResponse, error) {
+func (p *Database) DescribeUsers(context.Context, *pb.DescribeUsersRequest) (*pb.DescribeUsersResponse, error) {
 	panic("TODO")
 }

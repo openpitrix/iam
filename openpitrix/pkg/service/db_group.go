@@ -6,6 +6,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -87,8 +88,28 @@ func (p *Database) ModifyGroup(ctx context.Context, req *pb.ModifyGroupRequest) 
 
 	return reply, nil
 }
-func (p *Database) GetGroup(context.Context, *pb.GetGroupRequest) (*pb.GetGroupResponse, error) {
-	panic("TODO")
+func (p *Database) GetGroup(ctx context.Context, req *pb.GetGroupRequest) (*pb.GetGroupResponse, error) {
+	var sql = fmt.Sprintf(
+		"SELECT * FROM %s WHERE %s=$1",
+		dbSpec.GroupTableName,
+		dbSpec.GroupPrimaryKeyName,
+	)
+	var value pb.Group
+	err := p.DB.Get(&value, sql, req.GetGroupId())
+	if err != nil {
+		return nil, err
+	}
+
+	reply := &pb.GetGroupResponse{
+		Head: &pb.ResponseHeader{
+			UserId:     req.GetHead().GetUserId(),
+			OwnerPath:  "", // TODO
+			AccessPath: "", // TODO
+		},
+		Value: &value,
+	}
+
+	return reply, nil
 }
 func (p *Database) DescribeGroups(context.Context, *pb.DescribeGroupsRequest) (*pb.DescribeGroupsResponse, error) {
 	panic("TODO")
