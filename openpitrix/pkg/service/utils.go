@@ -5,11 +5,12 @@
 package service
 
 import (
-	"reflect"
 	"strings"
 
 	"github.com/chai2010/spacestring"
 	"github.com/fatih/structs"
+	"github.com/golang/protobuf/ptypes"
+	"github.com/golang/protobuf/ptypes/timestamp"
 )
 
 func pkgGetTableFiledNamesAndValues(v interface{}) (names []string, values []interface{}) {
@@ -31,14 +32,16 @@ func pkgGetTableFiledNamesAndValues(v interface{}) (names []string, values []int
 			db_field_name = f.Tag("json")[:idx]
 		}
 
-		if f.Kind() == reflect.String {
-			if spacestring.IsSpace(f.Value().(string)) {
+		switch v := db_field_value.(type) {
+		case string: // support space string
+			if spacestring.IsSpace(v) {
 				db_field_value = "" // clear field
 			}
+		case *timestamp.Timestamp:
+			if v != nil {
+				db_field_value, _ = ptypes.Timestamp(v)
+			}
 		}
-
-		// TODO(chai): support pb.Timestamp
-		// TODO(chai): keep empty value for insert into
 
 		names = append(names, db_field_name)
 		values = append(values, db_field_value)

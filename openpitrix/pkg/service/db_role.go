@@ -65,8 +65,27 @@ func (p *Database) DeleteRoles(ctx context.Context, req *pb.DeleteRolesRequest) 
 
 	return reply, nil
 }
-func (p *Database) ModifyRole(context.Context, *pb.ModifyRoleRequest) (*pb.ModifyRoleResponse, error) {
-	panic("TODO")
+func (p *Database) ModifyRole(ctx context.Context, req *pb.ModifyRoleRequest) (*pb.ModifyRoleResponse, error) {
+	sql, values := pkgBuildSql_Update(
+		dbSpec.RoleTableName, req.GetValue(),
+		dbSpec.RolePrimaryKeyName,
+	)
+
+	_, err := p.DB.ExecContext(ctx, sql, values...)
+	if err != nil {
+		return nil, err
+	}
+
+	reply := &pb.ModifyRoleResponse{
+		Head: &pb.ResponseHeader{
+			UserId:     req.GetHead().GetUserId(),
+			OwnerPath:  "", // TODO
+			AccessPath: "", // TODO
+		},
+		RoleId: req.GetValue().GetRoleId(),
+	}
+
+	return reply, nil
 }
 func (p *Database) GetRole(context.Context, *pb.GetRoleRequest) (*pb.GetRoleResponse, error) {
 	panic("TODO")

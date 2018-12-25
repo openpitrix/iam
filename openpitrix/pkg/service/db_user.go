@@ -64,8 +64,27 @@ func (p *Database) DeleteUsers(ctx context.Context, req *pb.DeleteUsersRequest) 
 
 	return reply, nil
 }
-func (p *Database) ModifyUser(context.Context, *pb.ModifyUserRequest) (*pb.ModifyUserResponse, error) {
-	panic("TODO")
+func (p *Database) ModifyUser(ctx context.Context, req *pb.ModifyUserRequest) (*pb.ModifyUserResponse, error) {
+	sql, values := pkgBuildSql_Update(
+		dbSpec.UserTableName, req.GetValue(),
+		dbSpec.UserPrimaryKeyName,
+	)
+
+	_, err := p.DB.ExecContext(ctx, sql, values...)
+	if err != nil {
+		return nil, err
+	}
+
+	reply := &pb.ModifyUserResponse{
+		Head: &pb.ResponseHeader{
+			UserId:     req.GetHead().GetUserId(),
+			OwnerPath:  "", // TODO
+			AccessPath: "", // TODO
+		},
+		UserId: req.GetValue().GetUserId(),
+	}
+
+	return reply, nil
 }
 func (p *Database) DescribeUsers(context.Context, *pb.DescribeUsersRequest) (*pb.DescribeUsersResponse, error) {
 	panic("TODO")
