@@ -16,12 +16,12 @@ func (p *Server) CreateGroup(ctx context.Context, req *pb.CreateGroupRequest) (*
 func (p *Server) DeleteGroups(ctx context.Context, req *pb.DeleteGroupsRequest) (*pb.DeleteGroupsResponse, error) {
 	return p.db.DeleteGroups(ctx, req)
 }
-func (p *Server) ModifyGroup(context.Context, *pb.ModifyGroupRequest) (*pb.ModifyGroupResponse, error) {
-	panic("TODO")
+func (p *Server) ModifyGroup(ctx context.Context, req *pb.ModifyGroupRequest) (*pb.ModifyGroupResponse, error) {
+	return p.db.ModifyGroup(ctx, req)
 }
-func (p *Server) GetGroup(context.Context, *pb.GetGroupRequest) (*pb.GetGroupResponse, error) {
-	panic("TODO")
+func (p *Server) GetGroup(ctx context.Context, req *pb.GetGroupRequest) (*pb.GetGroupResponse, error) {
+	return p.db.GetGroup(ctx, req)
 }
-func (p *Server) DescribeGroups(context.Context, *pb.DescribeGroupsRequest) (*pb.DescribeGroupsResponse, error) {
-	panic("TODO")
+func (p *Server) DescribeGroups(ctx context.Context, req *pb.DescribeGroupsRequest) (*pb.DescribeGroupsResponse, error) {
+	return p.db.DescribeGroups(ctx, req)
 }

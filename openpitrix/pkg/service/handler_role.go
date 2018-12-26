@@ -20,9 +20,9 @@ func (p *Server) DeleteRoles(ctx context.Context, req *pb.DeleteRolesRequest) (*
 func (p *Server) ModifyRole(ctx context.Context, req *pb.ModifyRoleRequest) (*pb.ModifyRoleResponse, error) {
 	return p.db.ModifyRole(ctx, req)
 }
-func (p *Server) GetRole(context.Context, *pb.GetRoleRequest) (*pb.GetRoleResponse, error) {
-	panic("TODO")
+func (p *Server) GetRole(ctx context.Context, req *pb.GetRoleRequest) (*pb.GetRoleResponse, error) {
+	return p.db.GetRole(ctx, req)
 }
-func (p *Server) DescribeRoles(context.Context, *pb.DescribeRolesRequest) (*pb.DescribeRolesResponse, error) {
-	panic("TODO")
+func (p *Server) DescribeRoles(ctx context.Context, req *pb.DescribeRolesRequest) (*pb.DescribeRolesResponse, error) {
+	return p.db.DescribeRoles(ctx, req)
 }

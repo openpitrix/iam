@@ -19,9 +19,9 @@ func (p *Server) DeleteUsers(ctx context.Context, req *pb.DeleteUsersRequest) (*
 func (p *Server) ModifyUser(ctx context.Context, req *pb.ModifyUserRequest) (*pb.ModifyUserResponse, error) {
 	return p.db.ModifyUser(ctx, req)
 }
-func (p *Server) DescribeUsers(context.Context, *pb.DescribeUsersRequest) (*pb.DescribeUsersResponse, error) {
-	panic("TODO")
+func (p *Server) DescribeUsers(ctx context.Context, req *pb.DescribeUsersRequest) (*pb.DescribeUsersResponse, error) {
+	return p.db.DescribeUsers(ctx, req)
 }
-func (p *Server) GetUser(context.Context, *pb.GetUserRequest) (*pb.GetUserResponse, error) {
-	panic("TODO")
+func (p *Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUserResponse, error) {
+	return p.db.GetUser(ctx, req)
 }

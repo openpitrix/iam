@@ -176,6 +176,10 @@ func (p *Database) _DescribeUsers_all(ctx context.Context, req *pb.DescribeUsers
 		if err := pkgSqlScanProtoMessge(rows, msg); err != nil {
 			return nil, err
 		}
+
+		msg.Password = ""
+		msg.OldPassword = ""
+
 		users = append(users, msg)
 	}
 	if err := rows.Err(); err != nil {
@@ -243,6 +247,10 @@ func (p *Database) _DescribeUsers_bySearchWord(ctx context.Context, req *pb.Desc
 		if err := pkgSqlScanProtoMessge(rows, msg); err != nil {
 			return nil, err
 		}
+
+		msg.Password = ""
+		msg.OldPassword = ""
+
 		users = append(users, msg)
 	}
 	if err := rows.Err(); err != nil {
