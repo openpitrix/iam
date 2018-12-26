@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"fmt"
 	"reflect"
+	"regexp"
 	"strings"
 	"time"
 
@@ -148,6 +149,8 @@ func pkgGetTableStringFieldNames(v interface{}) (names []string) {
 	return
 }
 
+var reSearchWord = regexp.MustCompile(`^[a-z0-9-]+$`)
+
 func pkgSearchWordValid(s string) bool {
-	return true
+	return reSearchWord.MatchString(s)
 }

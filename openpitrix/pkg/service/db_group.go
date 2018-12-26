@@ -6,6 +6,7 @@ package service
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 
 	"google.golang.org/grpc/codes"
@@ -89,15 +90,27 @@ func (p *Database) ModifyGroup(ctx context.Context, req *pb.ModifyGroupRequest) 
 	return reply, nil
 }
 func (p *Database) GetGroup(ctx context.Context, req *pb.GetGroupRequest) (*pb.GetGroupResponse, error) {
-	var sql = fmt.Sprintf(
-		"SELECT * FROM %s WHERE %s=$1",
+	var query = fmt.Sprintf(
+		"SELECT * FROM %s WHERE %s=$1 LIMIT 1 OFFSET 0;",
 		dbSpec.GroupTableName,
 		dbSpec.GroupPrimaryKeyName,
 	)
 
-	// TODO: support timestamp
-	var value pb.Group
-	err := p.DB.Get(&value, sql, req.GetGroupId())
+	rows, err := p.DB.QueryContext(ctx, query, req.GetGroupId())
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	if !rows.Next() {
+		if err := rows.Err(); err != nil {
+			return nil, err
+		}
+		return nil, sql.ErrNoRows
+	}
+
+	var msg = &pb.Group{}
+	err = pkgSqlScanProtoMessge(rows, msg)
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +121,7 @@ func (p *Database) GetGroup(ctx context.Context, req *pb.GetGroupRequest) (*pb.G
 			OwnerPath:  "", // TODO
 			AccessPath: "", // TODO
 		},
-		Value: &value,
+		Value: msg,
 	}
 
 	return reply, nil
@@ -194,10 +207,58 @@ func (p *Database) _DescribeGroups_bySearchWord(ctx context.Context, req *pb.Des
 		return nil, fmt.Errorf("invalid search_word: %q", searchWord)
 	}
 
+	total, err := p._DescribeGroups_count(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
 	var searchWordFieldNames = pkgGetTableStringFieldNames(new(pb.Group))
+	if len(searchWordFieldNames) == 0 {
+		return p._DescribeGroups_all(ctx, req)
+	}
 
-	_ = searchWord
-	_ = searchWordFieldNames
+	var query = fmt.Sprintf("SELECT * FROM %s", dbSpec.GroupTableName)
+	for i, name := range searchWordFieldNames {
+		if i == 0 {
+			query += name + `WHERE LIKE %` + searchWord + `%`
+		} else {
+			query += `OR ` + name + ` LIKE %` + searchWord + `%`
+		}
+	}
 
-	panic("TODO")
+	if offset, limit := req.GetOffset(), req.GetLimit(); offset > 0 || limit > 0 {
+		query += fmt.Sprintf("LIMIT %d OFFSET %d;", limit, offset)
+	} else {
+		query += fmt.Sprintf("LIMIT %d OFFSET %d;", 20, 0)
+	}
+
+	rows, err := p.DB.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var groups []*pb.Group
+	for rows.Next() {
+		var msg = &pb.Group{}
+		if err := pkgSqlScanProtoMessge(rows, msg); err != nil {
+			return nil, err
+		}
+		groups = append(groups, msg)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	reply := &pb.DescribeGroupsResponse{
+		Head: &pb.ResponseHeader{
+			UserId:     req.GetHead().GetUserId(),
+			OwnerPath:  "", // TODO
+			AccessPath: "", // TODO
+		},
+		Value:      groups,
+		TotalCount: int32(total),
+	}
+
+	return reply, nil
 }
