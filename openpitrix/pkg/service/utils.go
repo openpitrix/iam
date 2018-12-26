@@ -6,6 +6,8 @@ package service
 
 import (
 	"database/sql"
+	"fmt"
+	"reflect"
 	"strings"
 	"time"
 
@@ -38,21 +40,13 @@ func pkgSqlScanProtoMessge(rows *sql.Rows, msg proto.Message) error {
 		if f, ok := structs.FieldOk(colName); ok {
 			switch f.Value().(type) {
 			case int:
-				if v, ok := columns[i].(int); ok {
-					f.Set(v)
-				}
+				f.Set(int(reflect.ValueOf(columns[i]).Int()))
 			case int32:
-				if v, ok := columns[i].(int32); ok {
-					f.Set(v)
-				}
+				f.Set(int32(reflect.ValueOf(columns[i]).Int()))
 			case int64:
-				if v, ok := columns[i].(int64); ok {
-					f.Set(v)
-				}
+				f.Set(int64(reflect.ValueOf(columns[i]).Int()))
 			case string:
-				if v, ok := columns[i].(string); ok {
-					f.Set(v)
-				}
+				f.Set(fmt.Sprint(columns[i]))
 			case *timestamp.Timestamp:
 				if t, ok := columns[i].(time.Time); ok {
 					if t, err := ptypes.TimestampProto(t); err == nil {
@@ -127,4 +121,33 @@ func pkgGetTableFiledNamesAndValues(v interface{}) (names []string, values []int
 		values = append(values, db_field_value)
 	}
 	return
+}
+
+func pkgGetTableStringFieldNames(v interface{}) (names []string) {
+	for _, f := range structs.Fields(v) {
+		if !f.IsExported() || f.IsZero() {
+			continue
+		}
+		if strings.HasPrefix(f.Name(), "XXX_") || f.Tag("json") == "-" {
+			continue
+		}
+
+		var (
+			fieldName  = f.Name()
+			fieldValue = f.Value()
+		)
+
+		if idx := strings.Index(f.Tag("json"), ","); idx > 0 {
+			fieldName = f.Tag("json")[:idx]
+		}
+
+		if _, ok := fieldValue.(string); ok {
+			names = append(names, fieldName)
+		}
+	}
+	return
+}
+
+func pkgSearchWordValid(s string) bool {
+	return true
 }

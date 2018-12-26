@@ -94,6 +94,8 @@ func (p *Database) GetGroup(ctx context.Context, req *pb.GetGroupRequest) (*pb.G
 		dbSpec.GroupTableName,
 		dbSpec.GroupPrimaryKeyName,
 	)
+
+	// TODO: support timestamp
 	var value pb.Group
 	err := p.DB.Get(&value, sql, req.GetGroupId())
 	if err != nil {
@@ -111,6 +113,91 @@ func (p *Database) GetGroup(ctx context.Context, req *pb.GetGroupRequest) (*pb.G
 
 	return reply, nil
 }
-func (p *Database) DescribeGroups(context.Context, *pb.DescribeGroupsRequest) (*pb.DescribeGroupsResponse, error) {
+func (p *Database) DescribeGroups(ctx context.Context, req *pb.DescribeGroupsRequest) (*pb.DescribeGroupsResponse, error) {
+	var searchWord = req.GetSearchWord()
+
+	if searchWord == "" {
+		return p._DescribeGroups_all(ctx, req)
+	} else {
+		return p._DescribeGroups_bySearchWord(ctx, req)
+	}
+}
+
+func (p *Database) _DescribeGroups_count(ctx context.Context, req *pb.DescribeGroupsRequest) (total int, err error) {
+	var query = fmt.Sprintf("SELECT COUNT(*) FROM %s", dbSpec.GroupTableName)
+
+	rows, err := p.DB.QueryContext(ctx, query)
+	if err != nil {
+		return 0, err
+	}
+	defer rows.Close()
+
+	if err := rows.Scan(&total); err != nil {
+		return 0, err
+	}
+
+	return total, nil
+}
+
+func (p *Database) _DescribeGroups_all(ctx context.Context, req *pb.DescribeGroupsRequest) (*pb.DescribeGroupsResponse, error) {
+	total, err := p._DescribeGroups_count(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	var query = fmt.Sprintf("SELECT * FROM %s", dbSpec.GroupTableName)
+	if offset, limit := req.GetOffset(), req.GetLimit(); offset > 0 || limit > 0 {
+		query += fmt.Sprintf("LIMIT %d OFFSET %d;", limit, offset)
+	} else {
+		query += fmt.Sprintf("LIMIT %d OFFSET %d;", 20, 0)
+	}
+
+	rows, err := p.DB.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var groups []*pb.Group
+	for rows.Next() {
+		var msg = &pb.Group{}
+		if err := pkgSqlScanProtoMessge(rows, msg); err != nil {
+			return nil, err
+		}
+		groups = append(groups, msg)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	reply := &pb.DescribeGroupsResponse{
+		Head: &pb.ResponseHeader{
+			UserId:     req.GetHead().GetUserId(),
+			OwnerPath:  "", // TODO
+			AccessPath: "", // TODO
+		},
+		Value:      groups,
+		TotalCount: int32(total),
+	}
+
+	return reply, nil
+}
+
+func (p *Database) _DescribeGroups_bySearchWord(ctx context.Context, req *pb.DescribeGroupsRequest) (*pb.DescribeGroupsResponse, error) {
+	var searchWord = req.GetSearchWord()
+
+	if searchWord == "" {
+		return p._DescribeGroups_all(ctx, req)
+	}
+
+	if !pkgSearchWordValid(searchWord) {
+		return nil, fmt.Errorf("invalid search_word: %q", searchWord)
+	}
+
+	var searchWordFieldNames = pkgGetTableStringFieldNames(new(pb.Group))
+
+	_ = searchWord
+	_ = searchWordFieldNames
+
 	panic("TODO")
 }
