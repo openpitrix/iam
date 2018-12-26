@@ -17,7 +17,7 @@ import (
 	"openpitrix.io/logger"
 )
 
-func Main() {
+func main() {
 	app := cli.NewApp()
 	app.Name = "iam"
 	app.Usage = "iam provides iam service."
@@ -37,7 +37,7 @@ EXAMPLE:
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:   "config",
-			Value:  "iam-config.json",
+			Value:  "config.json",
 			Usage:  "iam config file",
 			EnvVar: "OPENPITRIX_IAM_CONFIG",
 		},
@@ -52,6 +52,38 @@ EXAMPLE:
 			Action: func(c *cli.Context) {
 				fmt.Println(nil)
 				fmt.Println(version.GetVersion())
+				return
+			},
+		},
+		{
+			Name:  "gen-config",
+			Usage: "gen config file",
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "json",
+					Usage: "json format (default)",
+				},
+				cli.BoolFlag{
+					Name:  "toml",
+					Usage: "toml format",
+				},
+				cli.BoolFlag{
+					Name:  "yaml",
+					Usage: "yaml format",
+				},
+			},
+
+			Action: func(c *cli.Context) {
+				switch {
+				case c.Bool("json"):
+					fmt.Println(config.Default().JSONString())
+				case c.Bool("toml"):
+					fmt.Println(config.Default().TOMLString())
+				case c.Bool("yaml"):
+					fmt.Println(config.Default().YAMLString())
+				default:
+					fmt.Println(config.Default().JSONString())
+				}
 				return
 			},
 		},

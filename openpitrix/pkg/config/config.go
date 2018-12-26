@@ -8,6 +8,7 @@ package config
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/BurntSushi/toml"
@@ -47,6 +48,18 @@ func (m *MysqlConfig) DbType() string {
 }
 func (m *MysqlConfig) GetUrl() string {
 	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", m.User, m.Password, m.Host, m.Port, m.Database)
+}
+
+func Default() *Config {
+	d := &multiconfig.DefaultLoader{
+		Loader: multiconfig.MultiLoader(&multiconfig.TagLoader{}),
+	}
+
+	var c Config
+	if err := d.Load(&c); err != nil {
+		log.Fatal(err)
+	}
+	return &c
 }
 
 func Load(path string) (*Config, error) {

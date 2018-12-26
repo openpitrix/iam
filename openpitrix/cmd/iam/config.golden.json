@@ -1,0 +1,18 @@
+{
+	"Port": 9115,
+	"TlsEnabled": false,
+	"TlsCertFile": "server.cert",
+	"TlsKeyFile": "server.key",
+	"Log": {
+		"Level": "info",
+		"GrpcDetail": false
+	},
+	"Mysql": {
+		"Host": "openpitrix-db",
+		"Port": 3306,
+		"User": "root",
+		"Password": "password",
+		"Database": "openpitrix",
+		"Disable": false
+	}
+}
