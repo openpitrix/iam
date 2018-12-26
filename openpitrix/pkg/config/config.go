@@ -20,21 +20,18 @@ import (
 )
 
 type Config struct {
+	DB DBConfig
+
 	Port        int    `default:"9115"`
 	TlsEnabled  bool   `default:"false"`
 	TlsCertFile string `default:"server.cert"`
 	TlsKeyFile  string `default:"server.key"`
 
-	Log   LogConfig
-	Mysql MysqlConfig
+	LogLevel string `default:"info"` // debug, info, warn, error, fatal
 }
 
-type LogConfig struct {
-	Level      string `default:"info"` // debug, info, warn, error, fatal
-	GrpcDetail bool
-}
-
-type MysqlConfig struct {
+type DBConfig struct {
+	Type     string `default:"mysql"`
 	Host     string `default:"openpitrix-db"`
 	Port     int    `default:"3306"`
 	User     string `default:"root"`
@@ -43,11 +40,14 @@ type MysqlConfig struct {
 	Disable  bool   `default:"false"`
 }
 
-func (m *MysqlConfig) DbType() string {
-	return "mysql"
-}
-func (m *MysqlConfig) GetUrl() string {
-	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", m.User, m.Password, m.Host, m.Port, m.Database)
+func (m *DBConfig) GetUrl() string {
+	if m.Type == "sqlite3" {
+		return m.Database
+	}
+	if m.Type == "mysql" {
+		return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", m.User, m.Password, m.Host, m.Port, m.Database)
+	}
+	return m.Database
 }
 
 func Default() *Config {

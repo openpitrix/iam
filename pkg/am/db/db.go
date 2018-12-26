@@ -6,21 +6,18 @@
 package db
 
 import (
-	"regexp"
-
-	"github.com/bmatcuk/doublestar"
-	"github.com/jmoiron/sqlx"
+	"database/sql"
 
 	"openpitrix.io/iam/pkg/pb/am"
 	"openpitrix.io/logger"
 )
 
 type Database struct {
-	*sqlx.DB
+	*sql.DB
 }
 
 func Open(dbtype, dbpath string) (*Database, error) {
-	db, err := sqlx.Open(dbtype, dbpath)
+	db, err := sql.Open(dbtype, dbpath)
 	if err != nil {
 		return nil, err
 	}
@@ -76,83 +73,90 @@ func (p *Database) DeleteRoleByRoleName(name string) error {
 }
 
 func (p *Database) GetRoleByName(name string) (*pbam.Role, error) {
-	var v Role
-	err := p.Get(&v, `SELECT * FROM role WHERE name=$1;`, name)
-	if err != nil {
-		return nil, err
-	}
-	return v.ToPbRole(), nil
+	panic("TODO")
+	//var v Role
+	//err := p.Get(&v, `SELECT * FROM role WHERE name=$1;`, name)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//return v.ToPbRole(), nil
 }
 
 func (p *Database) ListRoles(filter *pbam.NameFilter) (*pbam.RoleList, error) {
-	var (
-		roles  = []Role{}
-		result = &pbam.RoleList{}
-	)
-	err := p.Select(&roles, "SELECT * FROM role;")
-	if err != nil {
-		return nil, err
-	}
-
-	// if glob pattern
-	if sPathPattern := filter.GetGlobPattern(); sPathPattern != "" {
-		for _, role := range roles {
-			if ok, _ := doublestar.Match(sPathPattern, role.Name); ok {
-				result.Value = append(result.Value, role.ToPbRole())
-			}
-		}
-
-		// fallthrough
-	}
-
-	// if regexp pattern
-	if nameRegexp := filter.GetRegexpPattern(); nameRegexp != "" {
-		re, err := regexp.Compile(nameRegexp)
+	panic("TODO")
+	/*
+		var (
+			roles  = []Role{}
+			result = &pbam.RoleList{}
+		)
+		err := p.Select(&roles, "SELECT * FROM role;")
 		if err != nil {
 			return nil, err
 		}
 
-		for _, role := range roles {
-			if re.MatchString(role.Name) {
+		// if glob pattern
+		if sPathPattern := filter.GetGlobPattern(); sPathPattern != "" {
+			for _, role := range roles {
+				if ok, _ := doublestar.Match(sPathPattern, role.Name); ok {
+					result.Value = append(result.Value, role.ToPbRole())
+				}
+			}
+
+			// fallthrough
+		}
+
+		// if regexp pattern
+		if nameRegexp := filter.GetRegexpPattern(); nameRegexp != "" {
+			re, err := regexp.Compile(nameRegexp)
+			if err != nil {
+				return nil, err
+			}
+
+			for _, role := range roles {
+				if re.MatchString(role.Name) {
+					result.Value = append(result.Value, role.ToPbRole())
+				}
+			}
+
+			// fallthrough
+		}
+
+		// else: all
+		if filter.GetGlobPattern() == "" && filter.GetRegexpPattern() == "" {
+			for _, role := range roles {
 				result.Value = append(result.Value, role.ToPbRole())
 			}
+
+			// fallthrough
 		}
 
-		// fallthrough
-	}
-
-	// else: all
-	if filter.GetGlobPattern() == "" && filter.GetRegexpPattern() == "" {
-		for _, role := range roles {
-			result.Value = append(result.Value, role.ToPbRole())
-		}
-
-		// fallthrough
-	}
-
-	return result, nil
+		return result, nil
+	*/
 }
 
 func (p *Database) GetRoleByXidList(xid ...string) (*pbam.RoleList, error) {
-	var roles []Role
-	err := p.Select(&roles, `
-		SELECT * FROM role,role_binding WHERE
-			role.name=role_binding.role_name AND
-			xid IN(?)
-		;`, xid,
-	)
-	if err != nil {
-		return nil, err
-	}
+	panic("TODO")
+	/*
+		var roles []Role
+		err := p.Select(&roles, `
+			SELECT * FROM role,role_binding WHERE
+				role.name=role_binding.role_name AND
+				xid IN(?)
+			;`, xid,
+		)
+		if err != nil {
+			return nil, err
+		}
 
-	result := &pbam.RoleList{
-		Value: make([]*pbam.Role, len(roles)),
-	}
-	for i, v := range roles {
-		result.Value[i] = v.ToPbRole()
-	}
+		result := &pbam.RoleList{
+			Value: make([]*pbam.Role, len(roles)),
+		}
+		for i, v := range roles {
+			result.Value[i] = v.ToPbRole()
+		}
 
-	return result, nil
+		return result, nil
+	*/
 }
 
 func (p *Database) CreateRoleBinding(bindings *pbam.RoleXidBindingList) error {
@@ -184,85 +188,94 @@ func (p *Database) DeleteRoleBinding(xid ...string) error {
 }
 
 func (p *Database) GetRoleBindingByRoleName(name string) (*pbam.RoleXidBindingList, error) {
-	var bindings []RoleBinding
-	err := p.Select(&bindings, `SELECT * FROM role_binding WHERE role_name=$1;`, name)
-	if err != nil {
-		return nil, err
-	}
-
-	result := &pbam.RoleXidBindingList{
-		Value: make([]*pbam.RoleXidBinding, len(bindings)),
-	}
-	for i, v := range bindings {
-		result.Value[i] = v.ToPbRoleBinding()
-	}
-
-	return result, nil
-}
-
-func (p *Database) GetRoleBindingByXidList(xid ...string) (*pbam.RoleXidBindingList, error) {
-	var bindings []RoleBinding
-	err := p.Select(&bindings, `SELECT * FROM role_binding WHERE xid IN(?);`, xid)
-	if err != nil {
-		return nil, err
-	}
-
-	result := &pbam.RoleXidBindingList{
-		Value: make([]*pbam.RoleXidBinding, len(bindings)),
-	}
-	for i, v := range bindings {
-		result.Value[i] = v.ToPbRoleBinding()
-	}
-
-	return result, nil
-}
-
-func (p *Database) ListRoleBindings(filter *pbam.NameFilter) (*pbam.RoleXidBindingList, error) {
-	var (
-		bindings = []RoleBinding{}
-		result   = &pbam.RoleXidBindingList{}
-	)
-
-	err := p.Select(&bindings, `SELECT * FROM role_binding;`)
-	if err != nil {
-		return nil, err
-	}
-
-	// if glob pattern
-	if sPathPattern := filter.GetGlobPattern(); sPathPattern != "" {
-		for _, v := range bindings {
-			if ok, _ := doublestar.Match(sPathPattern, v.RoleName); ok {
-				result.Value = append(result.Value, v.ToPbRoleBinding())
-			}
-		}
-
-		// fallthrough
-	}
-
-	// if regexp pattern
-	if nameRegexp := filter.GetRegexpPattern(); nameRegexp != "" {
-		re, err := regexp.Compile(nameRegexp)
+	panic("TODO")
+	/*
+		var bindings []RoleBinding
+		err := p.Select(&bindings, `SELECT * FROM role_binding WHERE role_name=$1;`, name)
 		if err != nil {
 			return nil, err
 		}
 
-		for _, v := range bindings {
-			if re.MatchString(v.RoleName) {
+		result := &pbam.RoleXidBindingList{
+			Value: make([]*pbam.RoleXidBinding, len(bindings)),
+		}
+		for i, v := range bindings {
+			result.Value[i] = v.ToPbRoleBinding()
+		}
+
+		return result, nil
+	*/
+}
+
+func (p *Database) GetRoleBindingByXidList(xid ...string) (*pbam.RoleXidBindingList, error) {
+	panic("TODO")
+	/*
+		var bindings []RoleBinding
+		err := p.Select(&bindings, `SELECT * FROM role_binding WHERE xid IN(?);`, xid)
+		if err != nil {
+			return nil, err
+		}
+
+		result := &pbam.RoleXidBindingList{
+			Value: make([]*pbam.RoleXidBinding, len(bindings)),
+		}
+		for i, v := range bindings {
+			result.Value[i] = v.ToPbRoleBinding()
+		}
+
+		return result, nil
+	*/
+}
+
+func (p *Database) ListRoleBindings(filter *pbam.NameFilter) (*pbam.RoleXidBindingList, error) {
+	panic("TODO")
+	/*
+		var (
+			bindings = []RoleBinding{}
+			result   = &pbam.RoleXidBindingList{}
+		)
+
+		err := p.Select(&bindings, `SELECT * FROM role_binding;`)
+		if err != nil {
+			return nil, err
+		}
+
+		// if glob pattern
+		if sPathPattern := filter.GetGlobPattern(); sPathPattern != "" {
+			for _, v := range bindings {
+				if ok, _ := doublestar.Match(sPathPattern, v.RoleName); ok {
+					result.Value = append(result.Value, v.ToPbRoleBinding())
+				}
+			}
+
+			// fallthrough
+		}
+
+		// if regexp pattern
+		if nameRegexp := filter.GetRegexpPattern(); nameRegexp != "" {
+			re, err := regexp.Compile(nameRegexp)
+			if err != nil {
+				return nil, err
+			}
+
+			for _, v := range bindings {
+				if re.MatchString(v.RoleName) {
+					result.Value = append(result.Value, v.ToPbRoleBinding())
+				}
+			}
+
+			// fallthrough
+		}
+
+		// else: all
+		if filter.GetGlobPattern() == "" && filter.GetRegexpPattern() == "" {
+			for _, v := range bindings {
 				result.Value = append(result.Value, v.ToPbRoleBinding())
 			}
+
+			// fallthrough
 		}
 
-		// fallthrough
-	}
-
-	// else: all
-	if filter.GetGlobPattern() == "" && filter.GetRegexpPattern() == "" {
-		for _, v := range bindings {
-			result.Value = append(result.Value, v.ToPbRoleBinding())
-		}
-
-		// fallthrough
-	}
-
-	return result, nil
+		return result, nil
+	*/
 }

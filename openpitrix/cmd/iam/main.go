@@ -7,6 +7,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 
 	"github.com/urfave/cli"
@@ -27,12 +28,7 @@ func main() {
 
 EXAMPLE:
    iam gen-config
-   iam info
-   iam list
-   iam ping
-   iam getv key
-   iam serve
-   iam tour`
+   iam serve`
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
@@ -41,6 +37,22 @@ EXAMPLE:
 			Usage:  "iam config file",
 			EnvVar: "OPENPITRIX_IAM_CONFIG",
 		},
+	}
+
+	app.Before = func(c *cli.Context) error {
+		cfgpath := c.GlobalString("config")
+		if _, err := os.Stat(cfgpath); os.IsNotExist(err) {
+			data := config.Default().JSONString()
+			ioutil.WriteFile(cfgpath, []byte(data), 0666)
+		}
+
+		cfg := config.MustLoad(c.GlobalString("config"))
+		logger.SetLevelByString(cfg.LogLevel)
+		return nil
+	}
+
+	app.Action = func(c *cli.Context) {
+		serve(c)
 	}
 
 	app.Commands = []cli.Command{
@@ -92,34 +104,7 @@ EXAMPLE:
 			Name:  "serve",
 			Usage: "run as service",
 			Action: func(c *cli.Context) {
-				cfg := config.MustLoad(c.GlobalString("config"))
-				if cfg.TlsEnabled {
-					server, err := service.OpenServer(cfg.Mysql.DbType(), cfg.Mysql.GetUrl())
-					if err != nil {
-						logger.Criticalf(nil, "%v", err)
-						os.Exit(1)
-					}
-					err = server.ListenAndServe(fmt.Sprintf(":%d", cfg.Port))
-					if err != nil {
-						logger.Criticalf(nil, "%v", err)
-						os.Exit(1)
-					}
-				} else {
-					server, err := service.OpenServer(cfg.Mysql.DbType(), cfg.Mysql.GetUrl())
-					if err != nil {
-						logger.Criticalf(nil, "%v", err)
-						os.Exit(1)
-					}
-					err = server.ListenAndServeTLS(
-						fmt.Sprintf(":%d", cfg.Port),
-						cfg.TlsCertFile,
-						cfg.TlsKeyFile,
-					)
-					if err != nil {
-						logger.Criticalf(nil, "%v", err)
-						os.Exit(1)
-					}
-				}
+				serve(c)
 			},
 		},
 	}
@@ -129,4 +114,35 @@ EXAMPLE:
 	}
 
 	app.Run(os.Args)
+}
+
+func serve(c *cli.Context) {
+	cfg := config.MustLoad(c.GlobalString("config"))
+	if !cfg.TlsEnabled {
+		server, err := service.OpenServer(cfg.DB.Type, cfg.DB.GetUrl())
+		if err != nil {
+			logger.Criticalf(nil, "%v", err)
+			os.Exit(1)
+		}
+		err = server.ListenAndServe(fmt.Sprintf(":%d", cfg.Port))
+		if err != nil {
+			logger.Criticalf(nil, "%v", err)
+			os.Exit(1)
+		}
+	} else {
+		server, err := service.OpenServer(cfg.DB.Type, cfg.DB.GetUrl())
+		if err != nil {
+			logger.Criticalf(nil, "%v", err)
+			os.Exit(1)
+		}
+		err = server.ListenAndServeTLS(
+			fmt.Sprintf(":%d", cfg.Port),
+			cfg.TlsCertFile,
+			cfg.TlsKeyFile,
+		)
+		if err != nil {
+			logger.Criticalf(nil, "%v", err)
+			os.Exit(1)
+		}
+	}
 }

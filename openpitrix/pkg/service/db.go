@@ -5,17 +5,19 @@
 package service
 
 import (
-	"github.com/jmoiron/sqlx"
+	"database/sql"
+
+	_ "github.com/go-sql-driver/mysql"
 
 	"openpitrix.io/logger"
 )
 
 type Database struct {
-	*sqlx.DB
+	*sql.DB
 }
 
 func Open(dbtype, dbpath string) (*Database, error) {
-	db, err := sqlx.Open(dbtype, dbpath)
+	db, err := sql.Open(dbtype, dbpath)
 	if err != nil {
 		return nil, err
 	}
