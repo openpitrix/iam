@@ -6,6 +6,7 @@ package service
 
 import (
 	"database/sql"
+	"fmt"
 
 	_ "github.com/go-sql-driver/mysql"
 
@@ -23,9 +24,18 @@ func Open(dbtype, dbpath string) (*Database, error) {
 	}
 
 	p := &Database{DB: db}
-	if _, err := p.Exec(dbInitSql); err != nil {
-		logger.Criticalf(nil, "%v", err)
+	for _, v := range InitSqlList {
+		if _, err := p.Exec(v.Sql); err != nil {
+			logger.Warnf(nil, "%v", err)
+		}
 	}
+
+	if err := p.DB.Ping(); err != nil {
+		logger.Warnf(nil, "%#v", err)
+	}
+
+	stats := p.DB.Stats()
+	logger.Infof(nil, "DB stats: %s", fmt.Sprintf("%#v", stats))
 
 	return p, nil
 }
