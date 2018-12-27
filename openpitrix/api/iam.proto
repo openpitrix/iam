@@ -54,7 +54,7 @@ message DescribeActionsRequest {
 	int32 limit = 2;
 }
 message DescribeActionsResponse {
-	repeated Action value = 1;
+	repeated Action action_set = 1;
 	int32 total_count = 2;
 }
 
@@ -121,7 +121,7 @@ message DescribeRolesRequest {
 }
 message DescribeRolesResponse {
 	ResponseHeader head = 1;
-	repeated Role value = 2;
+	repeated Role role_set = 2;
 	int32 total_count = 3;
 }
 
@@ -214,7 +214,7 @@ message DescribeGroupsRequest {
 }
 message DescribeGroupsResponse {
 	ResponseHeader head = 1;
-	repeated Group value = 2;
+	repeated Group group_set = 2;
 	int32 total_count = 3;
 }
 
@@ -294,7 +294,7 @@ message DescribeUsersRequest {
 }
 message DescribeUsersResponse {
 	ResponseHeader head = 1;
-	repeated User value = 2;
+	repeated User user_set = 2;
 	int32 total_count = 3;
 }
 

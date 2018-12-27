@@ -192,7 +192,7 @@ func (p *Database) _DescribeUsers_all(ctx context.Context, req *pb.DescribeUsers
 			OwnerPath:  "", // TODO
 			AccessPath: "", // TODO
 		},
-		Value:      users,
+		UserSet:    users,
 		TotalCount: int32(total),
 	}
 
@@ -263,7 +263,7 @@ func (p *Database) _DescribeUsers_bySearchWord(ctx context.Context, req *pb.Desc
 			OwnerPath:  "", // TODO
 			AccessPath: "", // TODO
 		},
-		Value:      users,
+		UserSet:    users,
 		TotalCount: int32(total),
 	}
 

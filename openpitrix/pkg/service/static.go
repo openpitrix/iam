@@ -774,7 +774,7 @@ var staticFiles = map[string]string{
     "iamDescribeActionsResponse": {
       "type": "object",
       "properties": {
-        "value": {
+        "action_set": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/iamAction"
@@ -792,7 +792,7 @@ var staticFiles = map[string]string{
         "head": {
           "$ref": "#/definitions/iamResponseHeader"
         },
-        "value": {
+        "group_set": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/iamGroup"
@@ -810,7 +810,7 @@ var staticFiles = map[string]string{
         "head": {
           "$ref": "#/definitions/iamResponseHeader"
         },
-        "value": {
+        "role_set": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/iamRole"
@@ -828,7 +828,7 @@ var staticFiles = map[string]string{
         "head": {
           "$ref": "#/definitions/iamResponseHeader"
         },
-        "value": {
+        "user_set": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/iamUser"

@@ -765,7 +765,7 @@
     "iamDescribeActionsResponse": {
       "type": "object",
       "properties": {
-        "value": {
+        "action_set": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/iamAction"
@@ -783,7 +783,7 @@
         "head": {
           "$ref": "#/definitions/iamResponseHeader"
         },
-        "value": {
+        "group_set": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/iamGroup"
@@ -801,7 +801,7 @@
         "head": {
           "$ref": "#/definitions/iamResponseHeader"
         },
-        "value": {
+        "role_set": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/iamRole"
@@ -819,7 +819,7 @@
         "head": {
           "$ref": "#/definitions/iamResponseHeader"
         },
-        "value": {
+        "user_set": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/iamUser"

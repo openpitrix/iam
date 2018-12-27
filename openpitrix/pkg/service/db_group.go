@@ -195,7 +195,7 @@ func (p *Database) _DescribeGroups_all(ctx context.Context, req *pb.DescribeGrou
 				OwnerPath:  "", // TODO
 				AccessPath: "", // TODO
 			},
-			Value:      groups,
+			GroupSet:   groups,
 			TotalCount: int32(total),
 		}
 
@@ -252,7 +252,7 @@ func (p *Database) _DescribeGroups_all(ctx context.Context, req *pb.DescribeGrou
 			OwnerPath:  "", // TODO
 			AccessPath: "", // TODO
 		},
-		Value:      groups,
+		GroupSet:   groups,
 		TotalCount: int32(total),
 	}
 
@@ -319,7 +319,7 @@ func (p *Database) _DescribeGroups_bySearchWord(ctx context.Context, req *pb.Des
 			OwnerPath:  "", // TODO
 			AccessPath: "", // TODO
 		},
-		Value:      groups,
+		GroupSet:   groups,
 		TotalCount: int32(total),
 	}
 

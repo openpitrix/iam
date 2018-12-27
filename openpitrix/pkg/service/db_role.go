@@ -189,7 +189,7 @@ func (p *Database) _DescribeRoles_all(ctx context.Context, req *pb.DescribeRoles
 			OwnerPath:  "", // TODO
 			AccessPath: "", // TODO
 		},
-		Value:      roles,
+		RoleSet:    roles,
 		TotalCount: int32(total),
 	}
 
@@ -256,7 +256,7 @@ func (p *Database) _DescribeRoles_bySearchWord(ctx context.Context, req *pb.Desc
 			OwnerPath:  "", // TODO
 			AccessPath: "", // TODO
 		},
-		Value:      roles,
+		RoleSet:    roles,
 		TotalCount: int32(total),
 	}
 
