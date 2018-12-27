@@ -889,10 +889,12 @@ var staticFiles = map[string]string{
           "type": "string"
         },
         "level": {
-          "type": "string"
+          "type": "integer",
+          "format": "int32"
         },
         "seq_order": {
-          "type": "string"
+          "type": "integer",
+          "format": "int32"
         },
         "owner": {
           "type": "string"

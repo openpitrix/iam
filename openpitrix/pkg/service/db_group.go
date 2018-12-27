@@ -8,7 +8,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"time"
 
 	"github.com/jmoiron/sqlx"
 	"google.golang.org/grpc/codes"
@@ -162,34 +161,6 @@ func (p *Database) _DescribeGroups_count(ctx context.Context, req *pb.DescribeGr
 	return total, nil
 }
 
-type Group struct {
-	GroupId       string     `db:"group_id"`
-	GroupName     string     `db:"group_name"`
-	ParentGroupId string     `db:"parent_group_id"`
-	GroupPath     string     `db:"group_path"`
-	Level         int        `db:"level"`
-	SeqOrder      int        `db:"seq_order"`
-	Owner         string     `db:"owner"`
-	OwnerPath     string     `db:"owner_path"`
-	CreateTime    *time.Time `db:"create_time"`
-	UpdateTime    *time.Time `db:"update_time"`
-}
-
-func (p *Group) ToPb() *pb.Group {
-	return &pb.Group{
-		GroupId:       p.GroupId,
-		GroupName:     p.GroupName,
-		ParentGroupId: p.ParentGroupId,
-		GroupPath:     p.GroupPath,
-		//Level: p.Level,
-		//SeqOrder: p.SeqOrder,
-		Owner:     p.Owner,
-		OwnerPath: p.OwnerPath,
-		//CreateTime: p.CreateTime,
-		//UpdateTime: p.UpdateTime,
-	}
-}
-
 func (p *Database) _DescribeGroups_all(ctx context.Context, req *pb.DescribeGroupsRequest) (*pb.DescribeGroupsResponse, error) {
 
 	println("_DescribeGroups_all 1")
@@ -204,7 +175,7 @@ func (p *Database) _DescribeGroups_all(ctx context.Context, req *pb.DescribeGrou
 		var ss = "SELECT * FROM " + dbSpec.GroupTableName + "  LIMIT 20 OFFSET 0;"
 		fmt.Println(ss)
 
-		var res []Group
+		var res []DBGroup
 		err := p.DB.Select(&res, ss)
 		if err != nil {
 			fmt.Println("err:", err)

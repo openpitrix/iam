@@ -158,8 +158,8 @@ message Group {
 	string group_name = 2;
 	string parent_group_id = 3;
 	string group_path = 4;
-	string level = 5;
-	string seq_order = 6;
+	int32  level = 5;
+	int32  seq_order = 6;
 	string owner = 9;
 	string owner_path = 10;
 
