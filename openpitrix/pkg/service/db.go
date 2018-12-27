@@ -6,8 +6,8 @@ package service
 
 import (
 	"database/sql"
-	"fmt"
 
+	"github.com/fatih/structs"
 	_ "github.com/go-sql-driver/mysql"
 
 	"openpitrix.io/logger"
@@ -25,8 +25,10 @@ func Open(dbtype, dbpath string) (*Database, error) {
 
 	p := &Database{DB: db}
 	for _, v := range InitSqlList {
-		if _, err := p.Exec(v.Sql); err != nil {
-			logger.Warnf(nil, "%v", err)
+		if v.Name != "-" {
+			if _, err := p.Exec(v.Sql); err != nil {
+				logger.Warnf(nil, "%v", err)
+			}
 		}
 	}
 
@@ -34,8 +36,11 @@ func Open(dbtype, dbpath string) (*Database, error) {
 		logger.Warnf(nil, "%#v", err)
 	}
 
-	stats := p.DB.Stats()
-	logger.Infof(nil, "DB stats: %s", fmt.Sprintf("%#v", stats))
+	logger.Infof(nil, "DB stats: begin")
+	for _, f := range structs.Fields(p.DB.Stats()) {
+		logger.Infof(nil, "\t%s: %v", f.Name(), f.Value())
+	}
+	logger.Infof(nil, "DB stats: end")
 
 	return p, nil
 }

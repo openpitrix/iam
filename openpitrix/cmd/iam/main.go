@@ -8,6 +8,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"net"
 	"os"
 
 	"github.com/urfave/cli"
@@ -36,6 +37,11 @@ EXAMPLE:
 			Value:  "config.json",
 			Usage:  "iam config file",
 			EnvVar: "OPENPITRIX_IAM_CONFIG",
+		},
+		cli.StringFlag{
+			Name:   "iam-service-host",
+			Value:  "localhost",
+			EnvVar: "OPENPITRIX_IAM_HOST",
 		},
 	}
 
@@ -118,7 +124,16 @@ EXAMPLE:
 
 func serve(c *cli.Context) {
 	cfg := config.MustLoad(c.GlobalString("config"))
+
+	host := c.GlobalString("iam-service-host")
+	if host == "" || host == "localhost" {
+		host = getLocalIP()
+	}
+
 	if !cfg.TlsEnabled {
+		logger.Infof(nil, version.GetVersionString())
+		logger.Infof(nil, "IAM service http://%s:%d", host, cfg.Port)
+
 		server, err := service.OpenServer(cfg.DB.Type, cfg.DB.GetUrl())
 		if err != nil {
 			logger.Criticalf(nil, "%v", err)
@@ -130,6 +145,9 @@ func serve(c *cli.Context) {
 			os.Exit(1)
 		}
 	} else {
+		logger.Infof(nil, version.GetVersionString())
+		logger.Infof(nil, "IAM service https://%s:%d", host, cfg.Port)
+
 		server, err := service.OpenServer(cfg.DB.Type, cfg.DB.GetUrl())
 		if err != nil {
 			logger.Criticalf(nil, "%v", err)
@@ -145,4 +163,19 @@ func serve(c *cli.Context) {
 			os.Exit(1)
 		}
 	}
+}
+
+func getLocalIP() string {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return "127.0.0.1"
+	}
+	for _, address := range addrs {
+		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				return ipnet.IP.String()
+			}
+		}
+	}
+	return "127.0.0.1"
 }
