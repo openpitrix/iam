@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/julienschmidt/httprouter"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 	"golang.org/x/tools/godoc/vfs"
@@ -21,6 +21,7 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	"openpitrix.io/iam/openpitrix/pkg/pb"
+	"openpitrix.io/logger"
 )
 
 func (p *Server) ListenAndServe(addr string, opt ...grpc.ServerOption) error {
@@ -29,7 +30,7 @@ func (p *Server) ListenAndServe(addr string, opt ...grpc.ServerOption) error {
 	}
 
 	// https://github.com/grpc/grpc-go/issues/555#issuecomment-443293451
-	h2Handler := h2c.NewHandler(p.mainHandler(), &http2.Server{})
+	h2Handler := h2c.NewHandler(p.mainHandler(addr), &http2.Server{})
 
 	p.grpcServer = grpc.NewServer(opt...)
 	reflection.Register(p.grpcServer)
@@ -49,7 +50,7 @@ func (p *Server) ListenAndServeTLS(addr, certFile, keyFile string, opt ...grpc.S
 	reflection.Register(p.grpcServer)
 	pb.RegisterIAMManagerServer(p.grpcServer, p)
 
-	p.webServer = &http.Server{Addr: addr, Handler: p.mainHandler()}
+	p.webServer = &http.Server{Addr: addr, Handler: p.mainHandler(addr)}
 
 	return p.webServer.ListenAndServeTLS(certFile, keyFile)
 }
@@ -70,29 +71,33 @@ func (p *Server) Shutdown() error {
 	return nil
 }
 
-func (p *Server) mainHandler() http.Handler {
-	mux := httprouter.New()
+func (p *Server) mainHandler(addr string) http.Handler {
+	var gwmux = runtime.NewServeMux()
+	var opts = []grpc.DialOption{grpc.WithInsecure()}
+	var err error
+
+	err = pb.RegisterIAMManagerHandlerFromEndpoint(context.Background(),
+		gwmux, addr, opts,
+	)
+	if err != nil {
+		logger.Warnf(nil, "%v", err)
+	}
+
+	mux := http.NewServeMux()
 
 	// just for test
 	// GET /hello
-	mux.GET("/hello", func(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
-		fmt.Fprintln(w, "hello!", time.Now())
+	mux.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "hello", time.Now())
 	})
 
 	// swagger file
 	// GET /static/spec/iam.swagger.json
-	{
-		ns := vfs.NameSpace{}
-		ns.Bind("/", mapfs.New(staticFiles), "/", vfs.BindBefore)
+	ns := vfs.NameSpace{}
+	ns.Bind("/", mapfs.New(staticFiles), "/", vfs.BindBefore)
 
-		mux.Handler(
-			"GET", "/static/spec/*filepath",
-			http.StripPrefix(
-				"/static/spec",
-				http.FileServer(httpfs.New(ns)),
-			),
-		)
-	}
+	mux.Handle("/", gwmux)
+	mux.Handle("/static/spec/", http.StripPrefix("/static/spec", http.FileServer(httpfs.New(ns))))
 
 	// grpc
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

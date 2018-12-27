@@ -16,7 +16,14 @@ server:
 
 info:
 	curl ${SERVER_HOST}/hello
+	@echo
+
+	curl ${SERVER_HOST}/static/version
+	@echo
+	@echo
+
 	grpcurl -plaintext ${SERVER_HOST} openpitrix.iam.IAMManager/GetVersion
+	@echo
 
 swagger:
 	-curl ${SERVER_HOST}/static/spec/iam.swagger.json
