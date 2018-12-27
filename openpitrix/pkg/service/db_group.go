@@ -8,7 +8,9 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
+	"github.com/jmoiron/sqlx"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -160,6 +162,34 @@ func (p *Database) _DescribeGroups_count(ctx context.Context, req *pb.DescribeGr
 	return total, nil
 }
 
+type Group struct {
+	GroupId       string     `db:"group_id"`
+	GroupName     string     `db:"group_name"`
+	ParentGroupId string     `db:"parent_group_id"`
+	GroupPath     string     `db:"group_path"`
+	Level         int        `db:"level"`
+	SeqOrder      int        `db:"seq_order"`
+	Owner         string     `db:"owner"`
+	OwnerPath     string     `db:"owner_path"`
+	CreateTime    *time.Time `db:"create_time"`
+	UpdateTime    *time.Time `db:"update_time"`
+}
+
+func (p *Group) ToPb() *pb.Group {
+	return &pb.Group{
+		GroupId:       p.GroupId,
+		GroupName:     p.GroupName,
+		ParentGroupId: p.ParentGroupId,
+		GroupPath:     p.GroupPath,
+		//Level: p.Level,
+		//SeqOrder: p.SeqOrder,
+		Owner:     p.Owner,
+		OwnerPath: p.OwnerPath,
+		//CreateTime: p.CreateTime,
+		//UpdateTime: p.UpdateTime,
+	}
+}
+
 func (p *Database) _DescribeGroups_all(ctx context.Context, req *pb.DescribeGroupsRequest) (*pb.DescribeGroupsResponse, error) {
 
 	println("_DescribeGroups_all 1")
@@ -169,6 +199,37 @@ func (p *Database) _DescribeGroups_all(ctx context.Context, req *pb.DescribeGrou
 		return nil, err
 	}
 	println("_DescribeGroups_all 2")
+
+	if true {
+		var ss = "SELECT * FROM " + dbSpec.GroupTableName + "  LIMIT 20 OFFSET 0;"
+		fmt.Println(ss)
+
+		var res []Group
+		err := p.DB.Select(&res, ss)
+		if err != nil {
+			fmt.Println("err:", err)
+			return nil, err
+
+		}
+		fmt.Println(res)
+
+		var groups []*pb.Group
+		for _, v := range res {
+			groups = append(groups, v.ToPb())
+		}
+
+		reply := &pb.DescribeGroupsResponse{
+			Head: &pb.ResponseHeader{
+				UserId:     req.GetHead().GetUserId(),
+				OwnerPath:  "", // TODO
+				AccessPath: "", // TODO
+			},
+			Value:      groups,
+			TotalCount: int32(total),
+		}
+
+		return reply, nil
+	}
 
 	var query = fmt.Sprintf("SELECT * FROM %s", dbSpec.GroupTableName)
 	if offset, limit := req.GetOffset(), req.GetLimit(); offset > 0 || limit > 0 {
@@ -187,13 +248,25 @@ func (p *Database) _DescribeGroups_all(ctx context.Context, req *pb.DescribeGrou
 
 	var groups []*pb.Group
 	for i := 0; rows.Next(); i++ {
-		println("_DescribeGroups_all 4:", i)
+		println("_DescribeGroups_all 4.1:", i)
 
-		var msg = &pb.Group{}
-		if err := pkgSqlScanProtoMessge(rows, msg); err != nil {
+		type xGroup struct {
+			Group_id   []byte
+			Group_name []byte
+		}
+		var dat []xGroup
+		if err := sqlx.StructScan(rows, &dat); err != nil {
+			fmt.Println("_DescribeGroups_all 4.1.1:", i, err)
 			return nil, err
 		}
+		fmt.Println("dat:", dat)
 
+		//if err := pkgSqlScanProtoMessge(rows, msg); err != nil {
+		//	return nil, err
+		//}
+
+		var msg = &pb.Group{}
+		println("_DescribeGroups_all 4.2:", i)
 		fmt.Println(msg)
 
 		groups = append(groups, msg)

@@ -5,20 +5,27 @@
 package service
 
 import (
-	"database/sql"
+	"strings"
 
 	"github.com/fatih/structs"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx"
 
 	"openpitrix.io/logger"
 )
 
 type Database struct {
-	*sql.DB
+	*sqlx.DB
 }
 
 func Open(dbtype, dbpath string) (*Database, error) {
-	db, err := sql.Open(dbtype, dbpath)
+	if dbtype == "mysql" {
+		if !strings.Contains(dbpath, "parseTime=true") {
+			dbpath += "?parseTime=true"
+		}
+	}
+
+	db, err := sqlx.Open(dbtype, dbpath)
 	if err != nil {
 		return nil, err
 	}
