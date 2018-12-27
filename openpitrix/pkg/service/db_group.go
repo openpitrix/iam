@@ -6,10 +6,8 @@ package service
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 
-	"github.com/jmoiron/sqlx"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -97,21 +95,8 @@ func (p *Database) GetGroup(ctx context.Context, req *pb.GetGroupRequest) (*pb.G
 		dbSpec.GroupPrimaryKeyName,
 	)
 
-	rows, err := p.DB.QueryContext(ctx, query, req.GetGroupId())
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	if !rows.Next() {
-		if err := rows.Err(); err != nil {
-			return nil, err
-		}
-		return nil, sql.ErrNoRows
-	}
-
-	var msg = &pb.Group{}
-	err = pkgSqlScanProtoMessge(rows, msg)
+	var v = DBGroup{}
+	err := p.DB.GetContext(ctx, &v, query)
 	if err != nil {
 		return nil, err
 	}
@@ -122,23 +107,16 @@ func (p *Database) GetGroup(ctx context.Context, req *pb.GetGroupRequest) (*pb.G
 			OwnerPath:  "", // TODO
 			AccessPath: "", // TODO
 		},
-		Value: msg,
+		Value: v.ToPb(),
 	}
 
 	return reply, nil
 }
 func (p *Database) DescribeGroups(ctx context.Context, req *pb.DescribeGroupsRequest) (*pb.DescribeGroupsResponse, error) {
-	println("DescribeGroups 1")
 	var searchWord = req.GetSearchWord()
-	println("DescribeGroups 2")
-
 	if searchWord == "" {
-		println("DescribeGroups 3.1")
-
 		return p._DescribeGroups_all(ctx, req)
 	} else {
-		println("DescribeGroups 3.2", searchWord)
-
 		return p._DescribeGroups_bySearchWord(ctx, req)
 	}
 }
@@ -162,44 +140,9 @@ func (p *Database) _DescribeGroups_count(ctx context.Context, req *pb.DescribeGr
 }
 
 func (p *Database) _DescribeGroups_all(ctx context.Context, req *pb.DescribeGroupsRequest) (*pb.DescribeGroupsResponse, error) {
-
-	println("_DescribeGroups_all 1")
-
 	total, err := p._DescribeGroups_count(ctx, req)
 	if err != nil {
 		return nil, err
-	}
-	println("_DescribeGroups_all 2")
-
-	if true {
-		var ss = "SELECT * FROM " + dbSpec.GroupTableName + "  LIMIT 20 OFFSET 0;"
-		fmt.Println(ss)
-
-		var res []DBGroup
-		err := p.DB.Select(&res, ss)
-		if err != nil {
-			fmt.Println("err:", err)
-			return nil, err
-
-		}
-		fmt.Println(res)
-
-		var groups []*pb.Group
-		for _, v := range res {
-			groups = append(groups, v.ToPb())
-		}
-
-		reply := &pb.DescribeGroupsResponse{
-			Head: &pb.ResponseHeader{
-				UserId:     req.GetHead().GetUserId(),
-				OwnerPath:  "", // TODO
-				AccessPath: "", // TODO
-			},
-			GroupSet:   groups,
-			TotalCount: int32(total),
-		}
-
-		return reply, nil
 	}
 
 	var query = fmt.Sprintf("SELECT * FROM %s", dbSpec.GroupTableName)
@@ -209,41 +152,15 @@ func (p *Database) _DescribeGroups_all(ctx context.Context, req *pb.DescribeGrou
 		query += fmt.Sprintf(" LIMIT %d OFFSET %d;", 20, 0)
 	}
 
-	println("_DescribeGroups_all 3, query:", query)
-
-	rows, err := p.DB.QueryContext(ctx, query)
+	var rows = []DBGroup{}
+	err = p.DB.SelectContext(ctx, &rows, query)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
 	var groups []*pb.Group
-	for i := 0; rows.Next(); i++ {
-		println("_DescribeGroups_all 4.1:", i)
-
-		type xGroup struct {
-			Group_id   []byte
-			Group_name []byte
-		}
-		var dat []xGroup
-		if err := sqlx.StructScan(rows, &dat); err != nil {
-			fmt.Println("_DescribeGroups_all 4.1.1:", i, err)
-			return nil, err
-		}
-		fmt.Println("dat:", dat)
-
-		//if err := pkgSqlScanProtoMessge(rows, msg); err != nil {
-		//	return nil, err
-		//}
-
-		var msg = &pb.Group{}
-		println("_DescribeGroups_all 4.2:", i)
-		fmt.Println(msg)
-
-		groups = append(groups, msg)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
+	for _, v := range rows {
+		groups = append(groups, v.ToPb())
 	}
 
 	reply := &pb.DescribeGroupsResponse{
@@ -270,47 +187,56 @@ func (p *Database) _DescribeGroups_bySearchWord(ctx context.Context, req *pb.Des
 		return nil, fmt.Errorf("invalid search_word: %q", searchWord)
 	}
 
-	total, err := p._DescribeGroups_count(ctx, req)
-	if err != nil {
-		return nil, err
-	}
-
-	var searchWordFieldNames = pkgGetTableStringFieldNames(new(pb.Group))
+	var searchWordFieldNames = pkgGetTableStringFieldNames(new(DBGroup))
 	if len(searchWordFieldNames) == 0 {
 		return p._DescribeGroups_all(ctx, req)
 	}
 
-	var query = fmt.Sprintf("SELECT * FROM %s", dbSpec.GroupTableName)
+	var (
+		queryHeaer       = fmt.Sprintf("SELECT * FROM %s ", dbSpec.GroupTableName)
+		queryCountHeader = fmt.Sprintf("SELECT COUNT(*) FROM %s ", dbSpec.GroupTableName)
+		queryTail        string
+	)
+
 	for i, name := range searchWordFieldNames {
 		if i == 0 {
-			query += name + `WHERE LIKE %` + searchWord + `%`
+			queryTail += " WHERE `" + name + "` LIKE '%" + searchWord + "%'"
 		} else {
-			query += `OR ` + name + ` LIKE %` + searchWord + `%`
+			queryTail += " OR `" + name + "` LIKE '%" + searchWord + "%'"
 		}
 	}
 
 	if offset, limit := req.GetOffset(), req.GetLimit(); offset > 0 || limit > 0 {
-		query += fmt.Sprintf("LIMIT %d OFFSET %d;", limit, offset)
+		queryTail += fmt.Sprintf(" LIMIT %d OFFSET %d;", limit, offset)
 	} else {
-		query += fmt.Sprintf("LIMIT %d OFFSET %d;", 20, 0)
+		queryTail += fmt.Sprintf(" LIMIT %d OFFSET %d;", 20, 0)
 	}
 
-	rows, err := p.DB.QueryContext(ctx, query)
+	// total
+	var total int
+	{
+		rows, err := p.DB.QueryContext(ctx, queryCountHeader+queryTail)
+		if err != nil {
+			return nil, err
+		}
+		defer rows.Close()
+
+		if rows.Next() {
+			if err := rows.Scan(&total); err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	var rows = []DBGroup{}
+	err := p.DB.SelectContext(ctx, &rows, queryHeaer+queryTail)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
 	var groups []*pb.Group
-	for rows.Next() {
-		var msg = &pb.Group{}
-		if err := pkgSqlScanProtoMessge(rows, msg); err != nil {
-			return nil, err
-		}
-		groups = append(groups, msg)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
+	for _, v := range rows {
+		groups = append(groups, v.ToPb())
 	}
 
 	reply := &pb.DescribeGroupsResponse{

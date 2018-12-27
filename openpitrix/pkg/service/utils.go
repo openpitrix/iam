@@ -126,10 +126,10 @@ func pkgGetTableFiledNamesAndValues(v interface{}) (names []string, values []int
 
 func pkgGetTableStringFieldNames(v interface{}) (names []string) {
 	for _, f := range structs.Fields(v) {
-		if !f.IsExported() || f.IsZero() {
+		if !f.IsExported() {
 			continue
 		}
-		if strings.HasPrefix(f.Name(), "XXX_") || f.Tag("json") == "-" {
+		if strings.HasPrefix(f.Name(), "XXX_") || f.Tag("db") == "-" {
 			continue
 		}
 
@@ -138,8 +138,8 @@ func pkgGetTableStringFieldNames(v interface{}) (names []string) {
 			fieldValue = f.Value()
 		)
 
-		if idx := strings.Index(f.Tag("json"), ","); idx > 0 {
-			fieldName = f.Tag("json")[:idx]
+		if s := f.Tag("db"); s != "" {
+			fieldName = s
 		}
 
 		if _, ok := fieldValue.(string); ok {
@@ -149,7 +149,7 @@ func pkgGetTableStringFieldNames(v interface{}) (names []string) {
 	return
 }
 
-var reSearchWord = regexp.MustCompile(`^[a-z0-9-]+$`)
+var reSearchWord = regexp.MustCompile(`^[a-z0-9-_]+$`)
 
 func pkgSearchWordValid(s string) bool {
 	return reSearchWord.MatchString(s)
