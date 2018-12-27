@@ -607,6 +607,31 @@ var staticFiles = map[string]string{
           "IAMManager"
         ]
       }
+    },
+    "/static/version": {
+      "get": {
+        "operationId": "GetVersion",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/iamString"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "value",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "format": "boolean"
+          }
+        ],
+        "tags": [
+          "IAMManager"
+        ]
+      }
     }
   },
   "definitions": {

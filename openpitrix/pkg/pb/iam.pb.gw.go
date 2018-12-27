@@ -29,6 +29,23 @@ var _ = runtime.String
 var _ = utilities.NewDoubleArray
 
 var (
+	filter_IAMManager_GetVersion_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+)
+
+func request_IAMManager_GetVersion_0(ctx context.Context, marshaler runtime.Marshaler, client IAMManagerClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq Empty
+	var metadata runtime.ServerMetadata
+
+	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_IAMManager_GetVersion_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	msg, err := client.GetVersion(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+var (
 	filter_IAMManager_DescribeActions_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
 )
 
@@ -743,6 +760,35 @@ func RegisterIAMManagerHandler(ctx context.Context, mux *runtime.ServeMux, conn 
 // "IAMManagerClient" to call the correct interceptors.
 func RegisterIAMManagerHandlerClient(ctx context.Context, mux *runtime.ServeMux, client IAMManagerClient) error {
 
+	mux.Handle("GET", pattern_IAMManager_GetVersion_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(ctx)
+		defer cancel()
+		if cn, ok := w.(http.CloseNotifier); ok {
+			go func(done <-chan struct{}, closed <-chan bool) {
+				select {
+				case <-done:
+				case <-closed:
+					cancel()
+				}
+			}(ctx.Done(), cn.CloseNotify())
+		}
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_IAMManager_GetVersion_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_IAMManager_GetVersion_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
 	mux.Handle("GET", pattern_IAMManager_DescribeActions_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(ctx)
 		defer cancel()
@@ -1356,6 +1402,8 @@ func RegisterIAMManagerHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 }
 
 var (
+	pattern_IAMManager_GetVersion_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"static", "version"}, ""))
+
 	pattern_IAMManager_DescribeActions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"static", "IAMManager.DescribeActions"}, ""))
 
 	pattern_IAMManager_CreateRole_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "IAMManager.CreateRole", "head.user_id"}, ""))
@@ -1400,6 +1448,8 @@ var (
 )
 
 var (
+	forward_IAMManager_GetVersion_0 = runtime.ForwardResponseMessage
+
 	forward_IAMManager_DescribeActions_0 = runtime.ForwardResponseMessage
 
 	forward_IAMManager_CreateRole_0 = runtime.ForwardResponseMessage

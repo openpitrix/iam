@@ -24,6 +24,9 @@ message ResponseHeader {
 	string access_path = 3;
 }
 
+message Empty {
+	bool value = 1;
+}
 message Bool {
 	bool value = 1;
 }
@@ -323,6 +326,16 @@ message GetAccessPathRequest {
 // ----------------------------------------------------------------------------
 
 service IAMManager {
+	// -------------------------------------------------------------
+	// 1.Version
+	// -------------------------------------------------------------
+
+	rpc GetVersion(Empty) returns (String) {
+		option (google.api.http) = {
+			get: "/static/version"
+		};
+	}
+
 	// -------------------------------------------------------------
 	// 1.Action
 	// action的数据不走数据权限，直接拿到全部
