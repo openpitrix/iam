@@ -20,7 +20,10 @@ generate: Makefile
 	protoc $(PROTOC_FLAGS) --govalidators_out=$(GOPATH)/src ${PBFILES}
 
 	# gateway
-	protoc $(PROTOC_FLAGS) --grpc-gateway_out=../pkg/pb ${PBFILES}
+	protoc $(PROTOC_FLAGS) --grpc-gateway_out=logtostderr=true,allow_delete_body=true:../pkg/pb ${PBFILES}
+
+	# swagger
+	protoc $(PROTOC_FLAGS) --swagger_out=logtostderr=true,allow_delete_body=true:../pkg/pb ${PBFILES}
 
 clean:
 	rm -rf $(GOPATH)/src/openpitrix.io/iam/openpitrix/pkg/pb
