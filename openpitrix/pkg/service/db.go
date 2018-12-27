@@ -33,7 +33,9 @@ func Open(dbtype, dbpath string) (*Database, error) {
 	}
 
 	if err := p.DB.Ping(); err != nil {
-		logger.Warnf(nil, "%#v", err)
+		logger.Warnf(nil, "ping faild: %#v", err)
+	} else {
+		logger.Infof(nil, "ping ok")
 	}
 
 	logger.Infof(nil, "DB stats: begin")
