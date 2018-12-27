@@ -9,10 +9,18 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
+	"github.com/julienschmidt/httprouter"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
+	"golang.org/x/tools/godoc/vfs"
+	"golang.org/x/tools/godoc/vfs/httpfs"
+	"golang.org/x/tools/godoc/vfs/mapfs"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
+
+	"openpitrix.io/iam/openpitrix/pkg/pb"
 )
 
 func (p *Server) ListenAndServe(addr string, opt ...grpc.ServerOption) error {
@@ -24,6 +32,9 @@ func (p *Server) ListenAndServe(addr string, opt ...grpc.ServerOption) error {
 	h2Handler := h2c.NewHandler(p.mainHandler(), &http2.Server{})
 
 	p.grpcServer = grpc.NewServer(opt...)
+	reflection.Register(p.grpcServer)
+	pb.RegisterIAMManagerServer(p.grpcServer, p)
+
 	p.webServer = &http.Server{Addr: addr, Handler: h2Handler}
 
 	return p.webServer.ListenAndServe()
@@ -35,6 +46,9 @@ func (p *Server) ListenAndServeTLS(addr, certFile, keyFile string, opt ...grpc.S
 	}
 
 	p.grpcServer = grpc.NewServer(opt...)
+	reflection.Register(p.grpcServer)
+	pb.RegisterIAMManagerServer(p.grpcServer, p)
+
 	p.webServer = &http.Server{Addr: addr, Handler: p.mainHandler()}
 
 	return p.webServer.ListenAndServeTLS(certFile, keyFile)
@@ -57,10 +71,30 @@ func (p *Server) Shutdown() error {
 }
 
 func (p *Server) mainHandler() http.Handler {
-	mux := http.NewServeMux()
+	mux := httprouter.New()
 
-	// mux.HandleFunc("/", ...)
+	// just for test
+	// GET /hello
+	mux.GET("/hello", func(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+		fmt.Fprintln(w, "hello!", time.Now())
+	})
 
+	// swagger file
+	// GET /static/spec/iam.swagger.json
+	{
+		ns := vfs.NameSpace{}
+		ns.Bind("/", mapfs.New(staticFiles), "/", vfs.BindBefore)
+
+		mux.Handler(
+			"GET", "/static/spec/*filepath",
+			http.StripPrefix(
+				"/static/spec",
+				http.FileServer(httpfs.New(ns)),
+			),
+		)
+	}
+
+	// grpc
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// TODO(tamird): point to merged gRPC code rather than a PR.
 		// This is a partial recreation of gRPC's internal checks

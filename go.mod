@@ -15,6 +15,7 @@ require (
 	github.com/gogo/protobuf v1.2.0 // indirect
 	github.com/golang/protobuf v1.2.0
 	github.com/grpc-ecosystem/grpc-gateway v1.6.2
+	github.com/julienschmidt/httprouter v1.2.0
 	github.com/koding/multiconfig v0.0.0-20171124222453-69c27309b2d7
 	github.com/lib/pq v1.0.0 // indirect
 	github.com/mattn/go-sqlite3 v1.9.0
@@ -24,6 +25,7 @@ require (
 	github.com/urfave/cli v1.20.0
 	github.com/ziutek/mymysql v1.5.4 // indirect
 	golang.org/x/net v0.0.0-20181108082009-03003ca0c849
+	golang.org/x/tools v0.0.0-20180828015842-6cd1fcedba52
 	google.golang.org/genproto v0.0.0-20180817151627-c66870c02cf8
 	google.golang.org/grpc v1.16.0
 	gopkg.in/gorp.v2 v2.0.0

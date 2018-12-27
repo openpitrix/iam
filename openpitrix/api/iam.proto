@@ -10,19 +10,18 @@ option go_package = "openpitrix.io/iam/openpitrix/pkg/pb;pb";
 
 import "google/protobuf/timestamp.proto";
 import "google/api/annotations.proto";
-import "github.com/mwitkow/go-proto-validators/validator.proto";
 
 // ----------------------------------------------------------------------------
 // basic type
 // ----------------------------------------------------------------------------
 
 message RequestHeader {
-	string user_id = 1 [(validator.field) = {regex: "^[a-z]+$"}];
+	string user_id = 1;
 }
 message ResponseHeader {
-	string user_id = 1 [(validator.field) = {regex: "^[a-z]+$"}];
-	string owner_path = 2 [(validator.field) = {regex: "^[a-z]+$"}];
-	string access_path = 3 [(validator.field) = {regex: "^[a-z]+$"}];
+	string user_id = 1;
+	string owner_path = 2;
+	string access_path = 3;
 }
 
 message Bool {
@@ -37,9 +36,9 @@ message String {
 // ----------------------------------------------------------------------------
 
 message Action {
-	string action_id = 1 [(validator.field) = {regex: "^[a-z]+$"}];
-	string action_name = 2 [(validator.field) = {regex: "^[a-z]+$"}];
-	string method = 3 [(validator.field) = {regex: "^[a-z]+$"}];
+	string action_id = 1;
+	string action_name = 2;
+	string method = 3;
 	string description = 4;
 	string feature_id = 5;
 	string feature_name = 6;
@@ -61,7 +60,7 @@ message DescribeActionsResponse {
 // ----------------------------------------------------------------------------
 
 message Role {
-	string role_id = 1 [(validator.field) = {regex: "^[a-z]+$"}];
+	string role_id = 1;
 	string role_name = 2;
 	string description = 3;
 	string portal = 4;
@@ -73,43 +72,43 @@ message Role {
 }
 
 message CreateRoleRequest {
-	RequestHeader head = 1 [(validator.field) = {msg_exists: true}];
+	RequestHeader head = 1;
 	Role value = 2;
 }
 message CreateRoleResponse {
-	ResponseHeader head = 1 [(validator.field) = {msg_exists: true}];
+	ResponseHeader head = 1;
 	string role_id = 2;
 }
 
 message DeleteRolesRequest {
-	RequestHeader head = 1 [(validator.field) = {msg_exists: true}];
+	RequestHeader head = 1;
 	repeated string role_id = 2;
 }
 message DeleteRolesResponse {
-	ResponseHeader head = 1 [(validator.field) = {msg_exists: true}];
+	ResponseHeader head = 1;
 	repeated string role_id = 2;
 }
 
 message ModifyRoleRequest {
-	RequestHeader head = 1 [(validator.field) = {msg_exists: true}];
+	RequestHeader head = 1;
 	Role value = 2;
 }
 message ModifyRoleResponse {
-	ResponseHeader head = 1 [(validator.field) = {msg_exists: true}];
+	ResponseHeader head = 1;
 	string role_id = 2;
 }
 
 message GetRoleRequest {
-	RequestHeader head = 1 [(validator.field) = {msg_exists: true}];
+	RequestHeader head = 1;
 	string role_id = 2;
 }
 message GetRoleResponse {
-	ResponseHeader head = 1 [(validator.field) = {msg_exists: true}];
+	ResponseHeader head = 1;
 	Role value = 2;
 }
 
 message DescribeRolesRequest {
-	RequestHeader head = 1 [(validator.field) = {msg_exists: true}];
+	RequestHeader head = 1;
 
 	map<string,string> key_word = 2; // x.key == word
 	string search_word = 3;          // x.[...] LIKE search_word
@@ -118,7 +117,7 @@ message DescribeRolesRequest {
 	int32 limit = 5;
 }
 message DescribeRolesResponse {
-	ResponseHeader head = 1 [(validator.field) = {msg_exists: true}];
+	ResponseHeader head = 1;
 	repeated Role value = 2;
 	int32 total_count = 3;
 }
@@ -128,9 +127,9 @@ message DescribeRolesResponse {
 // ----------------------------------------------------------------------------
 
 message RoleModuleBinding {
-	string binding_id = 1 [(validator.field) = {regex: "^[a-z]+$"}];
-	string role_id = 2 [(validator.field) = {regex: "^[a-z]+$"}];
-	string module_id = 3 [(validator.field) = {regex: "^[a-z]+$"}];
+	string binding_id = 1;
+	string role_id = 2;
+	string module_id = 3;
 	string data_level = 4;
 	string enabled_actions = 5; // 001:createapp, 002:modifyapp
 	string owner = 8;
@@ -140,11 +139,11 @@ message RoleModuleBinding {
 }
 
 message ModifyRoleModuleBindingsRequest {
-	RequestHeader head = 1 [(validator.field) = {msg_exists: true}];
+	RequestHeader head = 1;
 	RoleModuleBinding binding = 2;
 }
 message ModifyRoleModuleBindingsResponse {
-	ResponseHeader head = 1 [(validator.field) = {msg_exists: true}];
+	ResponseHeader head = 1;
 }
 
 // ----------------------------------------------------------------------------
@@ -152,9 +151,9 @@ message ModifyRoleModuleBindingsResponse {
 // ----------------------------------------------------------------------------
 
 message Group {
-	string group_id = 1 [(validator.field) = {regex: "^[a-z]+$"}];
-	string group_name = 2 [(validator.field) = {regex: "^[a-z]+$"}];
-	string parent_group_id = 3 [(validator.field) = {regex: "^[a-z]+$"}];
+	string group_id = 1;
+	string group_name = 2;
+	string parent_group_id = 3;
 	string group_path = 4;
 	string level = 5;
 	string seq_order = 6;
@@ -166,43 +165,43 @@ message Group {
 }
 
 message CreateGroupRequest {
-	RequestHeader head = 1 [(validator.field) = {msg_exists: true}];
+	RequestHeader head = 1;
 	Group value = 2;
 }
 message CreateGroupResponse {
-	ResponseHeader head = 1 [(validator.field) = {msg_exists: true}];
+	ResponseHeader head = 1;
 	string group_id = 2;
 }
 
 message DeleteGroupsRequest {
-	RequestHeader head = 1 [(validator.field) = {msg_exists: true}];
+	RequestHeader head = 1;
 	repeated string group_id = 2;
 }
 message DeleteGroupsResponse {
-	ResponseHeader head = 1 [(validator.field) = {msg_exists: true}];
+	ResponseHeader head = 1;
 	repeated string group_id = 2;
 }
 
 message ModifyGroupRequest {
-	RequestHeader head = 1 [(validator.field) = {msg_exists: true}];
+	RequestHeader head = 1;
 	Group value = 2;
 }
 message ModifyGroupResponse {
-	ResponseHeader head = 1 [(validator.field) = {msg_exists: true}];
+	ResponseHeader head = 1;
 	string group_id = 2;
 }
 
 message GetGroupRequest {
-	RequestHeader head = 1 [(validator.field) = {msg_exists: true}];
+	RequestHeader head = 1;
 	string group_id = 2;
 }
 message GetGroupResponse {
-	ResponseHeader head = 1 [(validator.field) = {msg_exists: true}];
+	ResponseHeader head = 1;
 	Group value = 2;
 }
 
 message DescribeGroupsRequest {
-	RequestHeader head = 1 [(validator.field) = {msg_exists: true}];
+	RequestHeader head = 1;
 
 	map<string,string> key_word = 2; // x.key == word
 	string search_word = 3;          // x.[...] LIKE search_word
@@ -211,7 +210,7 @@ message DescribeGroupsRequest {
 	int32 limit = 5;
 }
 message DescribeGroupsResponse {
-	ResponseHeader head = 1 [(validator.field) = {msg_exists: true}];
+	ResponseHeader head = 1;
 	repeated Group value = 2;
 	int32 total_count = 3;
 }
@@ -221,10 +220,10 @@ message DescribeGroupsResponse {
 // ----------------------------------------------------------------------------
 
 message User {
-	string user_id = 1 [(validator.field) = {regex: "^[a-z]+$"}];
-	string group_id = 2 [(validator.field) = {regex: "^[a-z]+$"}];
-	string role_id = 3 [(validator.field) = {regex: "^[a-z]+$"}];
-	string user_name = 4 [(validator.field) = {regex: "^[a-z]+$"}];
+	string user_id = 1;
+	string group_id = 2;
+	string role_id = 3;
+	string user_name = 4;
 	string position = 5;
 	string email = 6;
 	string phone_number = 7;
@@ -241,48 +240,48 @@ message User {
 }
 
 message UserPassword {
-	string user_id = 1 [(validator.field) = {regex: "^[a-z]+$"}];
-	string password = 2 [(validator.field) = {regex: "^[a-z]+$"}];
+	string user_id = 1;
+	string password = 2;
 }
 
 message CreateUserRequest {
-	RequestHeader head = 1 [(validator.field) = {msg_exists: true}];
+	RequestHeader head = 1;
 	User value = 2;
 }
 message CreateUserResponse {
-	ResponseHeader head = 1 [(validator.field) = {msg_exists: true}];
+	ResponseHeader head = 1;
 	string user_id = 2;
 }
 
 message DeleteUsersRequest {
-	RequestHeader head = 1 [(validator.field) = {msg_exists: true}];
+	RequestHeader head = 1;
 	repeated string user_id = 2;
 }
 message DeleteUsersResponse {
-	ResponseHeader head = 1 [(validator.field) = {msg_exists: true}];
+	ResponseHeader head = 1;
 	repeated string user_id = 2;
 }
 
 message ModifyUserRequest {
-	RequestHeader head = 1 [(validator.field) = {msg_exists: true}];
+	RequestHeader head = 1;
 	User value = 2;
 }
 message ModifyUserResponse {
-	ResponseHeader head = 1 [(validator.field) = {msg_exists: true}];
+	ResponseHeader head = 1;
 	string user_id = 2;
 }
 
 message GetUserRequest {
-	RequestHeader head = 1 [(validator.field) = {msg_exists: true}];
+	RequestHeader head = 1;
 	string user_id = 2;
 }
 message GetUserResponse {
-	ResponseHeader head = 1 [(validator.field) = {msg_exists: true}];
+	ResponseHeader head = 1;
 	User value = 2;
 }
 
 message DescribeUsersRequest {
-	RequestHeader head = 1 [(validator.field) = {msg_exists: true}];
+	RequestHeader head = 1;
 
 	map<string,string> key_word = 2; // x.key == word
 	string search_word = 3;          // x.[...] LIKE search_word
@@ -291,7 +290,7 @@ message DescribeUsersRequest {
 	int32 limit = 5;
 }
 message DescribeUsersResponse {
-	ResponseHeader head = 1 [(validator.field) = {msg_exists: true}];
+	ResponseHeader head = 1;
 	repeated User value = 2;
 	int32 total_count = 3;
 }
@@ -301,22 +300,22 @@ message DescribeUsersResponse {
 // ----------------------------------------------------------------------------
 
 message CanDoActionRequest {
-	RequestHeader head = 1 [(validator.field) = {msg_exists: true}];
-	string method = 2 [(validator.field) = {regex: "^[a-z]+$"}];
+	RequestHeader head = 1;
+	string method = 2;
 	string access_path = 3;
 }
 message CanDoActionResponse {
-	ResponseHeader head = 1 [(validator.field) = {msg_exists: true}];
+	ResponseHeader head = 1;
 	bool ok = 2;
 }
 
 message GetOwnerPathRequest {
-	RequestHeader head = 1 [(validator.field) = {msg_exists: true}];
-	string method = 2 [(validator.field) = {regex: "^[a-z]+$"}];
+	RequestHeader head = 1;
+	string method = 2;
 }
 message GetAccessPathRequest {
-	ResponseHeader head = 1 [(validator.field) = {msg_exists: true}];
-	string method = 2 [(validator.field) = {regex: "^[a-z]+$"}];
+	ResponseHeader head = 1;
+	string method = 2;
 }
 
 // ----------------------------------------------------------------------------

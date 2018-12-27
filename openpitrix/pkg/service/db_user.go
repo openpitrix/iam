@@ -16,9 +16,9 @@ import (
 )
 
 func (p *Database) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
-	if err := req.Validate(); err != nil {
-		return nil, err
-	}
+	//if err := req.Validate(); err != nil {
+	//	return nil, err
+	//}
 
 	sql, values := pkgBuildSql_InsertInto(
 		dbSpec.UserTableName,

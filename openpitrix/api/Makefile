@@ -17,7 +17,7 @@ generate: Makefile
 	protoc $(PROTOC_FLAGS) --go_out=plugins=grpc:$(GOPATH)/src ${PBFILES}
 
 	# govalidators
-	protoc $(PROTOC_FLAGS) --govalidators_out=$(GOPATH)/src ${PBFILES}
+	#protoc $(PROTOC_FLAGS) --govalidators_out=$(GOPATH)/src ${PBFILES}
 
 	# gateway
 	protoc $(PROTOC_FLAGS) --grpc-gateway_out=logtostderr=true,allow_delete_body=true:../pkg/pb ${PBFILES}

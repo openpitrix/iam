@@ -16,9 +16,9 @@ import (
 )
 
 func (p *Database) CreateGroup(ctx context.Context, req *pb.CreateGroupRequest) (*pb.CreateGroupResponse, error) {
-	if err := req.Validate(); err != nil {
-		return nil, err
-	}
+	//if err := req.Validate(); err != nil {
+	//	return nil, err
+	//}
 
 	sql, values := pkgBuildSql_InsertInto(
 		dbSpec.GroupTableName,

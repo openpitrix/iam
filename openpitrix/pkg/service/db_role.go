@@ -16,9 +16,9 @@ import (
 )
 
 func (p *Database) CreateRole(ctx context.Context, req *pb.CreateRoleRequest) (*pb.CreateRoleResponse, error) {
-	if err := req.Validate(); err != nil {
-		return nil, err
-	}
+	//if err := req.Validate(); err != nil {
+	//	return nil, err
+	//}
 
 	sql, values := pkgBuildSql_InsertInto(
 		dbSpec.RoleTableName,
