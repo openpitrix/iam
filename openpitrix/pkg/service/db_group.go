@@ -127,11 +127,17 @@ func (p *Database) GetGroup(ctx context.Context, req *pb.GetGroupRequest) (*pb.G
 	return reply, nil
 }
 func (p *Database) DescribeGroups(ctx context.Context, req *pb.DescribeGroupsRequest) (*pb.DescribeGroupsResponse, error) {
+	println("DescribeGroups 1")
 	var searchWord = req.GetSearchWord()
+	println("DescribeGroups 2")
 
 	if searchWord == "" {
+		println("DescribeGroups 3.1")
+
 		return p._DescribeGroups_all(ctx, req)
 	} else {
+		println("DescribeGroups 3.2", searchWord)
+
 		return p._DescribeGroups_bySearchWord(ctx, req)
 	}
 }
@@ -145,25 +151,33 @@ func (p *Database) _DescribeGroups_count(ctx context.Context, req *pb.DescribeGr
 	}
 	defer rows.Close()
 
-	if err := rows.Scan(&total); err != nil {
-		return 0, err
+	if rows.Next() {
+		if err := rows.Scan(&total); err != nil {
+			return 0, err
+		}
 	}
 
 	return total, nil
 }
 
 func (p *Database) _DescribeGroups_all(ctx context.Context, req *pb.DescribeGroupsRequest) (*pb.DescribeGroupsResponse, error) {
+
+	println("_DescribeGroups_all 1")
+
 	total, err := p._DescribeGroups_count(ctx, req)
 	if err != nil {
 		return nil, err
 	}
+	println("_DescribeGroups_all 2")
 
 	var query = fmt.Sprintf("SELECT * FROM %s", dbSpec.GroupTableName)
 	if offset, limit := req.GetOffset(), req.GetLimit(); offset > 0 || limit > 0 {
-		query += fmt.Sprintf("LIMIT %d OFFSET %d;", limit, offset)
+		query += fmt.Sprintf(" LIMIT %d OFFSET %d;", limit, offset)
 	} else {
-		query += fmt.Sprintf("LIMIT %d OFFSET %d;", 20, 0)
+		query += fmt.Sprintf(" LIMIT %d OFFSET %d;", 20, 0)
 	}
+
+	println("_DescribeGroups_all 3, query:", query)
 
 	rows, err := p.DB.QueryContext(ctx, query)
 	if err != nil {
@@ -172,11 +186,16 @@ func (p *Database) _DescribeGroups_all(ctx context.Context, req *pb.DescribeGrou
 	defer rows.Close()
 
 	var groups []*pb.Group
-	for rows.Next() {
+	for i := 0; rows.Next(); i++ {
+		println("_DescribeGroups_all 4:", i)
+
 		var msg = &pb.Group{}
 		if err := pkgSqlScanProtoMessge(rows, msg); err != nil {
 			return nil, err
 		}
+
+		fmt.Println(msg)
+
 		groups = append(groups, msg)
 	}
 	if err := rows.Err(); err != nil {
