@@ -26,13 +26,18 @@ info:
 	@echo
 
 swagger:
-	-curl ${SERVER_HOST}/static/spec/iam.swagger.json
+	curl ${SERVER_HOST}/static/spec/iam.swagger.json
 
 list-method:
 	grpcurl -plaintext ${SERVER_HOST} list
 	grpcurl -plaintext ${SERVER_HOST} list openpitrix.iam.IAMManager
 
 list-group:
-	# TODO
+	grpcurl -plaintext ${SERVER_HOST} openpitrix.iam.IAMManager/DescribeGroups
+	@echo
+
+	curl ${SERVER_HOST}/api/IAMManager.DescribeGroups/chai | jq .
+	@echo
+	@echo
 
 clean:
