@@ -48,3 +48,10 @@ func (p *DBAction) ToPb() *pb.Action {
 
 	return q
 }
+
+func (p *DBAction) ValidateForInsert() error {
+	return nil
+}
+func (p *DBAction) ValidateForUpdate() error {
+	return nil
+}

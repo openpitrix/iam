@@ -15,7 +15,7 @@ import (
 )
 
 func (p *Database) CreateGroup(ctx context.Context, req *pb.CreateGroupRequest) (*pb.CreateGroupResponse, error) {
-	//if err := req.Validate(); err != nil {
+	//if err := req.GetValue().ValidateForInsert(); err != nil {
 	//	return nil, err
 	//}
 

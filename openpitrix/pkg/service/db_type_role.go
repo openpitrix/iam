@@ -54,3 +54,10 @@ func (p *DBRole) ToPb() *pb.Role {
 
 	return q
 }
+
+func (p *DBRole) ValidateForInsert() error {
+	return nil
+}
+func (p *DBRole) ValidateForUpdate() error {
+	return nil
+}

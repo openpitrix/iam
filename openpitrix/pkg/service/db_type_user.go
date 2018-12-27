@@ -78,3 +78,10 @@ func (p *DBUser) ToPb() *pb.User {
 
 	return q
 }
+
+func (p *DBUser) ValidateForInsert() error {
+	return nil
+}
+func (p *DBUser) ValidateForUpdate() error {
+	return nil
+}

@@ -64,3 +64,10 @@ func (p *DBGroup) ToPb() *pb.Group {
 
 	return q
 }
+
+func (p *DBGroup) ValidateForInsert() error {
+	return nil
+}
+func (p *DBGroup) ValidateForUpdate() error {
+	return nil
+}
