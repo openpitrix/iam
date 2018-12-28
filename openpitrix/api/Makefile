@@ -10,8 +10,8 @@ PBFILES=$(sort $(wildcard *.proto))
 PROTOC_FLAGS:=-I. -Ithird_party/googleapis -Ithird_party
 
 generate: Makefile
-	@mkdir -p ../pkg/pb
 	@rm -rf ../pkg/pb/*
+	@mkdir -p ../pkg/pb
 
 	# grpc service
 	protoc $(PROTOC_FLAGS) --go_out=plugins=grpc:$(GOPATH)/src ${PBFILES}
@@ -23,7 +23,8 @@ generate: Makefile
 	protoc $(PROTOC_FLAGS) --grpc-gateway_out=logtostderr=true,allow_delete_body=true:../pkg/pb ${PBFILES}
 
 	# swagger
-	protoc $(PROTOC_FLAGS) --swagger_out=logtostderr=true,allow_delete_body=true:../pkg/pb ${PBFILES}
+	protoc $(PROTOC_FLAGS) --swagger_out=logtostderr=true,allow_delete_body=true:../pkg/service/spec ${PBFILES}
+	make -C ../pkg/service/spec
 
 clean:
 	rm -rf $(GOPATH)/src/openpitrix.io/iam/openpitrix/pkg/pb

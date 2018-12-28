@@ -3,7 +3,6 @@
 # that can be found in the LICENSE file.
 
 default:
-	cp ../pb/iam.swagger.json .
 	go run makestatic.go
 
 clean:

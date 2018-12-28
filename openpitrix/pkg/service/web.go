@@ -21,6 +21,7 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	"openpitrix.io/iam/openpitrix/pkg/pb"
+	"openpitrix.io/iam/openpitrix/pkg/service/spec"
 	"openpitrix.io/logger"
 )
 
@@ -94,7 +95,7 @@ func (p *Server) mainHandler(addr string) http.Handler {
 	// swagger file
 	// GET /static/spec/iam.swagger.json
 	ns := vfs.NameSpace{}
-	ns.Bind("/", mapfs.New(staticFiles), "/", vfs.BindBefore)
+	ns.Bind("/", mapfs.New(spec.Files), "/", vfs.BindBefore)
 
 	mux.Handle("/", gwmux)
 	mux.Handle("/static/spec/", http.StripPrefix("/static/spec", http.FileServer(httpfs.New(ns))))

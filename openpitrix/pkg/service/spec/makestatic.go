@@ -36,8 +36,8 @@ func makestatic() error {
 	}
 	defer f.Close()
 	buf := new(bytes.Buffer)
-	fmt.Fprintf(buf, "%v\n\n%v\n\npackage service\n\n", license, warning)
-	fmt.Fprintf(buf, "var staticFiles = map[string]string{\n")
+	fmt.Fprintf(buf, "%v\n\n%v\n\npackage spec\n\n", license, warning)
+	fmt.Fprintf(buf, "var Files = map[string]string{\n")
 	for _, fn := range files {
 		b, err := ioutil.ReadFile(fn)
 		if err != nil {
