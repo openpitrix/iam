@@ -39,9 +39,14 @@ EXAMPLE:
 			EnvVar: "OPENPITRIX_IAM_CONFIG",
 		},
 		cli.StringFlag{
-			Name:   "iam-service-host",
+			Name:   "host",
 			Value:  "localhost",
 			EnvVar: "OPENPITRIX_IAM_HOST",
+		},
+
+		cli.StringFlag{
+			Name:  "readme",
+			Value: "_readme.md",
 		},
 	}
 
@@ -125,16 +130,18 @@ EXAMPLE:
 func serve(c *cli.Context) {
 	cfg := config.MustLoad(c.GlobalString("config"))
 
-	host := c.GlobalString("iam-service-host")
+	host := c.GlobalString("host")
 	if host == "" || host == "localhost" {
 		host = getLocalIP()
 	}
+
+	readme := c.GlobalString("readme")
 
 	if !cfg.TlsEnabled {
 		logger.Infof(nil, version.GetVersionString())
 		logger.Infof(nil, "IAM service http://%s:%d", host, cfg.Port)
 
-		server, err := service.OpenServer(cfg.DB.Type, cfg.DB.GetUrl())
+		server, err := service.OpenServer(cfg.DB.Type, cfg.DB.GetUrl(), readme)
 		if err != nil {
 			logger.Criticalf(nil, "%v", err)
 			os.Exit(1)
@@ -148,7 +155,7 @@ func serve(c *cli.Context) {
 		logger.Infof(nil, version.GetVersionString())
 		logger.Infof(nil, "IAM service https://%s:%d", host, cfg.Port)
 
-		server, err := service.OpenServer(cfg.DB.Type, cfg.DB.GetUrl())
+		server, err := service.OpenServer(cfg.DB.Type, cfg.DB.GetUrl(), readme)
 		if err != nil {
 			logger.Criticalf(nil, "%v", err)
 			os.Exit(1)

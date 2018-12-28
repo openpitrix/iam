@@ -87,6 +87,11 @@ func (p *Server) mainHandler(addr string) http.Handler {
 
 	mux := http.NewServeMux()
 
+	// GET /readme.md
+	mux.HandleFunc("/readme.md", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, web_readme_md(p.readmeFile))
+	})
+
 	// just for test
 	// GET /hello
 	mux.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
@@ -111,7 +116,11 @@ func (p *Server) mainHandler(addr string) http.Handler {
 		if r.ProtoMajor == 2 && strings.Contains(r.Header.Get("Content-Type"), "application/grpc") {
 			p.grpcServer.ServeHTTP(w, r)
 		} else {
-			mux.ServeHTTP(w, r)
+			if r.URL.Path == "/" {
+				fmt.Fprintln(w, web_homepage())
+			} else {
+				mux.ServeHTTP(w, r)
+			}
 		}
 	})
 }

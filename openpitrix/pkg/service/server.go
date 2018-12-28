@@ -13,19 +13,21 @@ import (
 )
 
 type Server struct {
+	readmeFile string
 	webServer  *http.Server
 	grpcServer *grpc.Server
 	db         *Database
 }
 
-func OpenServer(dbtype, dbpath string) (*Server, error) {
+func OpenServer(dbtype, dbpath, readmeFile string) (*Server, error) {
 	db, err := Open(dbtype, dbpath)
 	if err != nil {
 		logger.Criticalf(nil, "%v", err)
 	}
 
 	p := &Server{
-		db: db,
+		readmeFile: readmeFile,
+		db:         db,
 	}
 	return p, nil
 }
