@@ -15,9 +15,11 @@ import (
 )
 
 func (p *Database) CreateGroup(ctx context.Context, req *pb.CreateGroupRequest) (*pb.CreateGroupResponse, error) {
-	//if err := req.GetValue().ValidateForInsert(); err != nil {
-	//	return nil, err
-	//}
+	var dbGroup = pbGroupToDB(req.GetValue())
+
+	if err := dbGroup.ValidateForInsert(); err != nil {
+		return nil, err
+	}
 
 	sql, values := pkgBuildSql_InsertInto(
 		dbSpec.GroupTableName,
@@ -67,6 +69,12 @@ func (p *Database) DeleteGroups(ctx context.Context, req *pb.DeleteGroupsRequest
 	return reply, nil
 }
 func (p *Database) ModifyGroup(ctx context.Context, req *pb.ModifyGroupRequest) (*pb.ModifyGroupResponse, error) {
+	var dbGroup = pbGroupToDB(req.GetValue())
+
+	if err := dbGroup.ValidateForUpdate(); err != nil {
+		return nil, err
+	}
+
 	sql, values := pkgBuildSql_Update(
 		dbSpec.GroupTableName, req.GetValue(),
 		dbSpec.GroupPrimaryKeyName,
@@ -187,7 +195,7 @@ func (p *Database) _DescribeGroups_bySearchWord(ctx context.Context, req *pb.Des
 		return nil, fmt.Errorf("invalid search_word: %q", searchWord)
 	}
 
-	var searchWordFieldNames = pkgGetTableStringFieldNames(new(DBGroup))
+	var searchWordFieldNames = pkgGetDBTableStringFieldNames(new(DBGroup))
 	if len(searchWordFieldNames) == 0 {
 		return p._DescribeGroups_all(ctx, req)
 	}

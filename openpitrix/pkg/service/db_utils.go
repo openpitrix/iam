@@ -10,7 +10,7 @@ import (
 )
 
 func pkgBuildSql_InsertInto(tableName string, v interface{}) (sql string, values []interface{}) {
-	names, values := pkgGetTableFiledNamesAndValues(v)
+	names, values := pkgGetDBTableFiledNamesAndValues(v)
 	if len(names) == 0 {
 		return "", nil
 	}
@@ -66,7 +66,7 @@ func pkgBuildSql_Delete(tableName, primaryKeyName string, key ...string) (sql st
 func pkgBuildSql_Update(
 	tableName string, v interface{}, primaryKeyName string,
 ) (sql string, values []interface{}) {
-	names, values := pkgGetTableFiledNamesAndValues(v)
+	names, values := pkgGetDBTableFiledNamesAndValues(v)
 	if len(names) == 0 {
 		return "", nil
 	}

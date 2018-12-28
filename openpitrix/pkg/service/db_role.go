@@ -6,7 +6,6 @@ package service
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 
 	"google.golang.org/grpc/codes"
@@ -90,41 +89,44 @@ func (p *Database) ModifyRole(ctx context.Context, req *pb.ModifyRoleRequest) (*
 	return reply, nil
 }
 func (p *Database) GetRole(ctx context.Context, req *pb.GetRoleRequest) (*pb.GetRoleResponse, error) {
-	var query = fmt.Sprintf(
-		"SELECT * FROM %s WHERE %s=$1 LIMIT 1 OFFSET 0;",
-		dbSpec.RoleTableName,
-		dbSpec.RolePrimaryKeyName,
-	)
+	panic("TODO")
+	/*
+		var query = fmt.Sprintf(
+			"SELECT * FROM %s WHERE %s=$1 LIMIT 1 OFFSET 0;",
+			dbSpec.RoleTableName,
+			dbSpec.RolePrimaryKeyName,
+		)
 
-	rows, err := p.DB.QueryContext(ctx, query, req.GetRoleId())
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	if !rows.Next() {
-		if err := rows.Err(); err != nil {
+		rows, err := p.DB.QueryContext(ctx, query, req.GetRoleId())
+		if err != nil {
 			return nil, err
 		}
-		return nil, sql.ErrNoRows
-	}
+		defer rows.Close()
 
-	var msg = &pb.Role{}
-	err = pkgSqlScanProtoMessge(rows, msg)
-	if err != nil {
-		return nil, err
-	}
+		if !rows.Next() {
+			if err := rows.Err(); err != nil {
+				return nil, err
+			}
+			return nil, sql.ErrNoRows
+		}
 
-	reply := &pb.GetRoleResponse{
-		Head: &pb.ResponseHeader{
-			UserId:     req.GetHead().GetUserId(),
-			OwnerPath:  "", // TODO
-			AccessPath: "", // TODO
-		},
-		Value: msg,
-	}
+		var msg = &pb.Role{}
+		err = pkgSqlScanProtoMessge(rows, msg)
+		if err != nil {
+			return nil, err
+		}
 
-	return reply, nil
+		reply := &pb.GetRoleResponse{
+			Head: &pb.ResponseHeader{
+				UserId:     req.GetHead().GetUserId(),
+				OwnerPath:  "", // TODO
+				AccessPath: "", // TODO
+			},
+			Value: msg,
+		}
+
+		return reply, nil
+	*/
 }
 func (p *Database) DescribeRoles(ctx context.Context, req *pb.DescribeRolesRequest) (*pb.DescribeRolesResponse, error) {
 	var searchWord = req.GetSearchWord()
@@ -153,112 +155,118 @@ func (p *Database) _DescribeRoles_count(ctx context.Context, req *pb.DescribeRol
 }
 
 func (p *Database) _DescribeRoles_all(ctx context.Context, req *pb.DescribeRolesRequest) (*pb.DescribeRolesResponse, error) {
-	total, err := p._DescribeRoles_count(ctx, req)
-	if err != nil {
-		return nil, err
-	}
-
-	var query = fmt.Sprintf("SELECT * FROM %s", dbSpec.GroupTableName)
-	if offset, limit := req.GetOffset(), req.GetLimit(); offset > 0 || limit > 0 {
-		query += fmt.Sprintf("LIMIT %d OFFSET %d;", limit, offset)
-	} else {
-		query += fmt.Sprintf("LIMIT %d OFFSET %d;", 20, 0)
-	}
-
-	rows, err := p.DB.QueryContext(ctx, query)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var roles []*pb.Role
-	for rows.Next() {
-		var msg = &pb.Role{}
-		if err := pkgSqlScanProtoMessge(rows, msg); err != nil {
+	/*
+		total, err := p._DescribeRoles_count(ctx, req)
+		if err != nil {
 			return nil, err
 		}
-		roles = append(roles, msg)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
 
-	reply := &pb.DescribeRolesResponse{
-		Head: &pb.ResponseHeader{
-			UserId:     req.GetHead().GetUserId(),
-			OwnerPath:  "", // TODO
-			AccessPath: "", // TODO
-		},
-		RoleSet:    roles,
-		TotalCount: int32(total),
-	}
+		var query = fmt.Sprintf("SELECT * FROM %s", dbSpec.GroupTableName)
+		if offset, limit := req.GetOffset(), req.GetLimit(); offset > 0 || limit > 0 {
+			query += fmt.Sprintf("LIMIT %d OFFSET %d;", limit, offset)
+		} else {
+			query += fmt.Sprintf("LIMIT %d OFFSET %d;", 20, 0)
+		}
 
-	return reply, nil
+		rows, err := p.DB.QueryContext(ctx, query)
+		if err != nil {
+			return nil, err
+		}
+		defer rows.Close()
+
+		var roles []*pb.Role
+		for rows.Next() {
+			var msg = &pb.Role{}
+			if err := pkgSqlScanProtoMessge(rows, msg); err != nil {
+				return nil, err
+			}
+			roles = append(roles, msg)
+		}
+		if err := rows.Err(); err != nil {
+			return nil, err
+		}
+
+		reply := &pb.DescribeRolesResponse{
+			Head: &pb.ResponseHeader{
+				UserId:     req.GetHead().GetUserId(),
+				OwnerPath:  "", // TODO
+				AccessPath: "", // TODO
+			},
+			RoleSet:    roles,
+			TotalCount: int32(total),
+		}
+
+		return reply, nil
+	*/
+	panic("TODO")
 }
 
 func (p *Database) _DescribeRoles_bySearchWord(ctx context.Context, req *pb.DescribeRolesRequest) (*pb.DescribeRolesResponse, error) {
-	var searchWord = req.GetSearchWord()
+	/*
+		var searchWord = req.GetSearchWord()
 
-	if searchWord == "" {
-		return p._DescribeRoles_all(ctx, req)
-	}
-
-	if !pkgSearchWordValid(searchWord) {
-		return nil, fmt.Errorf("invalid search_word: %q", searchWord)
-	}
-
-	total, err := p._DescribeRoles_count(ctx, req)
-	if err != nil {
-		return nil, err
-	}
-
-	var searchWordFieldNames = pkgGetTableStringFieldNames(new(pb.Group))
-	if len(searchWordFieldNames) == 0 {
-		return p._DescribeRoles_all(ctx, req)
-	}
-
-	var query = fmt.Sprintf("SELECT * FROM %s", dbSpec.GroupTableName)
-	for i, name := range searchWordFieldNames {
-		if i == 0 {
-			query += name + `WHERE LIKE %` + searchWord + `%`
-		} else {
-			query += `OR ` + name + ` LIKE %` + searchWord + `%`
+		if searchWord == "" {
+			return p._DescribeRoles_all(ctx, req)
 		}
-	}
 
-	if offset, limit := req.GetOffset(), req.GetLimit(); offset > 0 || limit > 0 {
-		query += fmt.Sprintf("LIMIT %d OFFSET %d;", limit, offset)
-	} else {
-		query += fmt.Sprintf("LIMIT %d OFFSET %d;", 20, 0)
-	}
+		if !pkgSearchWordValid(searchWord) {
+			return nil, fmt.Errorf("invalid search_word: %q", searchWord)
+		}
 
-	rows, err := p.DB.QueryContext(ctx, query)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var roles []*pb.Role
-	for rows.Next() {
-		var msg = &pb.Role{}
-		if err := pkgSqlScanProtoMessge(rows, msg); err != nil {
+		total, err := p._DescribeRoles_count(ctx, req)
+		if err != nil {
 			return nil, err
 		}
-		roles = append(roles, msg)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
 
-	reply := &pb.DescribeRolesResponse{
-		Head: &pb.ResponseHeader{
-			UserId:     req.GetHead().GetUserId(),
-			OwnerPath:  "", // TODO
-			AccessPath: "", // TODO
-		},
-		RoleSet:    roles,
-		TotalCount: int32(total),
-	}
+		var searchWordFieldNames = pkgGetDBTableStringFieldNames(new(pb.Group))
+		if len(searchWordFieldNames) == 0 {
+			return p._DescribeRoles_all(ctx, req)
+		}
 
-	return reply, nil
+		var query = fmt.Sprintf("SELECT * FROM %s", dbSpec.GroupTableName)
+		for i, name := range searchWordFieldNames {
+			if i == 0 {
+				query += name + `WHERE LIKE %` + searchWord + `%`
+			} else {
+				query += `OR ` + name + ` LIKE %` + searchWord + `%`
+			}
+		}
+
+		if offset, limit := req.GetOffset(), req.GetLimit(); offset > 0 || limit > 0 {
+			query += fmt.Sprintf("LIMIT %d OFFSET %d;", limit, offset)
+		} else {
+			query += fmt.Sprintf("LIMIT %d OFFSET %d;", 20, 0)
+		}
+
+		rows, err := p.DB.QueryContext(ctx, query)
+		if err != nil {
+			return nil, err
+		}
+		defer rows.Close()
+
+		var roles []*pb.Role
+		for rows.Next() {
+			var msg = &pb.Role{}
+			if err := pkgSqlScanProtoMessge(rows, msg); err != nil {
+				return nil, err
+			}
+			roles = append(roles, msg)
+		}
+		if err := rows.Err(); err != nil {
+			return nil, err
+		}
+
+		reply := &pb.DescribeRolesResponse{
+			Head: &pb.ResponseHeader{
+				UserId:     req.GetHead().GetUserId(),
+				OwnerPath:  "", // TODO
+				AccessPath: "", // TODO
+			},
+			RoleSet:    roles,
+			TotalCount: int32(total),
+		}
+
+		return reply, nil
+	*/
+	panic("TODO")
 }
