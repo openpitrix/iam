@@ -93,13 +93,13 @@ func request_IAMManager_CreateRole_0(ctx context.Context, marshaler runtime.Mars
 
 }
 
-var (
-	filter_IAMManager_DeleteRoles_0 = &utilities.DoubleArray{Encoding: map[string]int{"head": 0, "user_id": 1}, Base: []int{1, 1, 1, 0}, Check: []int{0, 1, 2, 3}}
-)
-
 func request_IAMManager_DeleteRoles_0(ctx context.Context, marshaler runtime.Marshaler, client IAMManagerClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq DeleteRolesRequest
 	var metadata runtime.ServerMetadata
+
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
 
 	var (
 		val string
@@ -117,10 +117,6 @@ func request_IAMManager_DeleteRoles_0(ctx context.Context, marshaler runtime.Mar
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "head.user_id", err)
-	}
-
-	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_IAMManager_DeleteRoles_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
 	msg, err := client.DeleteRoles(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -128,13 +124,13 @@ func request_IAMManager_DeleteRoles_0(ctx context.Context, marshaler runtime.Mar
 
 }
 
-var (
-	filter_IAMManager_ModifyRole_0 = &utilities.DoubleArray{Encoding: map[string]int{"head": 0, "user_id": 1}, Base: []int{1, 1, 1, 0}, Check: []int{0, 1, 2, 3}}
-)
-
 func request_IAMManager_ModifyRole_0(ctx context.Context, marshaler runtime.Marshaler, client IAMManagerClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq ModifyRoleRequest
 	var metadata runtime.ServerMetadata
+
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
 
 	var (
 		val string
@@ -152,10 +148,6 @@ func request_IAMManager_ModifyRole_0(ctx context.Context, marshaler runtime.Mars
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "head.user_id", err)
-	}
-
-	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_IAMManager_ModifyRole_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
 	msg, err := client.ModifyRole(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -233,13 +225,13 @@ func request_IAMManager_DescribeRoles_0(ctx context.Context, marshaler runtime.M
 
 }
 
-var (
-	filter_IAMManager_ModifyRoleModuleBindings_0 = &utilities.DoubleArray{Encoding: map[string]int{"head": 0, "user_id": 1}, Base: []int{1, 1, 1, 0}, Check: []int{0, 1, 2, 3}}
-)
-
 func request_IAMManager_ModifyRoleModuleBindings_0(ctx context.Context, marshaler runtime.Marshaler, client IAMManagerClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq ModifyRoleModuleBindingsRequest
 	var metadata runtime.ServerMetadata
+
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
 
 	var (
 		val string
@@ -257,10 +249,6 @@ func request_IAMManager_ModifyRoleModuleBindings_0(ctx context.Context, marshale
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "head.user_id", err)
-	}
-
-	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_IAMManager_ModifyRoleModuleBindings_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
 	msg, err := client.ModifyRoleModuleBindings(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -268,13 +256,13 @@ func request_IAMManager_ModifyRoleModuleBindings_0(ctx context.Context, marshale
 
 }
 
-var (
-	filter_IAMManager_CreateGroup_0 = &utilities.DoubleArray{Encoding: map[string]int{"head": 0, "user_id": 1}, Base: []int{1, 1, 1, 0}, Check: []int{0, 1, 2, 3}}
-)
-
 func request_IAMManager_CreateGroup_0(ctx context.Context, marshaler runtime.Marshaler, client IAMManagerClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq CreateGroupRequest
 	var metadata runtime.ServerMetadata
+
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
 
 	var (
 		val string
@@ -292,10 +280,6 @@ func request_IAMManager_CreateGroup_0(ctx context.Context, marshaler runtime.Mar
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "head.user_id", err)
-	}
-
-	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_IAMManager_CreateGroup_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
 	msg, err := client.CreateGroup(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -303,13 +287,13 @@ func request_IAMManager_CreateGroup_0(ctx context.Context, marshaler runtime.Mar
 
 }
 
-var (
-	filter_IAMManager_DeleteGroups_0 = &utilities.DoubleArray{Encoding: map[string]int{"head": 0, "user_id": 1}, Base: []int{1, 1, 1, 0}, Check: []int{0, 1, 2, 3}}
-)
-
 func request_IAMManager_DeleteGroups_0(ctx context.Context, marshaler runtime.Marshaler, client IAMManagerClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq DeleteGroupsRequest
 	var metadata runtime.ServerMetadata
+
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
 
 	var (
 		val string
@@ -327,10 +311,6 @@ func request_IAMManager_DeleteGroups_0(ctx context.Context, marshaler runtime.Ma
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "head.user_id", err)
-	}
-
-	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_IAMManager_DeleteGroups_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
 	msg, err := client.DeleteGroups(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -338,13 +318,13 @@ func request_IAMManager_DeleteGroups_0(ctx context.Context, marshaler runtime.Ma
 
 }
 
-var (
-	filter_IAMManager_ModifyGroup_0 = &utilities.DoubleArray{Encoding: map[string]int{"head": 0, "user_id": 1}, Base: []int{1, 1, 1, 0}, Check: []int{0, 1, 2, 3}}
-)
-
 func request_IAMManager_ModifyGroup_0(ctx context.Context, marshaler runtime.Marshaler, client IAMManagerClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq ModifyGroupRequest
 	var metadata runtime.ServerMetadata
+
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
 
 	var (
 		val string
@@ -362,10 +342,6 @@ func request_IAMManager_ModifyGroup_0(ctx context.Context, marshaler runtime.Mar
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "head.user_id", err)
-	}
-
-	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_IAMManager_ModifyGroup_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
 	msg, err := client.ModifyGroup(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -443,13 +419,13 @@ func request_IAMManager_DescribeGroups_0(ctx context.Context, marshaler runtime.
 
 }
 
-var (
-	filter_IAMManager_CreateUser_0 = &utilities.DoubleArray{Encoding: map[string]int{"head": 0, "user_id": 1}, Base: []int{1, 1, 1, 0}, Check: []int{0, 1, 2, 3}}
-)
-
 func request_IAMManager_CreateUser_0(ctx context.Context, marshaler runtime.Marshaler, client IAMManagerClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq CreateUserRequest
 	var metadata runtime.ServerMetadata
+
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
 
 	var (
 		val string
@@ -467,10 +443,6 @@ func request_IAMManager_CreateUser_0(ctx context.Context, marshaler runtime.Mars
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "head.user_id", err)
-	}
-
-	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_IAMManager_CreateUser_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
 	msg, err := client.CreateUser(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -478,13 +450,13 @@ func request_IAMManager_CreateUser_0(ctx context.Context, marshaler runtime.Mars
 
 }
 
-var (
-	filter_IAMManager_DeleteUsers_0 = &utilities.DoubleArray{Encoding: map[string]int{"head": 0, "user_id": 1}, Base: []int{1, 1, 1, 0}, Check: []int{0, 1, 2, 3}}
-)
-
 func request_IAMManager_DeleteUsers_0(ctx context.Context, marshaler runtime.Marshaler, client IAMManagerClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq DeleteUsersRequest
 	var metadata runtime.ServerMetadata
+
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
 
 	var (
 		val string
@@ -502,10 +474,6 @@ func request_IAMManager_DeleteUsers_0(ctx context.Context, marshaler runtime.Mar
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "head.user_id", err)
-	}
-
-	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_IAMManager_DeleteUsers_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
 	msg, err := client.DeleteUsers(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -513,13 +481,13 @@ func request_IAMManager_DeleteUsers_0(ctx context.Context, marshaler runtime.Mar
 
 }
 
-var (
-	filter_IAMManager_ModifyUser_0 = &utilities.DoubleArray{Encoding: map[string]int{"head": 0, "user_id": 1}, Base: []int{1, 1, 1, 0}, Check: []int{0, 1, 2, 3}}
-)
-
 func request_IAMManager_ModifyUser_0(ctx context.Context, marshaler runtime.Marshaler, client IAMManagerClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq ModifyUserRequest
 	var metadata runtime.ServerMetadata
+
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
 
 	var (
 		val string
@@ -537,10 +505,6 @@ func request_IAMManager_ModifyUser_0(ctx context.Context, marshaler runtime.Mars
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "head.user_id", err)
-	}
-
-	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_IAMManager_ModifyUser_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
 	msg, err := client.ModifyUser(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -618,15 +582,11 @@ func request_IAMManager_GetUser_0(ctx context.Context, marshaler runtime.Marshal
 
 }
 
-var (
-	filter_IAMManager_ComparePassword_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
-)
-
 func request_IAMManager_ComparePassword_0(ctx context.Context, marshaler runtime.Marshaler, client IAMManagerClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq UserPassword
 	var metadata runtime.ServerMetadata
 
-	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_IAMManager_ComparePassword_0); err != nil {
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -635,15 +595,11 @@ func request_IAMManager_ComparePassword_0(ctx context.Context, marshaler runtime
 
 }
 
-var (
-	filter_IAMManager_ModifyPassword_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
-)
-
 func request_IAMManager_ModifyPassword_0(ctx context.Context, marshaler runtime.Marshaler, client IAMManagerClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq UserPassword
 	var metadata runtime.ServerMetadata
 
-	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_IAMManager_ModifyPassword_0); err != nil {
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -652,13 +608,13 @@ func request_IAMManager_ModifyPassword_0(ctx context.Context, marshaler runtime.
 
 }
 
-var (
-	filter_IAMManager_GetOwnerPath_0 = &utilities.DoubleArray{Encoding: map[string]int{"head": 0, "user_id": 1}, Base: []int{1, 1, 1, 0}, Check: []int{0, 1, 2, 3}}
-)
-
 func request_IAMManager_GetOwnerPath_0(ctx context.Context, marshaler runtime.Marshaler, client IAMManagerClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetOwnerPathRequest
 	var metadata runtime.ServerMetadata
+
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
 
 	var (
 		val string
@@ -676,10 +632,6 @@ func request_IAMManager_GetOwnerPath_0(ctx context.Context, marshaler runtime.Ma
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "head.user_id", err)
-	}
-
-	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_IAMManager_GetOwnerPath_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
 	msg, err := client.GetOwnerPath(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -687,13 +639,13 @@ func request_IAMManager_GetOwnerPath_0(ctx context.Context, marshaler runtime.Ma
 
 }
 
-var (
-	filter_IAMManager_GetAccessPath_0 = &utilities.DoubleArray{Encoding: map[string]int{"head": 0, "user_id": 1}, Base: []int{1, 1, 1, 0}, Check: []int{0, 1, 2, 3}}
-)
-
 func request_IAMManager_GetAccessPath_0(ctx context.Context, marshaler runtime.Marshaler, client IAMManagerClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetAccessPathRequest
 	var metadata runtime.ServerMetadata
+
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
 
 	var (
 		val string
@@ -711,10 +663,6 @@ func request_IAMManager_GetAccessPath_0(ctx context.Context, marshaler runtime.M
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "head.user_id", err)
-	}
-
-	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_IAMManager_GetAccessPath_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
 	msg, err := client.GetAccessPath(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))

@@ -20,6 +20,9 @@ type DBAction struct {
 }
 
 func pbActionToDB(p *pb.Action) *DBAction {
+	if p == nil {
+		return new(DBAction)
+	}
 	var q = &DBAction{
 		ActionId:    p.ActionId,
 		ActionName:  p.ActionName,
@@ -35,6 +38,9 @@ func pbActionToDB(p *pb.Action) *DBAction {
 }
 
 func (p *DBAction) ToPb() *pb.Action {
+	if p == nil {
+		return new(pb.Action)
+	}
 	var q = &pb.Action{
 		ActionId:    p.ActionId,
 		ActionName:  p.ActionName,

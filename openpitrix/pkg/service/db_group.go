@@ -23,8 +23,9 @@ func (p *Database) CreateGroup(ctx context.Context, req *pb.CreateGroupRequest) 
 
 	sql, values := pkgBuildSql_InsertInto(
 		dbSpec.GroupTableName,
-		req.GetValue(),
+		dbGroup,
 	)
+	fmt.Println("CreateGroup, sql:", sql)
 	if len(values) == 0 {
 		err := status.Errorf(codes.InvalidArgument, "empty field")
 		return nil, err

@@ -32,6 +32,9 @@ type DBUser struct {
 }
 
 func pbUserToDB(p *pb.User) *DBUser {
+	if p == nil {
+		return new(DBUser)
+	}
 	var q = &DBUser{
 		UserId:      p.UserId,
 		GroupId:     p.GroupId,
@@ -56,6 +59,9 @@ func pbUserToDB(p *pb.User) *DBUser {
 }
 
 func (p *DBUser) ToPb() *pb.User {
+	if p == nil {
+		return new(pb.User)
+	}
 	var q = &pb.User{
 		UserId:      p.UserId,
 		GroupId:     p.GroupId,

@@ -364,12 +364,14 @@ service IAMManager {
 	rpc DeleteRoles(DeleteRolesRequest) returns (DeleteRolesResponse) {
 		option (google.api.http) = {
 			delete: "/api/IAMManager.DeleteRole/{head.user_id}"
+			body: "*"
 		};
 	}
 
 	rpc ModifyRole(ModifyRoleRequest) returns (ModifyRoleResponse) {
 		option (google.api.http) = {
 			patch: "/api/IAMManager.ModifyRole/{head.user_id}"
+			body: "*"
 		};
 	}
 	rpc GetRole(GetRoleRequest) returns (GetRoleResponse) {
@@ -392,6 +394,7 @@ service IAMManager {
 	rpc ModifyRoleModuleBindings(ModifyRoleModuleBindingsRequest) returns (ModifyRoleModuleBindingsResponse) {
 		option (google.api.http) = {
 			post: "/api/IAMManager.ModifyRoleModuleBindings/{head.user_id}"
+			body: "*"
 		};
 	}
 
@@ -402,18 +405,21 @@ service IAMManager {
 	rpc CreateGroup(CreateGroupRequest) returns (CreateGroupResponse) {
 		option (google.api.http) = {
 			post: "/api/IAMManager.CreateGroup/{head.user_id}"
+			body: "*"
 		};
 	}
 
 	rpc DeleteGroups(DeleteGroupsRequest) returns (DeleteGroupsResponse) {
 		option (google.api.http) = {
 			delete: "/api/IAMManager.DeleteGroups/{head.user_id}"
+			body: "*"
 		};
 	}
 
 	rpc ModifyGroup(ModifyGroupRequest) returns (ModifyGroupResponse) {
 		option (google.api.http) = {
 			patch: "/api/IAMManager.ModifyGroup/{head.user_id}"
+			body: "*"
 		};
 	}
 
@@ -436,16 +442,19 @@ service IAMManager {
 	rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {
 		option (google.api.http) = {
 			post: "/api/IAMManager.CreateUser/{head.user_id}"
+			body: "*"
 		};
 	}
 	rpc DeleteUsers(DeleteUsersRequest) returns (DeleteUsersResponse) {
 		option (google.api.http) = {
 			delete: "/api/IAMManager.DeleteUsers/{head.user_id}"
+			body: "*"
 		};
 	}
 	rpc ModifyUser(ModifyUserRequest) returns (ModifyUserResponse) {
 		option (google.api.http) = {
 			patch: "/api/IAMManager.ModifyUser/{head.user_id}"
+			body: "*"
 		};
 	}
 	rpc DescribeUsers(DescribeUsersRequest) returns (DescribeUsersResponse) {
@@ -462,11 +471,13 @@ service IAMManager {
 	rpc ComparePassword(UserPassword) returns (Bool) {
 		option (google.api.http) = {
 			post: "/api/IAMManager.ComparePassword"
+			body: "*"
 		};
 	}
 	rpc ModifyPassword(UserPassword) returns (Bool) {
 		option (google.api.http) = {
 			post: "/api/IAMManager.ModifyPassword"
+			body: "*"
 		};
 	}
 
@@ -480,6 +491,7 @@ service IAMManager {
 	rpc GetOwnerPath(GetOwnerPathRequest) returns (String) {
 		option (google.api.http) = {
 			post: "/api/IAMManager.GetOwnerPath/{head.user_id}"
+			body: "*"
 		};
 	}
 
@@ -488,6 +500,7 @@ service IAMManager {
 	rpc GetAccessPath(GetAccessPathRequest) returns (String) {
 		option (google.api.http) = {
 			post: "/api/IAMManager.GetAccessPath/{head.user_id}"
+			body: "*"
 		};
 	}
 

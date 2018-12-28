@@ -24,6 +24,9 @@ type DBRole struct {
 }
 
 func pbRoleToDB(p *pb.Role) *DBRole {
+	if p == nil {
+		return new(DBRole)
+	}
 	var q = &DBRole{
 		RoleId:      p.RoleId,
 		RoleName:    p.RoleName,
@@ -40,6 +43,9 @@ func pbRoleToDB(p *pb.Role) *DBRole {
 }
 
 func (p *DBRole) ToPb() *pb.Role {
+	if p == nil {
+		return new(pb.Role)
+	}
 	var q = &pb.Role{
 		RoleId:      p.RoleId,
 		RoleName:    p.RoleName,

@@ -35,6 +35,16 @@ var Files = map[string]string{
             }
           }
         },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamUserPassword"
+            }
+          }
+        ],
         "tags": [
           "IAMManager"
         ]
@@ -57,6 +67,14 @@ var Files = map[string]string{
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamCreateGroupRequest"
+            }
           }
         ],
         "tags": [
@@ -113,6 +131,14 @@ var Files = map[string]string{
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamCreateUserRequest"
+            }
           }
         ],
         "tags": [
@@ -137,6 +163,14 @@ var Files = map[string]string{
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamDeleteGroupsRequest"
+            }
           }
         ],
         "tags": [
@@ -162,6 +196,14 @@ var Files = map[string]string{
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamDeleteRolesRequest"
+            }
           }
         ],
         "tags": [
@@ -186,6 +228,14 @@ var Files = map[string]string{
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamDeleteUsersRequest"
+            }
           }
         ],
         "tags": [
@@ -343,6 +393,14 @@ var Files = map[string]string{
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamGetAccessPathRequest"
+            }
           }
         ],
         "tags": [
@@ -397,6 +455,14 @@ var Files = map[string]string{
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamGetOwnerPathRequest"
+            }
           }
         ],
         "tags": [
@@ -481,6 +547,14 @@ var Files = map[string]string{
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamModifyGroupRequest"
+            }
           }
         ],
         "tags": [
@@ -499,6 +573,16 @@ var Files = map[string]string{
             }
           }
         },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamUserPassword"
+            }
+          }
+        ],
         "tags": [
           "IAMManager"
         ]
@@ -521,6 +605,14 @@ var Files = map[string]string{
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamModifyRoleRequest"
+            }
           }
         ],
         "tags": [
@@ -545,6 +637,14 @@ var Files = map[string]string{
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamModifyRoleModuleBindingsRequest"
+            }
           }
         ],
         "tags": [
@@ -569,6 +669,14 @@ var Files = map[string]string{
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamModifyUserRequest"
+            }
           }
         ],
         "tags": [
@@ -685,6 +793,17 @@ var Files = map[string]string{
         }
       }
     },
+    "iamCreateGroupRequest": {
+      "type": "object",
+      "properties": {
+        "head": {
+          "$ref": "#/definitions/iamRequestHeader"
+        },
+        "value": {
+          "$ref": "#/definitions/iamGroup"
+        }
+      }
+    },
     "iamCreateGroupResponse": {
       "type": "object",
       "properties": {
@@ -718,6 +837,17 @@ var Files = map[string]string{
         }
       }
     },
+    "iamCreateUserRequest": {
+      "type": "object",
+      "properties": {
+        "head": {
+          "$ref": "#/definitions/iamRequestHeader"
+        },
+        "value": {
+          "$ref": "#/definitions/iamUser"
+        }
+      }
+    },
     "iamCreateUserResponse": {
       "type": "object",
       "properties": {
@@ -726,6 +856,20 @@ var Files = map[string]string{
         },
         "user_id": {
           "type": "string"
+        }
+      }
+    },
+    "iamDeleteGroupsRequest": {
+      "type": "object",
+      "properties": {
+        "head": {
+          "$ref": "#/definitions/iamRequestHeader"
+        },
+        "group_id": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -743,6 +887,20 @@ var Files = map[string]string{
         }
       }
     },
+    "iamDeleteRolesRequest": {
+      "type": "object",
+      "properties": {
+        "head": {
+          "$ref": "#/definitions/iamRequestHeader"
+        },
+        "role_id": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "iamDeleteRolesResponse": {
       "type": "object",
       "properties": {
@@ -750,6 +908,20 @@ var Files = map[string]string{
           "$ref": "#/definitions/iamResponseHeader"
         },
         "role_id": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "iamDeleteUsersRequest": {
+      "type": "object",
+      "properties": {
+        "head": {
+          "$ref": "#/definitions/iamRequestHeader"
+        },
+        "user_id": {
           "type": "array",
           "items": {
             "type": "string"
@@ -840,6 +1012,17 @@ var Files = map[string]string{
         }
       }
     },
+    "iamGetAccessPathRequest": {
+      "type": "object",
+      "properties": {
+        "head": {
+          "$ref": "#/definitions/iamResponseHeader"
+        },
+        "method": {
+          "type": "string"
+        }
+      }
+    },
     "iamGetGroupResponse": {
       "type": "object",
       "properties": {
@@ -848,6 +1031,17 @@ var Files = map[string]string{
         },
         "value": {
           "$ref": "#/definitions/iamGroup"
+        }
+      }
+    },
+    "iamGetOwnerPathRequest": {
+      "type": "object",
+      "properties": {
+        "head": {
+          "$ref": "#/definitions/iamRequestHeader"
+        },
+        "method": {
+          "type": "string"
         }
       }
     },
@@ -912,6 +1106,17 @@ var Files = map[string]string{
         }
       }
     },
+    "iamModifyGroupRequest": {
+      "type": "object",
+      "properties": {
+        "head": {
+          "$ref": "#/definitions/iamRequestHeader"
+        },
+        "value": {
+          "$ref": "#/definitions/iamGroup"
+        }
+      }
+    },
     "iamModifyGroupResponse": {
       "type": "object",
       "properties": {
@@ -923,11 +1128,33 @@ var Files = map[string]string{
         }
       }
     },
+    "iamModifyRoleModuleBindingsRequest": {
+      "type": "object",
+      "properties": {
+        "head": {
+          "$ref": "#/definitions/iamRequestHeader"
+        },
+        "binding": {
+          "$ref": "#/definitions/iamRoleModuleBinding"
+        }
+      }
+    },
     "iamModifyRoleModuleBindingsResponse": {
       "type": "object",
       "properties": {
         "head": {
           "$ref": "#/definitions/iamResponseHeader"
+        }
+      }
+    },
+    "iamModifyRoleRequest": {
+      "type": "object",
+      "properties": {
+        "head": {
+          "$ref": "#/definitions/iamRequestHeader"
+        },
+        "value": {
+          "$ref": "#/definitions/iamRole"
         }
       }
     },
@@ -939,6 +1166,17 @@ var Files = map[string]string{
         },
         "role_id": {
           "type": "string"
+        }
+      }
+    },
+    "iamModifyUserRequest": {
+      "type": "object",
+      "properties": {
+        "head": {
+          "$ref": "#/definitions/iamRequestHeader"
+        },
+        "value": {
+          "$ref": "#/definitions/iamUser"
         }
       }
     },
@@ -994,6 +1232,37 @@ var Files = map[string]string{
           "type": "string"
         },
         "owner_path": {
+          "type": "string"
+        },
+        "create_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "update_time": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "iamRoleModuleBinding": {
+      "type": "object",
+      "properties": {
+        "binding_id": {
+          "type": "string"
+        },
+        "role_id": {
+          "type": "string"
+        },
+        "module_id": {
+          "type": "string"
+        },
+        "data_level": {
+          "type": "string"
+        },
+        "enabled_actions": {
+          "type": "string"
+        },
+        "owner": {
           "type": "string"
         },
         "create_time": {
@@ -1067,6 +1336,17 @@ var Files = map[string]string{
         "update_time": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "iamUserPassword": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
         }
       }
     }

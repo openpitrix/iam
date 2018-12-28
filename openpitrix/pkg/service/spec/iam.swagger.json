@@ -26,6 +26,16 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamUserPassword"
+            }
+          }
+        ],
         "tags": [
           "IAMManager"
         ]
@@ -48,6 +58,14 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamCreateGroupRequest"
+            }
           }
         ],
         "tags": [
@@ -104,6 +122,14 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamCreateUserRequest"
+            }
           }
         ],
         "tags": [
@@ -128,6 +154,14 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamDeleteGroupsRequest"
+            }
           }
         ],
         "tags": [
@@ -153,6 +187,14 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamDeleteRolesRequest"
+            }
           }
         ],
         "tags": [
@@ -177,6 +219,14 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamDeleteUsersRequest"
+            }
           }
         ],
         "tags": [
@@ -334,6 +384,14 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamGetAccessPathRequest"
+            }
           }
         ],
         "tags": [
@@ -388,6 +446,14 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamGetOwnerPathRequest"
+            }
           }
         ],
         "tags": [
@@ -472,6 +538,14 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamModifyGroupRequest"
+            }
           }
         ],
         "tags": [
@@ -490,6 +564,16 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamUserPassword"
+            }
+          }
+        ],
         "tags": [
           "IAMManager"
         ]
@@ -512,6 +596,14 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamModifyRoleRequest"
+            }
           }
         ],
         "tags": [
@@ -536,6 +628,14 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamModifyRoleModuleBindingsRequest"
+            }
           }
         ],
         "tags": [
@@ -560,6 +660,14 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamModifyUserRequest"
+            }
           }
         ],
         "tags": [
@@ -676,6 +784,17 @@
         }
       }
     },
+    "iamCreateGroupRequest": {
+      "type": "object",
+      "properties": {
+        "head": {
+          "$ref": "#/definitions/iamRequestHeader"
+        },
+        "value": {
+          "$ref": "#/definitions/iamGroup"
+        }
+      }
+    },
     "iamCreateGroupResponse": {
       "type": "object",
       "properties": {
@@ -709,6 +828,17 @@
         }
       }
     },
+    "iamCreateUserRequest": {
+      "type": "object",
+      "properties": {
+        "head": {
+          "$ref": "#/definitions/iamRequestHeader"
+        },
+        "value": {
+          "$ref": "#/definitions/iamUser"
+        }
+      }
+    },
     "iamCreateUserResponse": {
       "type": "object",
       "properties": {
@@ -717,6 +847,20 @@
         },
         "user_id": {
           "type": "string"
+        }
+      }
+    },
+    "iamDeleteGroupsRequest": {
+      "type": "object",
+      "properties": {
+        "head": {
+          "$ref": "#/definitions/iamRequestHeader"
+        },
+        "group_id": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -734,6 +878,20 @@
         }
       }
     },
+    "iamDeleteRolesRequest": {
+      "type": "object",
+      "properties": {
+        "head": {
+          "$ref": "#/definitions/iamRequestHeader"
+        },
+        "role_id": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "iamDeleteRolesResponse": {
       "type": "object",
       "properties": {
@@ -741,6 +899,20 @@
           "$ref": "#/definitions/iamResponseHeader"
         },
         "role_id": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "iamDeleteUsersRequest": {
+      "type": "object",
+      "properties": {
+        "head": {
+          "$ref": "#/definitions/iamRequestHeader"
+        },
+        "user_id": {
           "type": "array",
           "items": {
             "type": "string"
@@ -831,6 +1003,17 @@
         }
       }
     },
+    "iamGetAccessPathRequest": {
+      "type": "object",
+      "properties": {
+        "head": {
+          "$ref": "#/definitions/iamResponseHeader"
+        },
+        "method": {
+          "type": "string"
+        }
+      }
+    },
     "iamGetGroupResponse": {
       "type": "object",
       "properties": {
@@ -839,6 +1022,17 @@
         },
         "value": {
           "$ref": "#/definitions/iamGroup"
+        }
+      }
+    },
+    "iamGetOwnerPathRequest": {
+      "type": "object",
+      "properties": {
+        "head": {
+          "$ref": "#/definitions/iamRequestHeader"
+        },
+        "method": {
+          "type": "string"
         }
       }
     },
@@ -903,6 +1097,17 @@
         }
       }
     },
+    "iamModifyGroupRequest": {
+      "type": "object",
+      "properties": {
+        "head": {
+          "$ref": "#/definitions/iamRequestHeader"
+        },
+        "value": {
+          "$ref": "#/definitions/iamGroup"
+        }
+      }
+    },
     "iamModifyGroupResponse": {
       "type": "object",
       "properties": {
@@ -914,11 +1119,33 @@
         }
       }
     },
+    "iamModifyRoleModuleBindingsRequest": {
+      "type": "object",
+      "properties": {
+        "head": {
+          "$ref": "#/definitions/iamRequestHeader"
+        },
+        "binding": {
+          "$ref": "#/definitions/iamRoleModuleBinding"
+        }
+      }
+    },
     "iamModifyRoleModuleBindingsResponse": {
       "type": "object",
       "properties": {
         "head": {
           "$ref": "#/definitions/iamResponseHeader"
+        }
+      }
+    },
+    "iamModifyRoleRequest": {
+      "type": "object",
+      "properties": {
+        "head": {
+          "$ref": "#/definitions/iamRequestHeader"
+        },
+        "value": {
+          "$ref": "#/definitions/iamRole"
         }
       }
     },
@@ -930,6 +1157,17 @@
         },
         "role_id": {
           "type": "string"
+        }
+      }
+    },
+    "iamModifyUserRequest": {
+      "type": "object",
+      "properties": {
+        "head": {
+          "$ref": "#/definitions/iamRequestHeader"
+        },
+        "value": {
+          "$ref": "#/definitions/iamUser"
         }
       }
     },
@@ -985,6 +1223,37 @@
           "type": "string"
         },
         "owner_path": {
+          "type": "string"
+        },
+        "create_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "update_time": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "iamRoleModuleBinding": {
+      "type": "object",
+      "properties": {
+        "binding_id": {
+          "type": "string"
+        },
+        "role_id": {
+          "type": "string"
+        },
+        "module_id": {
+          "type": "string"
+        },
+        "data_level": {
+          "type": "string"
+        },
+        "enabled_actions": {
+          "type": "string"
+        },
+        "owner": {
           "type": "string"
         },
         "create_time": {
@@ -1058,6 +1327,17 @@
         "update_time": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "iamUserPassword": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
         }
       }
     }

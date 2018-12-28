@@ -26,6 +26,9 @@ type DBGroup struct {
 }
 
 func pbGroupToDB(p *pb.Group) *DBGroup {
+	if p == nil {
+		return new(DBGroup)
+	}
 	var q = &DBGroup{
 		GroupId:       p.GroupId,
 		GroupName:     p.GroupName,
@@ -46,6 +49,9 @@ func pbGroupToDB(p *pb.Group) *DBGroup {
 }
 
 func (p *DBGroup) ToPb() *pb.Group {
+	if p == nil {
+		return new(pb.Group)
+	}
 	var q = &pb.Group{
 		GroupId:       p.GroupId,
 		GroupName:     p.GroupName,
