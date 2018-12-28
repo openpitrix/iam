@@ -26,7 +26,7 @@ info:
 	@echo
 
 swagger:
-	curl ${SERVER_HOST}/static/spec/iam.swagger.json | jq .
+	curl ${SERVER_HOST}/swagger/iam.swagger.json | jq .
 
 list-method:
 	grpcurl -plaintext ${SERVER_HOST} list

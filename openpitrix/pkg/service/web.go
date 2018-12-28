@@ -22,6 +22,7 @@ import (
 
 	"openpitrix.io/iam/openpitrix/pkg/pb"
 	"openpitrix.io/iam/openpitrix/pkg/service/spec"
+	staticSwaggerUI "openpitrix.io/iam/openpitrix/pkg/service/swagger-ui"
 	"openpitrix.io/logger"
 )
 
@@ -93,12 +94,13 @@ func (p *Server) mainHandler(addr string) http.Handler {
 	})
 
 	// swagger file
-	// GET /static/spec/iam.swagger.json
+	// GET /swagger/iam.swagger.json
 	ns := vfs.NameSpace{}
+	ns.Bind("/", mapfs.New(staticSwaggerUI.Files), "/", vfs.BindReplace)
 	ns.Bind("/", mapfs.New(spec.Files), "/", vfs.BindBefore)
 
 	mux.Handle("/", gwmux)
-	mux.Handle("/static/spec/", http.StripPrefix("/static/spec", http.FileServer(httpfs.New(ns))))
+	mux.Handle("/swagger/", http.StripPrefix("/swagger", http.FileServer(httpfs.New(ns))))
 
 	// grpc
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
