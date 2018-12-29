@@ -11,13 +11,18 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"openpitrix.io/iam/openpitrix/pkg/internal/funcutil"
 	"openpitrix.io/iam/openpitrix/pkg/pb"
+	"openpitrix.io/logger"
 )
 
 func (p *Database) CreateGroup(ctx context.Context, req *pb.CreateGroupRequest) (*pb.CreateGroupResponse, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
 	var dbGroup = pbGroupToDB(req.GetValue())
 
 	if err := dbGroup.ValidateForInsert(); err != nil {
+		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
@@ -27,11 +32,13 @@ func (p *Database) CreateGroup(ctx context.Context, req *pb.CreateGroupRequest) 
 	)
 	if len(values) == 0 {
 		err := status.Errorf(codes.InvalidArgument, "empty field")
+		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
 	_, err := p.DB.ExecContext(ctx, sql, values...)
 	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
@@ -48,6 +55,8 @@ func (p *Database) CreateGroup(ctx context.Context, req *pb.CreateGroupRequest) 
 }
 
 func (p *Database) DeleteGroups(ctx context.Context, req *pb.DeleteGroupsRequest) (*pb.DeleteGroupsResponse, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
 	sql := pkgBuildSql_Delete(
 		dbSpec.GroupTableName, dbSpec.GroupPrimaryKeyName,
 		req.GroupId...,
@@ -55,6 +64,7 @@ func (p *Database) DeleteGroups(ctx context.Context, req *pb.DeleteGroupsRequest
 
 	_, err := p.DB.ExecContext(ctx, sql)
 	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
@@ -70,9 +80,12 @@ func (p *Database) DeleteGroups(ctx context.Context, req *pb.DeleteGroupsRequest
 	return reply, nil
 }
 func (p *Database) ModifyGroup(ctx context.Context, req *pb.ModifyGroupRequest) (*pb.ModifyGroupResponse, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
 	var dbGroup = pbGroupToDB(req.GetValue())
 
 	if err := dbGroup.ValidateForUpdate(); err != nil {
+		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
@@ -83,7 +96,7 @@ func (p *Database) ModifyGroup(ctx context.Context, req *pb.ModifyGroupRequest) 
 
 	_, err := p.DB.ExecContext(ctx, sql, values...)
 	if err != nil {
-		fmt.Println("ModifyGroup err:", err)
+		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
@@ -99,6 +112,8 @@ func (p *Database) ModifyGroup(ctx context.Context, req *pb.ModifyGroupRequest) 
 	return reply, nil
 }
 func (p *Database) GetGroup(ctx context.Context, req *pb.GetGroupRequest) (*pb.GetGroupResponse, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
 	var query = fmt.Sprintf(
 		"SELECT * FROM %s WHERE %s=? LIMIT 1 OFFSET 0;",
 		dbSpec.GroupTableName,
@@ -108,6 +123,7 @@ func (p *Database) GetGroup(ctx context.Context, req *pb.GetGroupRequest) (*pb.G
 	var v = DBGroup{}
 	err := p.DB.GetContext(ctx, &v, query, req.GetGroupId())
 	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
@@ -123,6 +139,8 @@ func (p *Database) GetGroup(ctx context.Context, req *pb.GetGroupRequest) (*pb.G
 	return reply, nil
 }
 func (p *Database) DescribeGroups(ctx context.Context, req *pb.DescribeGroupsRequest) (*pb.DescribeGroupsResponse, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
 	var searchWord = req.GetSearchWord()
 	if searchWord == "" {
 		return p._DescribeGroups_all(ctx, req)
@@ -132,16 +150,20 @@ func (p *Database) DescribeGroups(ctx context.Context, req *pb.DescribeGroupsReq
 }
 
 func (p *Database) _DescribeGroups_count(ctx context.Context, req *pb.DescribeGroupsRequest) (total int, err error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
 	var query = fmt.Sprintf("SELECT COUNT(*) FROM %s", dbSpec.GroupTableName)
 
 	rows, err := p.DB.QueryContext(ctx, query)
 	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
 		return 0, err
 	}
 	defer rows.Close()
 
 	if rows.Next() {
 		if err := rows.Scan(&total); err != nil {
+			logger.Warnf(ctx, "%+v", err)
 			return 0, err
 		}
 	}
@@ -150,8 +172,11 @@ func (p *Database) _DescribeGroups_count(ctx context.Context, req *pb.DescribeGr
 }
 
 func (p *Database) _DescribeGroups_all(ctx context.Context, req *pb.DescribeGroupsRequest) (*pb.DescribeGroupsResponse, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
 	total, err := p._DescribeGroups_count(ctx, req)
 	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
@@ -165,6 +190,7 @@ func (p *Database) _DescribeGroups_all(ctx context.Context, req *pb.DescribeGrou
 	var rows = []DBGroup{}
 	err = p.DB.SelectContext(ctx, &rows, query)
 	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
@@ -187,6 +213,8 @@ func (p *Database) _DescribeGroups_all(ctx context.Context, req *pb.DescribeGrou
 }
 
 func (p *Database) _DescribeGroups_bySearchWord(ctx context.Context, req *pb.DescribeGroupsRequest) (*pb.DescribeGroupsResponse, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
 	var searchWord = req.GetSearchWord()
 
 	if searchWord == "" {
@@ -227,12 +255,14 @@ func (p *Database) _DescribeGroups_bySearchWord(ctx context.Context, req *pb.Des
 	{
 		rows, err := p.DB.QueryContext(ctx, queryCountHeader+queryTail)
 		if err != nil {
+			logger.Warnf(ctx, "%+v", err)
 			return nil, err
 		}
 		defer rows.Close()
 
 		if rows.Next() {
 			if err := rows.Scan(&total); err != nil {
+				logger.Warnf(ctx, "%+v", err)
 				return nil, err
 			}
 		}
@@ -241,6 +271,7 @@ func (p *Database) _DescribeGroups_bySearchWord(ctx context.Context, req *pb.Des
 	var rows = []DBGroup{}
 	err := p.DB.SelectContext(ctx, &rows, queryHeaer+queryTail)
 	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
