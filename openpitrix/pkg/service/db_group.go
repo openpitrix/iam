@@ -77,12 +77,13 @@ func (p *Database) ModifyGroup(ctx context.Context, req *pb.ModifyGroupRequest) 
 	}
 
 	sql, values := pkgBuildSql_Update(
-		dbSpec.GroupTableName, req.GetValue(),
+		dbSpec.GroupTableName, dbGroup,
 		dbSpec.GroupPrimaryKeyName,
 	)
 
 	_, err := p.DB.ExecContext(ctx, sql, values...)
 	if err != nil {
+		fmt.Println("ModifyGroup err:", err)
 		return nil, err
 	}
 
