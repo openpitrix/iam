@@ -5,7 +5,6 @@
 package service
 
 import (
-	"fmt"
 	"io/ioutil"
 	"sync"
 )
@@ -20,7 +19,7 @@ func web_readme_md(readmeFile string) string {
 		if data, err := ioutil.ReadFile(readmeFile); err == nil {
 			web_readme_content = string(data)
 		} else {
-			web_readme_content = fmt.Sprintf("%q file missing", readmeFile)
+			web_readme_content = web_tmplReadme_md
 		}
 	})
 	return web_readme_content
@@ -30,6 +29,13 @@ func web_homepage() string {
 	return web_tmplHomepage
 }
 
+const web_tmplReadme_md = `
+# IAM帐号和权限管理服务
+
+- [Swagger页面](/swagger)
+- [版本信息](/static/version)
+
+`
 const web_tmplHomepage = `<!doctype html>
 <html>
 <head>
