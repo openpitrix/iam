@@ -23,7 +23,7 @@ RUN echo module drone > /build-dir/go.mod
 RUN git describe --tags --always > /build-dir/version
 RUN git describe --exact-match 2>/dev/null || git log -1 --format="%H" > /build-dir/version
 
-RUN go get -ldflags '-w -s' -tags netgo openpitrix.io/iam/openpitrix/cmd/iam@$(cat /build-dir/version)
+RUN go get -ldflags '-w -s' -tags netgo openpitrix.io/iam@$(cat /build-dir/version)
 
 RUN echo version: $(cat /build-dir/version)
 

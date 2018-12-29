@@ -1,3 +1,5 @@
+.ash_history
+
 /_temp
 /_test
 
@@ -13,3 +15,4 @@
 .idea
 
 go.sum
+config.json

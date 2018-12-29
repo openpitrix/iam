@@ -4,25 +4,8 @@
 
 package service
 
-import (
-	"io/ioutil"
-	"sync"
-)
-
-var (
-	web_readme_once    sync.Once
-	web_readme_content string
-)
-
-func web_readme_md(readmeFile string) string {
-	web_readme_once.Do(func() {
-		if data, err := ioutil.ReadFile(readmeFile); err == nil {
-			web_readme_content = string(data)
-		} else {
-			web_readme_content = web_tmplReadme_md
-		}
-	})
-	return web_readme_content
+func web_readme_md() string {
+	return web_tmplReadme_md
 }
 
 func web_homepage() string {

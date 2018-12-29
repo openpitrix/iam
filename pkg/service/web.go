@@ -128,7 +128,7 @@ func (p *Server) mainHandler(addr string) http.Handler {
 
 	// GET /readme.md
 	mux.HandleFunc("/readme.md", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, web_readme_md(p.readmeFile))
+		fmt.Fprintln(w, web_readme_md())
 	})
 
 	// just for test

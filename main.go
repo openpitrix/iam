@@ -2,8 +2,8 @@
 // Use of this source code is governed by a Apache license
 // that can be found in the LICENSE file.
 
-// OpenPitrix IAM service app.
-package main
+// Identity and Access Management System for OpenPitrix.
+package iam
 
 import (
 	"fmt"
@@ -17,6 +17,10 @@ import (
 	"openpitrix.io/iam/pkg/service"
 	"openpitrix.io/iam/pkg/version"
 	"openpitrix.io/logger"
+)
+
+var (
+	appConfig *config.Config = nil
 )
 
 func main() {
@@ -40,7 +44,7 @@ EXAMPLE:
 		},
 		cli.StringFlag{
 			Name:   "host",
-			Value:  "localhost",
+			Value:  "openpitrix-iam2-service",
 			EnvVar: "OPENPITRIX_IAM_HOST",
 		},
 
@@ -53,12 +57,13 @@ EXAMPLE:
 	app.Before = func(c *cli.Context) error {
 		cfgpath := c.GlobalString("config")
 		if _, err := os.Stat(cfgpath); os.IsNotExist(err) {
-			data := config.Default().JSONString()
-			ioutil.WriteFile(cfgpath, []byte(data), 0666)
+			appConfig = config.Default()
+			ioutil.WriteFile(cfgpath, []byte(appConfig.JSONString()), 0666)
+		} else {
+			appConfig = config.MustLoad(c.GlobalString("config"))
 		}
 
-		cfg := config.MustLoad(c.GlobalString("config"))
-		logger.SetLevelByString(cfg.LogLevel)
+		logger.SetLevelByString(appConfig.LogLevel)
 		return nil
 	}
 
@@ -128,42 +133,38 @@ EXAMPLE:
 }
 
 func serve(c *cli.Context) {
-	cfg := config.MustLoad(c.GlobalString("config"))
-
 	host := c.GlobalString("host")
 	if host == "" || host == "localhost" {
 		host = getLocalIP()
 	}
 
-	readme := c.GlobalString("readme")
-
-	if !cfg.TlsEnabled {
+	if !appConfig.TlsEnabled {
 		logger.Infof(nil, version.GetVersionString())
-		logger.Infof(nil, "IAM service http://%s:%d", host, cfg.Port)
+		logger.Infof(nil, "IAM service http://%s:%d", host, appConfig.Port)
 
-		server, err := service.OpenServer(cfg.DB.Type, cfg.DB.GetUrl(), readme)
+		server, err := service.OpenServer(appConfig.DB.Type, appConfig.DB.GetUrl())
 		if err != nil {
 			logger.Criticalf(nil, "%v", err)
 			os.Exit(1)
 		}
-		err = server.ListenAndServe(fmt.Sprintf(":%d", cfg.Port))
+		err = server.ListenAndServe(fmt.Sprintf(":%d", appConfig.Port))
 		if err != nil {
 			logger.Criticalf(nil, "%v", err)
 			os.Exit(1)
 		}
 	} else {
 		logger.Infof(nil, version.GetVersionString())
-		logger.Infof(nil, "IAM service https://%s:%d", host, cfg.Port)
+		logger.Infof(nil, "IAM service https://%s:%d", host, appConfig.Port)
 
-		server, err := service.OpenServer(cfg.DB.Type, cfg.DB.GetUrl(), readme)
+		server, err := service.OpenServer(appConfig.DB.Type, appConfig.DB.GetUrl())
 		if err != nil {
 			logger.Criticalf(nil, "%v", err)
 			os.Exit(1)
 		}
 		err = server.ListenAndServeTLS(
-			fmt.Sprintf(":%d", cfg.Port),
-			cfg.TlsCertFile,
-			cfg.TlsKeyFile,
+			fmt.Sprintf(":%d", appConfig.Port),
+			appConfig.TlsCertFile,
+			appConfig.TlsKeyFile,
 		)
 		if err != nil {
 			logger.Criticalf(nil, "%v", err)
