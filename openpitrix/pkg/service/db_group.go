@@ -32,12 +32,14 @@ func (p *Database) CreateGroup(ctx context.Context, req *pb.CreateGroupRequest) 
 	)
 	if len(values) == 0 {
 		err := status.Errorf(codes.InvalidArgument, "empty field")
+		logger.Warnf(ctx, "%v, %v", sql, values)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
 	_, err := p.DB.ExecContext(ctx, sql, values...)
 	if err != nil {
+		logger.Warnf(ctx, "%v, %v", sql, values)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
@@ -64,6 +66,7 @@ func (p *Database) DeleteGroups(ctx context.Context, req *pb.DeleteGroupsRequest
 
 	_, err := p.DB.ExecContext(ctx, sql)
 	if err != nil {
+		logger.Warnf(ctx, "%v", sql)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
@@ -96,6 +99,7 @@ func (p *Database) ModifyGroup(ctx context.Context, req *pb.ModifyGroupRequest) 
 
 	_, err := p.DB.ExecContext(ctx, sql, values...)
 	if err != nil {
+		logger.Warnf(ctx, "%v, %v", sql, values)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
@@ -123,6 +127,7 @@ func (p *Database) GetGroup(ctx context.Context, req *pb.GetGroupRequest) (*pb.G
 	var v = DBGroup{}
 	err := p.DB.GetContext(ctx, &v, query, req.GetGroupId())
 	if err != nil {
+		logger.Warnf(ctx, "%v", query)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
@@ -156,6 +161,7 @@ func (p *Database) _DescribeGroups_count(ctx context.Context, req *pb.DescribeGr
 
 	rows, err := p.DB.QueryContext(ctx, query)
 	if err != nil {
+		logger.Warnf(ctx, "%v", query)
 		logger.Warnf(ctx, "%+v", err)
 		return 0, err
 	}
@@ -163,6 +169,7 @@ func (p *Database) _DescribeGroups_count(ctx context.Context, req *pb.DescribeGr
 
 	if rows.Next() {
 		if err := rows.Scan(&total); err != nil {
+			logger.Warnf(ctx, "%v", query)
 			logger.Warnf(ctx, "%+v", err)
 			return 0, err
 		}
@@ -190,13 +197,14 @@ func (p *Database) _DescribeGroups_all(ctx context.Context, req *pb.DescribeGrou
 	var rows = []DBGroup{}
 	err = p.DB.SelectContext(ctx, &rows, query)
 	if err != nil {
+		logger.Warnf(ctx, "%v", query)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
-	var groups []*pb.Group
+	var sets []*pb.Group
 	for _, v := range rows {
-		groups = append(groups, v.ToPb())
+		sets = append(sets, v.ToPb())
 	}
 
 	reply := &pb.DescribeGroupsResponse{
@@ -205,7 +213,7 @@ func (p *Database) _DescribeGroups_all(ctx context.Context, req *pb.DescribeGrou
 			OwnerPath:  "", // TODO
 			AccessPath: "", // TODO
 		},
-		GroupSet:   groups,
+		GroupSet:   sets,
 		TotalCount: int32(total),
 	}
 
@@ -255,6 +263,7 @@ func (p *Database) _DescribeGroups_bySearchWord(ctx context.Context, req *pb.Des
 	{
 		rows, err := p.DB.QueryContext(ctx, queryCountHeader+queryTail)
 		if err != nil {
+			logger.Warnf(ctx, "%v", queryCountHeader+queryTail)
 			logger.Warnf(ctx, "%+v", err)
 			return nil, err
 		}
@@ -262,6 +271,7 @@ func (p *Database) _DescribeGroups_bySearchWord(ctx context.Context, req *pb.Des
 
 		if rows.Next() {
 			if err := rows.Scan(&total); err != nil {
+				logger.Warnf(ctx, "%v", queryCountHeader+queryTail)
 				logger.Warnf(ctx, "%+v", err)
 				return nil, err
 			}
@@ -271,13 +281,14 @@ func (p *Database) _DescribeGroups_bySearchWord(ctx context.Context, req *pb.Des
 	var rows = []DBGroup{}
 	err := p.DB.SelectContext(ctx, &rows, queryHeaer+queryTail)
 	if err != nil {
+		logger.Warnf(ctx, "%v", queryCountHeader+queryTail)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
-	var groups []*pb.Group
+	var sets []*pb.Group
 	for _, v := range rows {
-		groups = append(groups, v.ToPb())
+		sets = append(sets, v.ToPb())
 	}
 
 	reply := &pb.DescribeGroupsResponse{
@@ -286,7 +297,7 @@ func (p *Database) _DescribeGroups_bySearchWord(ctx context.Context, req *pb.Des
 			OwnerPath:  "", // TODO
 			AccessPath: "", // TODO
 		},
-		GroupSet:   groups,
+		GroupSet:   sets,
 		TotalCount: int32(total),
 	}
 
