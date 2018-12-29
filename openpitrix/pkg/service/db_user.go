@@ -11,24 +11,36 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"openpitrix.io/iam/openpitrix/pkg/internal/funcutil"
 	"openpitrix.io/iam/openpitrix/pkg/pb"
+	"openpitrix.io/logger"
 )
 
 func (p *Database) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
-	//if err := req.Validate(); err != nil {
-	//	return nil, err
-	//}
+	logger.Infof(ctx, funcutil.CallerName(1))
+
+	var dbUser = pbUserToDB(req.GetValue())
+
+	if err := dbUser.ValidateForInsert(); err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
 
 	sql, values := pkgBuildSql_InsertInto(
 		dbSpec.UserTableName,
-		req.GetValue(),
+		dbUser,
 	)
 	if len(values) == 0 {
 		err := status.Errorf(codes.InvalidArgument, "empty field")
+		logger.Warnf(ctx, "%v, %v", sql, values)
+		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
+
 	_, err := p.DB.ExecContext(ctx, sql, values...)
 	if err != nil {
+		logger.Warnf(ctx, "%v, %v", sql, values)
+		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
@@ -44,6 +56,8 @@ func (p *Database) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*
 	return reply, nil
 }
 func (p *Database) DeleteUsers(ctx context.Context, req *pb.DeleteUsersRequest) (*pb.DeleteUsersResponse, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
 	sql := pkgBuildSql_Delete(
 		dbSpec.UserTableName, dbSpec.UserPrimaryKeyName,
 		req.UserId...,
@@ -51,6 +65,8 @@ func (p *Database) DeleteUsers(ctx context.Context, req *pb.DeleteUsersRequest) 
 
 	_, err := p.DB.ExecContext(ctx, sql)
 	if err != nil {
+		logger.Warnf(ctx, "%v", sql)
+		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
@@ -64,15 +80,27 @@ func (p *Database) DeleteUsers(ctx context.Context, req *pb.DeleteUsersRequest) 
 	}
 
 	return reply, nil
+
 }
 func (p *Database) ModifyUser(ctx context.Context, req *pb.ModifyUserRequest) (*pb.ModifyUserResponse, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
+	var dbUser = pbUserToDB(req.GetValue())
+
+	if err := dbUser.ValidateForUpdate(); err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
 	sql, values := pkgBuildSql_Update(
-		dbSpec.UserTableName, req.GetValue(),
+		dbSpec.UserTableName, dbUser,
 		dbSpec.UserPrimaryKeyName,
 	)
 
 	_, err := p.DB.ExecContext(ctx, sql, values...)
 	if err != nil {
+		logger.Warnf(ctx, "%v, %v", sql, values)
+		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
@@ -86,50 +114,41 @@ func (p *Database) ModifyUser(ctx context.Context, req *pb.ModifyUserRequest) (*
 	}
 
 	return reply, nil
+
 }
 func (p *Database) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUserResponse, error) {
-	/*
-		var query = fmt.Sprintf(
-			"SELECT * FROM %s WHERE %s=$1 LIMIT 1 OFFSET 0;",
-			dbSpec.GroupTableName,
-			dbSpec.GroupPrimaryKeyName,
-		)
+	logger.Infof(ctx, funcutil.CallerName(1))
 
-		rows, err := p.DB.QueryContext(ctx, query, req.GetUserId())
-		if err != nil {
-			return nil, err
-		}
-		defer rows.Close()
+	var query = fmt.Sprintf(
+		"SELECT * FROM %s WHERE %s=? LIMIT 1 OFFSET 0;",
+		dbSpec.UserTableName,
+		dbSpec.UserPrimaryKeyName,
+	)
 
-		if !rows.Next() {
-			if err := rows.Err(); err != nil {
-				return nil, err
-			}
-			return nil, sql.ErrNoRows
-		}
+	var v = DBUser{}
+	err := p.DB.GetContext(ctx, &v, query, req.GetUserId())
+	if err != nil {
+		logger.Warnf(ctx, "%v", query)
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
 
-		var msg = &pb.User{}
-		err = pkgSqlScanProtoMessge(rows, msg)
-		if err != nil {
-			return nil, err
-		}
+	reply := &pb.GetUserResponse{
+		Head: &pb.ResponseHeader{
+			UserId:     req.GetHead().GetUserId(),
+			OwnerPath:  "", // TODO
+			AccessPath: "", // TODO
+		},
+		Value: v.ToPb(),
+	}
 
-		reply := &pb.GetUserResponse{
-			Head: &pb.ResponseHeader{
-				UserId:     req.GetHead().GetUserId(),
-				OwnerPath:  "", // TODO
-				AccessPath: "", // TODO
-			},
-			Value: msg,
-		}
+	return reply, nil
 
-		return reply, nil
-	*/
-	panic("TODO")
 }
 func (p *Database) DescribeUsers(ctx context.Context, req *pb.DescribeUsersRequest) (*pb.DescribeUsersResponse, error) {
-	var searchWord = req.GetSearchWord()
+	logger.Infof(ctx, funcutil.CallerName(1))
 
+	var searchWord = req.GetSearchWord()
 	if searchWord == "" {
 		return p._DescribeUsers_all(ctx, req)
 	} else {
@@ -138,142 +157,151 @@ func (p *Database) DescribeUsers(ctx context.Context, req *pb.DescribeUsersReque
 }
 
 func (p *Database) _DescribeUsers_count(ctx context.Context, req *pb.DescribeUsersRequest) (total int, err error) {
-	var query = fmt.Sprintf("SELECT COUNT(*) FROM %s", dbSpec.GroupTableName)
+	logger.Infof(ctx, funcutil.CallerName(1))
+
+	var query = fmt.Sprintf("SELECT COUNT(*) FROM %s", dbSpec.UserTableName)
 
 	rows, err := p.DB.QueryContext(ctx, query)
 	if err != nil {
+		logger.Warnf(ctx, "%v", query)
+		logger.Warnf(ctx, "%+v", err)
 		return 0, err
 	}
 	defer rows.Close()
 
-	if err := rows.Scan(&total); err != nil {
-		return 0, err
+	if rows.Next() {
+		if err := rows.Scan(&total); err != nil {
+			logger.Warnf(ctx, "%v", query)
+			logger.Warnf(ctx, "%+v", err)
+			return 0, err
+		}
 	}
 
 	return total, nil
 }
 
 func (p *Database) _DescribeUsers_all(ctx context.Context, req *pb.DescribeUsersRequest) (*pb.DescribeUsersResponse, error) {
-	/*
-		total, err := p._DescribeUsers_count(ctx, req)
-		if err != nil {
-			return nil, err
-		}
+	logger.Infof(ctx, funcutil.CallerName(1))
 
-		var query = fmt.Sprintf("SELECT * FROM %s", dbSpec.GroupTableName)
-		if offset, limit := req.GetOffset(), req.GetLimit(); offset > 0 || limit > 0 {
-			query += fmt.Sprintf("LIMIT %d OFFSET %d;", limit, offset)
-		} else {
-			query += fmt.Sprintf("LIMIT %d OFFSET %d;", 20, 0)
-		}
+	total, err := p._DescribeUsers_count(ctx, req)
+	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
 
-		rows, err := p.DB.QueryContext(ctx, query)
-		if err != nil {
-			return nil, err
-		}
-		defer rows.Close()
+	var query = fmt.Sprintf("SELECT * FROM %s", dbSpec.UserTableName)
+	if offset, limit := req.GetOffset(), req.GetLimit(); offset > 0 || limit > 0 {
+		query += fmt.Sprintf(" LIMIT %d OFFSET %d;", limit, offset)
+	} else {
+		query += fmt.Sprintf(" LIMIT %d OFFSET %d;", 20, 0)
+	}
 
-		var users []*pb.User
-		for rows.Next() {
-			var msg = &pb.User{}
-			if err := pkgSqlScanProtoMessge(rows, msg); err != nil {
-				return nil, err
-			}
+	var rows = []DBUser{}
+	err = p.DB.SelectContext(ctx, &rows, query)
+	if err != nil {
+		logger.Warnf(ctx, "%v", query)
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
 
-			msg.Password = ""
-			msg.OldPassword = ""
+	var sets []*pb.User
+	for _, v := range rows {
+		sets = append(sets, v.ToPb())
+	}
 
-			users = append(users, msg)
-		}
-		if err := rows.Err(); err != nil {
-			return nil, err
-		}
+	reply := &pb.DescribeUsersResponse{
+		Head: &pb.ResponseHeader{
+			UserId:     req.GetHead().GetUserId(),
+			OwnerPath:  "", // TODO
+			AccessPath: "", // TODO
+		},
+		UserSet:    sets,
+		TotalCount: int32(total),
+	}
 
-		reply := &pb.DescribeUsersResponse{
-			Head: &pb.ResponseHeader{
-				UserId:     req.GetHead().GetUserId(),
-				OwnerPath:  "", // TODO
-				AccessPath: "", // TODO
-			},
-			UserSet:    users,
-			TotalCount: int32(total),
-		}
-
-		return reply, nil
-	*/
-	panic("TODO")
+	return reply, nil
 }
 
 func (p *Database) _DescribeUsers_bySearchWord(ctx context.Context, req *pb.DescribeUsersRequest) (*pb.DescribeUsersResponse, error) {
-	/*
-		var searchWord = req.GetSearchWord()
+	logger.Infof(ctx, funcutil.CallerName(1))
 
-		if searchWord == "" {
-			return p._DescribeUsers_all(ctx, req)
-		}
+	var searchWord = req.GetSearchWord()
 
-		if !pkgSearchWordValid(searchWord) {
-			return nil, fmt.Errorf("invalid search_word: %q", searchWord)
-		}
+	if searchWord == "" {
+		return p._DescribeUsers_all(ctx, req)
+	}
 
-		total, err := p._DescribeUsers_count(ctx, req)
-		if err != nil {
-			return nil, err
-		}
+	if !pkgSearchWordValid(searchWord) {
+		return nil, fmt.Errorf("invalid search_word: %q", searchWord)
+	}
 
-		var searchWordFieldNames = pkgGetDBTableStringFieldNames(new(pb.Group))
-		if len(searchWordFieldNames) == 0 {
-			return p._DescribeUsers_all(ctx, req)
-		}
+	var searchWordFieldNames = pkgGetDBTableStringFieldNames(new(DBUser))
+	if len(searchWordFieldNames) == 0 {
+		return p._DescribeUsers_all(ctx, req)
+	}
 
-		var query = fmt.Sprintf("SELECT * FROM %s", dbSpec.GroupTableName)
-		for i, name := range searchWordFieldNames {
-			if i == 0 {
-				query += name + `WHERE LIKE %` + searchWord + `%`
-			} else {
-				query += `OR ` + name + ` LIKE %` + searchWord + `%`
-			}
-		}
+	var (
+		queryHeaer       = fmt.Sprintf("SELECT * FROM %s ", dbSpec.UserTableName)
+		queryCountHeader = fmt.Sprintf("SELECT COUNT(*) FROM %s ", dbSpec.UserTableName)
+		queryTail        string
+	)
 
-		if offset, limit := req.GetOffset(), req.GetLimit(); offset > 0 || limit > 0 {
-			query += fmt.Sprintf("LIMIT %d OFFSET %d;", limit, offset)
+	for i, name := range searchWordFieldNames {
+		if i == 0 {
+			queryTail += " WHERE `" + name + "` LIKE '%" + searchWord + "%'"
 		} else {
-			query += fmt.Sprintf("LIMIT %d OFFSET %d;", 20, 0)
+			queryTail += " OR `" + name + "` LIKE '%" + searchWord + "%'"
 		}
+	}
 
-		rows, err := p.DB.QueryContext(ctx, query)
+	if offset, limit := req.GetOffset(), req.GetLimit(); offset > 0 || limit > 0 {
+		queryTail += fmt.Sprintf(" LIMIT %d OFFSET %d;", limit, offset)
+	} else {
+		queryTail += fmt.Sprintf(" LIMIT %d OFFSET %d;", 20, 0)
+	}
+
+	// total
+	var total int
+	{
+		rows, err := p.DB.QueryContext(ctx, queryCountHeader+queryTail)
 		if err != nil {
+			logger.Warnf(ctx, "%v", queryCountHeader+queryTail)
+			logger.Warnf(ctx, "%+v", err)
 			return nil, err
 		}
 		defer rows.Close()
 
-		var users []*pb.User
-		for rows.Next() {
-			var msg = &pb.User{}
-			if err := pkgSqlScanProtoMessge(rows, msg); err != nil {
+		if rows.Next() {
+			if err := rows.Scan(&total); err != nil {
+				logger.Warnf(ctx, "%v", queryCountHeader+queryTail)
+				logger.Warnf(ctx, "%+v", err)
 				return nil, err
 			}
-
-			msg.Password = ""
-			msg.OldPassword = ""
-
-			users = append(users, msg)
 		}
-		if err := rows.Err(); err != nil {
-			return nil, err
-		}
+	}
 
-		reply := &pb.DescribeUsersResponse{
-			Head: &pb.ResponseHeader{
-				UserId:     req.GetHead().GetUserId(),
-				OwnerPath:  "", // TODO
-				AccessPath: "", // TODO
-			},
-			UserSet:    users,
-			TotalCount: int32(total),
-		}
+	var rows = []DBUser{}
+	err := p.DB.SelectContext(ctx, &rows, queryHeaer+queryTail)
+	if err != nil {
+		logger.Warnf(ctx, "%v", queryCountHeader+queryTail)
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
 
-		return reply, nil
-	*/
-	panic("TODO")
+	var sets []*pb.User
+	for _, v := range rows {
+		sets = append(sets, v.ToPb())
+	}
+
+	reply := &pb.DescribeUsersResponse{
+		Head: &pb.ResponseHeader{
+			UserId:     req.GetHead().GetUserId(),
+			OwnerPath:  "", // TODO
+			AccessPath: "", // TODO
+		},
+		UserSet:    sets,
+		TotalCount: int32(total),
+	}
+
+	return reply, nil
 }
