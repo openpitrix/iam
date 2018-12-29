@@ -64,7 +64,7 @@ func pkgBuildSql_Delete(tableName, primaryKeyName string, key ...string) (sql st
 
 	// delete * from group where group_id in ("group1","group2")
 	return fmt.Sprintf(
-		"DELETE * FROM %s WHERE %s IN (%s)",
+		"DELETE FROM %s WHERE %s IN (%s);",
 		tableName, primaryKeyName, primaryKeyValues,
 	)
 }
