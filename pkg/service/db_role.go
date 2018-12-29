@@ -11,8 +11,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"openpitrix.io/iam/openpitrix/pkg/internal/funcutil"
-	"openpitrix.io/iam/openpitrix/pkg/pb"
+	"openpitrix.io/iam/pkg/internal/funcutil"
+	"openpitrix.io/iam/pkg/pb"
 	"openpitrix.io/logger"
 )
 

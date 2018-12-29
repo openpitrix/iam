@@ -15,7 +15,7 @@ import (
 	"github.com/koding/multiconfig"
 	"gopkg.in/yaml.v2"
 
-	"openpitrix.io/iam/openpitrix/pkg/internal/jsonutil"
+	"openpitrix.io/iam/pkg/internal/jsonutil"
 	"openpitrix.io/logger"
 )
 

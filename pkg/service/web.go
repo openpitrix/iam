@@ -27,9 +27,9 @@ import (
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 
-	"openpitrix.io/iam/openpitrix/pkg/pb"
-	"openpitrix.io/iam/openpitrix/pkg/service/spec"
-	staticSwaggerUI "openpitrix.io/iam/openpitrix/pkg/service/swagger-ui"
+	"openpitrix.io/iam/pkg/pb"
+	"openpitrix.io/iam/pkg/service/spec"
+	staticSwaggerUI "openpitrix.io/iam/pkg/service/swagger-ui"
 	"openpitrix.io/logger"
 )
 

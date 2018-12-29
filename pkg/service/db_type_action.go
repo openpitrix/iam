@@ -5,7 +5,7 @@
 package service
 
 import (
-	"openpitrix.io/iam/openpitrix/pkg/pb"
+	"openpitrix.io/iam/pkg/pb"
 )
 
 type DBAction struct {

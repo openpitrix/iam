@@ -7,8 +7,8 @@ package service
 import (
 	"context"
 
-	"openpitrix.io/iam/openpitrix/pkg/pb"
-	"openpitrix.io/iam/openpitrix/pkg/version"
+	"openpitrix.io/iam/pkg/pb"
+	"openpitrix.io/iam/pkg/version"
 )
 
 func (p *Server) GetVersion(ctx context.Context, req *pb.Empty) (*pb.String, error) {

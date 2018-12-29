@@ -13,9 +13,9 @@ import (
 
 	"github.com/urfave/cli"
 
-	"openpitrix.io/iam/openpitrix/pkg/config"
-	"openpitrix.io/iam/openpitrix/pkg/service"
-	"openpitrix.io/iam/openpitrix/pkg/version"
+	"openpitrix.io/iam/pkg/config"
+	"openpitrix.io/iam/pkg/service"
+	"openpitrix.io/iam/pkg/version"
 	"openpitrix.io/logger"
 )
 

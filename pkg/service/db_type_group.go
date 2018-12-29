@@ -9,7 +9,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 
-	"openpitrix.io/iam/openpitrix/pkg/pb"
+	"openpitrix.io/iam/pkg/pb"
 )
 
 type DBGroup struct {
