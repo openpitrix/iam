@@ -8,9 +8,13 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"runtime/debug"
 	"strings"
 	"time"
 
+	"github.com/grpc-ecosystem/go-grpc-middleware"
+	"github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	"github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
@@ -18,7 +22,10 @@ import (
 	"golang.org/x/tools/godoc/vfs/httpfs"
 	"golang.org/x/tools/godoc/vfs/mapfs"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"
+	"google.golang.org/grpc/status"
 
 	"openpitrix.io/iam/openpitrix/pkg/pb"
 	"openpitrix.io/iam/openpitrix/pkg/service/spec"
@@ -26,10 +33,40 @@ import (
 	"openpitrix.io/logger"
 )
 
-func (p *Server) ListenAndServe(addr string, opt ...grpc.ServerOption) error {
+func (p *Server) makeDefaultGrpcServerOptions() []grpc.ServerOption {
+	return []grpc.ServerOption{
+		grpc.KeepaliveEnforcementPolicy(keepalive.EnforcementPolicy{
+			MinTime:             10 * time.Second,
+			PermitWithoutStream: true,
+		}),
+		grpc_middleware.WithUnaryServerChain(
+			grpc_validator.UnaryServerInterceptor(),
+			grpc_recovery.UnaryServerInterceptor(
+				grpc_recovery.WithRecoveryHandler(func(p interface{}) error {
+					logger.Criticalf(nil, "GRPC server recovery with error: %+v", p)
+					logger.Criticalf(nil, string(debug.Stack()))
+					return status.Errorf(codes.Internal, "panic")
+				}),
+			),
+		),
+		grpc_middleware.WithStreamServerChain(
+			grpc_recovery.StreamServerInterceptor(
+				grpc_recovery.WithRecoveryHandler(func(p interface{}) error {
+					logger.Criticalf(nil, "GRPC server recovery with error: %+v", p)
+					logger.Criticalf(nil, string(debug.Stack()))
+					return status.Errorf(codes.Internal, "panic")
+				}),
+			),
+		),
+	}
+}
+
+func (p *Server) ListenAndServe(addr string) error {
 	if p.webServer != nil {
 		return fmt.Errorf("web server is running")
 	}
+
+	var opt = p.makeDefaultGrpcServerOptions()
 
 	// https://github.com/grpc/grpc-go/issues/555#issuecomment-443293451
 	h2Handler := h2c.NewHandler(p.mainHandler(addr), &http2.Server{})
@@ -43,10 +80,12 @@ func (p *Server) ListenAndServe(addr string, opt ...grpc.ServerOption) error {
 	return p.webServer.ListenAndServe()
 }
 
-func (p *Server) ListenAndServeTLS(addr, certFile, keyFile string, opt ...grpc.ServerOption) error {
+func (p *Server) ListenAndServeTLS(addr, certFile, keyFile string) error {
 	if p.webServer != nil {
 		return fmt.Errorf("web server is running")
 	}
+
+	var opt = p.makeDefaultGrpcServerOptions()
 
 	p.grpcServer = grpc.NewServer(opt...)
 	reflection.Register(p.grpcServer)
