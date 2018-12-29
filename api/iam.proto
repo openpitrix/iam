@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package openpitrix.iam;
 
-option go_package = "openpitrix.io/iam/openpitrix/pkg/pb;pb";
+option go_package = "openpitrix.io/iam/pkg/pb;pb";
 
 import "google/protobuf/timestamp.proto";
 import "google/api/annotations.proto";

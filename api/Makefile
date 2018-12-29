@@ -27,4 +27,4 @@ generate: Makefile
 	make -C ../pkg/service/spec
 
 clean:
-	rm -rf $(GOPATH)/src/openpitrix.io/iam/openpitrix/pkg/pb
+	rm -rf $(GOPATH)/src/openpitrix.io/iam/pkg/pb
