@@ -22,7 +22,7 @@ info:
 	curl ${SERVER_HOST}/hello
 	@echo
 
-	curl ${SERVER_HOST}/static/version
+	curl ${SERVER_HOST}/api/IAMManager.GetVersion
 	@echo
 	@echo
 

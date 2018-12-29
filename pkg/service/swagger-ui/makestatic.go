@@ -26,6 +26,8 @@ var files = []string{
 	"swagger-ui-standalone-preset.js",
 	"swagger-ui.css",
 	"swagger-ui.js",
+
+	"iam.swagger.json",
 	"marked.min.js",
 }
 

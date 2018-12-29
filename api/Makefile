@@ -23,8 +23,8 @@ generate: Makefile
 	protoc $(PROTOC_FLAGS) --grpc-gateway_out=logtostderr=true,allow_delete_body=true:../pkg/pb ${PBFILES}
 
 	# swagger
-	protoc $(PROTOC_FLAGS) --swagger_out=logtostderr=true,allow_delete_body=true:../pkg/service/spec ${PBFILES}
-	make -C ../pkg/service/spec
+	protoc $(PROTOC_FLAGS) --swagger_out=logtostderr=true,allow_delete_body=true:../pkg/service/swagger-ui ${PBFILES}
+	make -C ../pkg/service/swagger-ui
 
 clean:
 	rm -rf $(GOPATH)/src/openpitrix.io/iam/pkg/pb

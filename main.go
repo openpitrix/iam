@@ -3,7 +3,7 @@
 // that can be found in the LICENSE file.
 
 // Identity and Access Management System for OpenPitrix.
-package iam
+package main
 
 import (
 	"fmt"

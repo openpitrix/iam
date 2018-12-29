@@ -332,7 +332,7 @@ service IAMManager {
 
 	rpc GetVersion(Empty) returns (String) {
 		option (google.api.http) = {
-			get: "/static/version"
+			get: "/api/IAMManager.GetVersion"
 		};
 	}
 
@@ -343,7 +343,7 @@ service IAMManager {
 
 	rpc DescribeActions(DescribeActionsRequest) returns (DescribeActionsResponse) {
 		option (google.api.http) = {
-			get: "/static/IAMManager.DescribeActions"
+			get: "/api/IAMManager.DescribeActions"
 		};
 	}
 

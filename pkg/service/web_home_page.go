@@ -4,6 +4,27 @@
 
 package service
 
+import (
+	"io/ioutil"
+	"os"
+	"path/filepath"
+)
+
+func init() {
+	if appPath, err := os.Executable(); err == nil {
+		println(appPath)
+
+		indexPath := filepath.Join(filepath.Dir(appPath), "public", "index.html")
+		if data, err := ioutil.ReadFile(indexPath); err == nil {
+			web_tmplHomepage = string(data)
+		}
+		readmeMdPath := filepath.Join(filepath.Dir(appPath), "public", "readme.md")
+		if data, err := ioutil.ReadFile(readmeMdPath); err == nil {
+			web_tmplReadme_md = string(data)
+		}
+	}
+}
+
 func web_readme_md() string {
 	return web_tmplReadme_md
 }
@@ -12,14 +33,14 @@ func web_homepage() string {
 	return web_tmplHomepage
 }
 
-const web_tmplReadme_md = `
-# IAM帐号和权限管理服务
+var web_tmplReadme_md = `
+# OpenPitrix IAM Server
 
-- [Swagger页面](/swagger)
-- [版本信息](/static/version)
+- [Swagger](/static/swagger)
+- [Version](/api/IAMManager.GetVersion)
 
 `
-const web_tmplHomepage = `<!doctype html>
+var web_tmplHomepage = `<!doctype html>
 <html>
 <head>
 	<meta charset="utf-8"/>
@@ -27,7 +48,7 @@ const web_tmplHomepage = `<!doctype html>
 </head>
 <body>
 	<div id="content"></div>
-	<script src="/swagger/marked.min.js"></script>
+	<script src="/static/swagger/marked.min.js"></script>
 	<script>
 		fetch('readme.md').then(response => {
 			return response.text()

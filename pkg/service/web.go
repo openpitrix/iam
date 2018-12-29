@@ -8,6 +8,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
 	"runtime/debug"
 	"strings"
 	"time"
@@ -28,7 +30,6 @@ import (
 	"google.golang.org/grpc/status"
 
 	"openpitrix.io/iam/pkg/pb"
-	"openpitrix.io/iam/pkg/service/spec"
 	staticSwaggerUI "openpitrix.io/iam/pkg/service/swagger-ui"
 	"openpitrix.io/logger"
 )
@@ -138,13 +139,18 @@ func (p *Server) mainHandler(addr string) http.Handler {
 	})
 
 	// swagger file
-	// GET /swagger/iam.swagger.json
+	// GET /static/swagger/iam.swagger.json
 	ns := vfs.NameSpace{}
-	ns.Bind("/", mapfs.New(staticSwaggerUI.Files), "/", vfs.BindReplace)
-	ns.Bind("/", mapfs.New(spec.Files), "/", vfs.BindBefore)
+	ns.Bind("/swagger", mapfs.New(staticSwaggerUI.Files), "/", vfs.BindAfter)
+	if appPath, err := os.Executable(); err == nil {
+		pubDir := filepath.Join(filepath.Dir(appPath), "public")
+		if fi, _ := os.Lstat(pubDir); fi != nil && fi.IsDir() {
+			ns.Bind("/", vfs.OS(pubDir), "/", vfs.BindAfter)
+		}
+	}
 
 	mux.Handle("/", gwmux)
-	mux.Handle("/swagger/", http.StripPrefix("/swagger", http.FileServer(httpfs.New(ns))))
+	mux.Handle("/static/", http.StripPrefix("/static", http.FileServer(httpfs.New(ns))))
 
 	// grpc
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

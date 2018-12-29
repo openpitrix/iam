@@ -1350,9 +1350,9 @@ func RegisterIAMManagerHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 }
 
 var (
-	pattern_IAMManager_GetVersion_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"static", "version"}, ""))
+	pattern_IAMManager_GetVersion_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "IAMManager.GetVersion"}, ""))
 
-	pattern_IAMManager_DescribeActions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"static", "IAMManager.DescribeActions"}, ""))
+	pattern_IAMManager_DescribeActions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "IAMManager.DescribeActions"}, ""))
 
 	pattern_IAMManager_CreateRole_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "IAMManager.CreateRole", "head.user_id"}, ""))
 
