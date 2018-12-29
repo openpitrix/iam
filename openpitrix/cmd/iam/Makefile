@@ -14,6 +14,11 @@ default:
 server:
 	go run main.go
 
+docker-run:
+	docker run --rm -it -p 9115:9115 -v `pwd`:/root \
+		openpitrix/iam:v0.0.3-dev iam \
+		-config=/root/config.json
+
 info:
 	curl ${SERVER_HOST}/hello
 	@echo
