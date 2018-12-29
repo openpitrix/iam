@@ -100,13 +100,13 @@ func (p *Database) ModifyGroup(ctx context.Context, req *pb.ModifyGroupRequest) 
 }
 func (p *Database) GetGroup(ctx context.Context, req *pb.GetGroupRequest) (*pb.GetGroupResponse, error) {
 	var query = fmt.Sprintf(
-		"SELECT * FROM %s WHERE %s=$1 LIMIT 1 OFFSET 0;",
+		"SELECT * FROM %s WHERE %s=? LIMIT 1 OFFSET 0;",
 		dbSpec.GroupTableName,
 		dbSpec.GroupPrimaryKeyName,
 	)
 
 	var v = DBGroup{}
-	err := p.DB.GetContext(ctx, &v, query)
+	err := p.DB.GetContext(ctx, &v, query, req.GetGroupId())
 	if err != nil {
 		return nil, err
 	}
