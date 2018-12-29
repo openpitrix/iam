@@ -25,9 +25,28 @@ func pkgGetDBTableFiledNames(v interface{}) (names []string) {
 	}
 	return
 }
-func pkgGetDBTableFiledNamesAndValues(v interface{}) (names []string, values []interface{}) {
+func pkgGetNonZeroDBTableFiledNamesAndValues(v interface{}) (names []string, values []interface{}) {
 	for _, f := range structs.Fields(v) {
 		if !f.IsExported() || f.IsZero() || f.Tag("db") == "-" {
+			continue
+		}
+
+		var (
+			fieldName  = f.Name()
+			fieldValue = f.Value()
+		)
+		if s := f.Tag("db"); s != "" {
+			fieldName = s
+		}
+
+		names = append(names, fieldName)
+		values = append(values, fieldValue)
+	}
+	return
+}
+func pkgGetAllDBTableFiledNamesAndValues(v interface{}) (names []string, values []interface{}) {
+	for _, f := range structs.Fields(v) {
+		if !f.IsExported() || f.Tag("db") == "-" {
 			continue
 		}
 

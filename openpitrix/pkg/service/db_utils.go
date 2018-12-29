@@ -10,7 +10,7 @@ import (
 )
 
 func pkgBuildSql_InsertInto(tableName string, v interface{}) (sql string, values []interface{}) {
-	names, values := pkgGetDBTableFiledNamesAndValues(v)
+	names, values := pkgGetAllDBTableFiledNamesAndValues(v)
 	if len(names) == 0 {
 		return "", nil
 	}
@@ -18,23 +18,29 @@ func pkgBuildSql_InsertInto(tableName string, v interface{}) (sql string, values
 	tableFieldName := strings.Join(names, ",")
 
 	taleFieldValue := func() string { // table field values
+		// postgres
 		// "$1",
 		// "$1, $2"
 		// "$1, $2, $3"
+		//
+		// mysql & sqlite3
+		// ?, ?
 		var b strings.Builder
 		for i := 0; i < len(values); i++ {
 			if i == 0 {
-				fmt.Fprintf(&b, "$%d", i+1)
+				fmt.Fprintf(&b, "?")
 			} else {
-				fmt.Fprintf(&b, ",$%d", i+1)
+				fmt.Fprintf(&b, ",?")
 			}
 		}
 		return b.String()
 	}()
 
+	// postgres: VALUES ($1, $2)
+	// mysql & sqlite3: VALUES (?, ?)
 	// db.Exec("INSERT INTO place (country, telcode) VALUES ($1, $2)", "Singapore", "65")
 	sql = fmt.Sprintf(
-		"INSERT INTO %s (%s) VALUES (%s)",
+		"INSERT INTO %s (%s) VALUES (%s);",
 		tableName,
 		tableFieldName,
 		taleFieldValue,
@@ -66,7 +72,7 @@ func pkgBuildSql_Delete(tableName, primaryKeyName string, key ...string) (sql st
 func pkgBuildSql_Update(
 	tableName string, v interface{}, primaryKeyName string,
 ) (sql string, values []interface{}) {
-	names, values := pkgGetDBTableFiledNamesAndValues(v)
+	names, values := pkgGetNonZeroDBTableFiledNamesAndValues(v)
 	if len(names) == 0 {
 		return "", nil
 	}

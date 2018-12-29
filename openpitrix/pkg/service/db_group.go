@@ -25,11 +25,11 @@ func (p *Database) CreateGroup(ctx context.Context, req *pb.CreateGroupRequest) 
 		dbSpec.GroupTableName,
 		dbGroup,
 	)
-	fmt.Println("CreateGroup, sql:", sql)
 	if len(values) == 0 {
 		err := status.Errorf(codes.InvalidArgument, "empty field")
 		return nil, err
 	}
+
 	_, err := p.DB.ExecContext(ctx, sql, values...)
 	if err != nil {
 		return nil, err
