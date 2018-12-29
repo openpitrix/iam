@@ -133,14 +133,9 @@ EXAMPLE:
 }
 
 func serve(c *cli.Context) {
-	host := c.GlobalString("host")
-	if host == "" || host == "localhost" {
-		host = getLocalIP()
-	}
-
 	if !appConfig.TlsEnabled {
 		logger.Infof(nil, version.GetVersionString())
-		logger.Infof(nil, "IAM service http://%s:%d", host, appConfig.Port)
+		logger.Infof(nil, "IAM service http://%s:%d", appConfig.Host, appConfig.Port)
 
 		server, err := service.OpenServer(appConfig.DB.Type, appConfig.DB.GetUrl())
 		if err != nil {
@@ -154,7 +149,7 @@ func serve(c *cli.Context) {
 		}
 	} else {
 		logger.Infof(nil, version.GetVersionString())
-		logger.Infof(nil, "IAM service https://%s:%d", host, appConfig.Port)
+		logger.Infof(nil, "IAM service https://%s:%d", appConfig.Host, appConfig.Port)
 
 		server, err := service.OpenServer(appConfig.DB.Type, appConfig.DB.GetUrl())
 		if err != nil {

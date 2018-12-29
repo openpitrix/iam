@@ -22,7 +22,8 @@ import (
 type Config struct {
 	DB DBConfig
 
-	Port        int    `default:"9115"`
+	Host        string `default:"openpitrix-iam2-service"`
+	Port        int    `default:"9119"`
 	TlsEnabled  bool   `default:"false"`
 	TlsCertFile string `default:"server.cert"`
 	TlsKeyFile  string `default:"server.key"`
