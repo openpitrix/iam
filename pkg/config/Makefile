@@ -3,6 +3,21 @@
 # that can be found in the LICENSE file.
 
 default:
+	@make tag
+	@make file
+	@make env
+	@make env-file
+
+tag:
+	@echo from tag
+	@go run hello.go
+
+file:
+	@echo from file
+	@go run hello.go -conf=_config.json
+
+env:
+	@echo from env
 	@\
 	OPENPITRIX_IAM_DB_TYPE=db-type-9527 \
 	OPENPITRIX_IAM_DB_HOST=db-host-9527 \
@@ -21,5 +36,17 @@ default:
 	OPENPITRIX_IAM_LOG_LEVEL=DEBUG \
 	\
 	go run hello.go
+
+env-file:
+	@echo from env and file
+	@\
+	OPENPITRIX_IAM_DB_TYPE=db-type-9527 \
+	OPENPITRIX_IAM_DB_HOST=db-host-9527 \
+	OPENPITRIX_IAM_DB_PORT=9528 \
+	OPENPITRIX_IAM_DB_USER=chai \
+	OPENPITRIX_IAM_DB_PASSWORD=chai-9527 \
+	OPENPITRIX_IAM_DB_DATABASE=chai-iam-db \
+	\
+	go run hello.go -conf=_config.json
 
 clean:

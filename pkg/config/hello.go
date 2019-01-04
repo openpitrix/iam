@@ -7,11 +7,18 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 
 	"openpitrix.io/iam/pkg/config"
 )
 
+var (
+	flagConfFile = flag.String("conf", "", "config file")
+)
+
 func main() {
-	fmt.Println(config.Default().JSONString())
+	flag.Parse()
+	cfg, _ := config.Load(*flagConfFile)
+	fmt.Println(cfg.JSONString())
 }
