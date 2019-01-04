@@ -10,6 +10,6 @@
 		"Port": 3999,
 		"User": "root-3999",
 		"Password": "password-3999",
-		"Database": "IAM-3999"
+		"Database": "IAM2-3999"
 	}
 }

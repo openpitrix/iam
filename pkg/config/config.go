@@ -58,7 +58,7 @@ type DBConfig struct {
 	Port     int    `default:"3306"`
 	User     string `default:"root"`
 	Password string `default:"password"`
-	Database string `default:"openpitrix"`
+	Database string `default:"iam2"`
 }
 
 func (m *Config) Clone() *Config {
