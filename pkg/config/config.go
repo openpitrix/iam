@@ -38,6 +38,7 @@ const EnvPrefix = "OPENPITRIX_IAM"
 // OPENPITRIX_IAM_TLS_KEY_FILE
 //
 // OPENPITRIX_IAM_LOG_LEVEL
+// OPENPITRIX_IAM_GRPC_SHOW_ERROR_CAUSE
 //
 
 type Config struct {
@@ -49,7 +50,8 @@ type Config struct {
 	TlsCertFile string `default:"server.cert"`
 	TlsKeyFile  string `default:"server.key"`
 
-	LogLevel string `default:"info"` // debug, info, warn, error, fatal
+	LogLevel           string `default:"info"` // debug, info, warn, error, fatal
+	GrpcShowErrorCause bool   `default:"false"`
 }
 
 type DBConfig struct {
