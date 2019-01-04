@@ -8,7 +8,6 @@ package config
 import (
 	"bytes"
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/BurntSushi/toml"
@@ -18,6 +17,28 @@ import (
 	"openpitrix.io/iam/pkg/internal/jsonutil"
 	"openpitrix.io/logger"
 )
+
+const EnvPrefix = "OPENPITRIX_IAM"
+
+//
+// Environment:
+//
+// OPENPITRIX_IAM_DB_TYPE
+// OPENPITRIX_IAM_DB_HOST
+// OPENPITRIX_IAM_DB_PORT
+// OPENPITRIX_IAM_DB_USER
+// OPENPITRIX_IAM_DB_PASSWORD
+// OPENPITRIX_IAM_DB_DATABASE
+//
+// OPENPITRIX_IAM_HOST
+// OPENPITRIX_IAM_PORT
+//
+// OPENPITRIX_IAM_TLS_ENABLED
+// OPENPITRIX_IAM_TLS_CERT_FILE
+// OPENPITRIX_IAM_TLS_KEY_FILE
+//
+// OPENPITRIX_IAM_LOG_LEVEL
+//
 
 type Config struct {
 	DB DBConfig
@@ -38,7 +59,6 @@ type DBConfig struct {
 	User     string `default:"root"`
 	Password string `default:"password"`
 	Database string `default:"openpitrix"`
-	Disable  bool   `default:"false"`
 }
 
 func (m *DBConfig) GetUrl() string {
@@ -52,15 +72,14 @@ func (m *DBConfig) GetUrl() string {
 }
 
 func Default() *Config {
-	d := &multiconfig.DefaultLoader{
-		Loader: multiconfig.MultiLoader(&multiconfig.TagLoader{}),
-	}
+	conf := new(Config)
 
-	var c Config
-	if err := d.Load(&c); err != nil {
-		log.Fatal(err)
+	loader := newWithPath("")
+	if err := loader.Load(conf); err != nil {
+		logger.Criticalf(nil, "%v", err)
+		panic(err)
 	}
-	return &c
+	return conf
 }
 
 func Load(path string) (*Config, error) {
@@ -114,17 +133,22 @@ func newWithPath(path string) *multiconfig.DefaultLoader {
 	loaders = append(loaders, &multiconfig.TagLoader{})
 
 	// Choose what while is passed
-	if strings.HasSuffix(path, "toml") {
+	if strings.HasSuffix(path, ".toml") {
 		loaders = append(loaders, &multiconfig.TOMLLoader{Path: path})
 	}
 
-	if strings.HasSuffix(path, "json") {
+	if strings.HasSuffix(path, ".json") {
 		loaders = append(loaders, &multiconfig.JSONLoader{Path: path})
 	}
 
-	if strings.HasSuffix(path, "yml") || strings.HasSuffix(path, "yaml") {
+	if strings.HasSuffix(path, ".yml") || strings.HasSuffix(path, ".yaml") {
 		loaders = append(loaders, &multiconfig.YAMLLoader{Path: path})
 	}
+
+	loaders = append(loaders, &multiconfig.EnvironmentLoader{
+		Prefix:    EnvPrefix,
+		CamelCase: true,
+	})
 
 	loader := multiconfig.MultiLoader(loaders...)
 
