@@ -10,22 +10,28 @@ import (
 
 	"google.golang.org/grpc"
 	"openpitrix.io/logger"
+
+	"openpitrix.io/iam/pkg/config"
 )
 
 type Server struct {
+	cfg        *config.Config
 	webServer  *http.Server
 	grpcServer *grpc.Server
 	db         *Database
 }
 
-func OpenServer(dbtype, dbpath string) (*Server, error) {
-	db, err := Open(dbtype, dbpath)
+func OpenServer(cfg *config.Config) (*Server, error) {
+	cfg = cfg.Clone()
+
+	db, err := OpenDatabase(cfg)
 	if err != nil {
 		logger.Criticalf(nil, "%v", err)
 	}
 
 	p := &Server{
-		db: db,
+		cfg: cfg,
+		db:  db,
 	}
 	return p, nil
 }

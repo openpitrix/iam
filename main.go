@@ -137,7 +137,7 @@ func serve(c *cli.Context) {
 		logger.Infof(nil, version.GetVersionString())
 		logger.Infof(nil, "IAM service http://%s:%d", appConfig.Host, appConfig.Port)
 
-		server, err := service.OpenServer(appConfig.DB.Type, appConfig.DB.GetUrl())
+		server, err := service.OpenServer(appConfig)
 		if err != nil {
 			logger.Criticalf(nil, "%v", err)
 			os.Exit(1)
@@ -151,7 +151,7 @@ func serve(c *cli.Context) {
 		logger.Infof(nil, version.GetVersionString())
 		logger.Infof(nil, "IAM service https://%s:%d", appConfig.Host, appConfig.Port)
 
-		server, err := service.OpenServer(appConfig.DB.Type, appConfig.DB.GetUrl())
+		server, err := service.OpenServer(appConfig)
 		if err != nil {
 			logger.Criticalf(nil, "%v", err)
 			os.Exit(1)

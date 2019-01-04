@@ -61,12 +61,36 @@ type DBConfig struct {
 	Database string `default:"openpitrix"`
 }
 
+func (m *Config) Clone() *Config {
+	q := *m
+	return &q
+}
+
+func (m *DBConfig) GetHostUrl() string {
+	if m.Type == "sqlite3" {
+		return m.Database
+	}
+	if m.Type == "mysql" {
+		return fmt.Sprintf("%s:%s@tcp(%s:%d)/", m.User, m.Password, m.Host, m.Port)
+	}
+	return m.Database
+}
+
 func (m *DBConfig) GetUrl() string {
 	if m.Type == "sqlite3" {
 		return m.Database
 	}
 	if m.Type == "mysql" {
 		return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", m.User, m.Password, m.Host, m.Port, m.Database)
+	}
+	return m.Database
+}
+func (m *DBConfig) GetUrlWithParseTime() string {
+	if m.Type == "sqlite3" {
+		return m.Database
+	}
+	if m.Type == "mysql" {
+		return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true", m.User, m.Password, m.Host, m.Port, m.Database)
 	}
 	return m.Database
 }

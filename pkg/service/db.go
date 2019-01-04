@@ -5,36 +5,59 @@
 package service
 
 import (
+	"database/sql"
+	"fmt"
 	"strings"
 
 	"github.com/fatih/structs"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 
+	"openpitrix.io/iam/pkg/config"
 	"openpitrix.io/logger"
 )
 
 type Database struct {
+	cfg *config.Config
 	*sqlx.DB
 }
 
-func Open(dbtype, dbpath string) (*Database, error) {
-	if dbtype == "mysql" {
-		if !strings.Contains(dbpath, "parseTime=true") {
-			dbpath += "?parseTime=true"
-		}
-	}
+func OpenDatabase(cfg *config.Config) (*Database, error) {
+	cfg = cfg.Clone()
 
-	db, err := sqlx.Open(dbtype, dbpath)
+	// init db
+	func() {
+		if strings.EqualFold(cfg.DB.Type, "mysql") {
+			db, err := sql.Open("mysql", cfg.DB.GetHostUrl())
+			if err != nil {
+				logger.Warnf(nil, "%v", err)
+			}
+			defer db.Close()
+
+			query := fmt.Sprintf(
+				"CREATE DATABASE IF NOT EXISTS %s DEFAULT CHARACTER SET utf8;",
+				cfg.DB.Database,
+			)
+			_, err = db.Exec(query)
+			if err != nil {
+				logger.Warnf(nil, "query = %s, err = %v", query, err)
+			}
+		}
+	}()
+
+	db, err := sqlx.Open(cfg.DB.Type, cfg.DB.GetUrlWithParseTime())
 	if err != nil {
 		return nil, err
 	}
 
-	p := &Database{DB: db}
-	for _, v := range InitSqlList {
+	p := &Database{
+		cfg: cfg,
+		DB:  db,
+	}
+	for i, v := range InitSqlList {
 		if v.Name != "-" {
 			if _, err := p.Exec(v.Sql); err != nil {
-				logger.Warnf(nil, "%v", err)
+				logger.Warnf(nil, "%d: %v", i, err)
 			}
 		}
 	}
