@@ -35,7 +35,7 @@ func OpenDatabase(cfg *config.Config) (*Database, error) {
 			defer db.Close()
 
 			query := fmt.Sprintf(
-				"CREATE DATABASE IF NOT EXISTS %s DEFAULT CHARACTER SET utf8;",
+				"CREATE DATABASE IF NOT EXISTS %s DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_unicode_ci;",
 				cfg.DB.Database,
 			)
 			_, err = db.Exec(query)
