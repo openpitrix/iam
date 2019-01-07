@@ -37,7 +37,7 @@ var web_tmplReadme_md = `
 # OpenPitrix IAM Server
 
 - [Swagger](/static/swagger)
-- [Version](/api/IAMManager.GetVersion)
+- [Version](/v1.1/version:iam)
 
 `
 var web_tmplHomepage = `<!doctype html>

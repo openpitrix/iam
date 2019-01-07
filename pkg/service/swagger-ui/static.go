@@ -245,226 +245,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
     "application/json"
   ],
   "paths": {
-    "/api/IAMManager.ComparePassword": {
-      "post": {
-        "operationId": "ComparePassword",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/iamBool"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/iamUserPassword"
-            }
-          }
-        ],
-        "tags": [
-          "IAMManager"
-        ]
-      }
-    },
-    "/api/IAMManager.CreateGroup/{head.user_id}": {
-      "post": {
-        "operationId": "CreateGroup",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/iamCreateGroupResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "head.user_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/iamCreateGroupRequest"
-            }
-          }
-        ],
-        "tags": [
-          "IAMManager"
-        ]
-      }
-    },
-    "/api/IAMManager.CreateRole/{head.user_id}": {
-      "post": {
-        "operationId": "CreateRole",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/iamCreateRoleResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "head.user_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/iamCreateRoleRequest"
-            }
-          }
-        ],
-        "tags": [
-          "IAMManager"
-        ]
-      }
-    },
-    "/api/IAMManager.CreateUser/{head.user_id}": {
-      "post": {
-        "operationId": "CreateUser",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/iamCreateUserResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "head.user_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/iamCreateUserRequest"
-            }
-          }
-        ],
-        "tags": [
-          "IAMManager"
-        ]
-      }
-    },
-    "/api/IAMManager.DeleteGroups/{head.user_id}": {
-      "delete": {
-        "operationId": "DeleteGroups",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/iamDeleteGroupsResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "head.user_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/iamDeleteGroupsRequest"
-            }
-          }
-        ],
-        "tags": [
-          "IAMManager"
-        ]
-      }
-    },
-    "/api/IAMManager.DeleteRole/{head.user_id}": {
-      "delete": {
-        "summary": "注意：删除的时候注意需要递归删除，对应的role id list 的role包含的user的role_id 要修改为空，\n并且Role对应的Feature和Action表数据也要清理掉",
-        "operationId": "DeleteRoles",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/iamDeleteRolesResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "head.user_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/iamDeleteRolesRequest"
-            }
-          }
-        ],
-        "tags": [
-          "IAMManager"
-        ]
-      }
-    },
-    "/api/IAMManager.DeleteUsers/{head.user_id}": {
-      "delete": {
-        "operationId": "DeleteUsers",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/iamDeleteUsersResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "head.user_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/iamDeleteUsersRequest"
-            }
-          }
-        ],
-        "tags": [
-          "IAMManager"
-        ]
-      }
-    },
-    "/api/IAMManager.DescribeActions": {
+    "/v1.1/actions": {
       "get": {
         "operationId": "DescribeActions",
         "responses": {
@@ -496,7 +277,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         ]
       }
     },
-    "/api/IAMManager.DescribeGroups/{head.user_id}": {
+    "/v1.1/groups": {
       "get": {
         "operationId": "DescribeGroups",
         "responses": {
@@ -510,8 +291,8 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "parameters": [
           {
             "name": "head.user_id",
-            "in": "path",
-            "required": true,
+            "in": "query",
+            "required": false,
             "type": "string"
           },
           {
@@ -538,277 +319,55 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "tags": [
           "IAMManager"
         ]
-      }
-    },
-    "/api/IAMManager.DescribeRoles/{head.user_id}": {
-      "get": {
-        "operationId": "DescribeRoles",
+      },
+      "delete": {
+        "operationId": "DeleteGroups",
         "responses": {
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/iamDescribeRolesResponse"
+              "$ref": "#/definitions/iamDeleteGroupsResponse"
             }
           }
         },
         "parameters": [
-          {
-            "name": "head.user_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "search_word",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "tags": [
-          "IAMManager"
-        ]
-      }
-    },
-    "/api/IAMManager.DescribeUsers/{head.user_id}": {
-      "get": {
-        "operationId": "DescribeUsers",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/iamDescribeUsersResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "head.user_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "search_word",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "tags": [
-          "IAMManager"
-        ]
-      }
-    },
-    "/api/IAMManager.GetAccessPath/{head.user_id}": {
-      "post": {
-        "summary": "通过user_id,关联user,group,role,role_feature_binding，\n根据datalevel来处理group_path,得到access_path.",
-        "operationId": "GetAccessPath",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/iamString"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "head.user_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
           {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/iamGetAccessPathRequest"
+              "$ref": "#/definitions/iamDeleteGroupsRequest"
             }
           }
         ],
         "tags": [
           "IAMManager"
         ]
-      }
-    },
-    "/api/IAMManager.GetGroup/{head.user_id}": {
-      "get": {
-        "operationId": "GetGroup",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/iamGetGroupResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "head.user_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "group_id",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "IAMManager"
-        ]
-      }
-    },
-    "/api/IAMManager.GetOwnerPath/{head.user_id}": {
+      },
       "post": {
-        "operationId": "GetOwnerPath",
+        "operationId": "CreateGroup",
         "responses": {
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/iamString"
+              "$ref": "#/definitions/iamCreateGroupResponse"
             }
           }
         },
         "parameters": [
-          {
-            "name": "head.user_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
           {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/iamGetOwnerPathRequest"
+              "$ref": "#/definitions/iamCreateGroupRequest"
             }
           }
         ],
         "tags": [
           "IAMManager"
         ]
-      }
-    },
-    "/api/IAMManager.GetRole/{head.user_id}": {
-      "get": {
-        "operationId": "GetRole",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/iamGetRoleResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "head.user_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "role_id",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "IAMManager"
-        ]
-      }
-    },
-    "/api/IAMManager.GetUser/{head.user_id}": {
-      "get": {
-        "operationId": "GetUser",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/iamGetUserResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "head.user_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "user_id",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "IAMManager"
-        ]
-      }
-    },
-    "/api/IAMManager.GetVersion": {
-      "get": {
-        "operationId": "GetVersion",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/iamString"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "value",
-            "in": "query",
-            "required": false,
-            "type": "boolean",
-            "format": "boolean"
-          }
-        ],
-        "tags": [
-          "IAMManager"
-        ]
-      }
-    },
-    "/api/IAMManager.ModifyGroup/{head.user_id}": {
+      },
       "patch": {
         "operationId": "ModifyGroup",
         "responses": {
@@ -820,12 +379,6 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
           }
         },
         "parameters": [
-          {
-            "name": "head.user_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
           {
             "name": "body",
             "in": "body",
@@ -840,7 +393,37 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         ]
       }
     },
-    "/api/IAMManager.ModifyPassword": {
+    "/v1.1/groups/{group_id}": {
+      "get": {
+        "operationId": "GetGroup",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/iamGetGroupResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "head.user_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "IAMManager"
+        ]
+      }
+    },
+    "/v1.1/password:change": {
       "post": {
         "operationId": "ModifyPassword",
         "responses": {
@@ -866,30 +449,24 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         ]
       }
     },
-    "/api/IAMManager.ModifyRole/{head.user_id}": {
-      "patch": {
-        "operationId": "ModifyRole",
+    "/v1.1/password:compare": {
+      "post": {
+        "operationId": "ComparePassword",
         "responses": {
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/iamModifyRoleResponse"
+              "$ref": "#/definitions/iamBool"
             }
           }
         },
         "parameters": [
           {
-            "name": "head.user_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/iamModifyRoleRequest"
+              "$ref": "#/definitions/iamUserPassword"
             }
           }
         ],
@@ -898,7 +475,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         ]
       }
     },
-    "/api/IAMManager.ModifyRoleModuleBindings/{head.user_id}": {
+    "/v1.1/role_module_bindings": {
       "post": {
         "operationId": "ModifyRoleModuleBindings",
         "responses": {
@@ -910,12 +487,6 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
           }
         },
         "parameters": [
-          {
-            "name": "head.user_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
           {
             "name": "body",
             "in": "body",
@@ -930,7 +501,244 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         ]
       }
     },
-    "/api/IAMManager.ModifyUser/{head.user_id}": {
+    "/v1.1/roles": {
+      "get": {
+        "operationId": "DescribeRoles",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/iamDescribeRolesResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "head.user_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "search_word",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "IAMManager"
+        ]
+      },
+      "delete": {
+        "summary": "注意：删除的时候注意需要递归删除，对应的role id list 的role包含的user的role_id 要修改为空，\n并且Role对应的Feature和Action表数据也要清理掉",
+        "operationId": "DeleteRoles",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/iamDeleteRolesResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamDeleteRolesRequest"
+            }
+          }
+        ],
+        "tags": [
+          "IAMManager"
+        ]
+      },
+      "post": {
+        "operationId": "CreateRole",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/iamCreateRoleResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamCreateRoleRequest"
+            }
+          }
+        ],
+        "tags": [
+          "IAMManager"
+        ]
+      },
+      "patch": {
+        "operationId": "ModifyRole",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/iamModifyRoleResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamModifyRoleRequest"
+            }
+          }
+        ],
+        "tags": [
+          "IAMManager"
+        ]
+      }
+    },
+    "/v1.1/roles/{role_id}": {
+      "get": {
+        "operationId": "GetRole",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/iamGetRoleResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "role_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "head.user_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "IAMManager"
+        ]
+      }
+    },
+    "/v1.1/users": {
+      "get": {
+        "operationId": "DescribeUsers",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/iamDescribeUsersResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "head.user_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "search_word",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "IAMManager"
+        ]
+      },
+      "delete": {
+        "operationId": "DeleteUsers",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/iamDeleteUsersResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamDeleteUsersRequest"
+            }
+          }
+        ],
+        "tags": [
+          "IAMManager"
+        ]
+      },
+      "post": {
+        "operationId": "CreateUser",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/iamCreateUserResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iamCreateUserRequest"
+            }
+          }
+        ],
+        "tags": [
+          "IAMManager"
+        ]
+      },
       "patch": {
         "operationId": "ModifyUser",
         "responses": {
@@ -943,18 +751,67 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         },
         "parameters": [
           {
-            "name": "head.user_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
               "$ref": "#/definitions/iamModifyUserRequest"
             }
+          }
+        ],
+        "tags": [
+          "IAMManager"
+        ]
+      }
+    },
+    "/v1.1/users/user_id": {
+      "get": {
+        "operationId": "GetUser",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/iamGetUserResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "head.user_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "IAMManager"
+        ]
+      }
+    },
+    "/v1.1/version:iam": {
+      "get": {
+        "operationId": "GetVersion",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/iamString"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "value",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "format": "boolean"
           }
         ],
         "tags": [
@@ -1233,17 +1090,6 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         }
       }
     },
-    "iamGetAccessPathRequest": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamResponseHeader"
-        },
-        "method": {
-          "type": "string"
-        }
-      }
-    },
     "iamGetGroupResponse": {
       "type": "object",
       "properties": {
@@ -1252,17 +1098,6 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         },
         "value": {
           "$ref": "#/definitions/iamGroup"
-        }
-      }
-    },
-    "iamGetOwnerPathRequest": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamRequestHeader"
-        },
-        "method": {
-          "type": "string"
         }
       }
     },

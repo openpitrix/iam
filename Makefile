@@ -22,7 +22,7 @@ info:
 	curl ${SERVER_HOST}/hello
 	@echo
 
-	curl ${SERVER_HOST}/api/IAMManager.GetVersion
+	curl ${SERVER_HOST}/v1.1/version:iam
 	@echo
 	@echo
 
@@ -30,7 +30,7 @@ info:
 	@echo
 
 swagger:
-	curl ${SERVER_HOST}/swagger/iam.swagger.json | jq .
+	curl ${SERVER_HOST}/static/swagger/iam.swagger.json | jq .
 
 list-method:
 	grpcurl -plaintext ${SERVER_HOST} list
@@ -40,7 +40,7 @@ list-group:
 	grpcurl -plaintext ${SERVER_HOST} openpitrix.iam.IAMManager/DescribeGroups
 	@echo
 
-	curl ${SERVER_HOST}/api/IAMManager.DescribeGroups/chai | jq .
+	curl ${SERVER_HOST}/v1.1/groups | jq .
 	@echo
 	@echo
 

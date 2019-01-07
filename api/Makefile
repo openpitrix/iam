@@ -10,14 +10,15 @@ PBFILES=$(sort $(wildcard *.proto))
 PROTOC_FLAGS:=-I. -Ithird_party/googleapis -Ithird_party
 
 generate: Makefile
+	@rm -rf ./_output/*
+	@mkdir -p ./_output
+
 	@rm -rf ../pkg/pb/*
 	@mkdir -p ../pkg/pb
 
 	# grpc service
-	protoc $(PROTOC_FLAGS) --go_out=plugins=grpc:$(GOPATH)/src ${PBFILES}
-
-	# govalidators
-	#protoc $(PROTOC_FLAGS) --govalidators_out=$(GOPATH)/src ${PBFILES}
+	protoc $(PROTOC_FLAGS) --go_out=plugins=grpc:./_output ${PBFILES}
+	cp ./_output/openpitrix.io/iam/pkg/pb/*.go ../pkg/pb/
 
 	# gateway
 	protoc $(PROTOC_FLAGS) --grpc-gateway_out=logtostderr=true,allow_delete_body=true:../pkg/pb ${PBFILES}
