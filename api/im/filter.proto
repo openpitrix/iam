@@ -1,0 +1,38 @@
+// Copyright 2018 The OpenPitrix Authors. All rights reserved.
+// Use of this source code is governed by a Apache license
+// that can be found in the LICENSE file.
+
+syntax = "proto2";
+
+package openpitrix.iam.im;
+
+option go_package = "openpitrix.io/iam/pkg/pb/im;pbim";
+
+import "google/protobuf/timestamp.proto";
+
+message FieldValidator {
+	// Uses a Golang RE2-syntax regex to match the field contents.
+	optional string regex = 1;
+	// Field value of integer strictly greater than this value.
+	optional int64 int_gt = 2;
+	// Field value of integer strictly smaller than this value.
+	optional int64 int_lt = 3;
+	// Used for string fields, requires the string to be not empty (i.e different from "").
+	optional bool str_not_empty = 4;
+	// Field value of length greater than this value.
+	optional int64 len_gt = 5;
+	// Field value of length smaller than this value.
+	optional int64 len_lt = 6;
+	// Field value of integer strictly equal this value.
+	optional int64 len_eq = 7;
+	// Field value must be in [enum_int]
+	repeated int64 enum_int = 8;
+	// Field value must be in [enum_string]
+	repeated string enum_string = 9;
+	// Field time value before this value.
+	optional google.protobuf.Timestamp time_before = 10;
+	// Field time value after this value.
+	optional google.protobuf.Timestamp time_after = 11;
+	// Field value contains string elem.
+	repeated string repeated_contains_string = 12;
+}

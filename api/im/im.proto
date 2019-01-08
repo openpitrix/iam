@@ -1,0 +1,150 @@
+// Copyright 2018 The OpenPitrix Authors. All rights reserved.
+// Use of this source code is governed by a Apache license
+// that can be found in the LICENSE file.
+
+syntax = "proto3";
+
+package openpitrix.iam.im;
+
+option go_package = "openpitrix.io/iam/pkg/pb/im;pbim";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "im/filter.proto";
+
+// ----------------------------------------------------------------------------
+// basic type
+// ----------------------------------------------------------------------------
+
+message User {
+	string uid = 1;
+	repeated string gid = 2;
+
+	string name = 3;
+	string email = 4;
+	string description = 5;
+	string password = 6;
+	string status = 7;
+	map<string,string> extra = 8;
+
+	google.protobuf.Timestamp create_time = 9;
+	google.protobuf.Timestamp update_time = 10;
+	google.protobuf.Timestamp status_time = 11;
+}
+message UserList {
+	repeated User value = 1;
+}
+
+message Group {
+	string gid = 1;
+	string gid_parent = 2;
+
+	string name = 3;
+	string email = 4;
+	string description = 5;
+	string status = 6;
+	map<string,string> extra = 7;
+
+ 	google.protobuf.Timestamp create_time = 8;
+	google.protobuf.Timestamp update_time = 9;
+	google.protobuf.Timestamp status_time = 10;
+}
+
+// ----------------------------------------------------------------------------
+// service api
+// ----------------------------------------------------------------------------
+
+service AccountManager {
+	rpc CreateGroup(Group) returns (Group);
+	rpc DeleteGroups(IdList) returns (Empty);
+
+	rpc CreateUser(User) returns (User);
+	rpc DeleteUsers(IdList) returns (Empty);
+
+	rpc ListUesrs(Range) returns (ListUesrsResponse);
+	rpc ListGroups(Range) returns (ListGroupsResponse);
+
+	rpc GetUser(Id) returns (User);
+	rpc GetUserByGroupId(Id) returns (UserList);
+	rpc ModifyUser(ModifyUsersRequest) returns (User);
+	rpc ComparePassword(Password) returns (Empty);
+	rpc ModifyPassword(Password) returns (Empty);
+
+	rpc GetGroup(Id) returns (Group);
+	rpc GetGroupPath(Id) returns (GroupPath);
+	rpc ModifyGroup(ModifyGroupsRequest) returns (Group);
+
+	rpc JoinGroup(JoinGroupRequest) returns (Empty);
+	rpc LeaveGroup(LeaveGroupRequest) returns (Empty);
+}
+
+// ----------------------------------------------------------------------------
+// service api type
+// ----------------------------------------------------------------------------
+
+message Empty {
+	//
+}
+message Bool {
+	bool value = 1;
+}
+
+message Id {
+	string value = 1;
+}
+message IdList {
+	repeated string value = 1;
+}
+message Range {
+	map<string,FieldValidator> filter = 1;
+	int32 offset = 2;
+	int32 limit = 3;
+}
+message Password {
+	string uid = 1;
+	string password = 2;
+}
+
+message ListUesrsResponse {
+	repeated User user = 1;
+	int32 total = 2;
+}
+message ListGroupsResponse {
+	repeated Group group = 1;
+	int32 total = 2;
+}
+
+message ModifyUsersRequest {
+	string uid = 1;
+	google.protobuf.StringValue name = 2;
+	google.protobuf.StringValue email = 3;
+	google.protobuf.StringValue description = 4;
+	google.protobuf.StringValue status = 5;
+	map<string,string> extra = 6;
+}
+
+message ModifyGroupsRequest {
+	string gid = 1;
+	google.protobuf.StringValue name = 2;
+	google.protobuf.StringValue description = 3;
+	google.protobuf.StringValue status = 4;
+	map<string,string> extra = 5;
+}
+
+message GroupPath {
+	repeated string gid = 1;
+	repeated string name = 2;
+}
+
+message JoinGroupRequest {
+	repeated string gid = 1;
+	repeated string uid = 2;
+}
+message LeaveGroupRequest {
+	repeated string gid = 1;
+	repeated string uid = 2;
+}
+
+// ----------------------------------------------------------------------------
+// END
+// ----------------------------------------------------------------------------

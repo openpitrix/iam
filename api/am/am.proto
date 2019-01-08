@@ -1,0 +1,149 @@
+// Copyright 2018 The OpenPitrix Authors. All rights reserved.
+// Use of this source code is governed by a Apache license
+// that can be found in the LICENSE file.
+
+syntax = "proto3";
+
+package openpitrix.iam.am;
+
+option go_package = "openpitrix.io/iam/pkg/pb/am;pbam";
+
+// ----------------------------------------------------------------------------
+// The Pattern Syntax
+// ----------------------------------------------------------------------------
+
+// The pattern syntax is:
+//
+//	pattern:
+//	{ term }
+//	term:
+//		'*'         matches any sequence of non-Separator characters
+//		'**'        matches any sequence of characters, include path separators.
+//		'?'         matches any single non-Separator character
+//		'[' [ '^' ] { character-range } ']'
+//		            character class (must be non-empty)
+//		c           matches character c (c != '*', '?', '\\', '[')
+//		'\\' c      matches character c
+//
+//	character-range:
+//		c           matches character c (c != '\\', '-', ']')
+//		'\\' c      matches character c
+//		lo '-' hi   matches character c for lo <= c <= hi
+//
+// See https://godoc.org/path/filepath#Match
+// See https://github.com/bmatcuk/doublestar
+//
+// Examples: https://golang.org/src/path/filepath/match_test.go
+
+// ----------------------------------------------------------------------------
+// basic type
+// ----------------------------------------------------------------------------
+
+message Action {
+	// 1. check any role can do the action
+	// 2. mapping xid to the roles, then check any role can do the action
+
+	repeated string role_name = 1; //
+	repeated string xid = 2;       // user_id/group_id/*_id
+
+	string method = 3;    // GRPC: ServiceName.ServiceMethodName
+	string namespace = 4; // /qingcloud.test
+}
+
+message ActionRule {
+	string name = 1;                       // primary key, read only
+	string method_pattern = 2;             // See Pattern Syntax
+	repeated string namespace_pattern = 3; // See Pattern Syntax
+}
+message ActionRuleList {
+	repeated ActionRule value = 1;
+}
+
+message Role {
+	string name = 1; // primary key, read only
+	repeated ActionRule rule = 2;
+}
+message RoleList {
+	repeated Role value = 1;
+}
+
+message RoleActionRuleBinding {
+	string role_name = 1;
+	string action_rule_id = 2;
+}
+message RoleActionRuleBindingList {
+	repeated RoleActionRuleBinding value = 1;
+}
+
+message RoleXidBinding {
+	string role_name = 1;
+	string xid = 2;
+}
+message RoleXidBindingList {
+	repeated RoleXidBinding value = 1;
+}
+
+// ----------------------------------------------------------------------------
+// service api
+// ----------------------------------------------------------------------------
+
+service AccessManager {
+	rpc CreateRole(Role) returns (Role);
+	rpc DeleteRoleByName(String) returns (Bool);
+
+	rpc CreateActionRule(Role) returns (Role);
+	rpc DeleteActionRuleByName(String) returns (Bool);
+
+	rpc CreateRoleXidBinding(RoleXidBindingList) returns (Bool);
+	rpc DeleteRoleXidBindingByXid(XidList) returns (Bool);
+
+	rpc ListRoles(NameFilter) returns (RoleList);
+	rpc ListActionRules(NameFilter) returns (ActionRuleList);
+	rpc ListRoleBindings(NameFilter) returns (RoleXidBindingList);
+
+	rpc GetActionRuleByName(String) returns (Role);
+	rpc GetActionRuleByRoleName(String) returns (Role);
+	rpc GetActionRuleByXid(XidList) returns (RoleList);
+
+	rpc GetXidListByRoleName(String) returns (XidList);
+	rpc GetRoleListByByXid(XidList) returns (RoleList);
+
+	// check any of xid or role_name can do the action
+	rpc CanDo(Action) returns (Bool);
+}
+
+// ----------------------------------------------------------------------------
+// service api type
+// ----------------------------------------------------------------------------
+
+message Bool {
+	bool value = 1;
+}
+message String {
+	string value = 1;
+}
+
+message Xid {
+	string value = 1;
+}
+message XidList {
+	repeated string value = 1;
+}
+
+message NameFilter {
+	// Glob: See Pattern Syntax
+	string glob_pattern = 1;
+
+	// Use RE2 syntax
+	// See https://github.com/google/re2/wiki/Syntax
+	string regexp_pattern = 2;
+}
+
+message RoleBindingFilter {
+	NameFilter xid = 1;
+	NameFilter role_name = 2;
+}
+
+// ----------------------------------------------------------------------------
+// END
+// ----------------------------------------------------------------------------
