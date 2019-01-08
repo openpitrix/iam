@@ -23,14 +23,15 @@ message User {
 
 	string name = 3;
 	string email = 4;
-	string description = 5;
-	string password = 6;
-	string status = 7;
-	map<string,string> extra = 8;
+	string phone_number = 5;
+	string description = 6;
+	string password = 7;
+	string status = 8;
+	map<string,string> extra = 9;
 
-	google.protobuf.Timestamp create_time = 9;
-	google.protobuf.Timestamp update_time = 10;
-	google.protobuf.Timestamp status_time = 11;
+	google.protobuf.Timestamp create_time = 10;
+	google.protobuf.Timestamp update_time = 11;
+	google.protobuf.Timestamp status_time = 12;
 }
 message UserList {
 	repeated User value = 1;
@@ -38,7 +39,7 @@ message UserList {
 
 message Group {
 	string gid = 1;
-	string gid_parent = 2;
+	string group_path = 2;
 
 	string name = 3;
 	string email = 4;

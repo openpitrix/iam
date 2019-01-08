@@ -424,7 +424,7 @@
         "gid": {
           "type": "string"
         },
-        "gid_parent": {
+        "group_path": {
           "type": "string"
         },
         "name": {
@@ -561,6 +561,9 @@
           "type": "string"
         },
         "email": {
+          "type": "string"
+        },
+        "phone_number": {
           "type": "string"
         },
         "description": {
