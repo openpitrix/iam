@@ -8,6 +8,8 @@ package openpitrix.iam.am;
 
 option go_package = "openpitrix.io/iam/pkg/pb/am;pbam";
 
+import "google/api/annotations.proto";
+
 // ----------------------------------------------------------------------------
 // The Pattern Syntax
 // ----------------------------------------------------------------------------
@@ -88,14 +90,19 @@ message RoleXidBindingList {
 // ----------------------------------------------------------------------------
 
 service AccessManager {
-	rpc CreateRole(Role) returns (Role);
-	rpc DeleteRoleByName(String) returns (Bool);
+	rpc CreateRole(Role) returns (Role) {
+		option (google.api.http) = {
+			post: "/apis/iam/roles"
+			body: "*"
+		};
+	}
+	rpc DeleteRoleByName(String) returns (Empty);
 
 	rpc CreateActionRule(Role) returns (Role);
-	rpc DeleteActionRuleByName(String) returns (Bool);
+	rpc DeleteActionRuleByName(String) returns (Empty);
 
-	rpc CreateRoleXidBinding(RoleXidBindingList) returns (Bool);
-	rpc DeleteRoleXidBindingByXid(XidList) returns (Bool);
+	rpc CreateRoleXidBinding(RoleXidBindingList) returns (Empty);
+	rpc DeleteRoleXidBindingByXid(XidList) returns (Empty);
 
 	rpc ListRoles(NameFilter) returns (RoleList);
 	rpc ListActionRules(NameFilter) returns (ActionRuleList);
@@ -109,13 +116,16 @@ service AccessManager {
 	rpc GetRoleListByByXid(XidList) returns (RoleList);
 
 	// check any of xid or role_name can do the action
-	rpc CanDo(Action) returns (Bool);
+	rpc CanDo(Action) returns (Empty);
 }
 
 // ----------------------------------------------------------------------------
 // service api type
 // ----------------------------------------------------------------------------
 
+message Empty {
+	//
+}
 message Bool {
 	bool value = 1;
 }

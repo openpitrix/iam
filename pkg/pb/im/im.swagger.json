@@ -430,9 +430,6 @@
         "name": {
           "type": "string"
         },
-        "email": {
-          "type": "string"
-        },
         "description": {
           "type": "string"
         },
