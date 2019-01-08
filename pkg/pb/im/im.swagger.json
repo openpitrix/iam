@@ -1,0 +1,618 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "openpitrix/iam/im/im.proto",
+    "version": "version not set"
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/apis/iam/groups": {
+      "get": {
+        "operationId": "ListGroups",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/imListGroupsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "sort_key",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "reverse",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "format": "boolean"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "AccountManager"
+        ]
+      },
+      "delete": {
+        "operationId": "DeleteGroups",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/imEmpty"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/imGroupIdList"
+            }
+          }
+        ],
+        "tags": [
+          "AccountManager"
+        ]
+      },
+      "post": {
+        "operationId": "CreateGroup",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/imGroup"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/imGroup"
+            }
+          }
+        ],
+        "tags": [
+          "AccountManager"
+        ]
+      }
+    },
+    "/apis/iam/groups/{gid}": {
+      "get": {
+        "operationId": "GetGroup",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/imGroup"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "gid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AccountManager"
+        ]
+      },
+      "patch": {
+        "operationId": "ModifyGroup",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/imGroup"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "gid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/imGroup"
+            }
+          }
+        ],
+        "tags": [
+          "AccountManager"
+        ]
+      }
+    },
+    "/apis/iam/groups/{gid}/users": {
+      "get": {
+        "operationId": "GetUsersByGroupId",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/imUserList"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "gid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AccountManager"
+        ]
+      }
+    },
+    "/apis/iam/groups:join": {
+      "post": {
+        "operationId": "JoinGroup",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/imEmpty"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/imJoinGroupRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AccountManager"
+        ]
+      }
+    },
+    "/apis/iam/groups:leave": {
+      "post": {
+        "operationId": "LeaveGroup",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/imEmpty"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/imLeaveGroupRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AccountManager"
+        ]
+      }
+    },
+    "/apis/iam/password:compare": {
+      "post": {
+        "operationId": "ComparePassword",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/imEmpty"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/imPassword"
+            }
+          }
+        ],
+        "tags": [
+          "AccountManager"
+        ]
+      }
+    },
+    "/apis/iam/password:modify": {
+      "post": {
+        "operationId": "ModifyPassword",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/imEmpty"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/imPassword"
+            }
+          }
+        ],
+        "tags": [
+          "AccountManager"
+        ]
+      }
+    },
+    "/apis/iam/users": {
+      "get": {
+        "operationId": "ListUesrs",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/imListUesrsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "sort_key",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "reverse",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "format": "boolean"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "AccountManager"
+        ]
+      },
+      "post": {
+        "operationId": "DeleteUsers",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/imEmpty"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/imUserIdList"
+            }
+          }
+        ],
+        "tags": [
+          "AccountManager"
+        ]
+      }
+    },
+    "/apis/iam/users/{uid}": {
+      "get": {
+        "operationId": "GetUser",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/imUser"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AccountManager"
+        ]
+      },
+      "patch": {
+        "operationId": "ModifyUser",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/imUser"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/imUser"
+            }
+          }
+        ],
+        "tags": [
+          "AccountManager"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "imEmpty": {
+      "type": "object"
+    },
+    "imGroup": {
+      "type": "object",
+      "properties": {
+        "gid": {
+          "type": "string"
+        },
+        "gid_parent": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "extra": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "create_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "update_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status_time": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "imGroupIdList": {
+      "type": "object",
+      "properties": {
+        "gid": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "imJoinGroupRequest": {
+      "type": "object",
+      "properties": {
+        "gid": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "uid": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "imLeaveGroupRequest": {
+      "type": "object",
+      "properties": {
+        "gid": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "uid": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "imListGroupsResponse": {
+      "type": "object",
+      "properties": {
+        "group": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/imGroup"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "imListUesrsResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/imUser"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "imPassword": {
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "imUser": {
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string"
+        },
+        "gid": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "extra": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "create_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "update_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status_time": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "imUserIdList": {
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "imUserList": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/imUser"
+          }
+        }
+      }
+    }
+  }
+}

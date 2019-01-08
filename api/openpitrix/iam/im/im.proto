@@ -8,9 +8,10 @@ package openpitrix.iam.im;
 
 option go_package = "openpitrix.io/iam/pkg/pb/im;pbim";
 
+import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
-import "google/protobuf/wrappers.proto";
-import "im/filter.proto";
+
+import "openpitrix/iam/im/filter.proto";
 
 // ----------------------------------------------------------------------------
 // basic type
@@ -55,26 +56,96 @@ message Group {
 // ----------------------------------------------------------------------------
 
 service AccountManager {
-	rpc CreateGroup(Group) returns (Group);
-	rpc DeleteGroups(IdList) returns (Empty);
+	rpc CreateGroup(Group) returns (Group) {
+		option (google.api.http) = {
+			post: "/apis/iam/groups"
+			body: "*"
+		};
+	}
+	rpc DeleteGroups(GroupIdList) returns (Empty) {
+		option (google.api.http) = {
+			delete: "/apis/iam/groups"
+			body: "*"
+		};
+	}
 
-	rpc CreateUser(User) returns (User);
-	rpc DeleteUsers(IdList) returns (Empty);
+	rpc CreateUser(User) returns (User) {
+		option (google.api.http) = {
+			post: "/apis/iam/users"
+			body: "*"
+		};
+	}
+	rpc DeleteUsers(UserIdList) returns (Empty) {
+		option (google.api.http) = {
+			post: "/apis/iam/users"
+			body: "*"
+		};
+	}
 
-	rpc ListUesrs(Range) returns (ListUesrsResponse);
-	rpc ListGroups(Range) returns (ListGroupsResponse);
+	rpc ListUesrs(Range) returns (ListUesrsResponse) {
+		option (google.api.http) = {
+			get: "/apis/iam/users"
+		};
+	}
+	rpc ListGroups(Range) returns (ListGroupsResponse) {
+		option (google.api.http) = {
+			get: "/apis/iam/groups"
+		};
+	}
 
-	rpc GetUser(Id) returns (User);
-	rpc GetUsersByGroupId(Id) returns (UserList);
-	rpc ModifyUser(User) returns (User);
-	rpc ComparePassword(Password) returns (Empty);
-	rpc ModifyPassword(Password) returns (Empty);
+	rpc GetUser(UserId) returns (User) {
+		option (google.api.http) = {
+			get: "/apis/iam/users/{uid}"
+		};
+	}
+	rpc GetUsersByGroupId(GroupId) returns (UserList) {
+		option (google.api.http) = {
+			get: "/apis/iam/groups/{gid}/users"
+		};
+	}
+	rpc ModifyUser(User) returns (User) {
+		option (google.api.http) = {
+			patch: "/apis/iam/users/{uid}"
+			body: "*"
+		};
+	}
+	rpc ComparePassword(Password) returns (Empty) {
+		option (google.api.http) = {
+			post: "/apis/iam/password:compare"
+			body: "*"
+		};
+	}
+	rpc ModifyPassword(Password) returns (Empty) {
+		option (google.api.http) = {
+			post: "/apis/iam/password:modify"
+			body: "*"
+		};
+	}
 
-	rpc GetGroup(Id) returns (Group);
-	rpc ModifyGroup(Group) returns (Group);
+	rpc GetGroup(GroupId) returns (Group) {
+		option (google.api.http) = {
+			get: "/apis/iam/groups/{gid}"
+		};
+	}
+	rpc ModifyGroup(Group) returns (Group) {
+		option (google.api.http) = {
+			patch: "/apis/iam/groups/{gid}"
+			body: "*"
+		};
+	}
 
-	rpc JoinGroup(JoinGroupRequest) returns (Empty);
-	rpc LeaveGroup(LeaveGroupRequest) returns (Empty);
+	rpc JoinGroup(JoinGroupRequest) returns (Empty) {
+		option (google.api.http) = {
+			post: "/apis/iam/groups:join"
+			body: "*"
+		};
+	}
+	rpc LeaveGroup(LeaveGroupRequest) returns (Empty) {
+		option (google.api.http) = {
+			post: "/apis/iam/groups:leave"
+			body: "*"
+		};
+	}
 }
 
 // ----------------------------------------------------------------------------
@@ -85,12 +156,20 @@ message Empty {
 	//
 }
 
-message Id {
-	string value = 1;
+message UserId {
+	string uid = 1;
 }
-message IdList {
-	repeated string value = 1;
+message UserIdList {
+	repeated string uid = 1;
 }
+
+message GroupId {
+	string gid = 1;
+}
+message GroupIdList {
+	repeated string gid = 1;
+}
+
 message Range {
 	map<string,FieldValidator> filter = 1;
 	string sort_key = 2;

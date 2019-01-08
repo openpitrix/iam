@@ -5,7 +5,12 @@
 PWD:=$(shell pwd)
 GOPATH:=$(shell go env GOPATH)
 
-PBFILES=$(sort $(wildcard *.proto))
+IM_PBFILES+=./openpitrix/iam/im/im.proto
+IM_PBFILES+=./openpitrix/iam/im/filter.proto
+
+AM_PBFILES+=./openpitrix/iam/am/am.proto
+
+PBFILES:=./openpitrix/iam/iam.proto
 
 PROTOC_FLAGS:=-I. -Ithird_party/googleapis -Ithird_party
 
@@ -15,17 +20,23 @@ generate: Makefile
 
 	@rm -rf ../pkg/pb/*
 	@mkdir -p ../pkg/pb
+	@mkdir -p ../pkg/pb/am
+	@mkdir -p ../pkg/pb/im
 
+	make gen_im
+
+gen_im:
 	# grpc service
-	protoc $(PROTOC_FLAGS) --go_out=plugins=grpc:./_output ${PBFILES}
-	cp ./_output/openpitrix.io/iam/pkg/pb/*.go ../pkg/pb/
+	protoc $(PROTOC_FLAGS) --go_out=plugins=grpc:./_output ${IM_PBFILES}
+	cp ./_output/openpitrix.io/iam/pkg/pb/im/*.go ../pkg/pb/im/
 
 	# gateway
-	protoc $(PROTOC_FLAGS) --grpc-gateway_out=logtostderr=true,allow_delete_body=true:../pkg/pb ${PBFILES}
+	protoc $(PROTOC_FLAGS) --grpc-gateway_out=logtostderr=true,allow_delete_body=true:./_output ${IM_PBFILES}
+	cp ./_output/openpitrix/iam/im/*.go ../pkg/pb/im/
 
 	# swagger
-	protoc $(PROTOC_FLAGS) --swagger_out=logtostderr=true,allow_delete_body=true:../pkg/service/swagger-ui ${PBFILES}
-	make -C ../pkg/service/swagger-ui
+	protoc $(PROTOC_FLAGS) --swagger_out=logtostderr=true,allow_delete_body=true:./_output ${IM_PBFILES}
+	cp ./_output/openpitrix/iam/im/*.json ../pkg/pb/im/
 
 clean:
 	rm -rf $(GOPATH)/src/openpitrix.io/iam/pkg/pb
