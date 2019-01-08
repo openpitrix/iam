@@ -71,7 +71,6 @@ service AccountManager {
 	rpc ModifyPassword(Password) returns (Empty);
 
 	rpc GetGroup(Id) returns (Group);
-	rpc GetGroupPath(Id) returns (GroupPath);
 	rpc ModifyGroup(Group) returns (Group);
 
 	rpc JoinGroup(JoinGroupRequest) returns (Empty);
@@ -85,9 +84,6 @@ service AccountManager {
 message Empty {
 	//
 }
-message Bool {
-	bool value = 1;
-}
 
 message Id {
 	string value = 1;
@@ -97,8 +93,11 @@ message IdList {
 }
 message Range {
 	map<string,FieldValidator> filter = 1;
-	int32 offset = 2;
-	int32 limit = 3;
+	string sort_key = 2;
+	bool reverse = 3;
+
+	int32 offset = 4;
+	int32 limit = 5;
 }
 message Password {
 	string uid = 1;
@@ -112,11 +111,6 @@ message ListUesrsResponse {
 message ListGroupsResponse {
 	repeated Group group = 1;
 	int32 total = 2;
-}
-
-message GroupPath {
-	repeated string gid = 1;
-	repeated string name = 2;
 }
 
 message JoinGroupRequest {
