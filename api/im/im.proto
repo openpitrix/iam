@@ -65,14 +65,14 @@ service AccountManager {
 	rpc ListGroups(Range) returns (ListGroupsResponse);
 
 	rpc GetUser(Id) returns (User);
-	rpc GetUserByGroupId(Id) returns (UserList);
-	rpc ModifyUser(ModifyUsersRequest) returns (User);
+	rpc GetUsersByGroupId(Id) returns (UserList);
+	rpc ModifyUser(User) returns (User);
 	rpc ComparePassword(Password) returns (Empty);
 	rpc ModifyPassword(Password) returns (Empty);
 
 	rpc GetGroup(Id) returns (Group);
 	rpc GetGroupPath(Id) returns (GroupPath);
-	rpc ModifyGroup(ModifyGroupsRequest) returns (Group);
+	rpc ModifyGroup(Group) returns (Group);
 
 	rpc JoinGroup(JoinGroupRequest) returns (Empty);
 	rpc LeaveGroup(LeaveGroupRequest) returns (Empty);
@@ -112,23 +112,6 @@ message ListUesrsResponse {
 message ListGroupsResponse {
 	repeated Group group = 1;
 	int32 total = 2;
-}
-
-message ModifyUsersRequest {
-	string uid = 1;
-	google.protobuf.StringValue name = 2;
-	google.protobuf.StringValue email = 3;
-	google.protobuf.StringValue description = 4;
-	google.protobuf.StringValue status = 5;
-	map<string,string> extra = 6;
-}
-
-message ModifyGroupsRequest {
-	string gid = 1;
-	google.protobuf.StringValue name = 2;
-	google.protobuf.StringValue description = 3;
-	google.protobuf.StringValue status = 4;
-	map<string,string> extra = 5;
 }
 
 message GroupPath {
