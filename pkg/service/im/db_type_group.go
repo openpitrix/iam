@@ -2,14 +2,15 @@
 // Use of this source code is governed by a Apache license
 // that can be found in the LICENSE file.
 
-package service
+package im
+
 
 import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
 
-	"openpitrix.io/iam/pkg/pb"
+	"openpitrix.io/iam/pkg/pb/im"
 )
 
 type DBGroup struct {
@@ -25,19 +26,19 @@ type DBGroup struct {
 	UpdateTime    time.Time `db:"update_time"`
 }
 
-func pbGroupToDB(p *pb.Group) *DBGroup {
+func pbGroupToDB(p *pbim.Group) *DBGroup {
 	if p == nil {
 		return new(DBGroup)
 	}
 	var q = &DBGroup{
-		GroupId:       p.GroupId,
-		GroupName:     p.GroupName,
-		ParentGroupId: p.ParentGroupId,
-		GroupPath:     p.GroupPath,
-		Level:         p.Level,
-		SeqOrder:      p.SeqOrder,
-		Owner:         p.Owner,
-		OwnerPath:     p.OwnerPath,
+		//GroupId:       p.GroupId,
+		//GroupName:     p.GroupName,
+		//ParentGroupId: p.ParentGroupId,
+		//GroupPath:     p.GroupPath,
+		//Level:         p.Level,
+		//SeqOrder:      p.SeqOrder,
+		//Owner:         p.Owner,
+		//OwnerPath:     p.OwnerPath,
 		//CreateTime:    p.CreateTime,
 		//UpdateTime:    p.UpdateTime,
 	}
@@ -48,19 +49,19 @@ func pbGroupToDB(p *pb.Group) *DBGroup {
 	return q
 }
 
-func (p *DBGroup) ToPb() *pb.Group {
+func (p *DBGroup) ToPb() *pbim.Group {
 	if p == nil {
-		return new(pb.Group)
+		return new(pbim.Group)
 	}
-	var q = &pb.Group{
-		GroupId:       p.GroupId,
-		GroupName:     p.GroupName,
-		ParentGroupId: p.ParentGroupId,
-		GroupPath:     p.GroupPath,
-		Level:         p.Level,
-		SeqOrder:      p.SeqOrder,
-		Owner:         p.Owner,
-		OwnerPath:     p.OwnerPath,
+	var q = &pbim.Group{
+		//GroupId:       p.GroupId,
+		//GroupName:     p.GroupName,
+		//ParentGroupId: p.ParentGroupId,
+		//GroupPath:     p.GroupPath,
+		//Level:         p.Level,
+		//SeqOrder:      p.SeqOrder,
+		//Owner:         p.Owner,
+		//OwnerPath:     p.OwnerPath,
 		//CreateTime: p.CreateTime,
 		//UpdateTime: p.UpdateTime,
 	}
