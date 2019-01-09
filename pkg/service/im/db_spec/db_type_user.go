@@ -23,8 +23,8 @@ type DBUser struct {
 	Password    string    `db:"password"`
 	Status      string    `db:"status"`
 	CreateTime  time.Time `db:"create_time"`
-	StatusTime  time.Time `db:"status_time"`
 	UpdateTime  time.Time `db:"update_time"`
+	StatusTime  time.Time `db:"status_time"`
 	Extra       string    `db:"extra"` // JSON
 }
 

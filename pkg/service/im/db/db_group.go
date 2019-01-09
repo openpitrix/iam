@@ -4,32 +4,58 @@
 
 package db
 
-/*
-
 import (
 	"context"
-	"fmt"
 
+	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	"openpitrix.io/iam/pkg/internal/funcutil"
-	"openpitrix.io/iam/pkg/pb"
+	"openpitrix.io/iam/pkg/pb/im"
+	"openpitrix.io/iam/pkg/service/im/db_spec"
 	"openpitrix.io/logger"
 )
 
-func (p *Database) CreateGroup(ctx context.Context, req *pb.CreateGroupRequest) (*pb.CreateGroupResponse, error) {
+func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Group, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	var dbGroup = pbGroupToDB(req.GetValue())
+	if req == nil {
+		err := status.Errorf(codes.InvalidArgument, "empty field")
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+	if req != nil {
+		if req.Gid == "" {
+			req.Gid = genGid()
+		}
 
+		if isZeroTimestamp(req.CreateTime) {
+			req.CreateTime = ptypes.TimestampNow()
+		}
+		if isZeroTimestamp(req.UpdateTime) {
+			req.UpdateTime = ptypes.TimestampNow()
+		}
+		if isZeroTimestamp(req.StatusTime) {
+			req.StatusTime = ptypes.TimestampNow()
+		}
+	}
+
+	if err := req.Validate(); err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	// TODO: check group_path valid
+
+	var dbGroup = db_spec.PBGroupToDB(req)
 	if err := dbGroup.ValidateForInsert(); err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
 	sql, values := pkgBuildSql_InsertInto(
-		dbSpec.GroupTableName,
+		db_spec.DBSpec.UserGroupTableName,
 		dbGroup,
 	)
 	if len(values) == 0 {
@@ -46,17 +72,10 @@ func (p *Database) CreateGroup(ctx context.Context, req *pb.CreateGroupRequest) 
 		return nil, err
 	}
 
-	reply := &pb.CreateGroupResponse{
-		Head: &pb.ResponseHeader{
-			UserId:     req.GetHead().GetUserId(),
-			OwnerPath:  "", // TODO
-			AccessPath: "", // TODO
-		},
-		GroupId: req.GetValue().GetGroupId(),
-	}
-
-	return reply, nil
+	return req, nil
 }
+
+/*
 
 func (p *Database) DeleteGroups(ctx context.Context, req *pb.DeleteGroupsRequest) (*pb.DeleteGroupsResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))

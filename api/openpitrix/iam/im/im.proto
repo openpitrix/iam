@@ -10,6 +10,7 @@ option go_package = "openpitrix.io/iam/pkg/pb/im;pbim";
 
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
+import "github.com/mwitkow/go-proto-validators/validator.proto";
 
 import "openpitrix/iam/im/filter.proto";
 
@@ -18,7 +19,7 @@ import "openpitrix/iam/im/filter.proto";
 // ----------------------------------------------------------------------------
 
 message User {
-	string uid = 1;
+	string uid = 1 [(validator.field) = {regex: "^[a-z0-1_-]{2,32}$"}];
 	repeated string gid = 2;
 
 	string name = 3;
@@ -38,8 +39,8 @@ message UserList {
 }
 
 message Group {
-	string gid = 1;
-	string group_path = 2;
+	string gid = 1 [(validator.field) = {regex: "^[a-z0-1_-]{2,32}$"}];
+	string group_path = 2 [(validator.field) = {regex: "^[a-z0-1_-.]{2,255}$"}];
 
 	string name = 3;
 	string description = 4;

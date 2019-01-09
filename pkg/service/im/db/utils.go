@@ -5,10 +5,37 @@
 package db
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"regexp"
 
 	"github.com/fatih/structs"
+	"github.com/golang/protobuf/ptypes/timestamp"
 )
+
+func isZeroTimestamp(x *timestamp.Timestamp) bool {
+	if x == nil {
+		return true
+	}
+	if x.Seconds == 0 && x.Nanos == 0 {
+		return true
+	}
+	return false
+}
+
+func genGid() string {
+	buf := make([]byte, 8)
+	rand.Read(buf)
+	s := base64.StdEncoding.EncodeToString(buf)
+	return "gid-" + s[:8]
+}
+
+func genUid() string {
+	buf := make([]byte, 8)
+	rand.Read(buf)
+	s := base64.StdEncoding.EncodeToString(buf)
+	return "uid-" + s[:8]
+}
 
 func pkgGetDBTableFiledNames(v interface{}) (names []string) {
 	for _, f := range structs.Fields(v) {

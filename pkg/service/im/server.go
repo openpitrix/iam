@@ -8,17 +8,18 @@ import (
 	"openpitrix.io/logger"
 
 	"openpitrix.io/iam/pkg/config"
+	"openpitrix.io/iam/pkg/service/im/db"
 )
 
 type Server struct {
 	cfg *config.Config
-	db  *Database
+	db  *db.Database
 }
 
 func OpenServer(cfg *config.Config) (*Server, error) {
 	cfg = cfg.Clone()
 
-	db, err := OpenDatabase(cfg)
+	db, err := db.OpenDatabase(cfg)
 	if err != nil {
 		logger.Criticalf(nil, "%v", err)
 	}
