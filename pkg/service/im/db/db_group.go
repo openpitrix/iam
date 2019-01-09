@@ -6,6 +6,7 @@ package db
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
@@ -101,12 +102,16 @@ func (p *Database) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pb
 	return reply, nil
 }
 
-/*
-
-func (p *Database) ModifyGroup(ctx context.Context, req *pb.ModifyGroupRequest) (*pb.ModifyGroupResponse, error) {
+func (p *Database) ModifyGroup(ctx context.Context, req *pbim.Group) (*pbim.Group, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	var dbGroup = pbGroupToDB(req.GetValue())
+	if req == nil || req.Gid == "" {
+		err := status.Errorf(codes.InvalidArgument, "empty field")
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	var dbGroup = db_spec.PBGroupToDB(req)
 
 	if err := dbGroup.ValidateForUpdate(); err != nil {
 		logger.Warnf(ctx, "%+v", err)
@@ -114,8 +119,8 @@ func (p *Database) ModifyGroup(ctx context.Context, req *pb.ModifyGroupRequest) 
 	}
 
 	sql, values := pkgBuildSql_Update(
-		dbSpec.GroupTableName, dbGroup,
-		dbSpec.GroupPrimaryKeyName,
+		db_spec.DBSpec.UserGroupTableName, dbGroup,
+		db_spec.DBSpec.UserGroupPrimaryKeyName,
 	)
 
 	_, err := p.DB.ExecContext(ctx, sql, values...)
@@ -125,45 +130,31 @@ func (p *Database) ModifyGroup(ctx context.Context, req *pb.ModifyGroupRequest) 
 		return nil, err
 	}
 
-	reply := &pb.ModifyGroupResponse{
-		Head: &pb.ResponseHeader{
-			UserId:     req.GetHead().GetUserId(),
-			OwnerPath:  "", // TODO
-			AccessPath: "", // TODO
-		},
-		GroupId: req.GetValue().GetGroupId(),
-	}
-
-	return reply, nil
+	return p.GetGroup(ctx, &pbim.GroupId{Gid:req.Gid})
 }
-func (p *Database) GetGroup(ctx context.Context, req *pb.GetGroupRequest) (*pb.GetGroupResponse, error) {
+
+func (p *Database) GetGroup(ctx context.Context, req *pbim.GroupId) (*pbim.Group, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	var query = fmt.Sprintf(
 		"SELECT * FROM %s WHERE %s=? LIMIT 1 OFFSET 0;",
-		dbSpec.GroupTableName,
-		dbSpec.GroupPrimaryKeyName,
+		db_spec.DBSpec.UserGroupTableName,
+		db_spec.DBSpec.UserGroupPrimaryKeyName,
 	)
 
-	var v = DBGroup{}
-	err := p.DB.GetContext(ctx, &v, query, req.GetGroupId())
+	var v = db_spec.DBGroup{}
+	err := p.DB.GetContext(ctx, &v, query, req.GetGid())
 	if err != nil {
 		logger.Warnf(ctx, "%v", query)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
-	reply := &pb.GetGroupResponse{
-		Head: &pb.ResponseHeader{
-			UserId:     req.GetHead().GetUserId(),
-			OwnerPath:  "", // TODO
-			AccessPath: "", // TODO
-		},
-		Value: v.ToPb(),
-	}
-
-	return reply, nil
+	return v.ToPB(), nil
 }
+
+/*
+
 func (p *Database) DescribeGroups(ctx context.Context, req *pb.DescribeGroupsRequest) (*pb.DescribeGroupsResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
