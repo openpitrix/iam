@@ -14,7 +14,8 @@ import (
 	"github.com/urfave/cli"
 
 	"openpitrix.io/iam/pkg/config"
-	"openpitrix.io/iam/pkg/service"
+	"openpitrix.io/iam/pkg/service/im"
+	"openpitrix.io/iam/pkg/service/web"
 	"openpitrix.io/iam/pkg/version"
 	"openpitrix.io/logger"
 )
@@ -133,16 +134,21 @@ EXAMPLE:
 }
 
 func serve(c *cli.Context) {
+	imService, err := im.OpenServer(appConfig)
+	if err != nil {
+		logger.Criticalf(nil, "%v", err)
+		os.Exit(1)
+	}
+
 	if !appConfig.TlsEnabled {
 		logger.Infof(nil, version.GetVersionString())
 		logger.Infof(nil, "IAM service http://%s:%d", appConfig.Host, appConfig.Port)
 
-		server, err := service.OpenServer(appConfig)
-		if err != nil {
-			logger.Criticalf(nil, "%v", err)
-			os.Exit(1)
-		}
-		err = server.ListenAndServe(fmt.Sprintf(":%d", appConfig.Port))
+		err := web.ListenAndServe(
+			fmt.Sprintf(":%d", appConfig.Port),
+			[]web.GrpcServer{web.WithAccountManager(imService)},
+			nil,
+		)
 		if err != nil {
 			logger.Criticalf(nil, "%v", err)
 			os.Exit(1)
@@ -151,15 +157,11 @@ func serve(c *cli.Context) {
 		logger.Infof(nil, version.GetVersionString())
 		logger.Infof(nil, "IAM service https://%s:%d", appConfig.Host, appConfig.Port)
 
-		server, err := service.OpenServer(appConfig)
-		if err != nil {
-			logger.Criticalf(nil, "%v", err)
-			os.Exit(1)
-		}
-		err = server.ListenAndServeTLS(
+		err := web.ListenAndServeTLS(
 			fmt.Sprintf(":%d", appConfig.Port),
-			appConfig.TlsCertFile,
-			appConfig.TlsKeyFile,
+			appConfig.TlsCertFile, appConfig.TlsKeyFile,
+			[]web.GrpcServer{web.WithAccountManager(imService)},
+			nil,
 		)
 		if err != nil {
 			logger.Criticalf(nil, "%v", err)
