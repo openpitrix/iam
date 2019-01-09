@@ -2,7 +2,7 @@
 // Use of this source code is governed by a Apache license
 // that can be found in the LICENSE file.
 
-package im
+package db
 
 /*
 
@@ -14,23 +14,23 @@ import (
 	"google.golang.org/grpc/status"
 
 	"openpitrix.io/iam/pkg/internal/funcutil"
-	"openpitrix.io/iam/pkg/pb"
+	"openpitrix.io/iam/pkg/pb/im"
 	"openpitrix.io/logger"
 )
 
-func (p *Database) CreateGroup(ctx context.Context, req *pb.CreateGroupRequest) (*pb.CreateGroupResponse, error) {
+func (p *Database) CreateUser(ctx context.Context, req *pbim.CreateUserRequest) (*pbim.CreateUserResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	var dbGroup = pbGroupToDB(req.GetValue())
+	var dbUser = pbUserToDB(req.GetValue())
 
-	if err := dbGroup.ValidateForInsert(); err != nil {
+	if err := dbUser.ValidateForInsert(); err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
 	sql, values := pkgBuildSql_InsertInto(
-		dbSpec.GroupTableName,
-		dbGroup,
+		dbSpec.UserTableName,
+		dbUser,
 	)
 	if len(values) == 0 {
 		err := status.Errorf(codes.InvalidArgument, "empty field")
@@ -46,24 +46,23 @@ func (p *Database) CreateGroup(ctx context.Context, req *pb.CreateGroupRequest) 
 		return nil, err
 	}
 
-	reply := &pb.CreateGroupResponse{
+	reply := &pb.CreateUserResponse{
 		Head: &pb.ResponseHeader{
 			UserId:     req.GetHead().GetUserId(),
 			OwnerPath:  "", // TODO
 			AccessPath: "", // TODO
 		},
-		GroupId: req.GetValue().GetGroupId(),
+		UserId: req.GetValue().GetUserId(),
 	}
 
 	return reply, nil
 }
-
-func (p *Database) DeleteGroups(ctx context.Context, req *pb.DeleteGroupsRequest) (*pb.DeleteGroupsResponse, error) {
+func (p *Database) DeleteUsers(ctx context.Context, req *pb.DeleteUsersRequest) (*pb.DeleteUsersResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	sql := pkgBuildSql_Delete(
-		dbSpec.GroupTableName, dbSpec.GroupPrimaryKeyName,
-		req.GroupId...,
+		dbSpec.UserTableName, dbSpec.UserPrimaryKeyName,
+		req.UserId...,
 	)
 
 	_, err := p.DB.ExecContext(ctx, sql)
@@ -73,30 +72,31 @@ func (p *Database) DeleteGroups(ctx context.Context, req *pb.DeleteGroupsRequest
 		return nil, err
 	}
 
-	reply := &pb.DeleteGroupsResponse{
+	reply := &pb.DeleteUsersResponse{
 		Head: &pb.ResponseHeader{
 			UserId:     req.GetHead().GetUserId(),
 			OwnerPath:  "", // TODO
 			AccessPath: "", // TODO
 		},
-		GroupId: req.GroupId,
+		UserId: req.UserId,
 	}
 
 	return reply, nil
+
 }
-func (p *Database) ModifyGroup(ctx context.Context, req *pb.ModifyGroupRequest) (*pb.ModifyGroupResponse, error) {
+func (p *Database) ModifyUser(ctx context.Context, req *pb.ModifyUserRequest) (*pb.ModifyUserResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	var dbGroup = pbGroupToDB(req.GetValue())
+	var dbUser = pbUserToDB(req.GetValue())
 
-	if err := dbGroup.ValidateForUpdate(); err != nil {
+	if err := dbUser.ValidateForUpdate(); err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
 	sql, values := pkgBuildSql_Update(
-		dbSpec.GroupTableName, dbGroup,
-		dbSpec.GroupPrimaryKeyName,
+		dbSpec.UserTableName, dbUser,
+		dbSpec.UserPrimaryKeyName,
 	)
 
 	_, err := p.DB.ExecContext(ctx, sql, values...)
@@ -106,35 +106,36 @@ func (p *Database) ModifyGroup(ctx context.Context, req *pb.ModifyGroupRequest) 
 		return nil, err
 	}
 
-	reply := &pb.ModifyGroupResponse{
+	reply := &pb.ModifyUserResponse{
 		Head: &pb.ResponseHeader{
 			UserId:     req.GetHead().GetUserId(),
 			OwnerPath:  "", // TODO
 			AccessPath: "", // TODO
 		},
-		GroupId: req.GetValue().GetGroupId(),
+		UserId: req.GetValue().GetUserId(),
 	}
 
 	return reply, nil
+
 }
-func (p *Database) GetGroup(ctx context.Context, req *pb.GetGroupRequest) (*pb.GetGroupResponse, error) {
+func (p *Database) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUserResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	var query = fmt.Sprintf(
 		"SELECT * FROM %s WHERE %s=? LIMIT 1 OFFSET 0;",
-		dbSpec.GroupTableName,
-		dbSpec.GroupPrimaryKeyName,
+		dbSpec.UserTableName,
+		dbSpec.UserPrimaryKeyName,
 	)
 
-	var v = DBGroup{}
-	err := p.DB.GetContext(ctx, &v, query, req.GetGroupId())
+	var v = DBUser{}
+	err := p.DB.GetContext(ctx, &v, query, req.GetUserId())
 	if err != nil {
 		logger.Warnf(ctx, "%v", query)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
-	reply := &pb.GetGroupResponse{
+	reply := &pb.GetUserResponse{
 		Head: &pb.ResponseHeader{
 			UserId:     req.GetHead().GetUserId(),
 			OwnerPath:  "", // TODO
@@ -144,22 +145,23 @@ func (p *Database) GetGroup(ctx context.Context, req *pb.GetGroupRequest) (*pb.G
 	}
 
 	return reply, nil
+
 }
-func (p *Database) DescribeGroups(ctx context.Context, req *pb.DescribeGroupsRequest) (*pb.DescribeGroupsResponse, error) {
+func (p *Database) DescribeUsers(ctx context.Context, req *pb.DescribeUsersRequest) (*pb.DescribeUsersResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	var searchWord = req.GetSearchWord()
 	if searchWord == "" {
-		return p._DescribeGroups_all(ctx, req)
+		return p._DescribeUsers_all(ctx, req)
 	} else {
-		return p._DescribeGroups_bySearchWord(ctx, req)
+		return p._DescribeUsers_bySearchWord(ctx, req)
 	}
 }
 
-func (p *Database) _DescribeGroups_count(ctx context.Context, req *pb.DescribeGroupsRequest) (total int, err error) {
+func (p *Database) _DescribeUsers_count(ctx context.Context, req *pb.DescribeUsersRequest) (total int, err error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	var query = fmt.Sprintf("SELECT COUNT(*) FROM %s", dbSpec.GroupTableName)
+	var query = fmt.Sprintf("SELECT COUNT(*) FROM %s", dbSpec.UserTableName)
 
 	rows, err := p.DB.QueryContext(ctx, query)
 	if err != nil {
@@ -180,23 +182,23 @@ func (p *Database) _DescribeGroups_count(ctx context.Context, req *pb.DescribeGr
 	return total, nil
 }
 
-func (p *Database) _DescribeGroups_all(ctx context.Context, req *pb.DescribeGroupsRequest) (*pb.DescribeGroupsResponse, error) {
+func (p *Database) _DescribeUsers_all(ctx context.Context, req *pb.DescribeUsersRequest) (*pb.DescribeUsersResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	total, err := p._DescribeGroups_count(ctx, req)
+	total, err := p._DescribeUsers_count(ctx, req)
 	if err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
-	var query = fmt.Sprintf("SELECT * FROM %s", dbSpec.GroupTableName)
+	var query = fmt.Sprintf("SELECT * FROM %s", dbSpec.UserTableName)
 	if offset, limit := req.GetOffset(), req.GetLimit(); offset > 0 || limit > 0 {
 		query += fmt.Sprintf(" LIMIT %d OFFSET %d;", limit, offset)
 	} else {
 		query += fmt.Sprintf(" LIMIT %d OFFSET %d;", 20, 0)
 	}
 
-	var rows = []DBGroup{}
+	var rows = []DBUser{}
 	err = p.DB.SelectContext(ctx, &rows, query)
 	if err != nil {
 		logger.Warnf(ctx, "%v", query)
@@ -204,45 +206,45 @@ func (p *Database) _DescribeGroups_all(ctx context.Context, req *pb.DescribeGrou
 		return nil, err
 	}
 
-	var sets []*pb.Group
+	var sets []*pb.User
 	for _, v := range rows {
 		sets = append(sets, v.ToPb())
 	}
 
-	reply := &pb.DescribeGroupsResponse{
+	reply := &pb.DescribeUsersResponse{
 		Head: &pb.ResponseHeader{
 			UserId:     req.GetHead().GetUserId(),
 			OwnerPath:  "", // TODO
 			AccessPath: "", // TODO
 		},
-		GroupSet:   sets,
+		UserSet:    sets,
 		TotalCount: int32(total),
 	}
 
 	return reply, nil
 }
 
-func (p *Database) _DescribeGroups_bySearchWord(ctx context.Context, req *pb.DescribeGroupsRequest) (*pb.DescribeGroupsResponse, error) {
+func (p *Database) _DescribeUsers_bySearchWord(ctx context.Context, req *pb.DescribeUsersRequest) (*pb.DescribeUsersResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	var searchWord = req.GetSearchWord()
 
 	if searchWord == "" {
-		return p._DescribeGroups_all(ctx, req)
+		return p._DescribeUsers_all(ctx, req)
 	}
 
 	if !pkgSearchWordValid(searchWord) {
 		return nil, fmt.Errorf("invalid search_word: %q", searchWord)
 	}
 
-	var searchWordFieldNames = pkgGetDBTableStringFieldNames(new(DBGroup))
+	var searchWordFieldNames = pkgGetDBTableStringFieldNames(new(DBUser))
 	if len(searchWordFieldNames) == 0 {
-		return p._DescribeGroups_all(ctx, req)
+		return p._DescribeUsers_all(ctx, req)
 	}
 
 	var (
-		queryHeaer       = fmt.Sprintf("SELECT * FROM %s ", dbSpec.GroupTableName)
-		queryCountHeader = fmt.Sprintf("SELECT COUNT(*) FROM %s ", dbSpec.GroupTableName)
+		queryHeaer       = fmt.Sprintf("SELECT * FROM %s ", dbSpec.UserTableName)
+		queryCountHeader = fmt.Sprintf("SELECT COUNT(*) FROM %s ", dbSpec.UserTableName)
 		queryTail        string
 	)
 
@@ -280,7 +282,7 @@ func (p *Database) _DescribeGroups_bySearchWord(ctx context.Context, req *pb.Des
 		}
 	}
 
-	var rows = []DBGroup{}
+	var rows = []DBUser{}
 	err := p.DB.SelectContext(ctx, &rows, queryHeaer+queryTail)
 	if err != nil {
 		logger.Warnf(ctx, "%v", queryCountHeader+queryTail)
@@ -288,18 +290,18 @@ func (p *Database) _DescribeGroups_bySearchWord(ctx context.Context, req *pb.Des
 		return nil, err
 	}
 
-	var sets []*pb.Group
+	var sets []*pb.User
 	for _, v := range rows {
 		sets = append(sets, v.ToPb())
 	}
 
-	reply := &pb.DescribeGroupsResponse{
+	reply := &pb.DescribeUsersResponse{
 		Head: &pb.ResponseHeader{
 			UserId:     req.GetHead().GetUserId(),
 			OwnerPath:  "", // TODO
 			AccessPath: "", // TODO
 		},
-		GroupSet:   sets,
+		UserSet:    sets,
 		TotalCount: int32(total),
 	}
 
