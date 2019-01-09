@@ -4,32 +4,59 @@
 
 package db
 
-/*
-
 import (
 	"context"
 	"fmt"
 
+	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	"openpitrix.io/iam/pkg/internal/funcutil"
 	"openpitrix.io/iam/pkg/pb/im"
+	"openpitrix.io/iam/pkg/service/im/db_spec"
 	"openpitrix.io/logger"
 )
 
-func (p *Database) CreateUser(ctx context.Context, req *pbim.CreateUserRequest) (*pbim.CreateUserResponse, error) {
+func (p *Database) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	var dbUser = pbUserToDB(req.GetValue())
+	if req == nil {
+		err := status.Errorf(codes.InvalidArgument, "empty field")
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+	if req != nil {
+		if req.Uid == "" {
+			req.Uid = genUid()
+		}
 
+		if isZeroTimestamp(req.CreateTime) {
+			req.CreateTime = ptypes.TimestampNow()
+		}
+		if isZeroTimestamp(req.UpdateTime) {
+			req.UpdateTime = ptypes.TimestampNow()
+		}
+		if isZeroTimestamp(req.StatusTime) {
+			req.StatusTime = ptypes.TimestampNow()
+		}
+	}
+
+	if err := req.Validate(); err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	// TODO: check group_path valid
+
+	var dbUser = db_spec.PBUserToDB(req)
 	if err := dbUser.ValidateForInsert(); err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
 	sql, values := pkgBuildSql_InsertInto(
-		dbSpec.UserTableName,
+		db_spec.DBSpec.UserTableName,
 		dbUser,
 	)
 	if len(values) == 0 {
@@ -46,23 +73,22 @@ func (p *Database) CreateUser(ctx context.Context, req *pbim.CreateUserRequest) 
 		return nil, err
 	}
 
-	reply := &pb.CreateUserResponse{
-		Head: &pb.ResponseHeader{
-			UserId:     req.GetHead().GetUserId(),
-			OwnerPath:  "", // TODO
-			AccessPath: "", // TODO
-		},
-		UserId: req.GetValue().GetUserId(),
-	}
-
-	return reply, nil
+	return req, nil
 }
-func (p *Database) DeleteUsers(ctx context.Context, req *pb.DeleteUsersRequest) (*pb.DeleteUsersResponse, error) {
+
+func (p *Database) DeleteUsers(ctx context.Context, req *pbim.UserIdList) (*pbim.Empty, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
+	if req == nil || len(req.Uid) == 0 || !isValidIds(req.Uid...) {
+		err := status.Errorf(codes.InvalidArgument, "empty field")
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
 	sql := pkgBuildSql_Delete(
-		dbSpec.UserTableName, dbSpec.UserPrimaryKeyName,
-		req.UserId...,
+		db_spec.DBSpec.UserTableName,
+		db_spec.DBSpec.UserPrimaryKeyName,
+		req.Uid...,
 	)
 
 	_, err := p.DB.ExecContext(ctx, sql)
@@ -72,22 +98,20 @@ func (p *Database) DeleteUsers(ctx context.Context, req *pb.DeleteUsersRequest) 
 		return nil, err
 	}
 
-	reply := &pb.DeleteUsersResponse{
-		Head: &pb.ResponseHeader{
-			UserId:     req.GetHead().GetUserId(),
-			OwnerPath:  "", // TODO
-			AccessPath: "", // TODO
-		},
-		UserId: req.UserId,
-	}
-
+	reply := &pbim.Empty{}
 	return reply, nil
-
 }
-func (p *Database) ModifyUser(ctx context.Context, req *pb.ModifyUserRequest) (*pb.ModifyUserResponse, error) {
+
+func (p *Database) ModifyUser(ctx context.Context, req *pbim.User) (*pbim.User, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	var dbUser = pbUserToDB(req.GetValue())
+	if req == nil || req.Uid == "" {
+		err := status.Errorf(codes.InvalidArgument, "empty field")
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	var dbUser = db_spec.PBUserToDB(req)
 
 	if err := dbUser.ValidateForUpdate(); err != nil {
 		logger.Warnf(ctx, "%+v", err)
@@ -95,8 +119,8 @@ func (p *Database) ModifyUser(ctx context.Context, req *pb.ModifyUserRequest) (*
 	}
 
 	sql, values := pkgBuildSql_Update(
-		dbSpec.UserTableName, dbUser,
-		dbSpec.UserPrimaryKeyName,
+		db_spec.DBSpec.UserTableName, dbUser,
+		db_spec.DBSpec.UserPrimaryKeyName,
 	)
 
 	_, err := p.DB.ExecContext(ctx, sql, values...)
@@ -106,62 +130,45 @@ func (p *Database) ModifyUser(ctx context.Context, req *pb.ModifyUserRequest) (*
 		return nil, err
 	}
 
-	reply := &pb.ModifyUserResponse{
-		Head: &pb.ResponseHeader{
-			UserId:     req.GetHead().GetUserId(),
-			OwnerPath:  "", // TODO
-			AccessPath: "", // TODO
-		},
-		UserId: req.GetValue().GetUserId(),
-	}
-
-	return reply, nil
-
+	return p.GetUser(ctx, &pbim.UserId{Uid: req.Uid})
 }
-func (p *Database) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUserResponse, error) {
+
+func (p *Database) GetUser(ctx context.Context, req *pbim.UserId) (*pbim.User, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	var query = fmt.Sprintf(
 		"SELECT * FROM %s WHERE %s=? LIMIT 1 OFFSET 0;",
-		dbSpec.UserTableName,
-		dbSpec.UserPrimaryKeyName,
+		db_spec.DBSpec.UserTableName,
+		db_spec.DBSpec.UserPrimaryKeyName,
 	)
 
-	var v = DBUser{}
-	err := p.DB.GetContext(ctx, &v, query, req.GetUserId())
+	var v = db_spec.DBUser{}
+	err := p.DB.GetContext(ctx, &v, query, req.GetUid())
 	if err != nil {
 		logger.Warnf(ctx, "%v", query)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
-	reply := &pb.GetUserResponse{
-		Head: &pb.ResponseHeader{
-			UserId:     req.GetHead().GetUserId(),
-			OwnerPath:  "", // TODO
-			AccessPath: "", // TODO
-		},
-		Value: v.ToPb(),
-	}
-
-	return reply, nil
-
+	return v.ToPB(), nil
 }
-func (p *Database) DescribeUsers(ctx context.Context, req *pb.DescribeUsersRequest) (*pb.DescribeUsersResponse, error) {
+
+func (p *Database) ListUsers(ctx context.Context, req *pbim.Range) (*pbim.ListUsersResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	var searchWord = req.GetSearchWord()
-	if searchWord == "" {
-		return p._DescribeUsers_all(ctx, req)
+	if req.GetSearchWord() == "" {
+		return p._ListUsers_all(ctx, req)
 	} else {
-		return p._DescribeUsers_bySearchWord(ctx, req)
+		//return p._DescribeUsers_bySearchWord(ctx, req)
 	}
+
+	panic("TODO")
 }
 
-func (p *Database) _DescribeUsers_count(ctx context.Context, req *pb.DescribeUsersRequest) (total int, err error) {
+func (p *Database) _ListUsers_all_count(ctx context.Context, req *pbim.Range) (total int, err error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	var query = fmt.Sprintf("SELECT COUNT(*) FROM %s", dbSpec.UserTableName)
+	var query = fmt.Sprintf("SELECT COUNT(*) FROM %s", db_spec.DBSpec.UserTableName)
 
 	rows, err := p.DB.QueryContext(ctx, query)
 	if err != nil {
@@ -182,23 +189,23 @@ func (p *Database) _DescribeUsers_count(ctx context.Context, req *pb.DescribeUse
 	return total, nil
 }
 
-func (p *Database) _DescribeUsers_all(ctx context.Context, req *pb.DescribeUsersRequest) (*pb.DescribeUsersResponse, error) {
+func (p *Database) _ListUsers_all(ctx context.Context, req *pbim.Range) (*pbim.ListUsersResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	total, err := p._DescribeUsers_count(ctx, req)
+	total, err := p._ListUsers_all_count(ctx, req)
 	if err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
-	var query = fmt.Sprintf("SELECT * FROM %s", dbSpec.UserTableName)
+	var query = fmt.Sprintf("SELECT * FROM %s", db_spec.DBSpec.UserTableName)
 	if offset, limit := req.GetOffset(), req.GetLimit(); offset > 0 || limit > 0 {
 		query += fmt.Sprintf(" LIMIT %d OFFSET %d;", limit, offset)
 	} else {
 		query += fmt.Sprintf(" LIMIT %d OFFSET %d;", 20, 0)
 	}
 
-	var rows = []DBUser{}
+	var rows = []db_spec.DBUser{}
 	err = p.DB.SelectContext(ctx, &rows, query)
 	if err != nil {
 		logger.Warnf(ctx, "%v", query)
@@ -206,45 +213,40 @@ func (p *Database) _DescribeUsers_all(ctx context.Context, req *pb.DescribeUsers
 		return nil, err
 	}
 
-	var sets []*pb.User
+	var sets []*pbim.User
 	for _, v := range rows {
-		sets = append(sets, v.ToPb())
+		sets = append(sets, v.ToPB())
 	}
 
-	reply := &pb.DescribeUsersResponse{
-		Head: &pb.ResponseHeader{
-			UserId:     req.GetHead().GetUserId(),
-			OwnerPath:  "", // TODO
-			AccessPath: "", // TODO
-		},
-		UserSet:    sets,
-		TotalCount: int32(total),
+	reply := &pbim.ListUsersResponse{
+		User: sets,
+		Total: int32(total),
 	}
 
 	return reply, nil
 }
 
-func (p *Database) _DescribeUsers_bySearchWord(ctx context.Context, req *pb.DescribeUsersRequest) (*pb.DescribeUsersResponse, error) {
+func (p *Database) _ListUsers_bySearchWord(ctx context.Context, req *pbim.Range) (*pbim.ListUsersResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	var searchWord = req.GetSearchWord()
 
 	if searchWord == "" {
-		return p._DescribeUsers_all(ctx, req)
+		return p._ListUsers_all(ctx, req)
 	}
 
 	if !pkgSearchWordValid(searchWord) {
 		return nil, fmt.Errorf("invalid search_word: %q", searchWord)
 	}
 
-	var searchWordFieldNames = pkgGetDBTableStringFieldNames(new(DBUser))
+	var searchWordFieldNames = pkgGetDBTableStringFieldNames(new(db_spec.DBUser))
 	if len(searchWordFieldNames) == 0 {
-		return p._DescribeUsers_all(ctx, req)
+		return p._ListUsers_all(ctx, req)
 	}
 
 	var (
-		queryHeaer       = fmt.Sprintf("SELECT * FROM %s ", dbSpec.UserTableName)
-		queryCountHeader = fmt.Sprintf("SELECT COUNT(*) FROM %s ", dbSpec.UserTableName)
+		queryHeaer       = fmt.Sprintf("SELECT * FROM %s ", db_spec.DBSpec.UserTableName)
+		queryCountHeader = fmt.Sprintf("SELECT COUNT(*) FROM %s ", db_spec.DBSpec.UserTableName)
 		queryTail        string
 	)
 
@@ -282,7 +284,7 @@ func (p *Database) _DescribeUsers_bySearchWord(ctx context.Context, req *pb.Desc
 		}
 	}
 
-	var rows = []DBUser{}
+	var rows = []db_spec.DBUser{}
 	err := p.DB.SelectContext(ctx, &rows, queryHeaer+queryTail)
 	if err != nil {
 		logger.Warnf(ctx, "%v", queryCountHeader+queryTail)
@@ -290,22 +292,15 @@ func (p *Database) _DescribeUsers_bySearchWord(ctx context.Context, req *pb.Desc
 		return nil, err
 	}
 
-	var sets []*pb.User
+	var sets []*pbim.User
 	for _, v := range rows {
-		sets = append(sets, v.ToPb())
+		sets = append(sets, v.ToPB())
 	}
 
-	reply := &pb.DescribeUsersResponse{
-		Head: &pb.ResponseHeader{
-			UserId:     req.GetHead().GetUserId(),
-			OwnerPath:  "", // TODO
-			AccessPath: "", // TODO
-		},
-		UserSet:    sets,
-		TotalCount: int32(total),
+	reply := &pbim.ListUsersResponse{
+		User: sets,
+		Total: int32(total),
 	}
 
 	return reply, nil
 }
-
-*/
