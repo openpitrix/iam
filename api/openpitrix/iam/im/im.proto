@@ -82,7 +82,7 @@ service AccountManager {
 		};
 	}
 
-	rpc ListUesrs(Range) returns (ListUesrsResponse) {
+	rpc ListUsers(Range) returns (ListUesrsResponse) {
 		option (google.api.http) = {
 			get: "/apis/iam/users"
 		};

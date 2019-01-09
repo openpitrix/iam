@@ -661,7 +661,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
     },
     "/apis/iam/users": {
       "get": {
-        "operationId": "ListUesrs",
+        "operationId": "ListUsers",
         "responses": {
           "200": {
             "description": "",

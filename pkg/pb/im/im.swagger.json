@@ -292,7 +292,7 @@
     },
     "/apis/iam/users": {
       "get": {
-        "operationId": "ListUesrs",
+        "operationId": "ListUsers",
         "responses": {
           "200": {
             "description": "",
