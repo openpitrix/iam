@@ -75,14 +75,19 @@ func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 	return req, nil
 }
 
-/*
-
-func (p *Database) DeleteGroups(ctx context.Context, req *pb.DeleteGroupsRequest) (*pb.DeleteGroupsResponse, error) {
+func (p *Database) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pbim.Empty, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
+	if req == nil || len(req.Gid) == 0 || !isValidIds(req.Gid...) {
+		err := status.Errorf(codes.InvalidArgument, "empty field")
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
 	sql := pkgBuildSql_Delete(
-		dbSpec.GroupTableName, dbSpec.GroupPrimaryKeyName,
-		req.GroupId...,
+		db_spec.DBSpec.UserGroupTableName,
+		db_spec.DBSpec.UserGroupPrimaryKeyName,
+		req.Gid...,
 	)
 
 	_, err := p.DB.ExecContext(ctx, sql)
@@ -92,17 +97,12 @@ func (p *Database) DeleteGroups(ctx context.Context, req *pb.DeleteGroupsRequest
 		return nil, err
 	}
 
-	reply := &pb.DeleteGroupsResponse{
-		Head: &pb.ResponseHeader{
-			UserId:     req.GetHead().GetUserId(),
-			OwnerPath:  "", // TODO
-			AccessPath: "", // TODO
-		},
-		GroupId: req.GroupId,
-	}
-
+	reply := &pbim.Empty{}
 	return reply, nil
 }
+
+/*
+
 func (p *Database) ModifyGroup(ctx context.Context, req *pb.ModifyGroupRequest) (*pb.ModifyGroupResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 

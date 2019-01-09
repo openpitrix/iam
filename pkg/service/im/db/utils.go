@@ -13,6 +13,15 @@ import (
 	"github.com/golang/protobuf/ptypes/timestamp"
 )
 
+func isValidIds(ids ...string) bool {
+	var re = regexp.MustCompile(`^[a-z0-9-_]+$`)
+	for _, id := range ids {
+		if !re.MatchString(id) {
+			return false
+		}
+	}
+	return true
+}
 func isZeroTimestamp(x *timestamp.Timestamp) bool {
 	if x == nil {
 		return true
