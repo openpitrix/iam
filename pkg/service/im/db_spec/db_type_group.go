@@ -5,24 +5,29 @@
 package db_spec
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
 
 	"openpitrix.io/iam/pkg/pb/im"
+	"openpitrix.io/logger"
 )
 
 type DBGroup struct {
-	GroupId       string    `db:"group_id"`
-	GroupName     string    `db:"group_name"`
-	ParentGroupId string    `db:"parent_group_id"`
-	GroupPath     string    `db:"group_path"`
-	Level         int32     `db:"level"`
-	Status        string    `db:"status"`
-	CreateTime    time.Time `db:"create_time"`
-	StatusTime    time.Time `db:"status_time"`
-	UpdateTime    time.Time `db:"update_time"`
-	Extra         string    `db:"extra"` // JSON
+	Gid         string    `db:"group_id"`
+	GroupPath   string    `db:"group_path"`
+	Name        string    `db:"group_name"`
+	Description string    `db:"description"`
+	Status      string    `db:"status"`
+	CreateTime  time.Time `db:"create_time"`
+	StatusTime  time.Time `db:"status_time"`
+	UpdateTime  time.Time `db:"update_time"`
+	Extra       string    `db:"extra"` // JSON
+
+	// DB internal fields
+	parent_gid     string `db:"parent_group_id"`
+	GroupPathLevel string `db:"level"`
 }
 
 func PBGroupToDB(p *pbim.Group) *DBGroup {
@@ -30,20 +35,25 @@ func PBGroupToDB(p *pbim.Group) *DBGroup {
 		return new(DBGroup)
 	}
 	var q = &DBGroup{
-		//GroupId:       p.GroupId,
-		//GroupName:     p.GroupName,
-		//ParentGroupId: p.ParentGroupId,
-		//GroupPath:     p.GroupPath,
-		//Level:         p.Level,
-		//SeqOrder:      p.SeqOrder,
-		//Owner:         p.Owner,
-		//OwnerPath:     p.OwnerPath,
-		//CreateTime:    p.CreateTime,
-		//UpdateTime:    p.UpdateTime,
+		Gid:         p.Gid,
+		GroupPath:   p.GroupPath,
+		Name:        p.Name,
+		Description: p.Description,
+		Status:      p.Status,
 	}
 
 	q.CreateTime, _ = ptypes.Timestamp(p.CreateTime)
 	q.UpdateTime, _ = ptypes.Timestamp(p.UpdateTime)
+	q.StatusTime, _ = ptypes.Timestamp(p.StatusTime)
+
+	if len(p.Extra) > 0 {
+		data, err := json.MarshalIndent(p.Extra, "", "\t")
+		if err != nil {
+			logger.Warnf(nil, "%+v", err)
+			return q
+		}
+		q.Extra = string(data)
+	}
 
 	return q
 }
@@ -53,21 +63,27 @@ func (p *DBGroup) ToPB() *pbim.Group {
 		return new(pbim.Group)
 	}
 	var q = &pbim.Group{
-		//GroupId:       p.GroupId,
-		//GroupName:     p.GroupName,
-		//ParentGroupId: p.ParentGroupId,
-		//GroupPath:     p.GroupPath,
-		//Level:         p.Level,
-		//SeqOrder:      p.SeqOrder,
-		//Owner:         p.Owner,
-		//OwnerPath:     p.OwnerPath,
-		//CreateTime: p.CreateTime,
-		//UpdateTime: p.UpdateTime,
+		Gid:         p.Gid,
+		GroupPath:   p.GroupPath,
+		Name:        p.Name,
+		Description: p.Description,
+		Status:      p.Status,
 	}
 
 	q.CreateTime, _ = ptypes.TimestampProto(p.CreateTime)
 	q.UpdateTime, _ = ptypes.TimestampProto(p.UpdateTime)
+	q.StatusTime, _ = ptypes.TimestampProto(p.StatusTime)
 
+	if p.Extra != "" {
+		if q.Extra == nil {
+			q.Extra = make(map[string]string)
+		}
+		err := json.Unmarshal([]byte(p.Extra), &q.Extra)
+		if err != nil {
+			logger.Warnf(nil, "%+v", err)
+			return q
+		}
+	}
 	return q
 }
 
