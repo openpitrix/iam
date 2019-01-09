@@ -397,6 +397,12 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         },
         "parameters": [
           {
+            "name": "search_word",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
             "name": "sort_key",
             "in": "query",
             "required": false,
@@ -666,11 +672,17 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/imListUesrsResponse"
+              "$ref": "#/definitions/imListUsersResponse"
             }
           }
         },
         "parameters": [
+          {
+            "name": "search_word",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
           {
             "name": "sort_key",
             "in": "query",
@@ -885,7 +897,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         }
       }
     },
-    "imListUesrsResponse": {
+    "imListUsersResponse": {
       "type": "object",
       "properties": {
         "user": {

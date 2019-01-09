@@ -19,7 +19,7 @@ It has these top-level messages:
 	GroupIdList
 	Range
 	Password
-	ListUesrsResponse
+	ListUsersResponse
 	ListGroupsResponse
 	JoinGroupRequest
 	LeaveGroupRequest
@@ -126,7 +126,7 @@ func (this *Range) Validate() error {
 func (this *Password) Validate() error {
 	return nil
 }
-func (this *ListUesrsResponse) Validate() error {
+func (this *ListUsersResponse) Validate() error {
 	for _, item := range this.User {
 		if item != nil {
 			if err := go_proto_validators.CallValidatorIfExists(item); err != nil {

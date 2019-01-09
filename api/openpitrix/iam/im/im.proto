@@ -69,6 +69,22 @@ service AccountManager {
 			body: "*"
 		};
 	}
+	rpc ModifyGroup(Group) returns (Group) {
+		option (google.api.http) = {
+			patch: "/apis/iam/groups/{gid}"
+			body: "*"
+		};
+	}
+	rpc GetGroup(GroupId) returns (Group) {
+		option (google.api.http) = {
+			get: "/apis/iam/groups/{gid}"
+		};
+	}
+	rpc ListGroups(Range) returns (ListGroupsResponse) {
+		option (google.api.http) = {
+			get: "/apis/iam/groups"
+		};
+	}
 
 	rpc CreateUser(User) returns (User) {
 		option (google.api.http) = {
@@ -82,56 +98,20 @@ service AccountManager {
 			body: "*"
 		};
 	}
-
-	rpc ListUsers(Range) returns (ListUesrsResponse) {
-		option (google.api.http) = {
-			get: "/apis/iam/users"
-		};
-	}
-	rpc ListGroups(Range) returns (ListGroupsResponse) {
-		option (google.api.http) = {
-			get: "/apis/iam/groups"
-		};
-	}
-
-	rpc GetUser(UserId) returns (User) {
-		option (google.api.http) = {
-			get: "/apis/iam/users/{uid}"
-		};
-	}
-	rpc GetUsersByGroupId(GroupId) returns (UserList) {
-		option (google.api.http) = {
-			get: "/apis/iam/groups/{gid}/users"
-		};
-	}
 	rpc ModifyUser(User) returns (User) {
 		option (google.api.http) = {
 			patch: "/apis/iam/users/{uid}"
 			body: "*"
 		};
 	}
-	rpc ComparePassword(Password) returns (Empty) {
+	rpc GetUser(UserId) returns (User) {
 		option (google.api.http) = {
-			post: "/apis/iam/password:compare"
-			body: "*"
+			get: "/apis/iam/users/{uid}"
 		};
 	}
-	rpc ModifyPassword(Password) returns (Empty) {
+	rpc ListUsers(Range) returns (ListUsersResponse) {
 		option (google.api.http) = {
-			post: "/apis/iam/password:modify"
-			body: "*"
-		};
-	}
-
-	rpc GetGroup(GroupId) returns (Group) {
-		option (google.api.http) = {
-			get: "/apis/iam/groups/{gid}"
-		};
-	}
-	rpc ModifyGroup(Group) returns (Group) {
-		option (google.api.http) = {
-			patch: "/apis/iam/groups/{gid}"
-			body: "*"
+			get: "/apis/iam/users"
 		};
 	}
 
@@ -144,6 +124,24 @@ service AccountManager {
 	rpc LeaveGroup(LeaveGroupRequest) returns (Empty) {
 		option (google.api.http) = {
 			post: "/apis/iam/groups:leave"
+			body: "*"
+		};
+	}
+	rpc GetUsersByGroupId(GroupId) returns (UserList) {
+		option (google.api.http) = {
+			get: "/apis/iam/groups/{gid}/users"
+		};
+	}
+
+	rpc ComparePassword(Password) returns (Empty) {
+		option (google.api.http) = {
+			post: "/apis/iam/password:compare"
+			body: "*"
+		};
+	}
+	rpc ModifyPassword(Password) returns (Empty) {
+		option (google.api.http) = {
+			post: "/apis/iam/password:modify"
 			body: "*"
 		};
 	}
@@ -173,18 +171,19 @@ message GroupIdList {
 
 message Range {
 	map<string,FieldValidator> filter = 1;
-	string sort_key = 2;
-	bool reverse = 3;
+	string search_word = 2;
+	string sort_key = 3;
+	bool reverse = 4;
 
-	int32 offset = 4;
-	int32 limit = 5;
+	int32 offset = 5;
+	int32 limit = 6;
 }
 message Password {
 	string uid = 1;
 	string password = 2;
 }
 
-message ListUesrsResponse {
+message ListUsersResponse {
 	repeated User user = 1;
 	int32 total = 2;
 }

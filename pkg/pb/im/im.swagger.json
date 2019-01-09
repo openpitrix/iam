@@ -28,6 +28,12 @@
         },
         "parameters": [
           {
+            "name": "search_word",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
             "name": "sort_key",
             "in": "query",
             "required": false,
@@ -297,11 +303,17 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/imListUesrsResponse"
+              "$ref": "#/definitions/imListUsersResponse"
             }
           }
         },
         "parameters": [
+          {
+            "name": "search_word",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
           {
             "name": "sort_key",
             "in": "query",
@@ -516,7 +528,7 @@
         }
       }
     },
-    "imListUesrsResponse": {
+    "imListUsersResponse": {
       "type": "object",
       "properties": {
         "user": {

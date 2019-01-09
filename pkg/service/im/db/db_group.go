@@ -153,23 +153,23 @@ func (p *Database) GetGroup(ctx context.Context, req *pbim.GroupId) (*pbim.Group
 	return v.ToPB(), nil
 }
 
-/*
 
-func (p *Database) DescribeGroups(ctx context.Context, req *pb.DescribeGroupsRequest) (*pb.DescribeGroupsResponse, error) {
+func (p *Database) ListGroups(ctx context.Context, req *pbim.Range) (*pbim.ListGroupsResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	var searchWord = req.GetSearchWord()
-	if searchWord == "" {
-		return p._DescribeGroups_all(ctx, req)
+	if req.GetSearchWord() == "" {
+		return p._ListGroups_all(ctx, req)
 	} else {
-		return p._DescribeGroups_bySearchWord(ctx, req)
+		//return p._DescribeGroups_bySearchWord(ctx, req)
 	}
+
+	panic("TODO")
 }
 
-func (p *Database) _DescribeGroups_count(ctx context.Context, req *pb.DescribeGroupsRequest) (total int, err error) {
+func (p *Database) _ListGroups_all_count(ctx context.Context, req *pbim.Range) (total int, err error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	var query = fmt.Sprintf("SELECT COUNT(*) FROM %s", dbSpec.GroupTableName)
+	var query = fmt.Sprintf("SELECT COUNT(*) FROM %s", db_spec.DBSpec.UserGroupTableName)
 
 	rows, err := p.DB.QueryContext(ctx, query)
 	if err != nil {
@@ -190,23 +190,23 @@ func (p *Database) _DescribeGroups_count(ctx context.Context, req *pb.DescribeGr
 	return total, nil
 }
 
-func (p *Database) _DescribeGroups_all(ctx context.Context, req *pb.DescribeGroupsRequest) (*pb.DescribeGroupsResponse, error) {
+func (p *Database) _ListGroups_all(ctx context.Context, req *pbim.Range) (*pbim.ListGroupsResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	total, err := p._DescribeGroups_count(ctx, req)
+	total, err := p._ListGroups_all_count(ctx, req)
 	if err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
-	var query = fmt.Sprintf("SELECT * FROM %s", dbSpec.GroupTableName)
+	var query = fmt.Sprintf("SELECT * FROM %s", db_spec.DBSpec.UserGroupTableName)
 	if offset, limit := req.GetOffset(), req.GetLimit(); offset > 0 || limit > 0 {
 		query += fmt.Sprintf(" LIMIT %d OFFSET %d;", limit, offset)
 	} else {
 		query += fmt.Sprintf(" LIMIT %d OFFSET %d;", 20, 0)
 	}
 
-	var rows = []DBGroup{}
+	var rows = []db_spec.DBGroup{}
 	err = p.DB.SelectContext(ctx, &rows, query)
 	if err != nil {
 		logger.Warnf(ctx, "%v", query)
@@ -214,25 +214,21 @@ func (p *Database) _DescribeGroups_all(ctx context.Context, req *pb.DescribeGrou
 		return nil, err
 	}
 
-	var sets []*pb.Group
+	var sets []*pbim.Group
 	for _, v := range rows {
-		sets = append(sets, v.ToPb())
+		sets = append(sets, v.ToPB())
 	}
 
-	reply := &pb.DescribeGroupsResponse{
-		Head: &pb.ResponseHeader{
-			UserId:     req.GetHead().GetUserId(),
-			OwnerPath:  "", // TODO
-			AccessPath: "", // TODO
-		},
-		GroupSet:   sets,
-		TotalCount: int32(total),
+	reply := &pbim.ListGroupsResponse{
+		Group:   sets,
+		Total: int32(total),
 	}
 
 	return reply, nil
 }
 
-func (p *Database) _DescribeGroups_bySearchWord(ctx context.Context, req *pb.DescribeGroupsRequest) (*pb.DescribeGroupsResponse, error) {
+/*
+func (p *Database) _ListGroups_bySearchWord(ctx context.Context, req *pb.DescribeGroupsRequest) (*pb.DescribeGroupsResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	var searchWord = req.GetSearchWord()
