@@ -14,6 +14,7 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"openpitrix.io/iam/pkg/config"
+	"openpitrix.io/iam/pkg/service/im/db_spec"
 	"openpitrix.io/logger"
 )
 
@@ -54,7 +55,7 @@ func OpenDatabase(cfg *config.Config) (*Database, error) {
 		cfg: cfg,
 		DB:  db,
 	}
-	for i, v := range InitSqlList {
+	for i, v := range db_spec.DBInitSqlList {
 		if v.Name != "-" {
 			if _, err := p.Exec(v.Sql); err != nil {
 				logger.Warnf(nil, "%d: %v", i, err)

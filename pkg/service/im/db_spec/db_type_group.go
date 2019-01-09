@@ -2,8 +2,7 @@
 // Use of this source code is governed by a Apache license
 // that can be found in the LICENSE file.
 
-package im
-
+package db_spec
 
 import (
 	"time"
@@ -19,14 +18,14 @@ type DBGroup struct {
 	ParentGroupId string    `db:"parent_group_id"`
 	GroupPath     string    `db:"group_path"`
 	Level         int32     `db:"level"`
-	SeqOrder      int32     `db:"seq_order"`
-	Owner         string    `db:"owner"`
-	OwnerPath     string    `db:"owner_path"`
+	Status        string    `db:"status"`
 	CreateTime    time.Time `db:"create_time"`
+	StatusTime    time.Time `db:"status_time"`
 	UpdateTime    time.Time `db:"update_time"`
+	Extra         string    `db:"extra"` // JSON
 }
 
-func pbGroupToDB(p *pbim.Group) *DBGroup {
+func PBGroupToDB(p *pbim.Group) *DBGroup {
 	if p == nil {
 		return new(DBGroup)
 	}
@@ -49,7 +48,7 @@ func pbGroupToDB(p *pbim.Group) *DBGroup {
 	return q
 }
 
-func (p *DBGroup) ToPb() *pbim.Group {
+func (p *DBGroup) ToPB() *pbim.Group {
 	if p == nil {
 		return new(pbim.Group)
 	}

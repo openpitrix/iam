@@ -2,9 +2,9 @@
 // Use of this source code is governed by a Apache license
 // that can be found in the LICENSE file.
 
-package im
+package db_spec
 
-var dbSpec = struct {
+var DBSpec = struct {
 	TableNames []string
 
 	UserTableName      string
@@ -32,7 +32,7 @@ var dbSpec = struct {
 	UserGroupBindingPrimaryKeyName: "id",
 }
 
-var InitSqlList = []struct{ Name, Sql string }{
+var DBInitSqlList = []struct{ Name, Sql string }{
 	{
 		Name: "user",
 		Sql: `CREATE TABLE IF NOT EXISTS user (
