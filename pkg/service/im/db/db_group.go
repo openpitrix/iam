@@ -130,7 +130,7 @@ func (p *Database) ModifyGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 		return nil, err
 	}
 
-	return p.GetGroup(ctx, &pbim.GroupId{Gid:req.Gid})
+	return p.GetGroup(ctx, &pbim.GroupId{Gid: req.Gid})
 }
 
 func (p *Database) GetGroup(ctx context.Context, req *pbim.GroupId) (*pbim.Group, error) {
@@ -152,7 +152,6 @@ func (p *Database) GetGroup(ctx context.Context, req *pbim.GroupId) (*pbim.Group
 
 	return v.ToPB(), nil
 }
-
 
 func (p *Database) ListGroups(ctx context.Context, req *pbim.Range) (*pbim.ListGroupsResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
@@ -220,35 +219,34 @@ func (p *Database) _ListGroups_all(ctx context.Context, req *pbim.Range) (*pbim.
 	}
 
 	reply := &pbim.ListGroupsResponse{
-		Group:   sets,
+		Group: sets,
 		Total: int32(total),
 	}
 
 	return reply, nil
 }
 
-/*
-func (p *Database) _ListGroups_bySearchWord(ctx context.Context, req *pb.DescribeGroupsRequest) (*pb.DescribeGroupsResponse, error) {
+func (p *Database) _ListGroups_bySearchWord(ctx context.Context, req *pbim.Range) (*pbim.ListGroupsResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	var searchWord = req.GetSearchWord()
 
 	if searchWord == "" {
-		return p._DescribeGroups_all(ctx, req)
+		return p._ListGroups_all(ctx, req)
 	}
 
 	if !pkgSearchWordValid(searchWord) {
 		return nil, fmt.Errorf("invalid search_word: %q", searchWord)
 	}
 
-	var searchWordFieldNames = pkgGetDBTableStringFieldNames(new(DBGroup))
+	var searchWordFieldNames = pkgGetDBTableStringFieldNames(new(db_spec.DBGroup))
 	if len(searchWordFieldNames) == 0 {
-		return p._DescribeGroups_all(ctx, req)
+		return p._ListGroups_all(ctx, req)
 	}
 
 	var (
-		queryHeaer       = fmt.Sprintf("SELECT * FROM %s ", dbSpec.GroupTableName)
-		queryCountHeader = fmt.Sprintf("SELECT COUNT(*) FROM %s ", dbSpec.GroupTableName)
+		queryHeaer       = fmt.Sprintf("SELECT * FROM %s ", db_spec.DBSpec.UserGroupTableName)
+		queryCountHeader = fmt.Sprintf("SELECT COUNT(*) FROM %s ", db_spec.DBSpec.UserGroupTableName)
 		queryTail        string
 	)
 
@@ -286,7 +284,7 @@ func (p *Database) _ListGroups_bySearchWord(ctx context.Context, req *pb.Describ
 		}
 	}
 
-	var rows = []DBGroup{}
+	var rows = []db_spec.DBGroup{}
 	err := p.DB.SelectContext(ctx, &rows, queryHeaer+queryTail)
 	if err != nil {
 		logger.Warnf(ctx, "%v", queryCountHeader+queryTail)
@@ -294,22 +292,15 @@ func (p *Database) _ListGroups_bySearchWord(ctx context.Context, req *pb.Describ
 		return nil, err
 	}
 
-	var sets []*pb.Group
+	var sets []*pbim.Group
 	for _, v := range rows {
-		sets = append(sets, v.ToPb())
+		sets = append(sets, v.ToPB())
 	}
 
-	reply := &pb.DescribeGroupsResponse{
-		Head: &pb.ResponseHeader{
-			UserId:     req.GetHead().GetUserId(),
-			OwnerPath:  "", // TODO
-			AccessPath: "", // TODO
-		},
-		GroupSet:   sets,
-		TotalCount: int32(total),
+	reply := &pbim.ListGroupsResponse{
+		Group: sets,
+		Total: int32(total),
 	}
 
 	return reply, nil
 }
-
-*/
