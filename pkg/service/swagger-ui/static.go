@@ -88,7 +88,8 @@ window.onload = function() {
   // Build a system
   const ui = SwaggerUIBundle({
     urls: [
-      { name:"Api", url:"iam.swagger.json" }
+      { name:"Access Manager", url:"am.swagger.json" },
+      { name:"Identity Manager", url:"im.swagger.json" }
     ],
     dom_id: '#swagger-ui',
     deepLinking: true,
@@ -228,10 +229,10 @@ var V=n(138),$=n(173),Z=n(174);e.Buffer=s,e.SlowBuffer=m,e.INSPECT_MAX_BYTES=50,
 var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,o.TYPED_ARRAY_SUPPORT=void 0!==e.TYPED_ARRAY_SUPPORT?e.TYPED_ARRAY_SUPPORT:function(){try{var e=new Uint8Array(1);return e.__proto__={__proto__:Uint8Array.prototype,foo:function(){return 42}},42===e.foo()&&"function"==typeof e.subarray&&0===e.subarray(1,1).byteLength}catch(e){return!1}}(),t.kMaxLength=r(),o.poolSize=8192,o._augment=function(e){return e.__proto__=o.prototype,e},o.from=function(e,t,n){return u(null,e,t,n)},o.TYPED_ARRAY_SUPPORT&&(o.prototype.__proto__=Uint8Array.prototype,o.__proto__=Uint8Array,"undefined"!=typeof Symbol&&Symbol.species&&o[Symbol.species]===o&&Object.defineProperty(o,Symbol.species,{value:null,configurable:!0})),o.alloc=function(e,t,n){return l(null,e,t,n)},o.allocUnsafe=function(e){return s(null,e)},o.allocUnsafeSlow=function(e){return s(null,e)},o.isBuffer=function(e){return!(null==e||!e._isBuffer)},o.compare=function(e,t){if(!o.isBuffer(e)||!o.isBuffer(t))throw new TypeError("Arguments must be Buffers");if(e===t)return 0;for(var n=e.length,r=t.length,a=0,u=Math.min(n,r);a<u;++a)if(e[a]!==t[a]){n=e[a],r=t[a];break}return n<r?-1:r<n?1:0},o.isEncoding=function(e){switch(String(e).toLowerCase()){case"hex":case"utf8":case"utf-8":case"ascii":case"latin1":case"binary":case"base64":case"ucs2":case"ucs-2":case"utf16le":case"utf-16le":return!0;default:return!1}},o.concat=function(e,t){if(!Z(e))throw new TypeError('"list" argument must be an Array of Buffers');if(0===e.length)return o.alloc(0);var n;if(void 0===t)for(t=0,n=0;n<e.length;++n)t+=e[n].length;var r=o.allocUnsafe(t),a=0;for(n=0;n<e.length;++n){var u=e[n];if(!o.isBuffer(u))throw new TypeError('"list" argument must be an Array of Buffers');u.copy(r,a),a+=u.length}return r},o.byteLength=v,o.prototype._isBuffer=!0,o.prototype.swap16=function(){var e=this.length;if(e%2!=0)throw new RangeError("Buffer size must be a multiple of 16-bits");for(var t=0;t<e;t+=2)g(this,t,t+1);return this},o.prototype.swap32=function(){var e=this.length;if(e%4!=0)throw new RangeError("Buffer size must be a multiple of 32-bits");for(var t=0;t<e;t+=4)g(this,t,t+3),g(this,t+1,t+2);return this},o.prototype.swap64=function(){var e=this.length;if(e%8!=0)throw new RangeError("Buffer size must be a multiple of 64-bits");for(var t=0;t<e;t+=8)g(this,t,t+7),g(this,t+1,t+6),g(this,t+2,t+5),g(this,t+3,t+4);return this},o.prototype.toString=function(){var e=0|this.length;return 0===e?"":0===arguments.length?O(this,0,e):y.apply(this,arguments)},o.prototype.equals=function(e){if(!o.isBuffer(e))throw new TypeError("Argument must be a Buffer");return this===e||0===o.compare(this,e)},o.prototype.inspect=function(){var e="",n=t.INSPECT_MAX_BYTES;return this.length>0&&(e=this.toString("hex",0,n).match(/.{2}/g).join(" "),this.length>n&&(e+=" ... ")),"<Buffer "+e+">"},o.prototype.compare=function(e,t,n,r,a){if(!o.isBuffer(e))throw new TypeError("Argument must be a Buffer");if(void 0===t&&(t=0),void 0===n&&(n=e?e.length:0),void 0===r&&(r=0),void 0===a&&(a=this.length),t<0||n>e.length||r<0||a>this.length)throw new RangeError("out of range index");if(r>=a&&t>=n)return 0;if(r>=a)return-1;if(t>=n)return 1;if(t>>>=0,n>>>=0,r>>>=0,a>>>=0,this===e)return 0;for(var u=a-r,i=n-t,l=Math.min(u,i),s=this.slice(r,a),c=e.slice(t,n),f=0;f<l;++f)if(s[f]!==c[f]){u=s[f],i=c[f];break}return u<i?-1:i<u?1:0},o.prototype.includes=function(e,t,n){return-1!==this.indexOf(e,t,n)},o.prototype.indexOf=function(e,t,n){return _(this,e,t,n,!0)},o.prototype.lastIndexOf=function(e,t,n){return _(this,e,t,n,!1)},o.prototype.write=function(e,t,n,r){if(void 0===t)r="utf8",n=this.length,t=0;else if(void 0===n&&"string"==typeof t)r=t,n=this.length,t=0;else{if(!isFinite(t))throw new Error("Buffer.write(string, encoding, offset[, length]) is no longer supported");t|=0,isFinite(n)?(n|=0,void 0===r&&(r="utf8")):(r=n,n=void 0)}var a=this.length-t;if((void 0===n||n>a)&&(n=a),e.length>0&&(n<0||t<0)||t>this.length)throw new RangeError("Attempt to write outside buffer bounds");r||(r="utf8");for(var o=!1;;)switch(r){case"hex":return E(this,e,t,n);case"utf8":case"utf-8":return S(this,e,t,n);case"ascii":return x(this,e,t,n);case"latin1":case"binary":return w(this,e,t,n);case"base64":return C(this,e,t,n);case"ucs2":case"ucs-2":case"utf16le":case"utf-16le":return j(this,e,t,n);default:if(o)throw new TypeError("Unknown encoding: "+r);r=(""+r).toLowerCase(),o=!0}},o.prototype.toJSON=function(){return{type:"Buffer",data:Array.prototype.slice.call(this._arr||this,0)}};var Q=4096;o.prototype.slice=function(e,t){var n=this.length;e=~~e,t=void 0===t?n:~~t,e<0?(e+=n)<0&&(e=0):e>n&&(e=n),t<0?(t+=n)<0&&(t=0):t>n&&(t=n),t<e&&(t=e);var r;if(o.TYPED_ARRAY_SUPPORT)r=this.subarray(e,t),r.__proto__=o.prototype;else{var a=t-e;r=new o(a,void 0);for(var u=0;u<a;++u)r[u]=this[u+e]}return r},o.prototype.readUIntLE=function(e,t,n){e|=0,t|=0,n||q(e,t,this.length);for(var r=this[e],a=1,o=0;++o<t&&(a*=256);)r+=this[e+o]*a;return r},o.prototype.readUIntBE=function(e,t,n){e|=0,t|=0,n||q(e,t,this.length);for(var r=this[e+--t],a=1;t>0&&(a*=256);)r+=this[e+--t]*a;return r},o.prototype.readUInt8=function(e,t){return t||q(e,1,this.length),this[e]},o.prototype.readUInt16LE=function(e,t){return t||q(e,2,this.length),this[e]|this[e+1]<<8},o.prototype.readUInt16BE=function(e,t){return t||q(e,2,this.length),this[e]<<8|this[e+1]},o.prototype.readUInt32LE=function(e,t){return t||q(e,4,this.length),(this[e]|this[e+1]<<8|this[e+2]<<16)+16777216*this[e+3]},o.prototype.readUInt32BE=function(e,t){return t||q(e,4,this.length),16777216*this[e]+(this[e+1]<<16|this[e+2]<<8|this[e+3])},o.prototype.readIntLE=function(e,t,n){e|=0,t|=0,n||q(e,t,this.length);for(var r=this[e],a=1,o=0;++o<t&&(a*=256);)r+=this[e+o]*a;return a*=128,r>=a&&(r-=Math.pow(2,8*t)),r},o.prototype.readIntBE=function(e,t,n){e|=0,t|=0,n||q(e,t,this.length);for(var r=t,a=1,o=this[e+--r];r>0&&(a*=256);)o+=this[e+--r]*a;return a*=128,o>=a&&(o-=Math.pow(2,8*t)),o},o.prototype.readInt8=function(e,t){return t||q(e,1,this.length),128&this[e]?-1*(255-this[e]+1):this[e]},o.prototype.readInt16LE=function(e,t){t||q(e,2,this.length);var n=this[e]|this[e+1]<<8;return 32768&n?4294901760|n:n},o.prototype.readInt16BE=function(e,t){t||q(e,2,this.length);var n=this[e+1]|this[e]<<8;return 32768&n?4294901760|n:n},o.prototype.readInt32LE=function(e,t){return t||q(e,4,this.length),this[e]|this[e+1]<<8|this[e+2]<<16|this[e+3]<<24},o.prototype.readInt32BE=function(e,t){return t||q(e,4,this.length),this[e]<<24|this[e+1]<<16|this[e+2]<<8|this[e+3]},o.prototype.readFloatLE=function(e,t){return t||q(e,4,this.length),X.read(this,e,!0,23,4)},o.prototype.readFloatBE=function(e,t){return t||q(e,4,this.length),X.read(this,e,!1,23,4)},o.prototype.readDoubleLE=function(e,t){return t||q(e,8,this.length),X.read(this,e,!0,52,8)},o.prototype.readDoubleBE=function(e,t){return t||q(e,8,this.length),X.read(this,e,!1,52,8)},o.prototype.writeUIntLE=function(e,t,n,r){if(e=+e,t|=0,n|=0,!r){N(this,e,t,n,Math.pow(2,8*n)-1,0)}var a=1,o=0;for(this[t]=255&e;++o<n&&(a*=256);)this[t+o]=e/a&255;return t+n},o.prototype.writeUIntBE=function(e,t,n,r){if(e=+e,t|=0,n|=0,!r){N(this,e,t,n,Math.pow(2,8*n)-1,0)}var a=n-1,o=1;for(this[t+a]=255&e;--a>=0&&(o*=256);)this[t+a]=e/o&255;return t+n},o.prototype.writeUInt8=function(e,t,n){return e=+e,t|=0,n||N(this,e,t,1,255,0),o.TYPED_ARRAY_SUPPORT||(e=Math.floor(e)),this[t]=255&e,t+1},o.prototype.writeUInt16LE=function(e,t,n){return e=+e,t|=0,n||N(this,e,t,2,65535,0),o.TYPED_ARRAY_SUPPORT?(this[t]=255&e,this[t+1]=e>>>8):I(this,e,t,!0),t+2},o.prototype.writeUInt16BE=function(e,t,n){return e=+e,t|=0,n||N(this,e,t,2,65535,0),o.TYPED_ARRAY_SUPPORT?(this[t]=e>>>8,this[t+1]=255&e):I(this,e,t,!1),t+2},o.prototype.writeUInt32LE=function(e,t,n){return e=+e,t|=0,n||N(this,e,t,4,4294967295,0),o.TYPED_ARRAY_SUPPORT?(this[t+3]=e>>>24,this[t+2]=e>>>16,this[t+1]=e>>>8,this[t]=255&e):D(this,e,t,!0),t+4},o.prototype.writeUInt32BE=function(e,t,n){return e=+e,t|=0,n||N(this,e,t,4,4294967295,0),o.TYPED_ARRAY_SUPPORT?(this[t]=e>>>24,this[t+1]=e>>>16,this[t+2]=e>>>8,this[t+3]=255&e):D(this,e,t,!1),t+4},o.prototype.writeIntLE=function(e,t,n,r){if(e=+e,t|=0,!r){var a=Math.pow(2,8*n-1);N(this,e,t,n,a-1,-a)}var o=0,u=1,i=0;for(this[t]=255&e;++o<n&&(u*=256);)e<0&&0===i&&0!==this[t+o-1]&&(i=1),this[t+o]=(e/u>>0)-i&255;return t+n},o.prototype.writeIntBE=function(e,t,n,r){if(e=+e,t|=0,!r){var a=Math.pow(2,8*n-1);N(this,e,t,n,a-1,-a)}var o=n-1,u=1,i=0;for(this[t+o]=255&e;--o>=0&&(u*=256);)e<0&&0===i&&0!==this[t+o+1]&&(i=1),this[t+o]=(e/u>>0)-i&255;return t+n},o.prototype.writeInt8=function(e,t,n){return e=+e,t|=0,n||N(this,e,t,1,127,-128),o.TYPED_ARRAY_SUPPORT||(e=Math.floor(e)),e<0&&(e=255+e+1),this[t]=255&e,t+1},o.prototype.writeInt16LE=function(e,t,n){return e=+e,t|=0,n||N(this,e,t,2,32767,-32768),o.TYPED_ARRAY_SUPPORT?(this[t]=255&e,this[t+1]=e>>>8):I(this,e,t,!0),t+2},o.prototype.writeInt16BE=function(e,t,n){return e=+e,t|=0,n||N(this,e,t,2,32767,-32768),o.TYPED_ARRAY_SUPPORT?(this[t]=e>>>8,this[t+1]=255&e):I(this,e,t,!1),t+2},o.prototype.writeInt32LE=function(e,t,n){return e=+e,t|=0,n||N(this,e,t,4,2147483647,-2147483648),o.TYPED_ARRAY_SUPPORT?(this[t]=255&e,this[t+1]=e>>>8,this[t+2]=e>>>16,this[t+3]=e>>>24):D(this,e,t,!0),t+4},o.prototype.writeInt32BE=function(e,t,n){return e=+e,t|=0,n||N(this,e,t,4,2147483647,-2147483648),e<0&&(e=4294967295+e+1),o.TYPED_ARRAY_SUPPORT?(this[t]=e>>>24,this[t+1]=e>>>16,this[t+2]=e>>>8,this[t+3]=255&e):D(this,e,t,!1),t+4},o.prototype.writeFloatLE=function(e,t,n){return L(this,e,t,!0,n)},o.prototype.writeFloatBE=function(e,t,n){return L(this,e,t,!1,n)},o.prototype.writeDoubleLE=function(e,t,n){return z(this,e,t,!0,n)},o.prototype.writeDoubleBE=function(e,t,n){return z(this,e,t,!1,n)},o.prototype.copy=function(e,t,n,r){if(n||(n=0),r||0===r||(r=this.length),t>=e.length&&(t=e.length),t||(t=0),r>0&&r<n&&(r=n),r===n)return 0;if(0===e.length||0===this.length)return 0;if(t<0)throw new RangeError("targetStart out of bounds");if(n<0||n>=this.length)throw new RangeError("sourceStart out of bounds");if(r<0)throw new RangeError("sourceEnd out of bounds");r>this.length&&(r=this.length),e.length-t<r-n&&(r=e.length-t+n);var a,u=r-n;if(this===e&&n<t&&t<r)for(a=u-1;a>=0;--a)e[a+t]=this[a+n];else if(u<1e3||!o.TYPED_ARRAY_SUPPORT)for(a=0;a<u;++a)e[a+t]=this[a+n];else Uint8Array.prototype.set.call(e,this.subarray(n,n+u),t);return u},o.prototype.fill=function(e,t,n,r){if("string"==typeof e){if("string"==typeof t?(r=t,t=0,n=this.length):"string"==typeof n&&(r=n,n=this.length),1===e.length){var a=e.charCodeAt(0);a<256&&(e=a)}if(void 0!==r&&"string"!=typeof r)throw new TypeError("encoding must be a string");if("string"==typeof r&&!o.isEncoding(r))throw new TypeError("Unknown encoding: "+r)}else"number"==typeof e&&(e&=255);if(t<0||this.length<t||this.length<n)throw new RangeError("Out of range index");if(n<=t)return this;t>>>=0,n=void 0===n?this.length:n>>>0,e||(e=0);var u;if("number"==typeof e)for(u=t;u<n;++u)this[u]=e;else{var i=o.isBuffer(e)?e:J(new o(e,r).toString()),l=i.length;for(u=0;u<n-t;++u)this[u+t]=i[u%l]}return this};var ee=/[^+\/0-9A-Za-z-_]/g}).call(t,n(237))},function(e,t,n){n(376),n(378),n(379),n(377),e.exports=n(50).Promise},function(e,t,n){var r=n(15)("unscopables"),a=Array.prototype;void 0==a[r]&&n(42)(a,r,{}),e.exports=function(e){a[r][e]=!0}},function(e,t,n){var r=n(71),a=n(18).document,o=r(a)&&r(a.createElement);e.exports=function(e){return o?a.createElement(e):{}}},function(e,t){e.exports=function(e){try{return!!e()}catch(e){return!0}}},function(e,t,n){var r=n(51),a=n(358),o=n(357),u=n(49),i=n(373),l=n(374);e.exports=function(e,t,n,s){var c,f,d,p=l(e),h=r(n,s,t?2:1),m=0;if("function"!=typeof p)throw TypeError(e+" is not iterable!");if(o(p))for(c=i(e.length);c>m;m++)t?h(u(f=e[m])[0],f[1]):h(e[m]);else for(d=p.call(e);!(f=d.next()).done;)a(d,h,f.value,t)}},function(e,t,n){e.exports=n(18).document&&document.documentElement},function(e,t){e.exports=function(e,t,n){var r=void 0===n;switch(t.length){case 0:return r?e():e.call(n);case 1:return r?e(t[0]):e.call(n,t[0]);case 2:return r?e(t[0],t[1]):e.call(n,t[0],t[1]);case 3:return r?e(t[0],t[1],t[2]):e.call(n,t[0],t[1],t[2]);case 4:return r?e(t[0],t[1],t[2],t[3]):e.call(n,t[0],t[1],t[2],t[3])}return e.apply(n,t)}},function(e,t,n){var r=n(70);e.exports=Object("z").propertyIsEnumerable(0)?Object:function(e){return"String"==r(e)?e.split(""):Object(e)}},function(e,t,n){var r=n(52),a=n(15)("iterator"),o=Array.prototype;e.exports=function(e){return void 0!==e&&(r.Array===e||o[a]===e)}},function(e,t,n){var r=n(49);e.exports=function(e,t,n,a){try{return a?t(r(n)[0],n[1]):t(n)}catch(t){var o=e.return;throw void 0!==o&&r(o.call(e)),t}}},function(e,t,n){"use strict";var r=n(34),a=n(202),o=n(105),u={};n(42)(u,n(15)("iterator"),function(){return this}),e.exports=function(e,t,n){e.prototype=r.create(u,{next:a(1,n)}),o(e,t+" Iterator")}},function(e,t,n){var r=n(15)("iterator"),a=!1;try{var o=[7][r]();o.return=function(){a=!0},Array.from(o,function(){throw 2})}catch(e){}e.exports=function(e,t){if(!t&&!a)return!1;var n=!1;try{var o=[7],u=o[r]();u.next=function(){return{done:n=!0}},o[r]=function(){return u},e(o)}catch(e){}return n}},function(e,t){e.exports=function(e,t){return{value:t,done:!!e}}},function(e,t,n){var r,a,o,u=n(18),i=n(371).set,l=u.MutationObserver||u.WebKitMutationObserver,s=u.process,c=u.Promise,f="process"==n(70)(s),d=function(){var e,t,n;for(f&&(e=s.domain)&&(s.domain=null,e.exit());r;)t=r.domain,n=r.fn,t&&t.enter(),n(),t&&t.exit(),r=r.next;a=void 0,e&&e.enter()};if(f)o=function(){s.nextTick(d)};else if(l){var p=1,h=document.createTextNode("");new l(d).observe(h,{characterData:!0}),o=function(){h.data=p=-p}}else o=c&&c.resolve?function(){c.resolve().then(d)}:function(){i.call(u,d)};e.exports=function(e){var t={fn:e,next:void 0,domain:f&&s.domain};a&&(a.next=t),r||(r=t,o()),a=t}},function(e,t,n){var r=n(72);e.exports=function(e,t){for(var n in t)r(e,n,t[n]);return e}},function(e,t){e.exports=Object.is||function(e,t){return e===t?0!==e||1/e==1/t:e!=e&&t!=t}},function(e,t,n){var r=n(34).getDesc,a=n(71),o=n(49),u=function(e,t){if(o(e),!a(t)&&null!==t)throw TypeError(t+": can't set as prototype!")};e.exports={set:Object.setPrototypeOf||("__proto__"in{}?function(e,t,a){try{a=n(51)(Function.call,r(Object.prototype,"__proto__").set,2),a(e,[]),t=!(e instanceof Array)}catch(e){t=!0}return function(e,n){return u(e,n),t?e.__proto__=n:a(e,n),e}}({},!1):void 0),check:u}},function(e,t,n){"use strict";var r=n(18),a=n(34),o=n(104),u=n(15)("species");e.exports=function(e){var t=r[e];o&&t&&!t[u]&&a.setDesc(t,u,{configurable:!0,get:function(){return this}})}},function(e,t,n){var r=n(18),a=r["__core-js_shared__"]||(r["__core-js_shared__"]={});e.exports=function(e){return a[e]||(a[e]={})}},function(e,t,n){var r=n(49),a=n(102),o=n(15)("species");e.exports=function(e,t){var n,u=r(e).constructor;return void 0===u||void 0==(n=r(u)[o])?t:a(n)}},function(e,t){e.exports=function(e,t,n){if(!(e instanceof t))throw TypeError(n+": use the 'new' operator!");return e}},function(e,t,n){var r=n(203),a=n(197);e.exports=function(e){return function(t,n){var o,u,i=String(a(t)),l=r(n),s=i.length;return l<0||l>=s?e?"":void 0:(o=i.charCodeAt(l),o<55296||o>56319||l+1===s||(u=i.charCodeAt(l+1))<56320||u>57343?e?i.charAt(l):o:e?i.slice(l,l+2):u-56320+(o-55296<<10)+65536)}}},function(e,t,n){var r,a,o,u=n(51),i=n(355),l=n(354),s=n(351),c=n(18),f=c.process,d=c.setImmediate,p=c.clearImmediate,h=c.MessageChannel,m=0,v={},y=function(){var e=+this;if(v.hasOwnProperty(e)){var t=v[e];delete v[e],t()}},g=function(e){y.call(e.data)};d&&p||(d=function(e){for(var t=[],n=1;arguments.length>n;)t.push(arguments[n++]);return v[++m]=function(){i("function"==typeof e?e:Function(e),t)},r(m),m},p=function(e){delete v[e]},"process"==n(70)(f)?r=function(e){f.nextTick(u(y,e,1))}:h?(a=new h,o=a.port2,a.port1.onmessage=g,r=u(o.postMessage,o,1)):c.addEventListener&&"function"==typeof postMessage&&!c.importScripts?(r=function(e){c.postMessage(e+"","*")},c.addEventListener("message",g,!1)):r="onreadystatechange"in s("script")?function(e){l.appendChild(s("script")).onreadystatechange=function(){l.removeChild(this),y.call(e)}}:function(e){setTimeout(u(y,e,1),0)}),e.exports={set:d,clear:p}},function(e,t,n){var r=n(356),a=n(197);e.exports=function(e){return r(a(e))}},function(e,t,n){var r=n(203),a=Math.min;e.exports=function(e){return e>0?a(r(e),9007199254740991):0}},function(e,t,n){var r=n(103),a=n(15)("iterator"),o=n(52);e.exports=n(50).getIteratorMethod=function(e){if(void 0!=e)return e[a]||e["@@iterator"]||o[r(e)]}},function(e,t,n){"use strict";var r=n(350),a=n(361),o=n(52),u=n(372);e.exports=n(200)(Array,"Array",function(e,t){this._t=u(e),this._i=0,this._k=t},function(){var e=this._t,t=this._k,n=this._i++;return!e||n>=e.length?(this._t=void 0,a(1)):"keys"==t?a(0,n):"values"==t?a(0,e[n]):a(0,[n,e[n]])},"values"),o.Arguments=o.Array,r("keys"),r("values"),r("entries")},function(e,t,n){"use strict";var r=n(103),a={};a[n(15)("toStringTag")]="z",a+""!="[object z]"&&n(72)(Object.prototype,"toString",function(){return"[object "+r(this)+"]"},!0)},function(e,t,n){"use strict";var r,a=n(34),o=n(201),u=n(18),i=n(51),l=n(103),s=n(198),c=n(71),f=n(49),d=n(102),p=n(369),h=n(353),m=n(365).set,v=n(364),y=n(15)("species"),g=n(368),_=n(362),b=u.process,E="process"==l(b),S=u.Promise,x=function(){},w=function(e){var t,n=new S(x);return e&&(n.constructor=function(e){e(x,x)}),(t=S.resolve(n)).catch(x),t===n},C=function(){function e(t){var n=new S(t);return m(n,e.prototype),n}var t=!1;try{if(t=S&&S.resolve&&w(),m(e,S),e.prototype=a.create(S.prototype,{constructor:{value:e}}),e.resolve(5).then(function(){})instanceof e||(t=!1),t&&n(104)){var r=!1;S.resolve(a.setDesc({},"then",{get:function(){r=!0}})),t=r}}catch(e){t=!1}return t}(),j=function(e,t){return!(!o||e!==S||t!==r)||v(e,t)},A=function(e){var t=f(e)[y];return void 0!=t?t:e},O=function(e){var t;return!(!c(e)||"function"!=typeof(t=e.then))&&t},R=function(e){var t,n;this.promise=new e(function(e,r){if(void 0!==t||void 0!==n)throw TypeError("Bad Promise constructor");t=e,n=r}),this.resolve=d(t),this.reject=d(n)},k=function(e){try{e()}catch(e){return{error:e}}},T=function(e,t){if(!e.n){e.n=!0;var n=e.c;_(function(){for(var r=e.v,a=1==e.s,o=0;n.length>o;)!function(t){var n,o,u=a?t.ok:t.fail,i=t.resolve,l=t.reject;try{u?(a||(e.h=!0),n=!0===u?r:u(r),n===t.promise?l(TypeError("Promise-chain cycle")):(o=O(n))?o.call(n,i,l):i(n)):l(r)}catch(e){l(e)}}(n[o++]);n.length=0,e.n=!1,t&&setTimeout(function(){var t,n,a=e.p;P(a)&&(E?b.emit("unhandledRejection",r,a):(t=u.onunhandledrejection)?t({promise:a,reason:r}):(n=u.console)&&n.error&&n.error("Unhandled promise rejection",r)),e.a=void 0},1)})}},P=function(e){var t,n=e._d,r=n.a||n.c,a=0;if(n.h)return!1;for(;r.length>a;)if(t=r[a++],t.fail||!P(t.promise))return!1;return!0},M=function(e){var t=this;t.d||(t.d=!0,t=t.r||t,t.v=e,t.s=2,t.a=t.c.slice(),T(t,!0))},q=function(e){var t,n=this;if(!n.d){n.d=!0,n=n.r||n;try{if(n.p===e)throw TypeError("Promise can't be resolved itself");(t=O(e))?_(function(){var r={r:n,d:!1};try{t.call(e,i(q,r,1),i(M,r,1))}catch(e){M.call(r,e)}}):(n.v=e,n.s=1,T(n,!1))}catch(e){M.call({r:n,d:!1},e)}}};C||(S=function(e){d(e);var t=this._d={p:p(this,S,"Promise"),c:[],a:void 0,s:0,d:!1,v:void 0,h:!1,n:!1};try{e(i(q,t,1),i(M,t,1))}catch(e){M.call(t,e)}},n(363)(S.prototype,{then:function(e,t){var n=new R(g(this,S)),r=n.promise,a=this._d;return n.ok="function"!=typeof e||e,n.fail="function"==typeof t&&t,a.c.push(n),a.a&&a.a.push(n),a.s&&T(a,!1),r},catch:function(e){return this.then(void 0,e)}})),s(s.G+s.W+s.F*!C,{Promise:S}),n(105)(S,"Promise"),n(366)("Promise"),r=n(50).Promise,s(s.S+s.F*!C,"Promise",{reject:function(e){var t=new R(this);return(0,t.reject)(e),t.promise}}),s(s.S+s.F*(!C||w(!0)),"Promise",{resolve:function(e){if(e instanceof S&&j(e.constructor,this))return e;var t=new R(this);return(0,t.resolve)(e),t.promise}}),s(s.S+s.F*!(C&&n(360)(function(e){S.all(e).catch(function(){})})),"Promise",{all:function(e){var t=A(this),n=new R(t),r=n.resolve,o=n.reject,u=[],i=k(function(){h(e,!1,u.push,u);var n=u.length,i=Array(n);n?a.each.call(u,function(e,a){var u=!1;t.resolve(e).then(function(e){u||(u=!0,i[a]=e,--n||r(i))},o)}):r(i)});return i&&o(i.error),n.promise},race:function(e){var t=A(this),n=new R(t),r=n.reject,a=k(function(){h(e,!1,function(e){t.resolve(e).then(n.resolve,r)})});return a&&r(a.error),n.promise}})},function(e,t,n){"use strict";var r=n(370)(!0);n(200)(String,"String",function(e){this._t=String(e),this._i=0},function(){var e,t=this._t,n=this._i;return n>=t.length?{value:void 0,done:!0}:(e=r(t,n),this._i+=e.length,{value:e,done:!1})})},function(e,t,n){n(375);var r=n(18),a=n(42),o=n(52),u=n(15)("iterator"),i=r.NodeList,l=r.HTMLCollection,s=i&&i.prototype,c=l&&l.prototype,f=o.NodeList=o.HTMLCollection=o.Array;s&&!s[u]&&a(s,u,f),c&&!c[u]&&a(c,u,f)},function(e,t,n){var r=n(35),a=n(20),o=r(a,"DataView");e.exports=o},function(e,t,n){function r(e){var t=-1,n=null==e?0:e.length;for(this.clear();++t<n;){var r=e[t];this.set(r[0],r[1])}}var a=n(449),o=n(450),u=n(451),i=n(452),l=n(453);r.prototype.clear=a,r.prototype.delete=o,r.prototype.get=u,r.prototype.has=i,r.prototype.set=l,e.exports=r},function(e,t,n){var r=n(35),a=n(20),o=r(a,"Promise");e.exports=o},function(e,t,n){var r=n(35),a=n(20),o=r(a,"Set");e.exports=o},function(e,t,n){function r(e){var t=-1,n=null==e?0:e.length;for(this.__data__=new a;++t<n;)this.add(e[t])}var a=n(107),o=n(478),u=n(479);r.prototype.add=r.prototype.push=o,r.prototype.has=u,e.exports=r},function(e,t,n){var r=n(35),a=n(20),o=r(a,"WeakMap");e.exports=o},function(e,t){function n(e,t){return e.set(t[0],t[1]),e}e.exports=n},function(e,t){function n(e,t){return e.add(t),e}e.exports=n},function(e,t){function n(e,t,n){switch(n.length){case 0:return e.call(t);case 1:return e.call(t,n[0]);case 2:return e.call(t,n[0],n[1]);case 3:return e.call(t,n[0],n[1],n[2])}return e.apply(t,n)}e.exports=n},function(e,t){function n(e,t){for(var n=-1,r=null==e?0:e.length;++n<r&&!1!==t(e[n],n,e););return e}e.exports=n},function(e,t){function n(e,t){for(var n=-1,r=null==e?0:e.length,a=0,o=[];++n<r;){var u=e[n];t(u,n,e)&&(o[a++]=u)}return o}e.exports=n},function(e,t){function n(e){return e.split("")}e.exports=n},function(e,t){function n(e){return e.match(r)||[]}var r=/[^\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f]+/g;e.exports=n},function(e,t,n){function r(e,t){return e&&a(t,o(t),e)}var a=n(55),o=n(36);e.exports=r},function(e,t,n){function r(e,t){return e&&a(t,o(t),e)}var a=n(55),o=n(233);e.exports=r},function(e,t,n){function r(e,t,n,T,P,M){var q,N=t&x,I=t&w,D=t&C;if(n&&(q=P?n(e,T,P,M):n(e)),void 0!==q)return q;if(!E(e))return e;var U=_(e);if(U){if(q=v(e),!N)return c(e,q)}else{var L=m(e),z=L==A||L==O;if(b(e))return s(e,N);if(L==R||L==j||z&&!P){if(q=I||z?{}:g(e),!N)return I?d(e,l(q,e)):f(e,i(q,e))}else{if(!k[L])return P?e:{};q=y(e,L,r,N)}}M||(M=new a);var B=M.get(e);if(B)return B;M.set(e,q);var F=D?I?h:p:I?keysIn:S,V=U?void 0:F(e);return o(V||e,function(a,o){V&&(o=a,a=e[o]),u(q,o,r(a,t,n,o,e,M))}),q}var a=n(108),o=n(389),u=n(209),i=n(393),l=n(394),s=n(424),c=n(431),f=n(432),d=n(433),p=n(443),h=n(218),m=n(221),v=n(454),y=n(455),g=n(456),_=n(12),b=n(119),E=n(24),S=n(36),x=1,w=2,C=4,j="[object Arguments]",A="[object Function]",O="[object GeneratorFunction]",R="[object Object]",k={};k[j]=k["[object Array]"]=k["[object ArrayBuffer]"]=k["[object DataView]"]=k["[object Boolean]"]=k["[object Date]"]=k["[object Float32Array]"]=k["[object Float64Array]"]=k["[object Int8Array]"]=k["[object Int16Array]"]=k["[object Int32Array]"]=k["[object Map]"]=k["[object Number]"]=k[R]=k["[object RegExp]"]=k["[object Set]"]=k["[object String]"]=k["[object Symbol]"]=k["[object Uint8Array]"]=k["[object Uint8ClampedArray]"]=k["[object Uint16Array]"]=k["[object Uint32Array]"]=!0,k["[object Error]"]=k[A]=k["[object WeakMap]"]=!1,e.exports=r},function(e,t,n){var r=n(24),a=Object.create,o=function(){function e(){}return function(t){if(!r(t))return{};if(a)return a(t);e.prototype=t;var n=new e;return e.prototype=void 0,n}}();e.exports=o},function(e,t,n){function r(e,t){var n=[];return a(e,function(e,r,a){t(e,r,a)&&n.push(e)}),n}var a=n(110);e.exports=r},function(e,t){function n(e,t,n,r){for(var a=e.length,o=n+(r?1:-1);r?o--:++o<a;)if(t(e[o],o,e))return o;return-1}e.exports=n},function(e,t,n){function r(e,t,n,u,i){var l=-1,s=e.length;for(n||(n=o),i||(i=[]);++l<s;){var c=e[l];t>0&&n(c)?t>1?r(c,t-1,n,u,i):a(i,c):u||(i[i.length]=c)}return i}var a=n(109),o=n(457);e.exports=r},function(e,t,n){var r=n(436),a=r();e.exports=a},function(e,t,n){function r(e,t){return e&&a(e,t,o)}var a=n(400),o=n(36);e.exports=r},function(e,t){function n(e,t){return null!=e&&t in Object(e)}e.exports=n},function(e,t,n){function r(e){return o(e)&&a(e)==u}var a=n(53),o=n(59),u="[object Arguments]";e.exports=r},function(e,t,n){function r(e,t,n,r,v,g){var _=s(e),b=s(t),E=h,S=h;_||(E=l(e),E=E==p?m:E),b||(S=l(t),S=S==p?m:S);var x=E==m,w=S==m,C=E==S;if(C&&c(e)){if(!c(t))return!1;_=!0,x=!1}if(C&&!x)return g||(g=new a),_||f(e)?o(e,t,n,r,v,g):u(e,t,E,n,r,v,g);if(!(n&d)){var j=x&&y.call(e,"__wrapped__"),A=w&&y.call(t,"__wrapped__");if(j||A){var O=j?e.value():e,R=A?t.value():t;return g||(g=new a),v(O,R,n,r,g)}}return!!C&&(g||(g=new a),i(e,t,n,r,v,g))}var a=n(108),o=n(216),u=n(440),i=n(441),l=n(221),s=n(12),c=n(119),f=n(232),d=1,p="[object Arguments]",h="[object Array]",m="[object Object]",v=Object.prototype,y=v.hasOwnProperty;e.exports=r},function(e,t,n){function r(e,t,n,r){var l=n.length,s=l,c=!r;if(null==e)return!s;for(e=Object(e);l--;){var f=n[l];if(c&&f[2]?f[1]!==e[f[0]]:!(f[0]in e))return!1}for(;++l<s;){f=n[l];var d=f[0],p=e[d],h=f[1];if(c&&f[2]){if(void 0===p&&!(d in e))return!1}else{var m=new a;if(r)var v=r(p,h,d,e,t,m);if(!(void 0===v?o(h,p,u|i,r,m):v))return!1}}return!0}var a=n(108),o=n(212),u=1,i=2;e.exports=r},function(e,t,n){function r(e){return!(!u(e)||o(e))&&(a(e)?h:s).test(i(e))}var a=n(231),o=n(460),u=n(24),i=n(227),l=/[\\^$.*+?()[\]{}|]/g,s=/^\[object .+?Constructor\]$/,c=Function.prototype,f=Object.prototype,d=c.toString,p=f.hasOwnProperty,h=RegExp("^"+d.call(p).replace(l,"\\$&").replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g,"$1.*?")+"$");e.exports=r},function(e,t,n){function r(e){return u(e)&&o(e.length)&&!!i[a(e)]}var a=n(53),o=n(120),u=n(59),i={};i["[object Float32Array]"]=i["[object Float64Array]"]=i["[object Int8Array]"]=i["[object Int16Array]"]=i["[object Int32Array]"]=i["[object Uint8Array]"]=i["[object Uint8ClampedArray]"]=i["[object Uint16Array]"]=i["[object Uint32Array]"]=!0,i["[object Arguments]"]=i["[object Array]"]=i["[object ArrayBuffer]"]=i["[object Boolean]"]=i["[object DataView]"]=i["[object Date]"]=i["[object Error]"]=i["[object Function]"]=i["[object Map]"]=i["[object Number]"]=i["[object Object]"]=i["[object RegExp]"]=i["[object Set]"]=i["[object String]"]=i["[object WeakMap]"]=!1,e.exports=r},function(e,t,n){function r(e){if(!a(e))return o(e);var t=[];for(var n in Object(e))i.call(e,n)&&"constructor"!=n&&t.push(n);return t}var a=n(116),o=n(472),u=Object.prototype,i=u.hasOwnProperty;e.exports=r},function(e,t,n){function r(e){if(!a(e))return u(e);var t=o(e),n=[];for(var r in e)("constructor"!=r||!t&&l.call(e,r))&&n.push(r);return n}var a=n(24),o=n(116),u=n(473),i=Object.prototype,l=i.hasOwnProperty;e.exports=r},function(e,t,n){function r(e){var t=o(e);return 1==t.length&&t[0][2]?u(t[0][0],t[0][1]):function(n){return n===e||a(n,e,t)}}var a=n(405),o=n(444),u=n(225);e.exports=r},function(e,t,n){function r(e,t){return i(e)&&l(t)?s(c(e),t):function(n){var r=o(n,e);return void 0===r&&r===t?u(n,e):a(t,r,f|d)}}var a=n(212),o=n(229),u=n(497),i=n(115),l=n(223),s=n(225),c=n(56),f=1,d=2;e.exports=r},function(e,t){function n(e){return function(t){return null==t?void 0:t[e]}}e.exports=n},function(e,t,n){function r(e){return function(t){return a(t,e)}}var a=n(111);e.exports=r},function(e,t){function n(e){return function(t){return null==e?void 0:e[t]}}e.exports=n},function(e,t){function n(e,t,n,r,a){return a(e,function(e,a,o){n=r?(r=!1,e):t(n,e,a,o)}),n}e.exports=n},function(e,t,n){var r=n(493),a=n(215),o=n(230),u=a?function(e,t){return a(e,"toString",{configurable:!0,enumerable:!1,value:r(t),writable:!0})}:o;e.exports=u},function(e,t,n){function r(e,t){var n;return a(e,function(e,r,a){return!(n=t(e,r,a))}),!!n}var a=n(110);e.exports=r},function(e,t){function n(e,t){for(var n=-1,r=Array(e);++n<e;)r[n]=t(n);return r}e.exports=n},function(e,t,n){function r(e){if("string"==typeof e)return e;if(u(e))return o(e,r)+"";if(i(e))return c?c.call(e):"";var t=e+"";return"0"==t&&1/e==-l?"-0":t}var a=n(43),o=n(207),u=n(12),i=n(79),l=1/0,s=a?a.prototype:void 0,c=s?s.toString:void 0;e.exports=r},function(e,t){function n(e){return function(t){return e(t)}}e.exports=n},function(e,t,n){function r(e,t){return t=a(t,e),null==(e=u(e,t))||delete e[i(o(t))]}var a=n(76),o=n(498),u=n(477),i=n(56);e.exports=r},function(e,t){function n(e,t){return e.has(t)}e.exports=n},function(e,t,n){function r(e,t,n){var r=e.length;return n=void 0===n?r:n,!t&&n>=r?e:a(e,t,n)}var a=n(213);e.exports=r},function(e,t,n){(function(e){function r(e,t){if(t)return e.slice();var n=e.length,r=s?s(n):new e.constructor(n);return e.copy(r),r}var a=n(20),o="object"==typeof t&&t&&!t.nodeType&&t,u=o&&"object"==typeof e&&e&&!e.nodeType&&e,i=u&&u.exports===o,l=i?a.Buffer:void 0,s=l?l.allocUnsafe:void 0;e.exports=r}).call(t,n(121)(e))},function(e,t,n){function r(e,t){var n=t?a(e.buffer):e.buffer;return new e.constructor(n,e.byteOffset,e.byteLength)}var a=n(112);e.exports=r},function(e,t,n){function r(e,t,n){var r=t?n(u(e),i):u(e);return o(r,a,new e.constructor)}var a=n(386),o=n(74),u=n(224),i=1;e.exports=r},function(e,t){function n(e){var t=new e.constructor(e.source,r.exec(e));return t.lastIndex=e.lastIndex,t}var r=/\w*$/;e.exports=n},function(e,t,n){function r(e,t,n){var r=t?n(u(e),i):u(e);return o(r,a,new e.constructor)}var a=n(387),o=n(74),u=n(226),i=1;e.exports=r},function(e,t,n){function r(e){return u?Object(u.call(e)):{}}var a=n(43),o=a?a.prototype:void 0,u=o?o.valueOf:void 0;e.exports=r},function(e,t,n){function r(e,t){var n=t?a(e.buffer):e.buffer;return new e.constructor(n,e.byteOffset,e.length)}var a=n(112);e.exports=r},function(e,t){function n(e,t){var n=-1,r=e.length;for(t||(t=Array(r));++n<r;)t[n]=e[n];return t}e.exports=n},function(e,t,n){function r(e,t){return a(e,o(e),t)}var a=n(55),o=n(113);e.exports=r},function(e,t,n){function r(e,t){return a(e,o(e),t)}var a=n(55),o=n(220);e.exports=r},function(e,t,n){var r=n(20),a=r["__core-js_shared__"];e.exports=a},function(e,t,n){function r(e,t){return function(n,r){if(null==n)return n;if(!a(n))return e(n,r);for(var o=n.length,u=t?o:-1,i=Object(n);(t?u--:++u<o)&&!1!==r(i[u],u,i););return n}}var a=n(58);e.exports=r},function(e,t){function n(e){return function(t,n,r){for(var a=-1,o=Object(t),u=r(t),i=u.length;i--;){var l=u[e?i:++a];if(!1===n(o[l],l,o))break}return t}}e.exports=n},function(e,t,n){function r(e){return function(t){t=i(t);var n=o(t)?u(t):void 0,r=n?n[0]:t.charAt(0),l=n?a(n,1).join(""):t.slice(1);return r[e]()+l}}var a=n(423),o=n(222),u=n(487),i=n(60);e.exports=r},function(e,t,n){function r(e){return function(t,n,r){var i=Object(t);if(!o(t)){var l=a(n,3);t=u(t),n=function(e){return l(i[e],e,i)}}var s=e(t,n,r);return s>-1?i[l?t[s]:s]:void 0}}var a=n(54),o=n(58),u=n(36);e.exports=r},function(e,t,n){var r=n(414),a={"À":"A","Á":"A","Â":"A","Ã":"A","Ä":"A","Å":"A","à":"a","á":"a","â":"a","ã":"a","ä":"a","å":"a","Ç":"C","ç":"c","Ð":"D","ð":"d","È":"E","É":"E","Ê":"E","Ë":"E","è":"e","é":"e","ê":"e","ë":"e","Ì":"I","Í":"I","Î":"I","Ï":"I","ì":"i","í":"i","î":"i","ï":"i","Ñ":"N","ñ":"n","Ò":"O","Ó":"O","Ô":"O","Õ":"O","Ö":"O","Ø":"O","ò":"o","ó":"o","ô":"o","õ":"o","ö":"o","ø":"o","Ù":"U","Ú":"U","Û":"U","Ü":"U","ù":"u","ú":"u","û":"u","ü":"u","Ý":"Y","ý":"y","ÿ":"y","Æ":"Ae","æ":"ae","Þ":"Th","þ":"th","ß":"ss","Ā":"A","Ă":"A","Ą":"A","ā":"a","ă":"a","ą":"a","Ć":"C","Ĉ":"C","Ċ":"C","Č":"C","ć":"c","ĉ":"c","ċ":"c","č":"c","Ď":"D","Đ":"D","ď":"d","đ":"d","Ē":"E","Ĕ":"E","Ė":"E","Ę":"E","Ě":"E","ē":"e","ĕ":"e","ė":"e","ę":"e","ě":"e","Ĝ":"G","Ğ":"G","Ġ":"G","Ģ":"G","ĝ":"g","ğ":"g","ġ":"g","ģ":"g","Ĥ":"H","Ħ":"H","ĥ":"h","ħ":"h","Ĩ":"I","Ī":"I","Ĭ":"I","Į":"I","İ":"I","ĩ":"i","ī":"i","ĭ":"i","į":"i","ı":"i","Ĵ":"J","ĵ":"j","Ķ":"K","ķ":"k","ĸ":"k","Ĺ":"L","Ļ":"L","Ľ":"L","Ŀ":"L","Ł":"L","ĺ":"l","ļ":"l","ľ":"l","ŀ":"l","ł":"l","Ń":"N","Ņ":"N","Ň":"N","Ŋ":"N","ń":"n","ņ":"n","ň":"n","ŋ":"n","Ō":"O","Ŏ":"O","Ő":"O","ō":"o","ŏ":"o","ő":"o","Ŕ":"R","Ŗ":"R","Ř":"R","ŕ":"r","ŗ":"r","ř":"r","Ś":"S","Ŝ":"S","Ş":"S","Š":"S","ś":"s","ŝ":"s","ş":"s","š":"s","Ţ":"T","Ť":"T","Ŧ":"T","ţ":"t","ť":"t","ŧ":"t","Ũ":"U","Ū":"U","Ŭ":"U","Ů":"U","Ű":"U","Ų":"U","ũ":"u","ū":"u","ŭ":"u","ů":"u","ű":"u","ų":"u","Ŵ":"W","ŵ":"w","Ŷ":"Y","ŷ":"y","Ÿ":"Y","Ź":"Z","Ż":"Z","Ž":"Z","ź":"z","ż":"z","ž":"z","Ĳ":"IJ","ĳ":"ij","Œ":"Oe","œ":"oe","ŉ":"'n","ſ":"s"},o=r(a);e.exports=o},function(e,t,n){function r(e,t,n,r,a,x,C){switch(n){case S:if(e.byteLength!=t.byteLength||e.byteOffset!=t.byteOffset)return!1;e=e.buffer,t=t.buffer;case E:return!(e.byteLength!=t.byteLength||!x(new o(e),new o(t)));case d:case p:case v:return u(+e,+t);case h:return e.name==t.name&&e.message==t.message;case y:case _:return e==t+"";case m:var j=l;case g:var A=r&c;if(j||(j=s),e.size!=t.size&&!A)return!1;var O=C.get(e);if(O)return O==t;r|=f,C.set(e,t);var R=i(j(e),j(t),r,a,x,C);return C.delete(e),R;case b:if(w)return w.call(e)==w.call(t)}return!1}var a=n(43),o=n(205),u=n(57),i=n(216),l=n(224),s=n(226),c=1,f=2,d="[object Boolean]",p="[object Date]",h="[object Error]",m="[object Map]",v="[object Number]",y="[object RegExp]",g="[object Set]",_="[object String]",b="[object Symbol]",E="[object ArrayBuffer]",S="[object DataView]",x=a?a.prototype:void 0,w=x?x.valueOf:void 0;e.exports=r},function(e,t,n){function r(e,t,n,r,u,l){var s=n&o,c=a(e),f=c.length;if(f!=a(t).length&&!s)return!1;for(var d=f;d--;){var p=c[d];if(!(s?p in t:i.call(t,p)))return!1}var h=l.get(e);if(h&&l.get(t))return h==t;var m=!0;l.set(e,t),l.set(t,e);for(var v=s;++d<f;){p=c[d];var y=e[p],g=t[p];if(r)var _=s?r(g,y,p,t,e,l):r(y,g,p,e,t,l);if(!(void 0===_?y===g||u(y,g,n,r,l):_)){m=!1;break}v||(v="constructor"==p)}if(m&&!v){var b=e.constructor,E=t.constructor;b!=E&&"constructor"in e&&"constructor"in t&&!("function"==typeof b&&b instanceof b&&"function"==typeof E&&E instanceof E)&&(m=!1)}return l.delete(e),l.delete(t),m}var a=n(36),o=1,u=Object.prototype,i=u.hasOwnProperty;e.exports=r},function(e,t,n){function r(e){return u(o(e,void 0,a),e+"")}var a=n(496),o=n(476),u=n(480);e.exports=r},function(e,t,n){function r(e){return a(e,u,o)}var a=n(211),o=n(113),u=n(36);e.exports=r},function(e,t,n){function r(e){for(var t=o(e),n=t.length;n--;){var r=t[n],u=e[r];t[n]=[r,u,a(u)]}return t}var a=n(223),o=n(36);e.exports=r},function(e,t,n){function r(e){var t=u.call(e,l),n=e[l];try{e[l]=void 0;var r=!0}catch(e){}var a=i.call(e);return r&&(t?e[l]=n:delete e[l]),a}var a=n(43),o=Object.prototype,u=o.hasOwnProperty,i=o.toString,l=a?a.toStringTag:void 0;e.exports=r},function(e,t){function n(e,t){return null==e?void 0:e[t]}e.exports=n},function(e,t,n){function r(e,t,n){t=a(t,e);for(var r=-1,c=t.length,f=!1;++r<c;){var d=s(t[r]);if(!(f=null!=e&&n(e,d)))break;e=e[d]}return f||++r!=c?f:!!(c=null==e?0:e.length)&&l(c)&&i(d,c)&&(u(e)||o(e))}var a=n(76),o=n(118),u=n(12),i=n(114),l=n(120),s=n(56);e.exports=r},function(e,t){function n(e){return r.test(e)}var r=/[a-z][A-Z]|[A-Z]{2,}[a-z]|[0-9][a-zA-Z]|[a-zA-Z][0-9]|[^a-zA-Z0-9 ]/;e.exports=n},function(e,t,n){function r(){this.__data__=a?a(null):{},this.size=0}var a=n(78);e.exports=r},function(e,t){function n(e){var t=this.has(e)&&delete this.__data__[e];return this.size-=t?1:0,t}e.exports=n},function(e,t,n){function r(e){var t=this.__data__;if(a){var n=t[e];return n===o?void 0:n}return i.call(t,e)?t[e]:void 0}var a=n(78),o="__lodash_hash_undefined__",u=Object.prototype,i=u.hasOwnProperty;e.exports=r},function(e,t,n){function r(e){var t=this.__data__;return a?void 0!==t[e]:u.call(t,e)}var a=n(78),o=Object.prototype,u=o.hasOwnProperty;e.exports=r},function(e,t,n){function r(e,t){var n=this.__data__;return this.size+=this.has(e)?0:1,n[e]=a&&void 0===t?o:t,this}var a=n(78),o="__lodash_hash_undefined__";e.exports=r},function(e,t){function n(e){var t=e.length,n=e.constructor(t);return t&&"string"==typeof e[0]&&a.call(e,"index")&&(n.index=e.index,n.input=e.input),n}var r=Object.prototype,a=r.hasOwnProperty;e.exports=n},function(e,t,n){function r(e,t,n,r){var k=e.constructor;switch(t){case _:return a(e);case f:case d:return new k(+e);case b:return o(e,r);case E:case S:case x:case w:case C:case j:case A:case O:case R:return c(e,r);case p:return u(e,r,n);case h:case y:return new k(e);case m:return i(e);case v:return l(e,r,n);case g:return s(e)}}var a=n(112),o=n(425),u=n(426),i=n(427),l=n(428),s=n(429),c=n(430),f="[object Boolean]",d="[object Date]",p="[object Map]",h="[object Number]",m="[object RegExp]",v="[object Set]",y="[object String]",g="[object Symbol]",_="[object ArrayBuffer]",b="[object DataView]",E="[object Float32Array]",S="[object Float64Array]",x="[object Int8Array]",w="[object Int16Array]",C="[object Int32Array]",j="[object Uint8Array]",A="[object Uint8ClampedArray]",O="[object Uint16Array]",R="[object Uint32Array]";e.exports=r},function(e,t,n){function r(e){return"function"!=typeof e.constructor||u(e)?{}:a(o(e))}var a=n(396),o=n(219),u=n(116);e.exports=r},function(e,t,n){function r(e){return u(e)||o(e)||!!(i&&e&&e[i])}var a=n(43),o=n(118),u=n(12),i=a?a.isConcatSpreadable:void 0;e.exports=r},function(e,t,n){function r(e,t,n){if(!i(n))return!1;var r=typeof t;return!!("number"==r?o(n)&&u(t,n.length):"string"==r&&t in n)&&a(n[t],e)}var a=n(57),o=n(58),u=n(114),i=n(24);e.exports=r},function(e,t){function n(e){var t=typeof e;return"string"==t||"number"==t||"symbol"==t||"boolean"==t?"__proto__"!==e:null===e}e.exports=n},function(e,t,n){function r(e){return!!o&&o in e}var a=n(434),o=function(){var e=/[^.]+$/.exec(a&&a.keys&&a.keys.IE_PROTO||"");return e?"Symbol(src)_1."+e:""}();e.exports=r},function(e,t){function n(){this.__data__=[],this.size=0}e.exports=n},function(e,t,n){function r(e){var t=this.__data__,n=a(t,e);return!(n<0)&&(n==t.length-1?t.pop():u.call(t,n,1),--this.size,!0)}var a=n(75),o=Array.prototype,u=o.splice;e.exports=r},function(e,t,n){function r(e){var t=this.__data__,n=a(t,e);return n<0?void 0:t[n][1]}var a=n(75);e.exports=r},function(e,t,n){function r(e){return a(this.__data__,e)>-1}var a=n(75);e.exports=r},function(e,t,n){function r(e,t){var n=this.__data__,r=a(n,e);return r<0?(++this.size,n.push([e,t])):n[r][1]=t,this}var a=n(75);e.exports=r},function(e,t,n){function r(){this.size=0,this.__data__={hash:new a,map:new(u||o),string:new a}}var a=n(381),o=n(73),u=n(106);e.exports=r},function(e,t,n){function r(e){var t=a(this,e).delete(e);return this.size-=t?1:0,t}var a=n(77);e.exports=r},function(e,t,n){function r(e){return a(this,e).get(e)}var a=n(77);e.exports=r},function(e,t,n){function r(e){return a(this,e).has(e)}var a=n(77);e.exports=r},function(e,t,n){function r(e,t){var n=a(this,e),r=n.size;return n.set(e,t),this.size+=n.size==r?0:1,this}var a=n(77);e.exports=r},function(e,t,n){function r(e){var t=a(e,function(e){return n.size===o&&n.clear(),e}),n=t.cache;return t}var a=n(234),o=500;e.exports=r},function(e,t,n){var r=n(117),a=r(Object.keys,Object);e.exports=a},function(e,t){function n(e){var t=[];if(null!=e)for(var n in Object(e))t.push(n);return t}e.exports=n},function(e,t,n){(function(e){var r=n(217),a="object"==typeof t&&t&&!t.nodeType&&t,o=a&&"object"==typeof e&&e&&!e.nodeType&&e,u=o&&o.exports===a,i=u&&r.process,l=function(){try{return i&&i.binding&&i.binding("util")}catch(e){}}();e.exports=l}).call(t,n(121)(e))},function(e,t){function n(e){return a.call(e)}var r=Object.prototype,a=r.toString;e.exports=n},function(e,t,n){function r(e,t,n){return t=o(void 0===t?e.length-1:t,0),function(){for(var r=arguments,u=-1,i=o(r.length-t,0),l=Array(i);++u<i;)l[u]=r[t+u];u=-1;for(var s=Array(t+1);++u<t;)s[u]=r[u];return s[t]=n(l),a(e,this,s)}}var a=n(388),o=Math.max;e.exports=r},function(e,t,n){function r(e,t){return t.length<2?e:a(e,o(t,0,-1))}var a=n(111),o=n(213);e.exports=r},function(e,t){function n(e){return this.__data__.set(e,r),this}var r="__lodash_hash_undefined__";e.exports=n},function(e,t){function n(e){return this.__data__.has(e)}e.exports=n},function(e,t,n){var r=n(416),a=n(481),o=a(r);e.exports=o},function(e,t){function n(e){var t=0,n=0;return function(){var u=o(),i=a-(u-n);if(n=u,i>0){if(++t>=r)return arguments[0]}else t=0;return e.apply(void 0,arguments)}}var r=800,a=16,o=Date.now;e.exports=n},function(e,t,n){function r(){this.__data__=new a,this.size=0}var a=n(73);e.exports=r},function(e,t){function n(e){var t=this.__data__,n=t.delete(e);return this.size=t.size,n}e.exports=n},function(e,t){function n(e){return this.__data__.get(e)}e.exports=n},function(e,t){function n(e){return this.__data__.has(e)}e.exports=n},function(e,t,n){function r(e,t){var n=this.__data__;if(n instanceof a){var r=n.__data__;if(!o||r.length<i-1)return r.push([e,t]),this.size=++n.size,this;n=this.__data__=new u(r)}return n.set(e,t),this.size=n.size,this}var a=n(73),o=n(106),u=n(107),i=200;e.exports=r},function(e,t,n){function r(e){return o(e)?u(e):a(e)}var a=n(391),o=n(222),u=n(489);e.exports=r},function(e,t,n){var r=n(471),a=/^\./,o=/[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g,u=/\\(\\)?/g,i=r(function(e){var t=[];return a.test(e)&&t.push(""),e.replace(o,function(e,n,r,a){t.push(r?a.replace(u,"$1"):n||e)}),t});e.exports=i},function(e,t){function n(e){return e.match(f)||[]}var r="[\\u0300-\\u036f\\ufe20-\\ufe2f\\u20d0-\\u20ff]",a="\\ud83c[\\udffb-\\udfff]",o="(?:\\ud83c[\\udde6-\\uddff]){2}",u="[\\ud800-\\udbff][\\udc00-\\udfff]",i="(?:[\\u0300-\\u036f\\ufe20-\\ufe2f\\u20d0-\\u20ff]|\\ud83c[\\udffb-\\udfff])?",l="(?:\\u200d(?:"+["[^\\ud800-\\udfff]",o,u].join("|")+")[\\ufe0e\\ufe0f]?"+i+")*",s="[\\ufe0e\\ufe0f]?"+i+l,c="(?:"+["[^\\ud800-\\udfff]"+r+"?",r,o,u,"[\\ud800-\\udfff]"].join("|")+")",f=RegExp(a+"(?="+a+")|"+c+s,"g");e.exports=n},function(e,t){function n(e){return e.match(m)||[]}var r="\\xac\\xb1\\xd7\\xf7\\x00-\\x2f\\x3a-\\x40\\x5b-\\x60\\x7b-\\xbf\\u2000-\\u206f \\t\\x0b\\f\\xa0\\ufeff\\n\\r\\u2028\\u2029\\u1680\\u180e\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200a\\u202f\\u205f\\u3000",a="["+r+"]",o="[a-z\\xdf-\\xf6\\xf8-\\xff]",u="[^\\ud800-\\udfff"+r+"\\d+\\u2700-\\u27bfa-z\\xdf-\\xf6\\xf8-\\xffA-Z\\xc0-\\xd6\\xd8-\\xde]",i="(?:\\ud83c[\\udde6-\\uddff]){2}",l="[\\ud800-\\udbff][\\udc00-\\udfff]",s="[A-Z\\xc0-\\xd6\\xd8-\\xde]",c="(?:"+o+"|"+u+")",f="(?:[\\u0300-\\u036f\\ufe20-\\ufe2f\\u20d0-\\u20ff]|\\ud83c[\\udffb-\\udfff])?",d="(?:\\u200d(?:"+["[^\\ud800-\\udfff]",i,l].join("|")+")[\\ufe0e\\ufe0f]?"+f+")*",p="[\\ufe0e\\ufe0f]?"+f+d,h="(?:"+["[\\u2700-\\u27bf]",i,l].join("|")+")"+p,m=RegExp([s+"?"+o+"+(?:['’](?:d|ll|m|re|s|t|ve))?(?="+[a,s,"$"].join("|")+")","(?:[A-Z\\xc0-\\xd6\\xd8-\\xde]|[^\\ud800-\\udfff\\xac\\xb1\\xd7\\xf7\\x00-\\x2f\\x3a-\\x40\\x5b-\\x60\\x7b-\\xbf\\u2000-\\u206f \\t\\x0b\\f\\xa0\\ufeff\\n\\r\\u2028\\u2029\\u1680\\u180e\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200a\\u202f\\u205f\\u3000\\d+\\u2700-\\u27bfa-z\\xdf-\\xf6\\xf8-\\xffA-Z\\xc0-\\xd6\\xd8-\\xde])+(?:['’](?:D|LL|M|RE|S|T|VE))?(?="+[a,s+c,"$"].join("|")+")",s+"?"+c+"+(?:['’](?:d|ll|m|re|s|t|ve))?",s+"+(?:['’](?:D|LL|M|RE|S|T|VE))?","\\d*(?:(?:1ST|2ND|3RD|(?![123])\\dTH)\\b)","\\d*(?:(?:1st|2nd|3rd|(?![123])\\dth)\\b)","\\d+",h].join("|"),"g");e.exports=n},function(e,t,n){var r=n(492),a=n(214),o=a(function(e,t,n){return t=t.toLowerCase(),e+(n?r(t):t)});e.exports=o},function(e,t,n){function r(e){return o(a(e).toLowerCase())}var a=n(60),o=n(236);e.exports=r},function(e,t){function n(e){return function(){return e}}e.exports=n},function(e,t,n){function r(e){return(e=o(e))&&e.replace(u,a).replace(i,"")}var a=n(439),o=n(60),u=/[\xc0-\xd6\xd8-\xf6\xf8-\xff\u0100-\u017f]/g,i=RegExp("[\\u0300-\\u036f\\ufe20-\\ufe2f\\u20d0-\\u20ff]","g");e.exports=r},function(e,t,n){function r(e,t,n){var r=null==e?0:e.length;if(!r)return-1;var l=null==n?0:u(n);return l<0&&(l=i(r+l,0)),a(e,o(t,3),l)}var a=n(398),o=n(54),u=n(508),i=Math.max;e.exports=r},function(e,t,n){function r(e){return(null==e?0:e.length)?a(e,1):[]}var a=n(399);e.exports=r},function(e,t,n){function r(e,t){return null!=e&&o(e,t,a)}var a=n(402),o=n(447);e.exports=r},function(e,t){function n(e){var t=null==e?0:e.length;return t?e[t-1]:void 0}e.exports=n},function(e,t,n){var r=n(214),a=r(function(e,t,n){return e+(n?" ":"")+t.toLowerCase()});e.exports=a},function(e,t){function n(e){if("function"!=typeof e)throw new TypeError(r);return function(){var t=arguments;switch(t.length){case 0:return!e.call(this);case 1:return!e.call(this,t[0]);case 2:return!e.call(this,t[0],t[1]);case 3:return!e.call(this,t[0],t[1],t[2])}return!e.apply(this,t)}}var r="Expected a function";e.exports=n},function(e,t,n){var r=n(207),a=n(395),o=n(421),u=n(76),i=n(55),l=n(442),s=n(218),c=l(function(e,t){var n={};if(null==e)return n;var l=!1;t=r(t,function(t){return t=u(t,e),l||(l=t.length>1),t}),i(e,s(e),n),l&&(n=a(n,7));for(var c=t.length;c--;)o(n,t[c]);return n});e.exports=c},function(e,t,n){function r(e){return u(e)?a(i(e)):o(e)}var a=n(412),o=n(413),u=n(115),i=n(56);e.exports=r},function(e,t,n){function r(e,t,n){var r=l(e)?a:i,s=arguments.length<3;return r(e,u(t,4),n,s,o)}var a=n(74),o=n(110),u=n(54),i=n(415),l=n(12);e.exports=r},function(e,t,n){function r(e,t){return(i(e)?a:o)(e,l(u(t,3)))}var a=n(390),o=n(397),u=n(54),i=n(12),l=n(500);e.exports=r},function(e,t,n){function r(e,t,n){var r=i(e)?a:u;return n&&l(e,t,n)&&(t=void 0),r(e,o(t,3))}var a=n(208),o=n(54),u=n(417),i=n(12),l=n(458);e.exports=r},function(e,t){function n(){return!1}e.exports=n},function(e,t,n){function r(e){if(!e)return 0===e?e:0;if((e=a(e))===o||e===-o){return(e<0?-1:1)*u}return e===e?e:0}var a=n(509),o=1/0,u=1.7976931348623157e308;e.exports=r},function(e,t,n){function r(e){var t=a(e),n=t%1;return t===t?n?t-n:t:0}var a=n(507);e.exports=r},function(e,t,n){function r(e){if("number"==typeof e)return e;if(o(e))return u;if(a(e)){var t="function"==typeof e.valueOf?e.valueOf():e;e=a(t)?t+"":t}if("string"!=typeof e)return 0===e?e:+e;e=e.replace(i,"");var n=s.test(e);return n||c.test(e)?f(e.slice(2),n?2:8):l.test(e)?u:+e}var a=n(24),o=n(79),u=NaN,i=/^\s+|\s+$/g,l=/^[-+]0x[0-9a-f]+$/i,s=/^0b[01]+$/i,c=/^0o[0-7]+$/i,f=parseInt;e.exports=r},function(e,t,n){function r(e,t,n){return e=u(e),t=n?void 0:t,void 0===t?o(e)?i(e):a(e):e.match(t)||[]}var a=n(392),o=n(448),u=n(60),i=n(490);e.exports=r},function(e,t,n){function r(e){return n(a(e))}function a(e){var t=o[e];if(!(t+1))throw new Error("Cannot find module '"+e+"'.");return t}var o={"./all.js":126,"./ast/ast.js":127,"./ast/index.js":128,"./ast/jump-to-path.jsx":129,"./auth/actions.js":80,"./auth/index.js":130,"./auth/reducers.js":131,"./auth/selectors.js":132,"./auth/spec-wrap-actions.js":133,"./deep-linking/helpers.js":134,"./deep-linking/index.js":135,"./deep-linking/layout-wrap-actions.js":136,"./deep-linking/spec-wrap-actions.js":137,"./download-url.js":138,"./err/actions.js":61,"./err/error-transformers/hook.js":139,"./err/error-transformers/transformers/not-of-type.js":140,"./err/error-transformers/transformers/parameter-oneof.js":141,"./err/error-transformers/transformers/strip-instance.js":142,"./err/index.js":143,"./err/reducers.js":144,"./err/selectors.js":145,"./layout/actions.js":81,"./layout/index.js":146,"./layout/reducers.js":147,"./layout/selectors.js":148,"./logs/index.js":149,"./oas3/actions.js":82,"./oas3/components/callbacks.jsx":150,"./oas3/components/index.js":151,"./oas3/components/operation-link.jsx":152,"./oas3/components/request-body-editor.jsx":153,"./oas3/components/request-body.jsx":154,"./oas3/components/servers.jsx":155,"./oas3/helpers.js":21,"./oas3/index.js":156,"./oas3/reducers.js":157,"./oas3/selectors.js":158,"./oas3/spec-extensions/selectors.js":159,"./oas3/spec-extensions/wrap-selectors.js":160,"./oas3/wrap-components/index.js":161,"./oas3/wrap-components/markdown.js":162,"./oas3/wrap-components/model.jsx":163,"./oas3/wrap-components/online-validator-badge.js":164,"./oas3/wrap-components/parameters.jsx":165,"./oas3/wrap-components/version-stamp.jsx":166,"./samples/fn.js":83,"./samples/index.js":167,"./spec/actions.js":84,"./spec/index.js":168,"./spec/reducers.js":169,"./spec/selectors.js":170,"./spec/wrap-actions.js":171,"./split-pane-mode/components/index.js":85,"./split-pane-mode/components/split-pane-mode.jsx":172,"./split-pane-mode/index.js":173,"./swagger-js/index.js":174,"./util/index.js":175,"./view/index.js":176,"./view/root-injects.js":177};r.keys=function(){return Object.keys(o)},r.resolve=a,e.exports=r,r.id=511},function(e,t,n){function r(e){return n(a(e))}function a(e){var t=o[e];if(!(t+1))throw new Error("Cannot find module '"+e+"'.");return t}var o={"./not-of-type.js":140,"./parameter-oneof.js":141,"./strip-instance.js":142};r.keys=function(){return Object.keys(o)},r.resolve=a,e.exports=r,r.id=512},function(e,t,n){function r(e){return n(a(e))}function a(e){var t=o[e];if(!(t+1))throw new Error("Cannot find module '"+e+"'.");return t}var o={"./index.js":85,"./split-pane-mode.jsx":172};r.keys=function(){return Object.keys(o)},r.resolve=a,e.exports=r,r.id=513},function(e,t){e.exports=require("base64-js")},function(e,t){e.exports=require("classnames")},function(e,t){e.exports=require("css.escape")},function(e,t){e.exports=require("ieee754")},function(e,t){e.exports=require("isarray")},function(e,t){e.exports=require("js-yaml")},function(e,t){e.exports=require("memoizee")},function(e,t){e.exports=require("react-dom")},function(e,t){e.exports=require("react-markdown")},function(e,t){e.exports=require("react-redux")},function(e,t){e.exports=require("react-remarkable")},function(e,t){e.exports=require("react-split-pane")},function(e,t){e.exports=require("redux")},function(e,t){e.exports=require("redux-immutable")},function(e,t){e.exports=require("sanitize-html")},function(e,t){e.exports=require("scroll-to-element")},function(e,t){e.exports=require("url-parse")},function(e,t){e.exports=require("xml")},function(e,t){e.exports=require("yaml-js")},function(e,t,n){n(243),n(242),e.exports=n(241)}])});
 //# sourceMappingURL=swagger-ui.js.map`,
 
-	"iam.swagger.json": `{
+	"am.swagger.json": `{
   "swagger": "2.0",
   "info": {
-    "title": "iam.proto",
+    "title": "openpitrix/iam/am/am.proto",
     "version": "version not set"
   },
   "schemes": [
@@ -245,61 +246,168 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
     "application/json"
   ],
   "paths": {
-    "/v1.1/actions": {
-      "get": {
-        "operationId": "DescribeActions",
+    "/apis/iam/roles": {
+      "post": {
+        "operationId": "CreateRole",
         "responses": {
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/iamDescribeActionsResponse"
+              "$ref": "#/definitions/amRole"
             }
           }
         },
         "parameters": [
           {
-            "name": "offset",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/amRole"
+            }
           }
         ],
         "tags": [
-          "IAMManager"
+          "AccessManager"
         ]
       }
+    }
+  },
+  "definitions": {
+    "amActionRule": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "method_pattern": {
+          "type": "string"
+        },
+        "namespace_pattern": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
     },
-    "/v1.1/groups": {
+    "amActionRuleList": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/amActionRule"
+          }
+        }
+      }
+    },
+    "amEmpty": {
+      "type": "object"
+    },
+    "amRole": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "rule": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/amActionRule"
+          }
+        }
+      }
+    },
+    "amRoleList": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/amRole"
+          }
+        }
+      }
+    },
+    "amRoleXidBinding": {
+      "type": "object",
+      "properties": {
+        "role_name": {
+          "type": "string"
+        },
+        "xid": {
+          "type": "string"
+        }
+      }
+    },
+    "amRoleXidBindingList": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/amRoleXidBinding"
+          }
+        }
+      }
+    },
+    "amXidList": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
+`,
+
+	"im.swagger.json": `{
+  "swagger": "2.0",
+  "info": {
+    "title": "openpitrix/iam/im/im.proto",
+    "version": "version not set"
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/apis/iam/groups": {
       "get": {
-        "operationId": "DescribeGroups",
+        "operationId": "ListGroups",
         "responses": {
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/iamDescribeGroupsResponse"
+              "$ref": "#/definitions/imListGroupsResponse"
             }
           }
         },
         "parameters": [
           {
-            "name": "head.user_id",
+            "name": "sort_key",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "search_word",
+            "name": "reverse",
             "in": "query",
             "required": false,
-            "type": "string"
+            "type": "boolean",
+            "format": "boolean"
           },
           {
             "name": "offset",
@@ -317,7 +425,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
           }
         ],
         "tags": [
-          "IAMManager"
+          "AccountManager"
         ]
       },
       "delete": {
@@ -326,7 +434,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/iamDeleteGroupsResponse"
+              "$ref": "#/definitions/imEmpty"
             }
           }
         },
@@ -336,12 +444,12 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/iamDeleteGroupsRequest"
+              "$ref": "#/definitions/imGroupIdList"
             }
           }
         ],
         "tags": [
-          "IAMManager"
+          "AccountManager"
         ]
       },
       "post": {
@@ -350,7 +458,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/iamCreateGroupResponse"
+              "$ref": "#/definitions/imGroup"
             }
           }
         },
@@ -360,12 +468,36 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/iamCreateGroupRequest"
+              "$ref": "#/definitions/imGroup"
             }
           }
         ],
         "tags": [
-          "IAMManager"
+          "AccountManager"
+        ]
+      }
+    },
+    "/apis/iam/groups/{gid}": {
+      "get": {
+        "operationId": "GetGroup",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/imGroup"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "gid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AccountManager"
         ]
       },
       "patch": {
@@ -374,63 +506,63 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/iamModifyGroupResponse"
+              "$ref": "#/definitions/imGroup"
             }
           }
         },
         "parameters": [
           {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/iamModifyGroupRequest"
-            }
-          }
-        ],
-        "tags": [
-          "IAMManager"
-        ]
-      }
-    },
-    "/v1.1/groups/{group_id}": {
-      "get": {
-        "operationId": "GetGroup",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/iamGetGroupResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "group_id",
+            "name": "gid",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
-            "name": "head.user_id",
-            "in": "query",
-            "required": false,
-            "type": "string"
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/imGroup"
+            }
           }
         ],
         "tags": [
-          "IAMManager"
+          "AccountManager"
         ]
       }
     },
-    "/v1.1/password:change": {
-      "post": {
-        "operationId": "ModifyPassword",
+    "/apis/iam/groups/{gid}/users": {
+      "get": {
+        "operationId": "GetUsersByGroupId",
         "responses": {
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/iamBool"
+              "$ref": "#/definitions/imUserList"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "gid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AccountManager"
+        ]
+      }
+    },
+    "/apis/iam/groups:join": {
+      "post": {
+        "operationId": "JoinGroup",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/imEmpty"
             }
           }
         },
@@ -440,23 +572,49 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/iamUserPassword"
+              "$ref": "#/definitions/imJoinGroupRequest"
             }
           }
         ],
         "tags": [
-          "IAMManager"
+          "AccountManager"
         ]
       }
     },
-    "/v1.1/password:compare": {
+    "/apis/iam/groups:leave": {
+      "post": {
+        "operationId": "LeaveGroup",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/imEmpty"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/imLeaveGroupRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AccountManager"
+        ]
+      }
+    },
+    "/apis/iam/password:compare": {
       "post": {
         "operationId": "ComparePassword",
         "responses": {
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/iamBool"
+              "$ref": "#/definitions/imEmpty"
             }
           }
         },
@@ -466,23 +624,23 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/iamUserPassword"
+              "$ref": "#/definitions/imPassword"
             }
           }
         ],
         "tags": [
-          "IAMManager"
+          "AccountManager"
         ]
       }
     },
-    "/v1.1/role_module_bindings": {
+    "/apis/iam/password:modify": {
       "post": {
-        "operationId": "ModifyRoleModuleBindings",
+        "operationId": "ModifyPassword",
         "responses": {
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/iamModifyRoleModuleBindingsResponse"
+              "$ref": "#/definitions/imEmpty"
             }
           }
         },
@@ -492,38 +650,39 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/iamModifyRoleModuleBindingsRequest"
+              "$ref": "#/definitions/imPassword"
             }
           }
         ],
         "tags": [
-          "IAMManager"
+          "AccountManager"
         ]
       }
     },
-    "/v1.1/roles": {
+    "/apis/iam/users": {
       "get": {
-        "operationId": "DescribeRoles",
+        "operationId": "ListUesrs",
         "responses": {
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/iamDescribeRolesResponse"
+              "$ref": "#/definitions/imListUesrsResponse"
             }
           }
         },
         "parameters": [
           {
-            "name": "head.user_id",
+            "name": "sort_key",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "search_word",
+            "name": "reverse",
             "in": "query",
             "required": false,
-            "type": "string"
+            "type": "boolean",
+            "format": "boolean"
           },
           {
             "name": "offset",
@@ -541,163 +700,16 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
           }
         ],
         "tags": [
-          "IAMManager"
-        ]
-      },
-      "delete": {
-        "summary": "注意：删除的时候注意需要递归删除，对应的role id list 的role包含的user的role_id 要修改为空，\n并且Role对应的Feature和Action表数据也要清理掉",
-        "operationId": "DeleteRoles",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/iamDeleteRolesResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/iamDeleteRolesRequest"
-            }
-          }
-        ],
-        "tags": [
-          "IAMManager"
+          "AccountManager"
         ]
       },
       "post": {
-        "operationId": "CreateRole",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/iamCreateRoleResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/iamCreateRoleRequest"
-            }
-          }
-        ],
-        "tags": [
-          "IAMManager"
-        ]
-      },
-      "patch": {
-        "operationId": "ModifyRole",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/iamModifyRoleResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/iamModifyRoleRequest"
-            }
-          }
-        ],
-        "tags": [
-          "IAMManager"
-        ]
-      }
-    },
-    "/v1.1/roles/{role_id}": {
-      "get": {
-        "operationId": "GetRole",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/iamGetRoleResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "role_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "head.user_id",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "IAMManager"
-        ]
-      }
-    },
-    "/v1.1/users": {
-      "get": {
-        "operationId": "DescribeUsers",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/iamDescribeUsersResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "head.user_id",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "search_word",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "tags": [
-          "IAMManager"
-        ]
-      },
-      "delete": {
         "operationId": "DeleteUsers",
         "responses": {
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/iamDeleteUsersResponse"
+              "$ref": "#/definitions/imEmpty"
             }
           }
         },
@@ -707,36 +719,36 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/iamDeleteUsersRequest"
+              "$ref": "#/definitions/imUserIdList"
             }
           }
         ],
         "tags": [
-          "IAMManager"
+          "AccountManager"
         ]
-      },
-      "post": {
-        "operationId": "CreateUser",
+      }
+    },
+    "/apis/iam/users/{uid}": {
+      "get": {
+        "operationId": "GetUser",
         "responses": {
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/iamCreateUserResponse"
+              "$ref": "#/definitions/imUser"
             }
           }
         },
         "parameters": [
           {
-            "name": "body",
-            "in": "body",
+            "name": "uid",
+            "in": "path",
             "required": true,
-            "schema": {
-              "$ref": "#/definitions/iamCreateUserRequest"
-            }
+            "type": "string"
           }
         ],
         "tags": [
-          "IAMManager"
+          "AccountManager"
         ]
       },
       "patch": {
@@ -745,628 +757,46 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/iamModifyUserResponse"
+              "$ref": "#/definitions/imUser"
             }
           }
         },
         "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/iamModifyUserRequest"
+              "$ref": "#/definitions/imUser"
             }
           }
         ],
         "tags": [
-          "IAMManager"
-        ]
-      }
-    },
-    "/v1.1/users/user_id": {
-      "get": {
-        "operationId": "GetUser",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/iamGetUserResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "head.user_id",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "user_id",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "IAMManager"
-        ]
-      }
-    },
-    "/v1.1/version:iam": {
-      "get": {
-        "operationId": "GetVersion",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/iamString"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "value",
-            "in": "query",
-            "required": false,
-            "type": "boolean",
-            "format": "boolean"
-          }
-        ],
-        "tags": [
-          "IAMManager"
+          "AccountManager"
         ]
       }
     }
   },
   "definitions": {
-    "iamAction": {
-      "type": "object",
-      "properties": {
-        "action_id": {
-          "type": "string"
-        },
-        "action_name": {
-          "type": "string"
-        },
-        "method": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "feature_id": {
-          "type": "string"
-        },
-        "feature_name": {
-          "type": "string"
-        },
-        "module_id": {
-          "type": "string"
-        },
-        "module_name": {
-          "type": "string"
-        }
-      }
+    "imEmpty": {
+      "type": "object"
     },
-    "iamBool": {
+    "imGroup": {
       "type": "object",
       "properties": {
-        "value": {
-          "type": "boolean",
-          "format": "boolean"
-        }
-      }
-    },
-    "iamCanDoActionResponse": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamResponseHeader"
-        },
-        "ok": {
-          "type": "boolean",
-          "format": "boolean"
-        }
-      }
-    },
-    "iamCreateGroupRequest": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamRequestHeader"
-        },
-        "value": {
-          "$ref": "#/definitions/iamGroup"
-        }
-      }
-    },
-    "iamCreateGroupResponse": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamResponseHeader"
-        },
-        "group_id": {
-          "type": "string"
-        }
-      }
-    },
-    "iamCreateRoleRequest": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamRequestHeader"
-        },
-        "value": {
-          "$ref": "#/definitions/iamRole"
-        }
-      }
-    },
-    "iamCreateRoleResponse": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamResponseHeader"
-        },
-        "role_id": {
-          "type": "string"
-        }
-      }
-    },
-    "iamCreateUserRequest": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamRequestHeader"
-        },
-        "value": {
-          "$ref": "#/definitions/iamUser"
-        }
-      }
-    },
-    "iamCreateUserResponse": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamResponseHeader"
-        },
-        "user_id": {
-          "type": "string"
-        }
-      }
-    },
-    "iamDeleteGroupsRequest": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamRequestHeader"
-        },
-        "group_id": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "iamDeleteGroupsResponse": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamResponseHeader"
-        },
-        "group_id": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "iamDeleteRolesRequest": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamRequestHeader"
-        },
-        "role_id": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "iamDeleteRolesResponse": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamResponseHeader"
-        },
-        "role_id": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "iamDeleteUsersRequest": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamRequestHeader"
-        },
-        "user_id": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "iamDeleteUsersResponse": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamResponseHeader"
-        },
-        "user_id": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "iamDescribeActionsResponse": {
-      "type": "object",
-      "properties": {
-        "action_set": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/iamAction"
-          }
-        },
-        "total_count": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "iamDescribeGroupsResponse": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamResponseHeader"
-        },
-        "group_set": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/iamGroup"
-          }
-        },
-        "total_count": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "iamDescribeRolesResponse": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamResponseHeader"
-        },
-        "role_set": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/iamRole"
-          }
-        },
-        "total_count": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "iamDescribeUsersResponse": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamResponseHeader"
-        },
-        "user_set": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/iamUser"
-          }
-        },
-        "total_count": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "iamGetGroupResponse": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamResponseHeader"
-        },
-        "value": {
-          "$ref": "#/definitions/iamGroup"
-        }
-      }
-    },
-    "iamGetRoleResponse": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamResponseHeader"
-        },
-        "value": {
-          "$ref": "#/definitions/iamRole"
-        }
-      }
-    },
-    "iamGetUserResponse": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamResponseHeader"
-        },
-        "value": {
-          "$ref": "#/definitions/iamUser"
-        }
-      }
-    },
-    "iamGroup": {
-      "type": "object",
-      "properties": {
-        "group_id": {
-          "type": "string"
-        },
-        "group_name": {
-          "type": "string"
-        },
-        "parent_group_id": {
+        "gid": {
           "type": "string"
         },
         "group_path": {
           "type": "string"
         },
-        "level": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "seq_order": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "owner": {
-          "type": "string"
-        },
-        "owner_path": {
-          "type": "string"
-        },
-        "create_time": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "update_time": {
-          "type": "string",
-          "format": "date-time"
-        }
-      }
-    },
-    "iamModifyGroupRequest": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamRequestHeader"
-        },
-        "value": {
-          "$ref": "#/definitions/iamGroup"
-        }
-      }
-    },
-    "iamModifyGroupResponse": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamResponseHeader"
-        },
-        "group_id": {
-          "type": "string"
-        }
-      }
-    },
-    "iamModifyRoleModuleBindingsRequest": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamRequestHeader"
-        },
-        "binding": {
-          "$ref": "#/definitions/iamRoleModuleBinding"
-        }
-      }
-    },
-    "iamModifyRoleModuleBindingsResponse": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamResponseHeader"
-        }
-      }
-    },
-    "iamModifyRoleRequest": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamRequestHeader"
-        },
-        "value": {
-          "$ref": "#/definitions/iamRole"
-        }
-      }
-    },
-    "iamModifyRoleResponse": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamResponseHeader"
-        },
-        "role_id": {
-          "type": "string"
-        }
-      }
-    },
-    "iamModifyUserRequest": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamRequestHeader"
-        },
-        "value": {
-          "$ref": "#/definitions/iamUser"
-        }
-      }
-    },
-    "iamModifyUserResponse": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "$ref": "#/definitions/iamResponseHeader"
-        },
-        "user_id": {
-          "type": "string"
-        }
-      }
-    },
-    "iamRequestHeader": {
-      "type": "object",
-      "properties": {
-        "user_id": {
-          "type": "string"
-        }
-      }
-    },
-    "iamResponseHeader": {
-      "type": "object",
-      "properties": {
-        "user_id": {
-          "type": "string"
-        },
-        "owner_path": {
-          "type": "string"
-        },
-        "access_path": {
-          "type": "string"
-        }
-      }
-    },
-    "iamRole": {
-      "type": "object",
-      "properties": {
-        "role_id": {
-          "type": "string"
-        },
-        "role_name": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "portal": {
-          "type": "string"
-        },
-        "owner": {
-          "type": "string"
-        },
-        "owner_path": {
-          "type": "string"
-        },
-        "create_time": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "update_time": {
-          "type": "string",
-          "format": "date-time"
-        }
-      }
-    },
-    "iamRoleModuleBinding": {
-      "type": "object",
-      "properties": {
-        "binding_id": {
-          "type": "string"
-        },
-        "role_id": {
-          "type": "string"
-        },
-        "module_id": {
-          "type": "string"
-        },
-        "data_level": {
-          "type": "string"
-        },
-        "enabled_actions": {
-          "type": "string"
-        },
-        "owner": {
-          "type": "string"
-        },
-        "create_time": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "update_time": {
-          "type": "string",
-          "format": "date-time"
-        }
-      }
-    },
-    "iamString": {
-      "type": "object",
-      "properties": {
-        "value": {
-          "type": "string"
-        }
-      }
-    },
-    "iamUser": {
-      "type": "object",
-      "properties": {
-        "user_id": {
-          "type": "string"
-        },
-        "group_id": {
-          "type": "string"
-        },
-        "role_id": {
-          "type": "string"
-        },
-        "user_name": {
-          "type": "string"
-        },
-        "position": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        },
-        "phone_number": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
-        },
-        "old_password": {
+        "name": {
           "type": "string"
         },
         "description": {
@@ -1375,45 +805,185 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "status": {
           "type": "string"
         },
-        "owner": {
-          "type": "string"
-        },
-        "owner_path": {
-          "type": "string"
+        "extra": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         },
         "create_time": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "status_time": {
           "type": "string",
           "format": "date-time"
         },
         "update_time": {
           "type": "string",
           "format": "date-time"
+        },
+        "status_time": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
-    "iamUserPassword": {
+    "imGroupIdList": {
       "type": "object",
       "properties": {
-        "user_id": {
+        "gid": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "imJoinGroupRequest": {
+      "type": "object",
+      "properties": {
+        "gid": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "uid": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "imLeaveGroupRequest": {
+      "type": "object",
+      "properties": {
+        "gid": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "uid": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "imListGroupsResponse": {
+      "type": "object",
+      "properties": {
+        "group": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/imGroup"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "imListUesrsResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/imUser"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "imPassword": {
+      "type": "object",
+      "properties": {
+        "uid": {
           "type": "string"
         },
         "password": {
           "type": "string"
         }
       }
+    },
+    "imUser": {
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string"
+        },
+        "gid": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "phone_number": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "extra": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "create_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "update_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status_time": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "imUserIdList": {
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "imUserList": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/imUser"
+          }
+        }
+      }
     }
   }
 }
 `,
-
-	"marked.min.js": `/**
- * marked - a markdown parser
- * Copyright (c) 2011-2018, Christopher Jeffrey. (MIT Licensed)
- * https://github.com/markedjs/marked
- */
-!function(e){"use strict";var k={newline:/^\n+/,code:/^( {4}[^\n]+\n*)+/,fences:g,hr:/^ {0,3}((?:- *){3,}|(?:_ *){3,}|(?:\* *){3,})(?:\n+|$)/,heading:/^ *(#{1,6}) *([^\n]+?) *(?:#+ *)?(?:\n+|$)/,nptable:g,blockquote:/^( {0,3}> ?(paragraph|[^\n]*)(?:\n|$))+/,list:/^( *)(bull) [\s\S]+?(?:hr|def|\n{2,}(?! )(?!\1bull )\n*|\s*$)/,html:"^ {0,3}(?:<(script|pre|style)[\\s>][\\s\\S]*?(?:</\\1>[^\\n]*\\n+|$)|comment[^\\n]*(\\n+|$)|<\\?[\\s\\S]*?\\?>\\n*|<![A-Z][\\s\\S]*?>\\n*|<!\\[CDATA\\[[\\s\\S]*?\\]\\]>\\n*|</?(tag)(?: +|\\n|/?>)[\\s\\S]*?(?:\\n{2,}|$)|<(?!script|pre|style)([a-z][\\w-]*)(?:attribute)*? */?>(?=\\h*\\n)[\\s\\S]*?(?:\\n{2,}|$)|</(?!script|pre|style)[a-z][\\w-]*\\s*>(?=\\h*\\n)[\\s\\S]*?(?:\\n{2,}|$))",def:/^ {0,3}\[(label)\]: *\n? *<?([^\s>]+)>?(?:(?: +\n? *| *\n *)(title))? *(?:\n+|$)/,table:g,lheading:/^([^\n]+)\n *(=|-){2,} *(?:\n+|$)/,paragraph:/^([^\n]+(?:\n(?!hr|heading|lheading| {0,3}>|<\/?(?:tag)(?: +|\n|\/?>)|<(?:script|pre|style|!--))[^\n]+)*)/,text:/^[^\n]+/};function a(e){this.tokens=[],this.tokens.links=Object.create(null),this.options=e||d.defaults,this.rules=k.normal,this.options.pedantic?this.rules=k.pedantic:this.options.gfm&&(this.options.tables?this.rules=k.tables:this.rules=k.gfm)}k._label=/(?!\s*\])(?:\\[\[\]]|[^\[\]])+/,k._title=/(?:"(?:\\"?|[^"\\])*"|'[^'\n]*(?:\n[^'\n]+)*\n?'|\([^()]*\))/,k.def=t(k.def).replace("label",k._label).replace("title",k._title).getRegex(),k.bullet=/(?:[*+-]|\d+\.)/,k.item=/^( *)(bull) [^\n]*(?:\n(?!\1bull )[^\n]*)*/,k.item=t(k.item,"gm").replace(/bull/g,k.bullet).getRegex(),k.list=t(k.list).replace(/bull/g,k.bullet).replace("hr","\\n+(?=\\1?(?:(?:- *){3,}|(?:_ *){3,}|(?:\\* *){3,})(?:\\n+|$))").replace("def","\\n+(?="+k.def.source+")").getRegex(),k._tag="address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|section|source|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul",k._comment=/<!--(?!-?>)[\s\S]*?-->/,k.html=t(k.html,"i").replace("comment",k._comment).replace("tag",k._tag).replace("attribute",/ +[a-zA-Z:_][\w.:-]*(?: *= *"[^"\n]*"| *= *'[^'\n]*'| *= *[^\s"'=<>` + "`" + `]+)?/).getRegex(),k.paragraph=t(k.paragraph).replace("hr",k.hr).replace("heading",k.heading).replace("lheading",k.lheading).replace("tag",k._tag).getRegex(),k.blockquote=t(k.blockquote).replace("paragraph",k.paragraph).getRegex(),k.normal=f({},k),k.gfm=f({},k.normal,{fences:/^ *(` + "`" + `{3,}|~{3,})[ \.]*(\S+)? *\n([\s\S]*?)\n? *\1 *(?:\n+|$)/,paragraph:/^/,heading:/^ *(#{1,6}) +([^\n]+?) *#* *(?:\n+|$)/}),k.gfm.paragraph=t(k.paragraph).replace("(?!","(?!"+k.gfm.fences.source.replace("\\1","\\2")+"|"+k.list.source.replace("\\1","\\3")+"|").getRegex(),k.tables=f({},k.gfm,{nptable:/^ *([^|\n ].*\|.*)\n *([-:]+ *\|[-| :]*)(?:\n((?:.*[^>\n ].*(?:\n|$))*)\n*|$)/,table:/^ *\|(.+)\n *\|?( *[-:]+[-| :]*)(?:\n((?: *[^>\n ].*(?:\n|$))*)\n*|$)/}),k.pedantic=f({},k.normal,{html:t("^ *(?:comment *(?:\\n|\\s*$)|<(tag)[\\s\\S]+?</\\1> *(?:\\n{2,}|\\s*$)|<tag(?:\"[^\"]*\"|'[^']*'|\\s[^'\"/>\\s]*)*?/?> *(?:\\n{2,}|\\s*$))").replace("comment",k._comment).replace(/tag/g,"(?!(?:a|em|strong|small|s|cite|q|dfn|abbr|data|time|code|var|samp|kbd|sub|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo|span|br|wbr|ins|del|img)\\b)\\w+(?!:|[^\\w\\s@]*@)\\b").getRegex(),def:/^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +(["(][^\n]+[")]))? *(?:\n+|$)/}),a.rules=k,a.lex=function(e,t){return new a(t).lex(e)},a.prototype.lex=function(e){return e=e.replace(/\r\n|\r/g,"\n").replace(/\t/g,"    ").replace(/\u00a0/g," ").replace(/\u2424/g,"\n"),this.token(e,!0)},a.prototype.token=function(e,t){var n,r,s,i,l,o,a,h,p,c,u,g,f,d,b,m;for(e=e.replace(/^ +$/gm,"");e;)if((s=this.rules.newline.exec(e))&&(e=e.substring(s[0].length),1<s[0].length&&this.tokens.push({type:"space"})),s=this.rules.code.exec(e))e=e.substring(s[0].length),s=s[0].replace(/^ {4}/gm,""),this.tokens.push({type:"code",text:this.options.pedantic?s:y(s,"\n")});else if(s=this.rules.fences.exec(e))e=e.substring(s[0].length),this.tokens.push({type:"code",lang:s[2],text:s[3]||""});else if(s=this.rules.heading.exec(e))e=e.substring(s[0].length),this.tokens.push({type:"heading",depth:s[1].length,text:s[2]});else if(t&&(s=this.rules.nptable.exec(e))&&(o={type:"table",header:x(s[1].replace(/^ *| *\| *$/g,"")),align:s[2].replace(/^ *|\| *$/g,"").split(/ *\| */),cells:s[3]?s[3].replace(/\n$/,"").split("\n"):[]}).header.length===o.align.length){for(e=e.substring(s[0].length),u=0;u<o.align.length;u++)/^ *-+: *$/.test(o.align[u])?o.align[u]="right":/^ *:-+: *$/.test(o.align[u])?o.align[u]="center":/^ *:-+ *$/.test(o.align[u])?o.align[u]="left":o.align[u]=null;for(u=0;u<o.cells.length;u++)o.cells[u]=x(o.cells[u],o.header.length);this.tokens.push(o)}else if(s=this.rules.hr.exec(e))e=e.substring(s[0].length),this.tokens.push({type:"hr"});else if(s=this.rules.blockquote.exec(e))e=e.substring(s[0].length),this.tokens.push({type:"blockquote_start"}),s=s[0].replace(/^ *> ?/gm,""),this.token(s,t),this.tokens.push({type:"blockquote_end"});else if(s=this.rules.list.exec(e)){for(e=e.substring(s[0].length),a={type:"list_start",ordered:d=1<(i=s[2]).length,start:d?+i:"",loose:!1},this.tokens.push(a),n=!(h=[]),f=(s=s[0].match(this.rules.item)).length,u=0;u<f;u++)c=(o=s[u]).length,~(o=o.replace(/^ *([*+-]|\d+\.) +/,"")).indexOf("\n ")&&(c-=o.length,o=this.options.pedantic?o.replace(/^ {1,4}/gm,""):o.replace(new RegExp("^ {1,"+c+"}","gm"),"")),this.options.smartLists&&u!==f-1&&(i===(l=k.bullet.exec(s[u+1])[0])||1<i.length&&1<l.length||(e=s.slice(u+1).join("\n")+e,u=f-1)),r=n||/\n\n(?!\s*$)/.test(o),u!==f-1&&(n="\n"===o.charAt(o.length-1),r||(r=n)),r&&(a.loose=!0),m=void 0,(b=/^\[[ xX]\] /.test(o))&&(m=" "!==o[1],o=o.replace(/^\[[ xX]\] +/,"")),p={type:"list_item_start",task:b,checked:m,loose:r},h.push(p),this.tokens.push(p),this.token(o,!1),this.tokens.push({type:"list_item_end"});if(a.loose)for(f=h.length,u=0;u<f;u++)h[u].loose=!0;this.tokens.push({type:"list_end"})}else if(s=this.rules.html.exec(e))e=e.substring(s[0].length),this.tokens.push({type:this.options.sanitize?"paragraph":"html",pre:!this.options.sanitizer&&("pre"===s[1]||"script"===s[1]||"style"===s[1]),text:s[0]});else if(t&&(s=this.rules.def.exec(e)))e=e.substring(s[0].length),s[3]&&(s[3]=s[3].substring(1,s[3].length-1)),g=s[1].toLowerCase().replace(/\s+/g," "),this.tokens.links[g]||(this.tokens.links[g]={href:s[2],title:s[3]});else if(t&&(s=this.rules.table.exec(e))&&(o={type:"table",header:x(s[1].replace(/^ *| *\| *$/g,"")),align:s[2].replace(/^ *|\| *$/g,"").split(/ *\| */),cells:s[3]?s[3].replace(/(?: *\| *)?\n$/,"").split("\n"):[]}).header.length===o.align.length){for(e=e.substring(s[0].length),u=0;u<o.align.length;u++)/^ *-+: *$/.test(o.align[u])?o.align[u]="right":/^ *:-+: *$/.test(o.align[u])?o.align[u]="center":/^ *:-+ *$/.test(o.align[u])?o.align[u]="left":o.align[u]=null;for(u=0;u<o.cells.length;u++)o.cells[u]=x(o.cells[u].replace(/^ *\| *| *\| *$/g,""),o.header.length);this.tokens.push(o)}else if(s=this.rules.lheading.exec(e))e=e.substring(s[0].length),this.tokens.push({type:"heading",depth:"="===s[2]?1:2,text:s[1]});else if(t&&(s=this.rules.paragraph.exec(e)))e=e.substring(s[0].length),this.tokens.push({type:"paragraph",text:"\n"===s[1].charAt(s[1].length-1)?s[1].slice(0,-1):s[1]});else if(s=this.rules.text.exec(e))e=e.substring(s[0].length),this.tokens.push({type:"text",text:s[0]});else if(e)throw new Error("Infinite loop on byte: "+e.charCodeAt(0));return this.tokens};var n={escape:/^\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_` + "`" + `{|}~])/,autolink:/^<(scheme:[^\s\x00-\x1f<>]*|email)>/,url:g,tag:"^comment|^</[a-zA-Z][\\w:-]*\\s*>|^<[a-zA-Z][\\w-]*(?:attribute)*?\\s*/?>|^<\\?[\\s\\S]*?\\?>|^<![a-zA-Z]+\\s[\\s\\S]*?>|^<!\\[CDATA\\[[\\s\\S]*?\\]\\]>",link:/^!?\[(label)\]\(href(?:\s+(title))?\s*\)/,reflink:/^!?\[(label)\]\[(?!\s*\])((?:\\[\[\]]?|[^\[\]\\])+)\]/,nolink:/^!?\[(?!\s*\])((?:\[[^\[\]]*\]|\\[\[\]]|[^\[\]])*)\](?:\[\])?/,strong:/^__([^\s])__(?!_)|^\*\*([^\s])\*\*(?!\*)|^__([^\s][\s\S]*?[^\s])__(?!_)|^\*\*([^\s][\s\S]*?[^\s])\*\*(?!\*)/,em:/^_([^\s_])_(?!_)|^\*([^\s*"<\[])\*(?!\*)|^_([^\s][\s\S]*?[^\s_])_(?!_|[^\s.])|^_([^\s_][\s\S]*?[^\s])_(?!_|[^\s.])|^\*([^\s"<\[][\s\S]*?[^\s*])\*(?!\*)|^\*([^\s*"<\[][\s\S]*?[^\s])\*(?!\*)/,code:/^(` + "`" + `+)([^` + "`" + `]|[^` + "`" + `][\s\S]*?[^` + "`" + `])\1(?!` + "`" + `)/,br:/^( {2,}|\\)\n(?!\s*$)/,del:g,text:/^(` + "`" + `+|[^` + "`" + `])[\s\S]*?(?=[\\<!\[` + "`" + `*]|\b_| {2,}\n|$)/};function h(e,t){if(this.options=t||d.defaults,this.links=e,this.rules=n.normal,this.renderer=this.options.renderer||new r,this.renderer.options=this.options,!this.links)throw new Error("Tokens array requires a ` + "`" + `links` + "`" + ` property.");this.options.pedantic?this.rules=n.pedantic:this.options.gfm&&(this.options.breaks?this.rules=n.breaks:this.rules=n.gfm)}function r(e){this.options=e||d.defaults}function s(){}function p(e){this.tokens=[],this.token=null,this.options=e||d.defaults,this.options.renderer=this.options.renderer||new r,this.renderer=this.options.renderer,this.renderer.options=this.options}function c(e,t){if(t){if(c.escapeTest.test(e))return e.replace(c.escapeReplace,function(e){return c.replacements[e]})}else if(c.escapeTestNoEncode.test(e))return e.replace(c.escapeReplaceNoEncode,function(e){return c.replacements[e]});return e}function u(e){return e.replace(/&(#(?:\d+)|(?:#x[0-9A-Fa-f]+)|(?:\w+));?/gi,function(e,t){return"colon"===(t=t.toLowerCase())?":":"#"===t.charAt(0)?"x"===t.charAt(1)?String.fromCharCode(parseInt(t.substring(2),16)):String.fromCharCode(+t.substring(1)):""})}function t(n,e){return n=n.source||n,e=e||"",{replace:function(e,t){return t=(t=t.source||t).replace(/(^|[^\[])\^/g,"$1"),n=n.replace(e,t),this},getRegex:function(){return new RegExp(n,e)}}}function i(e,t,n){if(e){try{var r=decodeURIComponent(u(n)).replace(/[^\w:]/g,"").toLowerCase()}catch(e){return null}if(0===r.indexOf("javascript:")||0===r.indexOf("vbscript:")||0===r.indexOf("data:"))return null}t&&!o.test(n)&&(n=function(e,t){l[" "+e]||(/^[^:]+:\/*[^/]*$/.test(e)?l[" "+e]=e+"/":l[" "+e]=y(e,"/",!0));return e=l[" "+e],"//"===t.slice(0,2)?e.replace(/:[\s\S]*/,":")+t:"/"===t.charAt(0)?e.replace(/(:\/*[^/]*)[\s\S]*/,"$1")+t:e+t}(t,n));try{n=encodeURI(n).replace(/%25/g,"%")}catch(e){return null}return n}n._escapes=/\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_` + "`" + `{|}~])/g,n._scheme=/[a-zA-Z][a-zA-Z0-9+.-]{1,31}/,n._email=/[a-zA-Z0-9.!#$%&'*+/=?^_` + "`" + `{|}~-]+(@)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(?![-_])/,n.autolink=t(n.autolink).replace("scheme",n._scheme).replace("email",n._email).getRegex(),n._attribute=/\s+[a-zA-Z:_][\w.:-]*(?:\s*=\s*"[^"]*"|\s*=\s*'[^']*'|\s*=\s*[^\s"'=<>` + "`" + `]+)?/,n.tag=t(n.tag).replace("comment",k._comment).replace("attribute",n._attribute).getRegex(),n._label=/(?:\[[^\[\]]*\]|\\[\[\]]?|` + "`" + `[^` + "`" + `]*` + "`" + `|[^\[\]\\])*?/,n._href=/\s*(<(?:\\[<>]?|[^\s<>\\])*>|(?:\\[()]?|\([^\s\x00-\x1f\\]*\)|[^\s\x00-\x1f()\\])*?)/,n._title=/"(?:\\"?|[^"\\])*"|'(?:\\'?|[^'\\])*'|\((?:\\\)?|[^)\\])*\)/,n.link=t(n.link).replace("label",n._label).replace("href",n._href).replace("title",n._title).getRegex(),n.reflink=t(n.reflink).replace("label",n._label).getRegex(),n.normal=f({},n),n.pedantic=f({},n.normal,{strong:/^__(?=\S)([\s\S]*?\S)__(?!_)|^\*\*(?=\S)([\s\S]*?\S)\*\*(?!\*)/,em:/^_(?=\S)([\s\S]*?\S)_(?!_)|^\*(?=\S)([\s\S]*?\S)\*(?!\*)/,link:t(/^!?\[(label)\]\((.*?)\)/).replace("label",n._label).getRegex(),reflink:t(/^!?\[(label)\]\s*\[([^\]]*)\]/).replace("label",n._label).getRegex()}),n.gfm=f({},n.normal,{escape:t(n.escape).replace("])","~|])").getRegex(),_extended_email:/[A-Za-z0-9._+-]+(@)[a-zA-Z0-9-_]+(?:\.[a-zA-Z0-9-_]*[a-zA-Z0-9])+(?![-_])/,url:/^((?:ftp|https?):\/\/|www\.)(?:[a-zA-Z0-9\-]+\.?)+[^\s<]*|^email/,_backpedal:/(?:[^?!.,:;*_~()&]+|\([^)]*\)|&(?![a-zA-Z0-9]+;$)|[?!.,:;*_~)]+(?!$))+/,del:/^~+(?=\S)([\s\S]*?\S)~+/,text:t(n.text).replace("]|","~]|").replace("|$","|https?://|ftp://|www\\.|[a-zA-Z0-9.!#$%&'*+/=?^_` + "`" + `{\\|}~-]+@|$").getRegex()}),n.gfm.url=t(n.gfm.url).replace("email",n.gfm._extended_email).getRegex(),n.breaks=f({},n.gfm,{br:t(n.br).replace("{2,}","*").getRegex(),text:t(n.gfm.text).replace("{2,}","*").getRegex()}),h.rules=n,h.output=function(e,t,n){return new h(t,n).output(e)},h.prototype.output=function(e){for(var t,n,r,s,i,l,o="";e;)if(i=this.rules.escape.exec(e))e=e.substring(i[0].length),o+=i[1];else if(i=this.rules.autolink.exec(e))e=e.substring(i[0].length),r="@"===i[2]?"mailto:"+(n=c(this.mangle(i[1]))):n=c(i[1]),o+=this.renderer.link(r,null,n);else if(this.inLink||!(i=this.rules.url.exec(e))){if(i=this.rules.tag.exec(e))!this.inLink&&/^<a /i.test(i[0])?this.inLink=!0:this.inLink&&/^<\/a>/i.test(i[0])&&(this.inLink=!1),!this.inRawBlock&&/^<(pre|code|kbd|script)(\s|>)/i.test(i[0])?this.inRawBlock=!0:this.inRawBlock&&/^<\/(pre|code|kbd|script)(\s|>)/i.test(i[0])&&(this.inRawBlock=!1),e=e.substring(i[0].length),o+=this.options.sanitize?this.options.sanitizer?this.options.sanitizer(i[0]):c(i[0]):i[0];else if(i=this.rules.link.exec(e))e=e.substring(i[0].length),this.inLink=!0,r=i[2],this.options.pedantic?(t=/^([^'"]*[^\s])\s+(['"])(.*)\2/.exec(r))?(r=t[1],s=t[3]):s="":s=i[3]?i[3].slice(1,-1):"",r=r.trim().replace(/^<([\s\S]*)>$/,"$1"),o+=this.outputLink(i,{href:h.escapes(r),title:h.escapes(s)}),this.inLink=!1;else if((i=this.rules.reflink.exec(e))||(i=this.rules.nolink.exec(e))){if(e=e.substring(i[0].length),t=(i[2]||i[1]).replace(/\s+/g," "),!(t=this.links[t.toLowerCase()])||!t.href){o+=i[0].charAt(0),e=i[0].substring(1)+e;continue}this.inLink=!0,o+=this.outputLink(i,t),this.inLink=!1}else if(i=this.rules.strong.exec(e))e=e.substring(i[0].length),o+=this.renderer.strong(this.output(i[4]||i[3]||i[2]||i[1]));else if(i=this.rules.em.exec(e))e=e.substring(i[0].length),o+=this.renderer.em(this.output(i[6]||i[5]||i[4]||i[3]||i[2]||i[1]));else if(i=this.rules.code.exec(e))e=e.substring(i[0].length),o+=this.renderer.codespan(c(i[2].trim(),!0));else if(i=this.rules.br.exec(e))e=e.substring(i[0].length),o+=this.renderer.br();else if(i=this.rules.del.exec(e))e=e.substring(i[0].length),o+=this.renderer.del(this.output(i[1]));else if(i=this.rules.text.exec(e))e=e.substring(i[0].length),this.inRawBlock?o+=this.renderer.text(i[0]):o+=this.renderer.text(c(this.smartypants(i[0])));else if(e)throw new Error("Infinite loop on byte: "+e.charCodeAt(0))}else{if("@"===i[2])r="mailto:"+(n=c(i[0]));else{for(;l=i[0],i[0]=this.rules._backpedal.exec(i[0])[0],l!==i[0];);n=c(i[0]),r="www."===i[1]?"http://"+n:n}e=e.substring(i[0].length),o+=this.renderer.link(r,null,n)}return o},h.escapes=function(e){return e?e.replace(h.rules._escapes,"$1"):e},h.prototype.outputLink=function(e,t){var n=t.href,r=t.title?c(t.title):null;return"!"!==e[0].charAt(0)?this.renderer.link(n,r,this.output(e[1])):this.renderer.image(n,r,c(e[1]))},h.prototype.smartypants=function(e){return this.options.smartypants?e.replace(/---/g,"—").replace(/--/g,"–").replace(/(^|[-\u2014/(\[{"\s])'/g,"$1‘").replace(/'/g,"’").replace(/(^|[-\u2014/(\[{\u2018\s])"/g,"$1“").replace(/"/g,"”").replace(/\.{3}/g,"…"):e},h.prototype.mangle=function(e){if(!this.options.mangle)return e;for(var t,n="",r=e.length,s=0;s<r;s++)t=e.charCodeAt(s),.5<Math.random()&&(t="x"+t.toString(16)),n+="&#"+t+";";return n},r.prototype.code=function(e,t,n){if(this.options.highlight){var r=this.options.highlight(e,t);null!=r&&r!==e&&(n=!0,e=r)}return t?'<pre><code class="'+this.options.langPrefix+c(t,!0)+'">'+(n?e:c(e,!0))+"</code></pre>\n":"<pre><code>"+(n?e:c(e,!0))+"</code></pre>"},r.prototype.blockquote=function(e){return"<blockquote>\n"+e+"</blockquote>\n"},r.prototype.html=function(e){return e},r.prototype.heading=function(e,t,n){return this.options.headerIds?"<h"+t+' id="'+this.options.headerPrefix+n.toLowerCase().replace(/[^\w]+/g,"-")+'">'+e+"</h"+t+">\n":"<h"+t+">"+e+"</h"+t+">\n"},r.prototype.hr=function(){return this.options.xhtml?"<hr/>\n":"<hr>\n"},r.prototype.list=function(e,t,n){var r=t?"ol":"ul";return"<"+r+(t&&1!==n?' start="'+n+'"':"")+">\n"+e+"</"+r+">\n"},r.prototype.listitem=function(e){return"<li>"+e+"</li>\n"},r.prototype.checkbox=function(e){return"<input "+(e?'checked="" ':"")+'disabled="" type="checkbox"'+(this.options.xhtml?" /":"")+"> "},r.prototype.paragraph=function(e){return"<p>"+e+"</p>\n"},r.prototype.table=function(e,t){return t&&(t="<tbody>"+t+"</tbody>"),"<table>\n<thead>\n"+e+"</thead>\n"+t+"</table>\n"},r.prototype.tablerow=function(e){return"<tr>\n"+e+"</tr>\n"},r.prototype.tablecell=function(e,t){var n=t.header?"th":"td";return(t.align?"<"+n+' align="'+t.align+'">':"<"+n+">")+e+"</"+n+">\n"},r.prototype.strong=function(e){return"<strong>"+e+"</strong>"},r.prototype.em=function(e){return"<em>"+e+"</em>"},r.prototype.codespan=function(e){return"<code>"+e+"</code>"},r.prototype.br=function(){return this.options.xhtml?"<br/>":"<br>"},r.prototype.del=function(e){return"<del>"+e+"</del>"},r.prototype.link=function(e,t,n){if(null===(e=i(this.options.sanitize,this.options.baseUrl,e)))return n;var r='<a href="'+c(e)+'"';return t&&(r+=' title="'+t+'"'),r+=">"+n+"</a>"},r.prototype.image=function(e,t,n){if(null===(e=i(this.options.sanitize,this.options.baseUrl,e)))return n;var r='<img src="'+e+'" alt="'+n+'"';return t&&(r+=' title="'+t+'"'),r+=this.options.xhtml?"/>":">"},r.prototype.text=function(e){return e},s.prototype.strong=s.prototype.em=s.prototype.codespan=s.prototype.del=s.prototype.text=function(e){return e},s.prototype.link=s.prototype.image=function(e,t,n){return""+n},s.prototype.br=function(){return""},p.parse=function(e,t){return new p(t).parse(e)},p.prototype.parse=function(e){this.inline=new h(e.links,this.options),this.inlineText=new h(e.links,f({},this.options,{renderer:new s})),this.tokens=e.reverse();for(var t="";this.next();)t+=this.tok();return t},p.prototype.next=function(){return this.token=this.tokens.pop()},p.prototype.peek=function(){return this.tokens[this.tokens.length-1]||0},p.prototype.parseText=function(){for(var e=this.token.text;"text"===this.peek().type;)e+="\n"+this.next().text;return this.inline.output(e)},p.prototype.tok=function(){switch(this.token.type){case"space":return"";case"hr":return this.renderer.hr();case"heading":return this.renderer.heading(this.inline.output(this.token.text),this.token.depth,u(this.inlineText.output(this.token.text)));case"code":return this.renderer.code(this.token.text,this.token.lang,this.token.escaped);case"table":var e,t,n,r,s="",i="";for(n="",e=0;e<this.token.header.length;e++)n+=this.renderer.tablecell(this.inline.output(this.token.header[e]),{header:!0,align:this.token.align[e]});for(s+=this.renderer.tablerow(n),e=0;e<this.token.cells.length;e++){for(t=this.token.cells[e],n="",r=0;r<t.length;r++)n+=this.renderer.tablecell(this.inline.output(t[r]),{header:!1,align:this.token.align[r]});i+=this.renderer.tablerow(n)}return this.renderer.table(s,i);case"blockquote_start":for(i="";"blockquote_end"!==this.next().type;)i+=this.tok();return this.renderer.blockquote(i);case"list_start":i="";for(var l=this.token.ordered,o=this.token.start;"list_end"!==this.next().type;)i+=this.tok();return this.renderer.list(i,l,o);case"list_item_start":i="";var a=this.token.loose;for(this.token.task&&(i+=this.renderer.checkbox(this.token.checked));"list_item_end"!==this.next().type;)i+=a||"text"!==this.token.type?this.tok():this.parseText();return this.renderer.listitem(i);case"html":return this.renderer.html(this.token.text);case"paragraph":return this.renderer.paragraph(this.inline.output(this.token.text));case"text":return this.renderer.paragraph(this.parseText())}},c.escapeTest=/[&<>"']/,c.escapeReplace=/[&<>"']/g,c.replacements={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"},c.escapeTestNoEncode=/[<>"']|&(?!#?\w+;)/,c.escapeReplaceNoEncode=/[<>"']|&(?!#?\w+;)/g;var l={},o=/^$|^[a-z][a-z0-9+.-]*:|^[?#]/i;function g(){}function f(e){for(var t,n,r=1;r<arguments.length;r++)for(n in t=arguments[r])Object.prototype.hasOwnProperty.call(t,n)&&(e[n]=t[n]);return e}function x(e,t){var n=e.replace(/\|/g,function(e,t,n){for(var r=!1,s=t;0<=--s&&"\\"===n[s];)r=!r;return r?"|":" |"}).split(/ \|/),r=0;if(n.length>t)n.splice(t);else for(;n.length<t;)n.push("");for(;r<n.length;r++)n[r]=n[r].trim().replace(/\\\|/g,"|");return n}function y(e,t,n){if(0===e.length)return"";for(var r=0;r<e.length;){var s=e.charAt(e.length-r-1);if(s!==t||n){if(s===t||!n)break;r++}else r++}return e.substr(0,e.length-r)}function d(e,n,r){if(null==e)throw new Error("marked(): input parameter is undefined or null");if("string"!=typeof e)throw new Error("marked(): input parameter is of type "+Object.prototype.toString.call(e)+", string expected");if(r||"function"==typeof n){r||(r=n,n=null);var s,i,l=(n=f({},d.defaults,n||{})).highlight,t=0;try{s=a.lex(e,n)}catch(e){return r(e)}i=s.length;var o=function(t){if(t)return n.highlight=l,r(t);var e;try{e=p.parse(s,n)}catch(e){t=e}return n.highlight=l,t?r(t):r(null,e)};if(!l||l.length<3)return o();if(delete n.highlight,!i)return o();for(;t<s.length;t++)!function(n){"code"!==n.type?--i||o():l(n.text,n.lang,function(e,t){return e?o(e):null==t||t===n.text?--i||o():(n.text=t,n.escaped=!0,void(--i||o()))})}(s[t])}else try{return n&&(n=f({},d.defaults,n)),p.parse(a.lex(e,n),n)}catch(e){if(e.message+="\nPlease report this to https://github.com/markedjs/marked.",(n||d.defaults).silent)return"<p>An error occurred:</p><pre>"+c(e.message+"",!0)+"</pre>";throw e}}g.exec=g,d.options=d.setOptions=function(e){return f(d.defaults,e),d},d.getDefaults=function(){return{baseUrl:null,breaks:!1,gfm:!0,headerIds:!0,headerPrefix:"",highlight:null,langPrefix:"language-",mangle:!0,pedantic:!1,renderer:new r,sanitize:!1,sanitizer:null,silent:!1,smartLists:!1,smartypants:!1,tables:!0,xhtml:!1}},d.defaults=d.getDefaults(),d.Parser=p,d.parser=p.parse,d.Renderer=r,d.TextRenderer=s,d.Lexer=a,d.lexer=a.lex,d.InlineLexer=h,d.inlineLexer=h.output,d.parse=d,"undefined"!=typeof module&&"object"==typeof exports?module.exports=d:"function"==typeof define&&define.amd?define(function(){return d}):e.marked=d}(this||("undefined"!=typeof window?window:global));`,
 }

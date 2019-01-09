@@ -27,8 +27,8 @@ var files = []string{
 	"swagger-ui.css",
 	"swagger-ui.js",
 
-	"iam.swagger.json",
-	"marked.min.js",
+	"am.swagger.json",
+	"im.swagger.json",
 }
 
 func main() {

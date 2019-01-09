@@ -1,0 +1,136 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "openpitrix/iam/am/am.proto",
+    "version": "version not set"
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/apis/iam/roles": {
+      "post": {
+        "operationId": "CreateRole",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/amRole"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/amRole"
+            }
+          }
+        ],
+        "tags": [
+          "AccessManager"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "amActionRule": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "method_pattern": {
+          "type": "string"
+        },
+        "namespace_pattern": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "amActionRuleList": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/amActionRule"
+          }
+        }
+      }
+    },
+    "amEmpty": {
+      "type": "object"
+    },
+    "amRole": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "rule": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/amActionRule"
+          }
+        }
+      }
+    },
+    "amRoleList": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/amRole"
+          }
+        }
+      }
+    },
+    "amRoleXidBinding": {
+      "type": "object",
+      "properties": {
+        "role_name": {
+          "type": "string"
+        },
+        "xid": {
+          "type": "string"
+        }
+      }
+    },
+    "amRoleXidBindingList": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/amRoleXidBinding"
+          }
+        }
+      }
+    },
+    "amXidList": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

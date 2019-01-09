@@ -24,6 +24,8 @@ generate: Makefile
 	make gen_im
 	make gen_am
 
+	make -C ../pkg/service/swagger-ui/
+
 gen_im:
 	# grpc service
 	protoc $(PROTOC_FLAGS) --go_out=plugins=grpc:./_output ${IM_PBFILES}
@@ -36,6 +38,7 @@ gen_im:
 	# swagger
 	protoc $(PROTOC_FLAGS) --swagger_out=logtostderr=true,allow_delete_body=true:./_output ${IM_PBFILES}
 	cp ./_output/openpitrix/iam/im/*.json ../pkg/pb/im/
+	cp ./_output/openpitrix/iam/im/*.json ../pkg/service/swagger-ui/
 
 gen_am:
 	# grpc service
@@ -49,6 +52,7 @@ gen_am:
 	# swagger
 	protoc $(PROTOC_FLAGS) --swagger_out=logtostderr=true,allow_delete_body=true:./_output ${AM_PBFILES}
 	cp ./_output/openpitrix/iam/am/*.json ../pkg/pb/am/
+	cp ./_output/openpitrix/iam/am/*.json ../pkg/service/swagger-ui/
 
 clean:
 	rm -rf $(GOPATH)/src/openpitrix.io/iam/pkg/pb
