@@ -12,54 +12,54 @@ import (
 
 var _ pbim.AccountManagerServer = (*Server)(nil)
 
-func (p *Server) CreateGroup(context.Context, *pbim.Group) (*pbim.Group, error) {
+func (p *Server) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Group, error) {
+	return p.db.CreateGroup(ctx, req)
+}
+func (p *Server) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pbim.Empty, error) {
+	return p.db.DeleteGroups(ctx, req)
+}
+
+func (p *Server) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, error) {
+	return p.db.CreateUser(ctx, req)
+}
+func (p *Server) DeleteUsers(ctx context.Context, req *pbim.UserIdList) (*pbim.Empty, error) {
+	return p.db.DeleteUsers(ctx, req)
+}
+
+func (p *Server) ListUsers(ctx context.Context, req *pbim.Range) (*pbim.ListUsersResponse, error) {
+	return p.db.ListUsers(ctx, req)
+}
+func (p *Server) ListGroups(ctx context.Context, req *pbim.Range) (*pbim.ListGroupsResponse, error) {
+	return p.db.ListGroups(ctx, req)
+}
+
+func (p *Server) GetUser(ctx context.Context, req *pbim.UserId) (*pbim.User, error) {
+	return p.db.GetUser(ctx, req)
+}
+func (p *Server) GetUsersByGroupId(ctx context.Context, req *pbim.GroupId) (*pbim.UserList, error) {
 	panic("todo")
 }
-func (p *Server) DeleteGroups(context.Context, *pbim.GroupIdList) (*pbim.Empty, error) {
+func (p *Server) ModifyUser(ctx context.Context, req *pbim.User) (*pbim.User, error) {
 	panic("todo")
 }
 
-func (p *Server) CreateUser(context.Context, *pbim.User) (*pbim.User, error) {
+func (p *Server) ComparePassword(ctx context.Context, req *pbim.Password) (*pbim.Empty, error) {
 	panic("todo")
 }
-func (p *Server) DeleteUsers(context.Context, *pbim.UserIdList) (*pbim.Empty, error) {
-	panic("todo")
-}
-
-func (p *Server) ListUsers(context.Context, *pbim.Range) (*pbim.ListUesrsResponse, error) {
-	panic("todo")
-}
-func (p *Server) ListGroups(context.Context, *pbim.Range) (*pbim.ListGroupsResponse, error) {
+func (p *Server) ModifyPassword(ctx context.Context, req *pbim.Password) (*pbim.Empty, error) {
 	panic("todo")
 }
 
-func (p *Server) GetUser(context.Context, *pbim.UserId) (*pbim.User, error) {
+func (p *Server) GetGroup(ctx context.Context, req *pbim.GroupId) (*pbim.Group, error) {
 	panic("todo")
 }
-func (p *Server) GetUsersByGroupId(context.Context, *pbim.GroupId) (*pbim.UserList, error) {
-	panic("todo")
-}
-func (p *Server) ModifyUser(context.Context, *pbim.User) (*pbim.User, error) {
+func (p *Server) ModifyGroup(ctx context.Context, req *pbim.Group) (*pbim.Group, error) {
 	panic("todo")
 }
 
-func (p *Server) ComparePassword(context.Context, *pbim.Password) (*pbim.Empty, error) {
+func (p *Server) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*pbim.Empty, error) {
 	panic("todo")
 }
-func (p *Server) ModifyPassword(context.Context, *pbim.Password) (*pbim.Empty, error) {
-	panic("todo")
-}
-
-func (p *Server) GetGroup(context.Context, *pbim.GroupId) (*pbim.Group, error) {
-	panic("todo")
-}
-func (p *Server) ModifyGroup(context.Context, *pbim.Group) (*pbim.Group, error) {
-	panic("todo")
-}
-
-func (p *Server) JoinGroup(context.Context, *pbim.JoinGroupRequest) (*pbim.Empty, error) {
-	panic("todo")
-}
-func (p *Server) LeaveGroup(context.Context, *pbim.LeaveGroupRequest) (*pbim.Empty, error) {
+func (p *Server) LeaveGroup(ctx context.Context, req *pbim.LeaveGroupRequest) (*pbim.Empty, error) {
 	panic("todo")
 }

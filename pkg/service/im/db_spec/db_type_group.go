@@ -26,8 +26,8 @@ type DBGroup struct {
 	Extra       string    `db:"extra"` // JSON
 
 	// DB internal fields
-	parent_gid     string `db:"parent_group_id"`
-	GroupPathLevel string `db:"level"`
+	ParentGid      string `db:"parent_group_id"`
+	GroupPathLevel int    `db:"level"`
 }
 
 func PBGroupToDB(p *pbim.Group) *DBGroup {
@@ -40,6 +40,10 @@ func PBGroupToDB(p *pbim.Group) *DBGroup {
 		Name:        p.Name,
 		Description: p.Description,
 		Status:      p.Status,
+
+		// DB internal fields
+		ParentGid:      "<nil>",
+		GroupPathLevel: -1,
 	}
 
 	q.CreateTime, _ = ptypes.Timestamp(p.CreateTime)

@@ -41,11 +41,11 @@ var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
-var _regex_User_Uid = regexp.MustCompile("^[a-z0-1_-]{2,32}$")
+var _regex_User_Uid = regexp.MustCompile("^[a-z0-9_-]{2,32}$")
 
 func (this *User) Validate() error {
 	if !_regex_User_Uid.MatchString(this.Uid) {
-		return go_proto_validators.FieldError("Uid", fmt.Errorf(`value '%v' must be a string conforming to regex "^[a-z0-1_-]{2,32}$"`, this.Uid))
+		return go_proto_validators.FieldError("Uid", fmt.Errorf(`value '%v' must be a string conforming to regex "^[a-z0-9_-]{2,32}$"`, this.Uid))
 	}
 	// Validation of proto3 map<> fields is unsupported.
 	if this.CreateTime != nil {
@@ -76,15 +76,15 @@ func (this *UserList) Validate() error {
 	return nil
 }
 
-var _regex_Group_Gid = regexp.MustCompile("^[a-z0-1_-]{2,32}$")
-var _regex_Group_GroupPath = regexp.MustCompile("^[a-z0-1_-.]{2,255}$")
+var _regex_Group_Gid = regexp.MustCompile("^[a-z0-9_-]{2,32}$")
+var _regex_Group_GroupPath = regexp.MustCompile("^[a-z0-9_.-]{2,255}$")
 
 func (this *Group) Validate() error {
 	if !_regex_Group_Gid.MatchString(this.Gid) {
-		return go_proto_validators.FieldError("Gid", fmt.Errorf(`value '%v' must be a string conforming to regex "^[a-z0-1_-]{2,32}$"`, this.Gid))
+		return go_proto_validators.FieldError("Gid", fmt.Errorf(`value '%v' must be a string conforming to regex "^[a-z0-9_-]{2,32}$"`, this.Gid))
 	}
 	if !_regex_Group_GroupPath.MatchString(this.GroupPath) {
-		return go_proto_validators.FieldError("GroupPath", fmt.Errorf(`value '%v' must be a string conforming to regex "^[a-z0-1_-.]{2,255}$"`, this.GroupPath))
+		return go_proto_validators.FieldError("GroupPath", fmt.Errorf(`value '%v' must be a string conforming to regex "^[a-z0-9_.-]{2,255}$"`, this.GroupPath))
 	}
 	// Validation of proto3 map<> fields is unsupported.
 	if this.CreateTime != nil {

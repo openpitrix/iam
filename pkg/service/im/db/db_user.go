@@ -159,7 +159,7 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.Range) (*pbim.ListUs
 	if req.GetSearchWord() == "" {
 		return p._ListUsers_all(ctx, req)
 	} else {
-		//return p._DescribeUsers_bySearchWord(ctx, req)
+		return p._ListUsers_bySearchWord(ctx, req)
 	}
 
 	panic("TODO")
@@ -219,7 +219,7 @@ func (p *Database) _ListUsers_all(ctx context.Context, req *pbim.Range) (*pbim.L
 	}
 
 	reply := &pbim.ListUsersResponse{
-		User: sets,
+		User:  sets,
 		Total: int32(total),
 	}
 
@@ -298,7 +298,7 @@ func (p *Database) _ListUsers_bySearchWord(ctx context.Context, req *pbim.Range)
 	}
 
 	reply := &pbim.ListUsersResponse{
-		User: sets,
+		User:  sets,
 		Total: int32(total),
 	}
 
