@@ -40,7 +40,7 @@ var DBInitSqlList = []struct{ Name, Sql string }{
 			user_name    varchar(50),
 			email        varchar(50),
 			phone_number varchar(50),
-			description  varchar(200),
+			description  varchar(1000),
 			password     varchar(128),
 			status       varchar(10),
 			create_time  timestamp,
@@ -55,15 +55,17 @@ var DBInitSqlList = []struct{ Name, Sql string }{
 		Name: "user_group",
 		Sql: `CREATE TABLE IF NOT EXISTS user_group (
 			group_id        varchar(50) not null,
-			group_name      varchar(50),
-			parent_group_id varchar(50),
 			group_path      varchar(255),
-			level           int,
+			group_name      varchar(50),
+			description     varchar(1000),
 			status          varchar(10),
 			create_time     timestamp,
 			update_time     timestamp,
 			status_time     timestamp,
 			extra           json,
+
+			parent_group_id varchar(50),
+			level           int,
 
 			primary key(group_id)
 		);`,
