@@ -161,8 +161,6 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.Range) (*pbim.ListUs
 	} else {
 		return p._ListUsers_bySearchWord(ctx, req)
 	}
-
-	panic("TODO")
 }
 
 func (p *Database) _ListUsers_all_count(ctx context.Context, req *pbim.Range) (total int, err error) {

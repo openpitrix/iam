@@ -15,7 +15,7 @@
     "application/json"
   ],
   "paths": {
-    "/apis/iam/roles": {
+    "/api/iam/am/roles": {
       "post": {
         "operationId": "CreateRole",
         "responses": {
@@ -36,6 +36,22 @@
             }
           }
         ],
+        "tags": [
+          "AccessManager"
+        ]
+      }
+    },
+    "/api/iam/im/version": {
+      "get": {
+        "operationId": "GetVersion",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/amString"
+            }
+          }
+        },
         "tags": [
           "AccessManager"
         ]
@@ -118,6 +134,14 @@
           "items": {
             "$ref": "#/definitions/amRoleXidBinding"
           }
+        }
+      }
+    },
+    "amString": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
         }
       }
     },

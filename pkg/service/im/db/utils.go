@@ -13,6 +13,15 @@ import (
 	"github.com/golang/protobuf/ptypes/timestamp"
 )
 
+func isValidDatabaseName(name string) bool {
+	var re = regexp.MustCompile(`^[a-z0-9_]+$`)
+	return re.MatchString(name)
+}
+func isValidDatabaseTableName(name string) bool {
+	var re = regexp.MustCompile(`^[a-z0-9_]+$`)
+	return re.MatchString(name)
+}
+
 func isValidIds(ids ...string) bool {
 	var re = regexp.MustCompile(`^[a-z0-9-_]+$`)
 	for _, id := range ids {

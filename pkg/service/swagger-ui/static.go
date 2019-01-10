@@ -246,7 +246,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
     "application/json"
   ],
   "paths": {
-    "/apis/iam/roles": {
+    "/api/iam/am/roles": {
       "post": {
         "operationId": "CreateRole",
         "responses": {
@@ -267,6 +267,22 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
             }
           }
         ],
+        "tags": [
+          "AccessManager"
+        ]
+      }
+    },
+    "/api/iam/im/version": {
+      "get": {
+        "operationId": "GetVersion",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/amString"
+            }
+          }
+        },
         "tags": [
           "AccessManager"
         ]
@@ -352,6 +368,14 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         }
       }
     },
+    "amString": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        }
+      }
+    },
     "amXidList": {
       "type": "object",
       "properties": {
@@ -384,7 +408,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
     "application/json"
   ],
   "paths": {
-    "/apis/iam/groups": {
+    "/api/iam/im/groups": {
       "get": {
         "operationId": "ListGroups",
         "responses": {
@@ -483,7 +507,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         ]
       }
     },
-    "/apis/iam/groups/{gid}": {
+    "/api/iam/im/groups/{gid}": {
       "get": {
         "operationId": "GetGroup",
         "responses": {
@@ -537,7 +561,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         ]
       }
     },
-    "/apis/iam/groups/{gid}/users": {
+    "/api/iam/im/groups/{gid}/users": {
       "get": {
         "operationId": "GetUsersByGroupId",
         "responses": {
@@ -561,7 +585,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         ]
       }
     },
-    "/apis/iam/groups:join": {
+    "/api/iam/im/groups:join": {
       "post": {
         "operationId": "JoinGroup",
         "responses": {
@@ -587,7 +611,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         ]
       }
     },
-    "/apis/iam/groups:leave": {
+    "/api/iam/im/groups:leave": {
       "post": {
         "operationId": "LeaveGroup",
         "responses": {
@@ -613,7 +637,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         ]
       }
     },
-    "/apis/iam/password:compare": {
+    "/api/iam/im/password:compare": {
       "post": {
         "operationId": "ComparePassword",
         "responses": {
@@ -639,7 +663,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         ]
       }
     },
-    "/apis/iam/password:modify": {
+    "/api/iam/im/password:modify": {
       "post": {
         "operationId": "ModifyPassword",
         "responses": {
@@ -665,7 +689,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         ]
       }
     },
-    "/apis/iam/users": {
+    "/api/iam/im/users": {
       "get": {
         "operationId": "ListUsers",
         "responses": {
@@ -740,7 +764,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         ]
       }
     },
-    "/apis/iam/users/{uid}": {
+    "/api/iam/im/users/{uid}": {
       "get": {
         "operationId": "GetUser",
         "responses": {
@@ -789,6 +813,22 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
             }
           }
         ],
+        "tags": [
+          "AccountManager"
+        ]
+      }
+    },
+    "/api/iam/im/version": {
+      "get": {
+        "operationId": "GetVersion",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/imString"
+            }
+          }
+        },
         "tags": [
           "AccountManager"
         ]
@@ -919,6 +959,14 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
           "type": "string"
         },
         "password": {
+          "type": "string"
+        }
+      }
+    },
+    "imString": {
+      "type": "object",
+      "properties": {
+        "value": {
           "type": "string"
         }
       }

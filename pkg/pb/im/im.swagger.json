@@ -15,7 +15,7 @@
     "application/json"
   ],
   "paths": {
-    "/apis/iam/groups": {
+    "/api/iam/im/groups": {
       "get": {
         "operationId": "ListGroups",
         "responses": {
@@ -114,7 +114,7 @@
         ]
       }
     },
-    "/apis/iam/groups/{gid}": {
+    "/api/iam/im/groups/{gid}": {
       "get": {
         "operationId": "GetGroup",
         "responses": {
@@ -168,7 +168,7 @@
         ]
       }
     },
-    "/apis/iam/groups/{gid}/users": {
+    "/api/iam/im/groups/{gid}/users": {
       "get": {
         "operationId": "GetUsersByGroupId",
         "responses": {
@@ -192,7 +192,7 @@
         ]
       }
     },
-    "/apis/iam/groups:join": {
+    "/api/iam/im/groups:join": {
       "post": {
         "operationId": "JoinGroup",
         "responses": {
@@ -218,7 +218,7 @@
         ]
       }
     },
-    "/apis/iam/groups:leave": {
+    "/api/iam/im/groups:leave": {
       "post": {
         "operationId": "LeaveGroup",
         "responses": {
@@ -244,7 +244,7 @@
         ]
       }
     },
-    "/apis/iam/password:compare": {
+    "/api/iam/im/password:compare": {
       "post": {
         "operationId": "ComparePassword",
         "responses": {
@@ -270,7 +270,7 @@
         ]
       }
     },
-    "/apis/iam/password:modify": {
+    "/api/iam/im/password:modify": {
       "post": {
         "operationId": "ModifyPassword",
         "responses": {
@@ -296,7 +296,7 @@
         ]
       }
     },
-    "/apis/iam/users": {
+    "/api/iam/im/users": {
       "get": {
         "operationId": "ListUsers",
         "responses": {
@@ -371,7 +371,7 @@
         ]
       }
     },
-    "/apis/iam/users/{uid}": {
+    "/api/iam/im/users/{uid}": {
       "get": {
         "operationId": "GetUser",
         "responses": {
@@ -420,6 +420,22 @@
             }
           }
         ],
+        "tags": [
+          "AccountManager"
+        ]
+      }
+    },
+    "/api/iam/im/version": {
+      "get": {
+        "operationId": "GetVersion",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/imString"
+            }
+          }
+        },
         "tags": [
           "AccountManager"
         ]
@@ -550,6 +566,14 @@
           "type": "string"
         },
         "password": {
+          "type": "string"
+        }
+      }
+    },
+    "imString": {
+      "type": "object",
+      "properties": {
+        "value": {
           "type": "string"
         }
       }

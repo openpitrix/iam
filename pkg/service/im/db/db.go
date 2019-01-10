@@ -29,6 +29,10 @@ func OpenDatabase(cfg *config.Config) (*Database, error) {
 	// init db
 	func() {
 		if strings.EqualFold(cfg.DB.Type, "mysql") {
+			if !isValidDatabaseName(cfg.DB.Database) {
+				logger.Warnf(nil, "invalid db name %s", cfg.DB.Database)
+			}
+
 			db, err := sql.Open("mysql", cfg.DB.GetHostUrl())
 			if err != nil {
 				logger.Warnf(nil, "%v", err)
@@ -36,7 +40,7 @@ func OpenDatabase(cfg *config.Config) (*Database, error) {
 			defer db.Close()
 
 			query := fmt.Sprintf(
-				"CREATE DATABASE IF NOT EXISTS %s DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_unicode_ci;",
+				"CREATE DATABASE IF NOT EXISTS %s CHARACTER SET utf8 COLLATE utf8_general_ci;",
 				cfg.DB.Database,
 			)
 			_, err = db.Exec(query)
@@ -56,10 +60,11 @@ func OpenDatabase(cfg *config.Config) (*Database, error) {
 		DB:  db,
 	}
 	for i, v := range db_spec.DBInitSqlList {
-		if v.Name != "-" {
-			if _, err := p.Exec(v.Sql); err != nil {
-				logger.Warnf(nil, "%d: %v", i, err)
-			}
+		if !isValidDatabaseTableName(v.Name) {
+			logger.Warnf(nil, "invalid table name %s", v.Name)
+		}
+		if _, err := p.Exec(v.Sql); err != nil {
+			logger.Warnf(nil, "%d: %v", i, err)
 		}
 	}
 

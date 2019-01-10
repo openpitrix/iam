@@ -57,91 +57,97 @@ message Group {
 // ----------------------------------------------------------------------------
 
 service AccountManager {
+	rpc GetVersion(Empty) returns (String) {
+		option (google.api.http) = {
+			get: "/api/iam/im/version"
+		};
+	}
+
 	rpc CreateGroup(Group) returns (Group) {
 		option (google.api.http) = {
-			post: "/apis/iam/groups"
+			post: "/api/iam/im/groups"
 			body: "*"
 		};
 	}
 	rpc DeleteGroups(GroupIdList) returns (Empty) {
 		option (google.api.http) = {
-			delete: "/apis/iam/groups"
+			delete: "/api/iam/im/groups"
 			body: "*"
 		};
 	}
 	rpc ModifyGroup(Group) returns (Group) {
 		option (google.api.http) = {
-			patch: "/apis/iam/groups/{gid}"
+			patch: "/api/iam/im/groups/{gid}"
 			body: "*"
 		};
 	}
 	rpc GetGroup(GroupId) returns (Group) {
 		option (google.api.http) = {
-			get: "/apis/iam/groups/{gid}"
+			get: "/api/iam/im/groups/{gid}"
 		};
 	}
 	rpc ListGroups(Range) returns (ListGroupsResponse) {
 		option (google.api.http) = {
-			get: "/apis/iam/groups"
+			get: "/api/iam/im/groups"
 		};
 	}
 
 	rpc CreateUser(User) returns (User) {
 		option (google.api.http) = {
-			post: "/apis/iam/users"
+			post: "/api/iam/im/users"
 			body: "*"
 		};
 	}
 	rpc DeleteUsers(UserIdList) returns (Empty) {
 		option (google.api.http) = {
-			post: "/apis/iam/users"
+			post: "/api/iam/im/users"
 			body: "*"
 		};
 	}
 	rpc ModifyUser(User) returns (User) {
 		option (google.api.http) = {
-			patch: "/apis/iam/users/{uid}"
+			patch: "/api/iam/im/users/{uid}"
 			body: "*"
 		};
 	}
 	rpc GetUser(UserId) returns (User) {
 		option (google.api.http) = {
-			get: "/apis/iam/users/{uid}"
+			get: "/api/iam/im/users/{uid}"
 		};
 	}
 	rpc ListUsers(Range) returns (ListUsersResponse) {
 		option (google.api.http) = {
-			get: "/apis/iam/users"
+			get: "/api/iam/im/users"
 		};
 	}
 
 	rpc JoinGroup(JoinGroupRequest) returns (Empty) {
 		option (google.api.http) = {
-			post: "/apis/iam/groups:join"
+			post: "/api/iam/im/groups:join"
 			body: "*"
 		};
 	}
 	rpc LeaveGroup(LeaveGroupRequest) returns (Empty) {
 		option (google.api.http) = {
-			post: "/apis/iam/groups:leave"
+			post: "/api/iam/im/groups:leave"
 			body: "*"
 		};
 	}
 	rpc GetUsersByGroupId(GroupId) returns (UserList) {
 		option (google.api.http) = {
-			get: "/apis/iam/groups/{gid}/users"
+			get: "/api/iam/im/groups/{gid}/users"
 		};
 	}
 
 	rpc ComparePassword(Password) returns (Empty) {
 		option (google.api.http) = {
-			post: "/apis/iam/password:compare"
+			post: "/api/iam/im/password:compare"
 			body: "*"
 		};
 	}
 	rpc ModifyPassword(Password) returns (Empty) {
 		option (google.api.http) = {
-			post: "/apis/iam/password:modify"
+			post: "/api/iam/im/password:modify"
 			body: "*"
 		};
 	}
@@ -153,6 +159,9 @@ service AccountManager {
 
 message Empty {
 	//
+}
+message String {
+	string value = 1;
 }
 
 message UserId {

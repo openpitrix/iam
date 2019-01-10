@@ -8,9 +8,16 @@ import (
 	"context"
 
 	"openpitrix.io/iam/pkg/pb/im"
+	"openpitrix.io/iam/pkg/version"
 )
 
 var _ pbim.AccountManagerServer = (*Server)(nil)
+
+
+func (p *Server) GetVersion(ctx context.Context, req *pbim.Empty) (*pbim.String, error) {
+	reply := &pbim.String{Value: version.GetVersionString()}
+	return reply, nil
+}
 
 func (p *Server) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Group, error) {
 	return p.db.CreateGroup(ctx, req)

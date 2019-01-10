@@ -65,7 +65,7 @@ var DBInitSqlList = []struct{ Name, Sql string }{
 			status_time     timestamp,
 			extra           json,
 
-			primary key(user_id)
+			primary key(group_id)
 		);`,
 	},
 	{

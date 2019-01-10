@@ -53,6 +53,9 @@ func ListenAndServe(addr string,
 	mux.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "hello", time.Now()) // just for test
 	})
+	mux.HandleFunc("/index.html", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, homepage)
+	})
 
 	if defaultHandler == nil {
 		defaultHandler = MainHandler(grpcServer, addr, grpcServices, mux)
@@ -85,6 +88,9 @@ func ListenAndServeTLS(addr, certFile, keyFile string,
 	mux := http.NewServeMux()
 	mux.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "hello", time.Now()) // just for test
+	})
+	mux.HandleFunc("/index.html", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, homepage)
 	})
 
 	if defaultHandler == nil {
@@ -141,7 +147,11 @@ func MainHandler(
 		if r.ProtoMajor == 2 && strings.Contains(r.Header.Get("Content-Type"), "application/grpc") {
 			grpcServer.ServeHTTP(w, r)
 		} else {
-			mux.ServeHTTP(w, r)
+			if r.URL.Path == "/" {
+				http.Redirect(w, r, "/index.html", http.StatusFound)
+			} else {
+				mux.ServeHTTP(w, r)
+			}
 		}
 	})
 }

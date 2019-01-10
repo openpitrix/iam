@@ -13,6 +13,7 @@ It has these top-level messages:
 	UserList
 	Group
 	Empty
+	String
 	UserId
 	UserIdList
 	GroupId
@@ -105,6 +106,9 @@ func (this *Group) Validate() error {
 	return nil
 }
 func (this *Empty) Validate() error {
+	return nil
+}
+func (this *String) Validate() error {
 	return nil
 }
 func (this *UserId) Validate() error {

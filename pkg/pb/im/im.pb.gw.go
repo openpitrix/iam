@@ -28,6 +28,15 @@ var _ status.Status
 var _ = runtime.String
 var _ = utilities.NewDoubleArray
 
+func request_AccountManager_GetVersion_0(ctx context.Context, marshaler runtime.Marshaler, client AccountManagerClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq Empty
+	var metadata runtime.ServerMetadata
+
+	msg, err := client.GetVersion(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
 func request_AccountManager_CreateGroup_0(ctx context.Context, marshaler runtime.Marshaler, client AccountManagerClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq Group
 	var metadata runtime.ServerMetadata
@@ -346,6 +355,35 @@ func RegisterAccountManagerHandler(ctx context.Context, mux *runtime.ServeMux, c
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
 // "AccountManagerClient" to call the correct interceptors.
 func RegisterAccountManagerHandlerClient(ctx context.Context, mux *runtime.ServeMux, client AccountManagerClient) error {
+
+	mux.Handle("GET", pattern_AccountManager_GetVersion_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(ctx)
+		defer cancel()
+		if cn, ok := w.(http.CloseNotifier); ok {
+			go func(done <-chan struct{}, closed <-chan bool) {
+				select {
+				case <-done:
+				case <-closed:
+					cancel()
+				}
+			}(ctx.Done(), cn.CloseNotify())
+		}
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_AccountManager_GetVersion_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_AccountManager_GetVersion_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
 
 	mux.Handle("POST", pattern_AccountManager_CreateGroup_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(ctx)
@@ -786,38 +824,42 @@ func RegisterAccountManagerHandlerClient(ctx context.Context, mux *runtime.Serve
 }
 
 var (
-	pattern_AccountManager_CreateGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"apis", "iam", "groups"}, ""))
+	pattern_AccountManager_GetVersion_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "iam", "im", "version"}, ""))
 
-	pattern_AccountManager_DeleteGroups_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"apis", "iam", "groups"}, ""))
+	pattern_AccountManager_CreateGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "iam", "im", "groups"}, ""))
 
-	pattern_AccountManager_ModifyGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"apis", "iam", "groups", "gid"}, ""))
+	pattern_AccountManager_DeleteGroups_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "iam", "im", "groups"}, ""))
 
-	pattern_AccountManager_GetGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"apis", "iam", "groups", "gid"}, ""))
+	pattern_AccountManager_ModifyGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "iam", "im", "groups", "gid"}, ""))
 
-	pattern_AccountManager_ListGroups_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"apis", "iam", "groups"}, ""))
+	pattern_AccountManager_GetGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "iam", "im", "groups", "gid"}, ""))
 
-	pattern_AccountManager_CreateUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"apis", "iam", "users"}, ""))
+	pattern_AccountManager_ListGroups_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "iam", "im", "groups"}, ""))
 
-	pattern_AccountManager_DeleteUsers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"apis", "iam", "users"}, ""))
+	pattern_AccountManager_CreateUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "iam", "im", "users"}, ""))
 
-	pattern_AccountManager_ModifyUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"apis", "iam", "users", "uid"}, ""))
+	pattern_AccountManager_DeleteUsers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "iam", "im", "users"}, ""))
 
-	pattern_AccountManager_GetUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"apis", "iam", "users", "uid"}, ""))
+	pattern_AccountManager_ModifyUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "iam", "im", "users", "uid"}, ""))
 
-	pattern_AccountManager_ListUsers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"apis", "iam", "users"}, ""))
+	pattern_AccountManager_GetUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "iam", "im", "users", "uid"}, ""))
 
-	pattern_AccountManager_JoinGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"apis", "iam", "groups"}, "join"))
+	pattern_AccountManager_ListUsers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "iam", "im", "users"}, ""))
 
-	pattern_AccountManager_LeaveGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"apis", "iam", "groups"}, "leave"))
+	pattern_AccountManager_JoinGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "iam", "im", "groups"}, "join"))
 
-	pattern_AccountManager_GetUsersByGroupId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"apis", "iam", "groups", "gid", "users"}, ""))
+	pattern_AccountManager_LeaveGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "iam", "im", "groups"}, "leave"))
 
-	pattern_AccountManager_ComparePassword_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"apis", "iam", "password"}, "compare"))
+	pattern_AccountManager_GetUsersByGroupId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"api", "iam", "im", "groups", "gid", "users"}, ""))
 
-	pattern_AccountManager_ModifyPassword_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"apis", "iam", "password"}, "modify"))
+	pattern_AccountManager_ComparePassword_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "iam", "im", "password"}, "compare"))
+
+	pattern_AccountManager_ModifyPassword_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "iam", "im", "password"}, "modify"))
 )
 
 var (
+	forward_AccountManager_GetVersion_0 = runtime.ForwardResponseMessage
+
 	forward_AccountManager_CreateGroup_0 = runtime.ForwardResponseMessage
 
 	forward_AccountManager_DeleteGroups_0 = runtime.ForwardResponseMessage
