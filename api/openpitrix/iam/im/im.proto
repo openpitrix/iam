@@ -100,7 +100,7 @@ service AccountManager {
 	}
 	rpc DeleteUsers(UserIdList) returns (Empty) {
 		option (google.api.http) = {
-			post: "/api/iam/im/users"
+			delete: "/api/iam/im/users"
 			body: "*"
 		};
 	}

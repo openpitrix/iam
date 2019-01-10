@@ -346,7 +346,7 @@
           "AccountManager"
         ]
       },
-      "post": {
+      "delete": {
         "operationId": "DeleteUsers",
         "responses": {
           "200": {
@@ -363,6 +363,30 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/imUserIdList"
+            }
+          }
+        ],
+        "tags": [
+          "AccountManager"
+        ]
+      },
+      "post": {
+        "operationId": "CreateUser",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/imUser"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/imUser"
             }
           }
         ],

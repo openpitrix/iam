@@ -41,7 +41,7 @@ var DBInitSqlList = []struct{ Name, Sql string }{
 			email        varchar(50),
 			phone_number varchar(50),
 			description  varchar(200),
-			password     varchar(50),
+			password     varchar(128),
 			status       varchar(10),
 			create_time  timestamp,
 			update_time  timestamp,

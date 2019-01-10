@@ -69,6 +69,13 @@ func (p *Database) ComparePassword(ctx context.Context, req *pbim.Password) (*pb
 func (p *Database) ModifyPassword(ctx context.Context, req *pbim.Password) (*pbim.Empty, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
+	var user db_spec.DBUser
+	err := p.DB.Get(&user, "select * from user where user_id=?", req.GetUid())
+	if err != nil {
+		logger.Warnf(ctx, "uid = %s, err = %+v", req.GetUid(), err)
+		return nil, err
+	}
+
 	hashedPass, err := bcrypt.GenerateFromPassword(
 		[]byte(req.GetPassword()), bcrypt.DefaultCost,
 	)
@@ -81,7 +88,7 @@ func (p *Database) ModifyPassword(ctx context.Context, req *pbim.Password) (*pbi
 	sql := fmt.Sprintf(
 		`update %s set password="%s" where user_id="%s"`,
 		db_spec.DBSpec.UserTableName,
-		req.GetUid(), string(hashedPass),
+		string(hashedPass), req.GetUid(),
 	)
 
 	_, err = p.DB.ExecContext(ctx, sql)

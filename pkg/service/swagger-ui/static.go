@@ -739,7 +739,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
           "AccountManager"
         ]
       },
-      "post": {
+      "delete": {
         "operationId": "DeleteUsers",
         "responses": {
           "200": {
@@ -756,6 +756,30 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
             "required": true,
             "schema": {
               "$ref": "#/definitions/imUserIdList"
+            }
+          }
+        ],
+        "tags": [
+          "AccountManager"
+        ]
+      },
+      "post": {
+        "operationId": "CreateUser",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/imUser"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/imUser"
             }
           }
         ],
