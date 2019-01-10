@@ -9,6 +9,7 @@ import (
 	"fmt"
 
 	"github.com/golang/protobuf/ptypes"
+	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -55,6 +56,16 @@ func (p *Database) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 		return nil, err
 	}
 
+	hashedPass, err := bcrypt.GenerateFromPassword(
+		[]byte(dbUser.Password), bcrypt.DefaultCost,
+	)
+	if err != nil {
+		err := status.Errorf(codes.Internal, "bcrypt failed")
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+	dbUser.Password = string(hashedPass)
+
 	sql, values := pkgBuildSql_InsertInto(
 		db_spec.DBSpec.UserTableName,
 		dbUser,
@@ -66,7 +77,7 @@ func (p *Database) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 		return nil, err
 	}
 
-	_, err := p.DB.ExecContext(ctx, sql, values...)
+	_, err = p.DB.ExecContext(ctx, sql, values...)
 	if err != nil {
 		logger.Warnf(ctx, "%v, %v", sql, values)
 		logger.Warnf(ctx, "%+v", err)

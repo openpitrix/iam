@@ -8,12 +8,19 @@ import (
 	"context"
 	"fmt"
 
+	"golang.org/x/crypto/bcrypt"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
+	"openpitrix.io/iam/pkg/internal/funcutil"
 	"openpitrix.io/iam/pkg/pb/im"
 	"openpitrix.io/iam/pkg/service/im/db_spec"
 	"openpitrix.io/logger"
 )
 
 func (p *Database) GetUsersByGroupId(ctx context.Context, req *pbim.GroupId) (*pbim.UserList, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
 	const sql = `
 		select t1.* from
 		user t1, user_group t2, user_group_binding t3 
@@ -40,6 +47,8 @@ func (p *Database) GetUsersByGroupId(ctx context.Context, req *pbim.GroupId) (*p
 }
 
 func (p *Database) ComparePassword(ctx context.Context, req *pbim.Password) (*pbim.Bool, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
 	var user db_spec.DBUser
 	err := p.DB.Get(&user, "select * from user where user_id=?", req.GetUid())
 	if err != nil {
@@ -47,20 +56,35 @@ func (p *Database) ComparePassword(ctx context.Context, req *pbim.Password) (*pb
 		return nil, err
 	}
 
-	if user.Password == req.GetPassword() {
-		return &pbim.Bool{Value: true}, nil
-	} else {
+	err = bcrypt.CompareHashAndPassword(
+		[]byte(user.Password), []byte(req.GetPassword()),
+	)
+	if err != nil {
 		return &pbim.Bool{Value: false}, nil
 	}
+
+	// OK
+	return &pbim.Bool{Value: true}, nil
 }
 func (p *Database) ModifyPassword(ctx context.Context, req *pbim.Password) (*pbim.Empty, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
+	hashedPass, err := bcrypt.GenerateFromPassword(
+		[]byte(req.GetPassword()), bcrypt.DefaultCost,
+	)
+	if err != nil {
+		err := status.Errorf(codes.Internal, "bcrypt failed")
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
 	sql := fmt.Sprintf(
 		`update %s set password="%s" where user_id="%s"`,
 		db_spec.DBSpec.UserTableName,
-		req.GetUid(), req.GetPassword(),
+		req.GetUid(), string(hashedPass),
 	)
 
-	_, err := p.DB.ExecContext(ctx, sql)
+	_, err = p.DB.ExecContext(ctx, sql)
 	if err != nil {
 		logger.Warnf(ctx, "%v", sql)
 		logger.Warnf(ctx, "%+v", err)

@@ -8,12 +8,15 @@ import (
 	"context"
 	"fmt"
 
+	"openpitrix.io/iam/pkg/internal/funcutil"
 	"openpitrix.io/iam/pkg/pb/im"
 	"openpitrix.io/iam/pkg/service/im/db_spec"
 	"openpitrix.io/logger"
 )
 
 func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*pbim.Empty, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
 	sql := fmt.Sprintf(
 		`insert into %s (id, user_id, group_id) values(?,?,?)`,
 		db_spec.DBSpec.UserGroupBindingTableName,
@@ -30,6 +33,8 @@ func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*
 }
 
 func (p *Database) LeaveGroup(ctx context.Context, req *pbim.LeaveGroupRequest) (*pbim.Empty, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
 	sql := fmt.Sprintf(
 		`delete from %s where user_id=? AND group_id=?`,
 		db_spec.DBSpec.UserGroupBindingTableName,

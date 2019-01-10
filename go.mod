@@ -17,6 +17,7 @@ require (
 	github.com/koding/multiconfig v0.0.0-20171124222453-69c27309b2d7
 	github.com/mwitkow/go-proto-validators v0.0.0-20180403085117-0950a7990007
 	github.com/urfave/cli v1.20.0
+	golang.org/x/crypto v0.0.0-20190103213133-ff983b9c42bc
 	golang.org/x/net v0.0.0-20190108225652-1e06a53dbb7e
 	golang.org/x/tools v0.0.0-20190108222858-421f03a57a64
 	google.golang.org/genproto v0.0.0-20181202183823-bd91e49a0898
