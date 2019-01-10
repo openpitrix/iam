@@ -77,7 +77,7 @@ var DBInitSqlList = []struct{ Name, Sql string }{
 			user_id  varchar(50),
 			group_id varchar(50),
 
-			primary key(user_id)
+			primary key(id)
 		);`,
 	},
 }

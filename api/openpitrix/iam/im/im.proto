@@ -205,12 +205,12 @@ message ListGroupsResponse {
 }
 
 message JoinGroupRequest {
-	repeated string gid = 1;
-	repeated string uid = 2;
+	string gid = 1;
+	string uid = 2;
 }
 message LeaveGroupRequest {
-	repeated string gid = 1;
-	repeated string uid = 2;
+	string gid = 1;
+	string uid = 2;
 }
 
 // ----------------------------------------------------------------------------

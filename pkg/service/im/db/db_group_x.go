@@ -22,9 +22,11 @@ func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*
 		db_spec.DBSpec.UserGroupBindingTableName,
 	)
 
-	_, err := p.DB.ExecContext(ctx, sql, genXid(), req.GetUid(), req.GetGid())
+	xid := genXid()
+	_, err := p.DB.ExecContext(ctx, sql, xid, req.GetUid(), req.GetGid())
 	if err != nil {
 		logger.Warnf(ctx, "%v", sql)
+		logger.Warnf(ctx, "%v, %v, %v", xid, req.GetUid(), req.GetGid())
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}

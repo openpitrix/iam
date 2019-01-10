@@ -25,7 +25,7 @@ func (p *Database) GetUsersByGroupId(ctx context.Context, req *pbim.GroupId) (*p
 		select t1.* from
 		user t1, user_group t2, user_group_binding t3 
 		where t1.user_id=t3.user_id and t2.group_id=t3.group_id
-		where t2.group_id=?
+		and t2.group_id=?
 	`
 	var rows []db_spec.DBUser
 	err := p.DB.Select(&rows, sql, req.GetGid())
