@@ -251,7 +251,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/imEmpty"
+              "$ref": "#/definitions/imBool"
             }
           }
         },
@@ -443,6 +443,15 @@
     }
   },
   "definitions": {
+    "imBool": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
     "imEmpty": {
       "type": "object"
     },

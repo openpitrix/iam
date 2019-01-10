@@ -159,8 +159,6 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.Range) (*pbim.ListG
 	if req.GetSearchWord() == "" {
 		return p._ListGroups_all(ctx, req)
 	} else {
-		//return p._DescribeGroups_bySearchWord(ctx, req)
+		return p._ListGroups_bySearchWord(ctx, req)
 	}
-
-	panic("TODO")
 }

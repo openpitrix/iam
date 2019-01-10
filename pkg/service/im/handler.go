@@ -49,7 +49,7 @@ func (p *Server) ModifyUser(ctx context.Context, req *pbim.User) (*pbim.User, er
 	return p.db.ModifyUser(ctx, req)
 }
 
-func (p *Server) ComparePassword(ctx context.Context, req *pbim.Password) (*pbim.Empty, error) {
+func (p *Server) ComparePassword(ctx context.Context, req *pbim.Password) (*pbim.Bool, error) {
 	return p.db.ComparePassword(ctx, req)
 }
 func (p *Server) ModifyPassword(ctx context.Context, req *pbim.Password) (*pbim.Empty, error) {

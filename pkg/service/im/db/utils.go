@@ -54,6 +54,12 @@ func genUid() string {
 	s := base64.StdEncoding.EncodeToString(buf)
 	return "uid-" + s[:8]
 }
+func genXid() string {
+	buf := make([]byte, 8)
+	rand.Read(buf)
+	s := base64.StdEncoding.EncodeToString(buf)
+	return "xid-" + s[:8]
+}
 
 func pkgGetDBTableFiledNames(v interface{}) (names []string) {
 	for _, f := range structs.Fields(v) {

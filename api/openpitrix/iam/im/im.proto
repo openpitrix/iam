@@ -139,7 +139,7 @@ service AccountManager {
 		};
 	}
 
-	rpc ComparePassword(Password) returns (Empty) {
+	rpc ComparePassword(Password) returns (Bool) {
 		option (google.api.http) = {
 			post: "/api/iam/im/password:compare"
 			body: "*"
@@ -159,6 +159,9 @@ service AccountManager {
 
 message Empty {
 	//
+}
+message Bool {
+	bool value = 1;
 }
 message String {
 	string value = 1;

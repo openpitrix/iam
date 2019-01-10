@@ -644,7 +644,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/imEmpty"
+              "$ref": "#/definitions/imBool"
             }
           }
         },
@@ -836,6 +836,15 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
     }
   },
   "definitions": {
+    "imBool": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
     "imEmpty": {
       "type": "object"
     },
