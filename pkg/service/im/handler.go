@@ -43,29 +43,29 @@ func (p *Server) GetUser(ctx context.Context, req *pbim.UserId) (*pbim.User, err
 	return p.db.GetUser(ctx, req)
 }
 func (p *Server) GetUsersByGroupId(ctx context.Context, req *pbim.GroupId) (*pbim.UserList, error) {
-	panic("todo")
+	return p.db.GetUsersByGroupId(ctx, req)
 }
 func (p *Server) ModifyUser(ctx context.Context, req *pbim.User) (*pbim.User, error) {
-	panic("todo")
+	return p.db.ModifyUser(ctx, req)
 }
 
 func (p *Server) ComparePassword(ctx context.Context, req *pbim.Password) (*pbim.Empty, error) {
-	panic("todo")
+	return p.db.ComparePassword(ctx, req)
 }
 func (p *Server) ModifyPassword(ctx context.Context, req *pbim.Password) (*pbim.Empty, error) {
-	panic("todo")
+	return p.db.ModifyPassword(ctx, req)
 }
 
 func (p *Server) GetGroup(ctx context.Context, req *pbim.GroupId) (*pbim.Group, error) {
-	panic("todo")
+	return p.db.GetGroup(ctx, req)
 }
 func (p *Server) ModifyGroup(ctx context.Context, req *pbim.Group) (*pbim.Group, error) {
-	panic("todo")
+	return p.db.ModifyGroup(ctx, req)
 }
 
 func (p *Server) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*pbim.Empty, error) {
-	panic("todo")
+	return p.db.JoinGroup(ctx, req)
 }
 func (p *Server) LeaveGroup(ctx context.Context, req *pbim.LeaveGroupRequest) (*pbim.Empty, error) {
-	panic("todo")
+	return p.db.LeaveGroup(ctx, req)
 }
