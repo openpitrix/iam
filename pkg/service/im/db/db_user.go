@@ -43,6 +43,12 @@ func (p *Database) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 		}
 	}
 
+	if req.Uid == "" || req.Password == "" {
+		err := status.Errorf(codes.InvalidArgument, "empty uid or password")
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
 	if err := req.Validate(); err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -124,6 +130,9 @@ func (p *Database) ModifyUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 
 	var dbUser = db_spec.PBUserToDB(req)
 
+	// ignore Password
+	dbUser.Password = ""
+
 	if err := dbUser.ValidateForUpdate(); err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -160,6 +169,9 @@ func (p *Database) GetUser(ctx context.Context, req *pbim.UserId) (*pbim.User, e
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
+
+	// ignore Password
+	v.Password = ""
 
 	return v.ToPB(), nil
 }
