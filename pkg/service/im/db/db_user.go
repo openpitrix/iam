@@ -115,6 +115,24 @@ func (p *Database) DeleteUsers(ctx context.Context, req *pbim.UserIdList) (*pbim
 		return nil, err
 	}
 
+	// delete binding
+	for _, uid := range req.Uid {
+		sql := fmt.Sprintf(
+			`delete from %s where user_id=?`,
+			db_spec.DBSpec.UserGroupBindingTableName,
+		)
+
+		_, err := p.DB.ExecContext(ctx, sql, uid)
+		if err != nil {
+			logger.Warnf(ctx, "%v", sql)
+			logger.Warnf(ctx, "%+v", err)
+			return nil, err
+		}
+		if err != nil {
+			logger.Warnf(ctx, "uid = %v, err = %+v", uid, err)
+		}
+	}
+
 	reply := &pbim.Empty{}
 	return reply, nil
 }

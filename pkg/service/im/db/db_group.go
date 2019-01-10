@@ -98,6 +98,24 @@ func (p *Database) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pb
 		return nil, err
 	}
 
+	// delete binding
+	for _, gid := range req.Gid {
+		sql := fmt.Sprintf(
+			`delete from %s where group_id=?`,
+			db_spec.DBSpec.UserGroupBindingTableName,
+		)
+
+		_, err := p.DB.ExecContext(ctx, sql, gid)
+		if err != nil {
+			logger.Warnf(ctx, "%v", sql)
+			logger.Warnf(ctx, "%+v", err)
+			return nil, err
+		}
+		if err != nil {
+			logger.Warnf(ctx, "gid = %v, err = %+v", gid, err)
+		}
+	}
+
 	reply := &pbim.Empty{}
 	return reply, nil
 }
