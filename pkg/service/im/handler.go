@@ -13,7 +13,6 @@ import (
 
 var _ pbim.AccountManagerServer = (*Server)(nil)
 
-
 func (p *Server) GetVersion(ctx context.Context, req *pbim.Empty) (*pbim.String, error) {
 	reply := &pbim.String{Value: version.GetVersionString()}
 	return reply, nil

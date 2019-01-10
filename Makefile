@@ -7,10 +7,13 @@ DEFAULT_HOST:=localhost:9115
 SERVER_HOST := $(if ${OPENPITRIX_IAM_HOST},${OPENPITRIX_IAM_HOST},${DEFAULT_HOST})
 
 default:
+	go fmt ./...
+	go vet ./...
 	@echo ${SERVER_HOST}
 
-
 server:
+	go fmt ./...
+	go vet ./...
 	go run main.go
 
 docker-run:
