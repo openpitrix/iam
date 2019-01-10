@@ -18,7 +18,7 @@ server:
 
 docker-run:
 	docker run --rm -it -p 9115:9115 -v `pwd`:/root \
-		openpitrix/iam:v0.0.3-dev iam \
+		openpitrix/iam:v0.2.2-dev iam \
 		-config=/root/config.json
 
 info:

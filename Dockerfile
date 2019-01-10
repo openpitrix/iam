@@ -35,7 +35,7 @@ FROM alpine:3.7
 
 COPY --from=builder /build-dir/iam /usr/local/bin/
 
-CMD ["sh"]
+CMD ["iam"]
 
 # -----------------------------------------------------------------------------
 # END
