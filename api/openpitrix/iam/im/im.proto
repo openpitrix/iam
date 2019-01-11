@@ -100,7 +100,7 @@ service AccountManager {
 			get: "/api/iam/im/groups/{gid}"
 		};
 	}
-	rpc ListGroups(Range) returns (ListGroupsResponse) {
+	rpc ListGroups(ListGroupsRequest) returns (ListGroupsResponse) {
 		option (google.api.http) = {
 			get: "/api/iam/im/groups"
 		};
@@ -129,7 +129,7 @@ service AccountManager {
 			get: "/api/iam/im/users/{uid}"
 		};
 	}
-	rpc ListUsers(Range) returns (ListUsersResponse) {
+	rpc ListUsers(ListUsersRequest) returns (ListUsersResponse) {
 		option (google.api.http) = {
 			get: "/api/iam/im/users"
 		};
@@ -200,24 +200,41 @@ message GroupIdList {
 	repeated string gid = 1;
 }
 
-message Range {
-	map<string,FieldValidator> filter = 1;
-	string search_word = 2;
-	string sort_key = 3;
-	bool reverse = 4;
-	bool verbose = 5;
-
-	int32 offset = 6;
-	int32 limit = 7;
-}
 message Password {
 	string uid = 1;
 	string password = 2;
 }
 
+message ListUsersRequest {
+	map<string,FieldValidator> filter = 1;
+	string filter_gid = 2;
+	string filter_uid = 3;
+
+	string search_word = 4;
+	string sort_key = 5;
+	bool reverse = 6;
+	bool verbose = 7;
+
+	int32 offset = 8;
+	int32 limit = 9;
+}
 message ListUsersResponse {
 	repeated UserEx user = 1;
 	int32 total = 2;
+}
+
+message ListGroupsRequest {
+	map<string,FieldValidator> filter = 1;
+	string filter_gid = 2;
+	string filter_uid = 3;
+
+	string search_word = 4;
+	string sort_key = 5;
+	bool reverse = 6;
+	bool verbose = 7;
+
+	int32 offset = 8;
+	int32 limit = 9;
 }
 message ListGroupsResponse {
 	repeated GroupEx group = 1;
@@ -225,12 +242,12 @@ message ListGroupsResponse {
 }
 
 message JoinGroupRequest {
-	string gid = 1;
-	string uid = 2;
+	repeated string gid = 1;
+	repeated string uid = 2;
 }
 message LeaveGroupRequest {
-	string gid = 1;
-	string uid = 2;
+	repeated string gid = 1;
+	repeated string uid = 2;
 }
 
 // ----------------------------------------------------------------------------

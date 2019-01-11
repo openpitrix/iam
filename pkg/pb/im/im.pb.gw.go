@@ -126,7 +126,7 @@ var (
 )
 
 func request_AccountManager_ListGroups_0(ctx context.Context, marshaler runtime.Marshaler, client AccountManagerClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq Range
+	var protoReq ListGroupsRequest
 	var metadata runtime.ServerMetadata
 
 	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_AccountManager_ListGroups_0); err != nil {
@@ -227,7 +227,7 @@ var (
 )
 
 func request_AccountManager_ListUsers_0(ctx context.Context, marshaler runtime.Marshaler, client AccountManagerClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq Range
+	var protoReq ListUsersRequest
 	var metadata runtime.ServerMetadata
 
 	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_AccountManager_ListUsers_0); err != nil {

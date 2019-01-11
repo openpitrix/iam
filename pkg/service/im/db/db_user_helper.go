@@ -14,7 +14,7 @@ import (
 	"openpitrix.io/logger"
 )
 
-func (p *Database) _ListUsers_all_count(ctx context.Context, req *pbim.Range) (total int, err error) {
+func (p *Database) _ListUsers_all_count(ctx context.Context, req *pbim.ListUsersRequest) (total int, err error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	var query = fmt.Sprintf("SELECT COUNT(*) FROM %s", db_spec.UserTableName)
@@ -38,7 +38,7 @@ func (p *Database) _ListUsers_all_count(ctx context.Context, req *pbim.Range) (t
 	return total, nil
 }
 
-func (p *Database) _ListUsers_all(ctx context.Context, req *pbim.Range) (*pbim.ListUsersResponse, error) {
+func (p *Database) _ListUsers_all(ctx context.Context, req *pbim.ListUsersRequest) (*pbim.ListUsersResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	total, err := p._ListUsers_all_count(ctx, req)
@@ -78,7 +78,7 @@ func (p *Database) _ListUsers_all(ctx context.Context, req *pbim.Range) (*pbim.L
 	return reply, nil
 }
 
-func (p *Database) _ListUsers_bySearchWord(ctx context.Context, req *pbim.Range) (*pbim.ListUsersResponse, error) {
+func (p *Database) _ListUsers_bySearchWord(ctx context.Context, req *pbim.ListUsersRequest) (*pbim.ListUsersResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	var searchWord = req.GetSearchWord()

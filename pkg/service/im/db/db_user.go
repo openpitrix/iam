@@ -217,26 +217,26 @@ func (p *Database) GetUser(ctx context.Context, req *pbim.UserId) (*pbim.User, e
 	return v.ToPB(), nil
 }
 
-func (p *Database) ListUsers(ctx context.Context, req *pbim.Range) (*pbim.ListUsersResponse, error) {
+func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*pbim.ListUsersResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	if len(req.GetFilter()) > 0 {
-		err := status.Errorf(codes.Unimplemented, "unsupport range.Filter")
+		err := status.Errorf(codes.Unimplemented, "unsupport req.Filter")
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 	if req.GetSortKey() != "" {
-		err := status.Errorf(codes.Unimplemented, "unsupport range.SortKey")
+		err := status.Errorf(codes.Unimplemented, "unsupport req.SortKey")
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 	if req.GetReverse() {
-		err := status.Errorf(codes.Unimplemented, "unsupport range.Reverse")
+		err := status.Errorf(codes.Unimplemented, "unsupport req.Reverse")
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 	if req.GetVerbose() {
-		err := status.Errorf(codes.Unimplemented, "unsupport range.Verbose")
+		err := status.Errorf(codes.Unimplemented, "unsupport req.Verbose")
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}

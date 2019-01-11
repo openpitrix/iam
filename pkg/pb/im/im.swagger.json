@@ -28,6 +28,18 @@
         },
         "parameters": [
           {
+            "name": "filter_gid",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "filter_uid",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
             "name": "search_word",
             "in": "query",
             "required": false,
@@ -316,6 +328,18 @@
         },
         "parameters": [
           {
+            "name": "filter_gid",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "filter_uid",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
             "name": "search_word",
             "in": "query",
             "required": false,
@@ -602,10 +626,16 @@
       "type": "object",
       "properties": {
         "gid": {
-          "type": "string"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "uid": {
-          "type": "string"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -613,10 +643,16 @@
       "type": "object",
       "properties": {
         "gid": {
-          "type": "string"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "uid": {
-          "type": "string"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

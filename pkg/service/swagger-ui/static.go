@@ -421,6 +421,18 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         },
         "parameters": [
           {
+            "name": "filter_gid",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "filter_uid",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
             "name": "search_word",
             "in": "query",
             "required": false,
@@ -709,6 +721,18 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         },
         "parameters": [
           {
+            "name": "filter_gid",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "filter_uid",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
             "name": "search_word",
             "in": "query",
             "required": false,
@@ -995,10 +1019,16 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
       "type": "object",
       "properties": {
         "gid": {
-          "type": "string"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "uid": {
-          "type": "string"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1006,10 +1036,16 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
       "type": "object",
       "properties": {
         "gid": {
-          "type": "string"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "uid": {
-          "type": "string"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

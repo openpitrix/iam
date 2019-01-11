@@ -38,10 +38,10 @@ func (p *Server) DeleteUsers(ctx context.Context, req *pbim.UserIdList) (*pbim.E
 	return p.db.DeleteUsers(ctx, req)
 }
 
-func (p *Server) ListUsers(ctx context.Context, req *pbim.Range) (*pbim.ListUsersResponse, error) {
+func (p *Server) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*pbim.ListUsersResponse, error) {
 	return p.db.ListUsers(ctx, req)
 }
-func (p *Server) ListGroups(ctx context.Context, req *pbim.Range) (*pbim.ListGroupsResponse, error) {
+func (p *Server) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) (*pbim.ListGroupsResponse, error) {
 	return p.db.ListGroups(ctx, req)
 }
 func (p *Server) GetUser(ctx context.Context, req *pbim.UserId) (*pbim.User, error) {

@@ -41,7 +41,7 @@ func (p *Database) getGroupPathCount(ctx context.Context, groupPath string) (tot
 	return total, nil
 }
 
-func (p *Database) _ListGroups_all_count(ctx context.Context, req *pbim.Range) (total int, err error) {
+func (p *Database) _ListGroups_all_count(ctx context.Context, req *pbim.ListGroupsRequest) (total int, err error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	var query = fmt.Sprintf("SELECT COUNT(*) FROM %s", db_spec.UserGroupTableName)
@@ -65,7 +65,7 @@ func (p *Database) _ListGroups_all_count(ctx context.Context, req *pbim.Range) (
 	return total, nil
 }
 
-func (p *Database) _ListGroups_all(ctx context.Context, req *pbim.Range) (*pbim.ListGroupsResponse, error) {
+func (p *Database) _ListGroups_all(ctx context.Context, req *pbim.ListGroupsRequest) (*pbim.ListGroupsResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	total, err := p._ListGroups_all_count(ctx, req)
@@ -104,7 +104,7 @@ func (p *Database) _ListGroups_all(ctx context.Context, req *pbim.Range) (*pbim.
 	return reply, nil
 }
 
-func (p *Database) _ListGroups_bySearchWord(ctx context.Context, req *pbim.Range) (*pbim.ListGroupsResponse, error) {
+func (p *Database) _ListGroups_bySearchWord(ctx context.Context, req *pbim.ListGroupsRequest) (*pbim.ListGroupsResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	var searchWord = req.GetSearchWord()
