@@ -45,9 +45,9 @@ message Group {
 	string status = 5;
 	map<string,string> extra = 6;
 
-	google.protobuf.Timestamp create_time = 7;
-	google.protobuf.Timestamp update_time = 8;
-	google.protobuf.Timestamp status_time = 9;
+	google.protobuf.Timestamp create_time = 7; // read only
+	google.protobuf.Timestamp update_time = 8; // read only
+	google.protobuf.Timestamp status_time = 9; // read only
 }
 message GroupList {
 	repeated Group value = 1;
