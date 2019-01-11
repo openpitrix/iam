@@ -87,8 +87,9 @@ func (p *Database) ModifyPassword(ctx context.Context, req *pbim.Password) (*pbi
 
 	sql := fmt.Sprintf(
 		`update %s set password="%s" where user_id="%s"`,
-		db_spec.DBSpec.UserTableName,
-		string(hashedPass), req.GetUid(),
+		db_spec.UserTableName,
+		string(hashedPass),
+		req.GetUid(),
 	)
 
 	_, err = p.DB.ExecContext(ctx, sql)

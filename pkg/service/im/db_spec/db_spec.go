@@ -4,38 +4,22 @@
 
 package db_spec
 
-var DBSpec = struct {
-	TableNames []string
+const (
+	UserTableName      = "user"
+	UserPrimaryKeyName = "user_id"
 
-	UserTableName      string
-	UserPrimaryKeyName string
+	UserGroupTableName      = "user_group"
+	UserGroupPrimaryKeyName = "group_id"
 
-	UserGroupTableName      string
-	UserGroupPrimaryKeyName string
+	UserGroupBindingTableName      = "user_group_binding"
+	UserGroupBindingPrimaryKeyName = "id"
+)
 
-	UserGroupBindingTableName      string
-	UserGroupBindingPrimaryKeyName string
-}{
-	TableNames: []string{
-		"user",
-		"user_group",
-		"user_group_binding",
-	},
-
-	UserTableName:      "user",
-	UserPrimaryKeyName: "user_id",
-
-	UserGroupTableName:      "user_group",
-	UserGroupPrimaryKeyName: "group_id",
-
-	UserGroupBindingTableName:      "user_group_binding",
-	UserGroupBindingPrimaryKeyName: "id",
-}
-
-var DBInitSqlList = []struct{ Name, Sql string }{
-	{
-		Name: "user",
-		Sql: `CREATE TABLE IF NOT EXISTS user (
+var TableMap = map[string]struct{ Name, PrimaryKey, Sql string }{
+	UserTableName: {
+		Name:       UserTableName,
+		PrimaryKey: UserPrimaryKeyName,
+		Sql: `CREATE TABLE IF NOT EXISTS ` + UserTableName + ` (
 			user_id      varchar(50) not null,
 			user_name    varchar(50),
 			email        varchar(50),
@@ -48,12 +32,13 @@ var DBInitSqlList = []struct{ Name, Sql string }{
 			status_time  timestamp,
 			extra        json,
 
-			primary key(user_id)
+			primary key(` + UserPrimaryKeyName + `)
 		);`,
 	},
-	{
-		Name: "user_group",
-		Sql: `CREATE TABLE IF NOT EXISTS user_group (
+	UserGroupTableName: {
+		Name:       UserGroupTableName,
+		PrimaryKey: UserGroupPrimaryKeyName,
+		Sql: `CREATE TABLE IF NOT EXISTS ` + UserGroupTableName + ` (
 			group_id        varchar(50) not null,
 			group_path      varchar(255),
 			group_name      varchar(50),
@@ -67,17 +52,18 @@ var DBInitSqlList = []struct{ Name, Sql string }{
 			parent_group_id varchar(50),
 			level           int,
 
-			primary key(group_id)
+			primary key(` + UserGroupPrimaryKeyName + `)
 		);`,
 	},
-	{
-		Name: "user_group_binding",
-		Sql: `CREATE TABLE IF NOT EXISTS user_group_binding (
+	UserGroupBindingTableName: {
+		Name:       UserGroupBindingTableName,
+		PrimaryKey: UserGroupBindingPrimaryKeyName,
+		Sql: `CREATE TABLE IF NOT EXISTS ` + UserGroupBindingTableName + ` (
 			id       varchar(50) not null,
 			user_id  varchar(50),
 			group_id varchar(50),
 
-			primary key(id)
+			primary key(` + UserGroupBindingPrimaryKeyName + `)
 		);`,
 	},
 }

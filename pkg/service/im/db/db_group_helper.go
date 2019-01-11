@@ -17,7 +17,7 @@ import (
 func (p *Database) _ListGroups_all_count(ctx context.Context, req *pbim.Range) (total int, err error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	var query = fmt.Sprintf("SELECT COUNT(*) FROM %s", db_spec.DBSpec.UserGroupTableName)
+	var query = fmt.Sprintf("SELECT COUNT(*) FROM %s", db_spec.UserGroupTableName)
 
 	rows, err := p.DB.QueryContext(ctx, query)
 	if err != nil {
@@ -47,7 +47,7 @@ func (p *Database) _ListGroups_all(ctx context.Context, req *pbim.Range) (*pbim.
 		return nil, err
 	}
 
-	var query = fmt.Sprintf("SELECT * FROM %s", db_spec.DBSpec.UserGroupTableName)
+	var query = fmt.Sprintf("SELECT * FROM %s", db_spec.UserGroupTableName)
 	if offset, limit := req.GetOffset(), req.GetLimit(); offset > 0 || limit > 0 {
 		query += fmt.Sprintf(" LIMIT %d OFFSET %d;", limit, offset)
 	} else {
@@ -94,8 +94,8 @@ func (p *Database) _ListGroups_bySearchWord(ctx context.Context, req *pbim.Range
 	}
 
 	var (
-		queryHeaer       = fmt.Sprintf("SELECT * FROM %s ", db_spec.DBSpec.UserGroupTableName)
-		queryCountHeader = fmt.Sprintf("SELECT COUNT(*) FROM %s ", db_spec.DBSpec.UserGroupTableName)
+		queryHeaer       = fmt.Sprintf("SELECT * FROM %s ", db_spec.UserGroupTableName)
+		queryCountHeader = fmt.Sprintf("SELECT COUNT(*) FROM %s ", db_spec.UserGroupTableName)
 		queryTail        string
 	)
 

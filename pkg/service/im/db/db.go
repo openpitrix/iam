@@ -59,12 +59,12 @@ func OpenDatabase(cfg *config.Config) (*Database, error) {
 		cfg: cfg,
 		DB:  db,
 	}
-	for i, v := range db_spec.DBInitSqlList {
+	for _, v := range db_spec.TableMap {
 		if !isValidDatabaseTableName(v.Name) {
 			logger.Warnf(nil, "invalid table name %s", v.Name)
 		}
 		if _, err := p.Exec(v.Sql); err != nil {
-			logger.Warnf(nil, "%d: %v", i, err)
+			logger.Warnf(nil, "%s: %v", v.Name, err)
 		}
 	}
 

@@ -56,7 +56,7 @@ func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 	}
 
 	sql, values := pkgBuildSql_InsertInto(
-		db_spec.DBSpec.UserGroupTableName,
+		db_spec.UserGroupTableName,
 		dbGroup,
 	)
 	if len(values) == 0 {
@@ -86,8 +86,8 @@ func (p *Database) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pb
 	}
 
 	sql := pkgBuildSql_Delete(
-		db_spec.DBSpec.UserGroupTableName,
-		db_spec.DBSpec.UserGroupPrimaryKeyName,
+		db_spec.UserGroupTableName,
+		db_spec.UserGroupPrimaryKeyName,
 		req.Gid...,
 	)
 
@@ -102,7 +102,7 @@ func (p *Database) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pb
 	for _, gid := range req.Gid {
 		sql := fmt.Sprintf(
 			`delete from %s where group_id=?`,
-			db_spec.DBSpec.UserGroupBindingTableName,
+			db_spec.UserGroupBindingTableName,
 		)
 
 		_, err := p.DB.ExecContext(ctx, sql, gid)
@@ -137,8 +137,8 @@ func (p *Database) ModifyGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 	}
 
 	sql, values := pkgBuildSql_Update(
-		db_spec.DBSpec.UserGroupTableName, dbGroup,
-		db_spec.DBSpec.UserGroupPrimaryKeyName,
+		db_spec.UserGroupTableName, dbGroup,
+		db_spec.UserGroupPrimaryKeyName,
 	)
 
 	_, err := p.DB.ExecContext(ctx, sql, values...)
@@ -156,8 +156,8 @@ func (p *Database) GetGroup(ctx context.Context, req *pbim.GroupId) (*pbim.Group
 
 	var query = fmt.Sprintf(
 		"SELECT * FROM %s WHERE %s=? LIMIT 1 OFFSET 0;",
-		db_spec.DBSpec.UserGroupTableName,
-		db_spec.DBSpec.UserGroupPrimaryKeyName,
+		db_spec.UserGroupTableName,
+		db_spec.UserGroupPrimaryKeyName,
 	)
 
 	var v = db_spec.DBGroup{}

@@ -73,7 +73,7 @@ func (p *Database) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 	dbUser.Password = string(hashedPass)
 
 	sql, values := pkgBuildSql_InsertInto(
-		db_spec.DBSpec.UserTableName,
+		db_spec.UserTableName,
 		dbUser,
 	)
 	if len(values) == 0 {
@@ -103,8 +103,8 @@ func (p *Database) DeleteUsers(ctx context.Context, req *pbim.UserIdList) (*pbim
 	}
 
 	sql := pkgBuildSql_Delete(
-		db_spec.DBSpec.UserTableName,
-		db_spec.DBSpec.UserPrimaryKeyName,
+		db_spec.UserTableName,
+		db_spec.UserPrimaryKeyName,
 		req.Uid...,
 	)
 
@@ -119,7 +119,7 @@ func (p *Database) DeleteUsers(ctx context.Context, req *pbim.UserIdList) (*pbim
 	for _, uid := range req.Uid {
 		sql := fmt.Sprintf(
 			`delete from %s where user_id=?`,
-			db_spec.DBSpec.UserGroupBindingTableName,
+			db_spec.UserGroupBindingTableName,
 		)
 
 		_, err := p.DB.ExecContext(ctx, sql, uid)
@@ -157,8 +157,8 @@ func (p *Database) ModifyUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 	}
 
 	sql, values := pkgBuildSql_Update(
-		db_spec.DBSpec.UserTableName, dbUser,
-		db_spec.DBSpec.UserPrimaryKeyName,
+		db_spec.UserTableName, dbUser,
+		db_spec.UserPrimaryKeyName,
 	)
 
 	_, err := p.DB.ExecContext(ctx, sql, values...)
@@ -176,8 +176,8 @@ func (p *Database) GetUser(ctx context.Context, req *pbim.UserId) (*pbim.User, e
 
 	var query = fmt.Sprintf(
 		"SELECT * FROM %s WHERE %s=? LIMIT 1 OFFSET 0;",
-		db_spec.DBSpec.UserTableName,
-		db_spec.DBSpec.UserPrimaryKeyName,
+		db_spec.UserTableName,
+		db_spec.UserPrimaryKeyName,
 	)
 
 	var v = db_spec.DBUser{}

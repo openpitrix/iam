@@ -19,7 +19,7 @@ func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*
 
 	sql := fmt.Sprintf(
 		`insert into %s (id, user_id, group_id) values(?,?,?)`,
-		db_spec.DBSpec.UserGroupBindingTableName,
+		db_spec.UserGroupBindingTableName,
 	)
 
 	xid := genXid()
@@ -39,7 +39,7 @@ func (p *Database) LeaveGroup(ctx context.Context, req *pbim.LeaveGroupRequest) 
 
 	sql := fmt.Sprintf(
 		`delete from %s where user_id=? AND group_id=?`,
-		db_spec.DBSpec.UserGroupBindingTableName,
+		db_spec.UserGroupBindingTableName,
 	)
 
 	_, err := p.DB.ExecContext(ctx, sql, req.GetUid(), req.GetGid())
