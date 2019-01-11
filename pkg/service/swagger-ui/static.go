@@ -959,6 +959,13 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
           "items": {
             "$ref": "#/definitions/imUser"
           }
+        },
+        "user_group_binding_time": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       }
     },
@@ -1109,6 +1116,13 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
           "type": "array",
           "items": {
             "$ref": "#/definitions/imGroup"
+          }
+        },
+        "user_group_binding_time": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       }

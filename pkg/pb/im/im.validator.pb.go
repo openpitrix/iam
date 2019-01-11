@@ -132,6 +132,13 @@ func (this *UserEx) Validate() error {
 			}
 		}
 	}
+	for _, item := range this.UserGroupBindingTime {
+		if item != nil {
+			if err := go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return go_proto_validators.FieldError("UserGroupBindingTime", err)
+			}
+		}
+	}
 	return nil
 }
 func (this *GroupEx) Validate() error {
@@ -144,6 +151,13 @@ func (this *GroupEx) Validate() error {
 		if item != nil {
 			if err := go_proto_validators.CallValidatorIfExists(item); err != nil {
 				return go_proto_validators.FieldError("User", err)
+			}
+		}
+	}
+	for _, item := range this.UserGroupBindingTime {
+		if item != nil {
+			if err := go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return go_proto_validators.FieldError("UserGroupBindingTime", err)
 			}
 		}
 	}

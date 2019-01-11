@@ -46,7 +46,7 @@ message Group {
 	string status = 5;
 	map<string,string> extra = 6;
 
- 	google.protobuf.Timestamp create_time = 7;
+	google.protobuf.Timestamp create_time = 7;
 	google.protobuf.Timestamp update_time = 8;
 	google.protobuf.Timestamp status_time = 9;
 }
@@ -57,10 +57,14 @@ message GroupList {
 message UserEx {
 	User user = 1;
 	repeated Group group = 2;
+
+	repeated google.protobuf.Timestamp user_group_binding_time = 3;
 }
 message GroupEx {
 	Group group = 1;
 	repeated User user = 2;
+
+	repeated google.protobuf.Timestamp user_group_binding_time = 3;
 }
 
 // ----------------------------------------------------------------------------

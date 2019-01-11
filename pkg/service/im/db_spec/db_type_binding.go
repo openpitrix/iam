@@ -4,8 +4,11 @@
 
 package db_spec
 
-type DBUsertGroupBinding struct {
-	Id      string `db:"id"`
-	UserId  string `db:"user_id"`
-	GroupId string `db:"group_id"`
+import "time"
+
+type _DBUsertGroupBinding struct {
+	Id         string    `db:"id"`
+	UserId     string    `db:"user_id"`
+	GroupId    string    `db:"group_id"`
+	CreateTime time.Time `db:"create_time"`
 }

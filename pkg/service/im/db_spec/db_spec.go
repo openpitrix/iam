@@ -28,7 +28,7 @@ var TableMap = map[string]struct{ Name, PrimaryKey, Sql string }{
 			password     varchar(128),
 			status       varchar(10),
 			create_time  timestamp,
-			update_time  timestamp,
+			update_time  timestamp default CURRENT_TIMESTAMP,
 			status_time  timestamp,
 			extra        json,
 
@@ -45,7 +45,7 @@ var TableMap = map[string]struct{ Name, PrimaryKey, Sql string }{
 			description     varchar(1000),
 			status          varchar(10),
 			create_time     timestamp,
-			update_time     timestamp,
+			update_time  timestamp default CURRENT_TIMESTAMP,
 			status_time     timestamp,
 			extra           json,
 
@@ -59,9 +59,10 @@ var TableMap = map[string]struct{ Name, PrimaryKey, Sql string }{
 		Name:       UserGroupBindingTableName,
 		PrimaryKey: UserGroupBindingPrimaryKeyName,
 		Sql: `CREATE TABLE IF NOT EXISTS ` + UserGroupBindingTableName + ` (
-			id       varchar(50) not null,
-			user_id  varchar(50),
-			group_id varchar(50),
+			id          varchar(50) not null,
+			user_id     varchar(50),
+			group_id    varchar(50),
+			create_time timestamp default CURRENT_TIMESTAMP,
 
 			primary key(` + UserGroupBindingPrimaryKeyName + `)
 		);`,

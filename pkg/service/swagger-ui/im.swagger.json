@@ -566,6 +566,13 @@
           "items": {
             "$ref": "#/definitions/imUser"
           }
+        },
+        "user_group_binding_time": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       }
     },
@@ -716,6 +723,13 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/imGroup"
+          }
+        },
+        "user_group_binding_time": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       }
