@@ -206,9 +206,9 @@ message Password {
 }
 
 message ListUsersRequest {
-	map<string,FieldValidator> filter = 1;
-	string filter_gid = 2;
-	string filter_uid = 3;
+	string gid = 1;
+	string uid = 2;
+	map<string,FieldValidator> filter = 3;
 
 	string search_word = 4;
 	string sort_key = 5;
@@ -224,9 +224,9 @@ message ListUsersResponse {
 }
 
 message ListGroupsRequest {
-	map<string,FieldValidator> filter = 1;
-	string filter_gid = 2;
-	string filter_uid = 3;
+	string gid = 1;
+	string uid = 2;
+	map<string,FieldValidator> filter = 3;
 
 	string search_word = 4;
 	string sort_key = 5;

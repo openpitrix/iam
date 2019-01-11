@@ -421,13 +421,13 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         },
         "parameters": [
           {
-            "name": "filter_gid",
+            "name": "gid",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "filter_uid",
+            "name": "uid",
             "in": "query",
             "required": false,
             "type": "string"
@@ -721,13 +721,13 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         },
         "parameters": [
           {
-            "name": "filter_gid",
+            "name": "gid",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "filter_uid",
+            "name": "uid",
             "in": "query",
             "required": false,
             "type": "string"

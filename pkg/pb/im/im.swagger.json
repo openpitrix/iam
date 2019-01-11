@@ -28,13 +28,13 @@
         },
         "parameters": [
           {
-            "name": "filter_gid",
+            "name": "gid",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "filter_uid",
+            "name": "uid",
             "in": "query",
             "required": false,
             "type": "string"
@@ -328,13 +328,13 @@
         },
         "parameters": [
           {
-            "name": "filter_gid",
+            "name": "gid",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "filter_uid",
+            "name": "uid",
             "in": "query",
             "required": false,
             "type": "string"
