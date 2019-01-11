@@ -449,6 +449,30 @@
         ]
       }
     },
+    "/api/iam/im/users/{uid}/groups": {
+      "get": {
+        "operationId": "GetGroupsByUserId",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/imGroupList"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AccountManager"
+        ]
+      }
+    },
     "/api/iam/im/version": {
       "get": {
         "operationId": "GetVersion",
@@ -524,6 +548,17 @@
           "type": "array",
           "items": {
             "type": "string"
+          }
+        }
+      }
+    },
+    "imGroupList": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/imGroup"
           }
         }
       }
@@ -604,12 +639,6 @@
       "properties": {
         "uid": {
           "type": "string"
-        },
-        "gid": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         },
         "name": {
           "type": "string"

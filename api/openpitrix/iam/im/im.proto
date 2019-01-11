@@ -20,19 +20,18 @@ import "openpitrix/iam/im/filter.proto";
 
 message User {
 	string uid = 1 [(validator.field) = {regex: "^[a-z0-9_-]{2,32}$"}];
-	repeated string gid = 2;
 
-	string name = 3;
-	string email = 4;
-	string phone_number = 5;
-	string description = 6;
-	string password = 7;
-	string status = 8;
-	map<string,string> extra = 9;
+	string name = 2;
+	string email = 3;
+	string phone_number = 4;
+	string description = 5;
+	string password = 6;
+	string status = 7;
+	map<string,string> extra = 8;
 
-	google.protobuf.Timestamp create_time = 10;
-	google.protobuf.Timestamp update_time = 11;
-	google.protobuf.Timestamp status_time = 12;
+	google.protobuf.Timestamp create_time = 9;
+	google.protobuf.Timestamp update_time = 10;
+	google.protobuf.Timestamp status_time = 11;
 }
 message UserList {
 	repeated User value = 1;
@@ -50,6 +49,9 @@ message Group {
  	google.protobuf.Timestamp create_time = 7;
 	google.protobuf.Timestamp update_time = 8;
 	google.protobuf.Timestamp status_time = 9;
+}
+message GroupList {
+	repeated Group value = 1;
 }
 
 // ----------------------------------------------------------------------------
@@ -131,6 +133,11 @@ service AccountManager {
 		option (google.api.http) = {
 			post: "/api/iam/im/groups:leave"
 			body: "*"
+		};
+	}
+	rpc GetGroupsByUserId(UserId) returns (GroupList) {
+		option (google.api.http) = {
+			get: "/api/iam/im/users/{uid}/groups"
 		};
 	}
 	rpc GetUsersByGroupId(GroupId) returns (UserList) {

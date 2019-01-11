@@ -12,6 +12,7 @@ It has these top-level messages:
 	User
 	UserList
 	Group
+	GroupList
 	Empty
 	Bool
 	String
@@ -102,6 +103,16 @@ func (this *Group) Validate() error {
 	if this.StatusTime != nil {
 		if err := go_proto_validators.CallValidatorIfExists(this.StatusTime); err != nil {
 			return go_proto_validators.FieldError("StatusTime", err)
+		}
+	}
+	return nil
+}
+func (this *GroupList) Validate() error {
+	for _, item := range this.Value {
+		if item != nil {
+			if err := go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return go_proto_validators.FieldError("Value", err)
+			}
 		}
 	}
 	return nil

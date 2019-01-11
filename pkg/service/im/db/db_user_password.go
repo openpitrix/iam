@@ -18,34 +18,6 @@ import (
 	"openpitrix.io/logger"
 )
 
-func (p *Database) GetUsersByGroupId(ctx context.Context, req *pbim.GroupId) (*pbim.UserList, error) {
-	logger.Infof(ctx, funcutil.CallerName(1))
-
-	const sql = `
-		select t1.* from
-		user t1, user_group t2, user_group_binding t3 
-		where t1.user_id=t3.user_id and t2.group_id=t3.group_id
-		and t2.group_id=?
-	`
-	var rows []db_spec.DBUser
-	err := p.DB.Select(&rows, sql, req.GetGid())
-	if err != nil {
-		logger.Warnf(ctx, "%v", sql)
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-
-	var sets []*pbim.User
-	for _, v := range rows {
-		sets = append(sets, v.ToPB())
-	}
-
-	reply := &pbim.UserList{
-		Value: sets,
-	}
-	return reply, nil
-}
-
 func (p *Database) ComparePassword(ctx context.Context, req *pbim.Password) (*pbim.Bool, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 

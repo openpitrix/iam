@@ -42,9 +42,14 @@ func (p *Server) ListGroups(ctx context.Context, req *pbim.Range) (*pbim.ListGro
 func (p *Server) GetUser(ctx context.Context, req *pbim.UserId) (*pbim.User, error) {
 	return p.db.GetUser(ctx, req)
 }
+
+func (p *Server) GetGroupsByUserId(ctx context.Context, req *pbim.UserId) (*pbim.GroupList, error) {
+	return p.db.GetGroupsByUserId(ctx, req)
+}
 func (p *Server) GetUsersByGroupId(ctx context.Context, req *pbim.GroupId) (*pbim.UserList, error) {
 	return p.db.GetUsersByGroupId(ctx, req)
 }
+
 func (p *Server) ModifyUser(ctx context.Context, req *pbim.User) (*pbim.User, error) {
 	return p.db.ModifyUser(ctx, req)
 }

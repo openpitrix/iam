@@ -842,6 +842,30 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         ]
       }
     },
+    "/api/iam/im/users/{uid}/groups": {
+      "get": {
+        "operationId": "GetGroupsByUserId",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/imGroupList"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AccountManager"
+        ]
+      }
+    },
     "/api/iam/im/version": {
       "get": {
         "operationId": "GetVersion",
@@ -917,6 +941,17 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
           "type": "array",
           "items": {
             "type": "string"
+          }
+        }
+      }
+    },
+    "imGroupList": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/imGroup"
           }
         }
       }
@@ -997,12 +1032,6 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
       "properties": {
         "uid": {
           "type": "string"
-        },
-        "gid": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         },
         "name": {
           "type": "string"
