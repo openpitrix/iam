@@ -47,6 +47,13 @@
             "format": "boolean"
           },
           {
+            "name": "verbose",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "format": "boolean"
+          },
+          {
             "name": "offset",
             "in": "query",
             "required": false,
@@ -328,6 +335,13 @@
             "format": "boolean"
           },
           {
+            "name": "verbose",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "format": "boolean"
+          },
+          {
             "name": "offset",
             "in": "query",
             "required": false,
@@ -541,6 +555,20 @@
         }
       }
     },
+    "imGroupEx": {
+      "type": "object",
+      "properties": {
+        "group": {
+          "$ref": "#/definitions/imGroup"
+        },
+        "user": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/imUser"
+          }
+        }
+      }
+    },
     "imGroupIdList": {
       "type": "object",
       "properties": {
@@ -591,7 +619,7 @@
         "group": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/imGroup"
+            "$ref": "#/definitions/imGroupEx"
           }
         },
         "total": {
@@ -606,7 +634,7 @@
         "user": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/imUser"
+            "$ref": "#/definitions/imUserEx"
           }
         },
         "total": {
@@ -675,6 +703,20 @@
         "status_time": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "imUserEx": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/imUser"
+        },
+        "group": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/imGroup"
+          }
         }
       }
     },

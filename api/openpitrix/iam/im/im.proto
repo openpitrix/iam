@@ -54,6 +54,15 @@ message GroupList {
 	repeated Group value = 1;
 }
 
+message UserEx {
+	User user = 1;
+	repeated Group group = 2;
+}
+message GroupEx {
+	Group group = 1;
+	repeated User user = 2;
+}
+
 // ----------------------------------------------------------------------------
 // service api
 // ----------------------------------------------------------------------------
@@ -193,9 +202,10 @@ message Range {
 	string search_word = 2;
 	string sort_key = 3;
 	bool reverse = 4;
+	bool verbose = 5;
 
-	int32 offset = 5;
-	int32 limit = 6;
+	int32 offset = 6;
+	int32 limit = 7;
 }
 message Password {
 	string uid = 1;
@@ -203,11 +213,11 @@ message Password {
 }
 
 message ListUsersResponse {
-	repeated User user = 1;
+	repeated UserEx user = 1;
 	int32 total = 2;
 }
 message ListGroupsResponse {
-	repeated Group group = 1;
+	repeated GroupEx group = 1;
 	int32 total = 2;
 }
 

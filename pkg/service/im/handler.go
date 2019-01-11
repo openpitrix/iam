@@ -24,6 +24,12 @@ func (p *Server) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Group,
 func (p *Server) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pbim.Empty, error) {
 	return p.db.DeleteGroups(ctx, req)
 }
+func (p *Server) GetGroup(ctx context.Context, req *pbim.GroupId) (*pbim.Group, error) {
+	return p.db.GetGroup(ctx, req)
+}
+func (p *Server) ModifyGroup(ctx context.Context, req *pbim.Group) (*pbim.Group, error) {
+	return p.db.ModifyGroup(ctx, req)
+}
 
 func (p *Server) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, error) {
 	return p.db.CreateUser(ctx, req)
@@ -38,34 +44,11 @@ func (p *Server) ListUsers(ctx context.Context, req *pbim.Range) (*pbim.ListUser
 func (p *Server) ListGroups(ctx context.Context, req *pbim.Range) (*pbim.ListGroupsResponse, error) {
 	return p.db.ListGroups(ctx, req)
 }
-
 func (p *Server) GetUser(ctx context.Context, req *pbim.UserId) (*pbim.User, error) {
 	return p.db.GetUser(ctx, req)
 }
-
-func (p *Server) GetGroupsByUserId(ctx context.Context, req *pbim.UserId) (*pbim.GroupList, error) {
-	return p.db.GetGroupsByUserId(ctx, req)
-}
-func (p *Server) GetUsersByGroupId(ctx context.Context, req *pbim.GroupId) (*pbim.UserList, error) {
-	return p.db.GetUsersByGroupId(ctx, req)
-}
-
 func (p *Server) ModifyUser(ctx context.Context, req *pbim.User) (*pbim.User, error) {
 	return p.db.ModifyUser(ctx, req)
-}
-
-func (p *Server) ComparePassword(ctx context.Context, req *pbim.Password) (*pbim.Bool, error) {
-	return p.db.ComparePassword(ctx, req)
-}
-func (p *Server) ModifyPassword(ctx context.Context, req *pbim.Password) (*pbim.Empty, error) {
-	return p.db.ModifyPassword(ctx, req)
-}
-
-func (p *Server) GetGroup(ctx context.Context, req *pbim.GroupId) (*pbim.Group, error) {
-	return p.db.GetGroup(ctx, req)
-}
-func (p *Server) ModifyGroup(ctx context.Context, req *pbim.Group) (*pbim.Group, error) {
-	return p.db.ModifyGroup(ctx, req)
 }
 
 func (p *Server) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*pbim.Empty, error) {
@@ -73,4 +56,17 @@ func (p *Server) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*pb
 }
 func (p *Server) LeaveGroup(ctx context.Context, req *pbim.LeaveGroupRequest) (*pbim.Empty, error) {
 	return p.db.LeaveGroup(ctx, req)
+}
+func (p *Server) GetGroupsByUserId(ctx context.Context, req *pbim.UserId) (*pbim.GroupList, error) {
+	return p.db.GetGroupsByUserId(ctx, req)
+}
+func (p *Server) GetUsersByGroupId(ctx context.Context, req *pbim.GroupId) (*pbim.UserList, error) {
+	return p.db.GetUsersByGroupId(ctx, req)
+}
+
+func (p *Server) ComparePassword(ctx context.Context, req *pbim.Password) (*pbim.Bool, error) {
+	return p.db.ComparePassword(ctx, req)
+}
+func (p *Server) ModifyPassword(ctx context.Context, req *pbim.Password) (*pbim.Empty, error) {
+	return p.db.ModifyPassword(ctx, req)
 }

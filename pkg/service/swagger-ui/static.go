@@ -440,6 +440,13 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
             "format": "boolean"
           },
           {
+            "name": "verbose",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "format": "boolean"
+          },
+          {
             "name": "offset",
             "in": "query",
             "required": false,
@@ -721,6 +728,13 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
             "format": "boolean"
           },
           {
+            "name": "verbose",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "format": "boolean"
+          },
+          {
             "name": "offset",
             "in": "query",
             "required": false,
@@ -934,6 +948,20 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         }
       }
     },
+    "imGroupEx": {
+      "type": "object",
+      "properties": {
+        "group": {
+          "$ref": "#/definitions/imGroup"
+        },
+        "user": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/imUser"
+          }
+        }
+      }
+    },
     "imGroupIdList": {
       "type": "object",
       "properties": {
@@ -984,7 +1012,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "group": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/imGroup"
+            "$ref": "#/definitions/imGroupEx"
           }
         },
         "total": {
@@ -999,7 +1027,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "user": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/imUser"
+            "$ref": "#/definitions/imUserEx"
           }
         },
         "total": {
@@ -1068,6 +1096,20 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "status_time": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "imUserEx": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/imUser"
+        },
+        "group": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/imGroup"
+          }
         }
       }
     },

@@ -13,6 +13,8 @@ It has these top-level messages:
 	UserList
 	Group
 	GroupList
+	UserEx
+	GroupEx
 	Empty
 	Bool
 	String
@@ -112,6 +114,36 @@ func (this *GroupList) Validate() error {
 		if item != nil {
 			if err := go_proto_validators.CallValidatorIfExists(item); err != nil {
 				return go_proto_validators.FieldError("Value", err)
+			}
+		}
+	}
+	return nil
+}
+func (this *UserEx) Validate() error {
+	if this.User != nil {
+		if err := go_proto_validators.CallValidatorIfExists(this.User); err != nil {
+			return go_proto_validators.FieldError("User", err)
+		}
+	}
+	for _, item := range this.Group {
+		if item != nil {
+			if err := go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return go_proto_validators.FieldError("Group", err)
+			}
+		}
+	}
+	return nil
+}
+func (this *GroupEx) Validate() error {
+	if this.Group != nil {
+		if err := go_proto_validators.CallValidatorIfExists(this.Group); err != nil {
+			return go_proto_validators.FieldError("Group", err)
+		}
+	}
+	for _, item := range this.User {
+		if item != nil {
+			if err := go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return go_proto_validators.FieldError("User", err)
 			}
 		}
 	}

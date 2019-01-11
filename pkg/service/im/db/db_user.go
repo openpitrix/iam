@@ -197,6 +197,12 @@ func (p *Database) GetUser(ctx context.Context, req *pbim.UserId) (*pbim.User, e
 func (p *Database) ListUsers(ctx context.Context, req *pbim.Range) (*pbim.ListUsersResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
+	if req.GetVerbose() {
+		err := status.Errorf(codes.Unimplemented, "unsupport range.Verbose")
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
 	if req.GetSearchWord() == "" {
 		return p._ListUsers_all(ctx, req)
 	} else {
