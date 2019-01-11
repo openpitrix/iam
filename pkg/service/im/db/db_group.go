@@ -232,11 +232,6 @@ func (p *Database) GetGroup(ctx context.Context, req *pbim.GroupId) (*pbim.Group
 func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) (*pbim.ListGroupsResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if len(req.GetFilter()) > 0 {
-		err := status.Errorf(codes.Unimplemented, "unsupport req.Filter")
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
 	if req.GetSortKey() != "" {
 		err := status.Errorf(codes.Unimplemented, "unsupport req.SortKey")
 		logger.Warnf(ctx, "%+v", err)
@@ -244,11 +239,6 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 	}
 	if req.GetReverse() {
 		err := status.Errorf(codes.Unimplemented, "unsupport req.Reverse")
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-	if req.GetVerbose() {
-		err := status.Errorf(codes.Unimplemented, "unsupport req.Verbose")
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}

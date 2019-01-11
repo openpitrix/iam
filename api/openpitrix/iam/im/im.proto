@@ -53,19 +53,6 @@ message GroupList {
 	repeated Group value = 1;
 }
 
-message UserEx {
-	User user = 1;
-	repeated Group group = 2;
-
-	repeated google.protobuf.Timestamp user_group_binding_time = 3;
-}
-message GroupEx {
-	Group group = 1;
-	repeated User user = 2;
-
-	repeated google.protobuf.Timestamp user_group_binding_time = 3;
-}
-
 // ----------------------------------------------------------------------------
 // service api
 // ----------------------------------------------------------------------------
@@ -206,38 +193,38 @@ message Password {
 }
 
 message ListUsersRequest {
-	string gid = 1;
-	string uid = 2;
-	map<string,FieldValidator> filter = 3;
+	string search_word = 1;
+	string sort_key = 2;
+	bool reverse = 3;
+	int32 offset = 4;
+	int32 limit = 5;
 
-	string search_word = 4;
-	string sort_key = 5;
-	bool reverse = 6;
-	bool verbose = 7;
-
-	int32 offset = 8;
-	int32 limit = 9;
+	repeated string gid = 6;
+	repeated string uid = 7;
+	repeated string name = 8;
+	repeated string email = 9;
+	repeated string phone_number = 10;
+	repeated string status = 11;
 }
 message ListUsersResponse {
-	repeated UserEx user = 1;
+	repeated User user = 1;
 	int32 total = 2;
 }
 
 message ListGroupsRequest {
-	string gid = 1;
-	string uid = 2;
-	map<string,FieldValidator> filter = 3;
+	string search_word = 1;
+	string sort_key = 2;
+	bool reverse = 3;
+	int32 offset = 4;
+	int32 limit = 5;
 
-	string search_word = 4;
-	string sort_key = 5;
-	bool reverse = 6;
-	bool verbose = 7;
-
-	int32 offset = 8;
-	int32 limit = 9;
+	repeated string gid = 6;
+	repeated string uid = 7;
+	repeated string name = 8;
+	repeated string status = 9;
 }
 message ListGroupsResponse {
-	repeated GroupEx group = 1;
+	repeated Group group = 1;
 	int32 total = 2;
 }
 

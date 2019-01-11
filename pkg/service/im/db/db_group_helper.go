@@ -89,11 +89,9 @@ func (p *Database) _ListGroups_all(ctx context.Context, req *pbim.ListGroupsRequ
 		return nil, err
 	}
 
-	var sets []*pbim.GroupEx
+	var sets []*pbim.Group
 	for _, v := range rows {
-		sets = append(sets, &pbim.GroupEx{
-			Group: v.ToPB(),
-		})
+		sets = append(sets, v.ToPB())
 	}
 
 	reply := &pbim.ListGroupsResponse{
@@ -170,11 +168,9 @@ func (p *Database) _ListGroups_bySearchWord(ctx context.Context, req *pbim.ListG
 		return nil, err
 	}
 
-	var sets []*pbim.GroupEx
+	var sets []*pbim.Group
 	for _, v := range rows {
-		sets = append(sets, &pbim.GroupEx{
-			Group: v.ToPB(),
-		})
+		sets = append(sets, v.ToPB())
 	}
 
 	reply := &pbim.ListGroupsResponse{

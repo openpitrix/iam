@@ -421,18 +421,6 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         },
         "parameters": [
           {
-            "name": "gid",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "uid",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
             "name": "search_word",
             "in": "query",
             "required": false,
@@ -452,13 +440,6 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
             "format": "boolean"
           },
           {
-            "name": "verbose",
-            "in": "query",
-            "required": false,
-            "type": "boolean",
-            "format": "boolean"
-          },
-          {
             "name": "offset",
             "in": "query",
             "required": false,
@@ -471,6 +452,42 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
             "required": false,
             "type": "integer",
             "format": "int32"
+          },
+          {
+            "name": "gid",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "uid",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         ],
         "tags": [
@@ -721,18 +738,6 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         },
         "parameters": [
           {
-            "name": "gid",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "uid",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
             "name": "search_word",
             "in": "query",
             "required": false,
@@ -752,13 +757,6 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
             "format": "boolean"
           },
           {
-            "name": "verbose",
-            "in": "query",
-            "required": false,
-            "type": "boolean",
-            "format": "boolean"
-          },
-          {
             "name": "offset",
             "in": "query",
             "required": false,
@@ -771,6 +769,60 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
             "required": false,
             "type": "integer",
             "format": "int32"
+          },
+          {
+            "name": "gid",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "uid",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "phone_number",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         ],
         "tags": [
@@ -972,27 +1024,6 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         }
       }
     },
-    "imGroupEx": {
-      "type": "object",
-      "properties": {
-        "group": {
-          "$ref": "#/definitions/imGroup"
-        },
-        "user": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/imUser"
-          }
-        },
-        "user_group_binding_time": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      }
-    },
     "imGroupIdList": {
       "type": "object",
       "properties": {
@@ -1055,7 +1086,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "group": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/imGroupEx"
+            "$ref": "#/definitions/imGroup"
           }
         },
         "total": {
@@ -1070,7 +1101,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "user": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/imUserEx"
+            "$ref": "#/definitions/imUser"
           }
         },
         "total": {
@@ -1139,27 +1170,6 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "status_time": {
           "type": "string",
           "format": "date-time"
-        }
-      }
-    },
-    "imUserEx": {
-      "type": "object",
-      "properties": {
-        "user": {
-          "$ref": "#/definitions/imUser"
-        },
-        "group": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/imGroup"
-          }
-        },
-        "user_group_binding_time": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "date-time"
-          }
         }
       }
     },

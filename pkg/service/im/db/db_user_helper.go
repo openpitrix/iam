@@ -62,12 +62,10 @@ func (p *Database) _ListUsers_all(ctx context.Context, req *pbim.ListUsersReques
 		return nil, err
 	}
 
-	var sets []*pbim.UserEx
+	var sets []*pbim.User
 	for _, v := range rows {
 		v.Password = ""
-		sets = append(sets, &pbim.UserEx{
-			User: v.ToPB(),
-		})
+		sets = append(sets, v.ToPB())
 	}
 
 	reply := &pbim.ListUsersResponse{
@@ -144,12 +142,10 @@ func (p *Database) _ListUsers_bySearchWord(ctx context.Context, req *pbim.ListUs
 		return nil, err
 	}
 
-	var sets []*pbim.UserEx
+	var sets []*pbim.User
 	for _, v := range rows {
 		v.Password = ""
-		sets = append(sets, &pbim.UserEx{
-			User: v.ToPB(),
-		})
+		sets = append(sets, v.ToPB())
 	}
 
 	reply := &pbim.ListUsersResponse{

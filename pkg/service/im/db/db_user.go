@@ -220,11 +220,6 @@ func (p *Database) GetUser(ctx context.Context, req *pbim.UserId) (*pbim.User, e
 func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*pbim.ListUsersResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if len(req.GetFilter()) > 0 {
-		err := status.Errorf(codes.Unimplemented, "unsupport req.Filter")
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
 	if req.GetSortKey() != "" {
 		err := status.Errorf(codes.Unimplemented, "unsupport req.SortKey")
 		logger.Warnf(ctx, "%+v", err)
@@ -232,11 +227,6 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 	}
 	if req.GetReverse() {
 		err := status.Errorf(codes.Unimplemented, "unsupport req.Reverse")
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-	if req.GetVerbose() {
-		err := status.Errorf(codes.Unimplemented, "unsupport req.Verbose")
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}

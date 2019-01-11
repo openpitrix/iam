@@ -28,18 +28,6 @@
         },
         "parameters": [
           {
-            "name": "gid",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "uid",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
             "name": "search_word",
             "in": "query",
             "required": false,
@@ -59,13 +47,6 @@
             "format": "boolean"
           },
           {
-            "name": "verbose",
-            "in": "query",
-            "required": false,
-            "type": "boolean",
-            "format": "boolean"
-          },
-          {
             "name": "offset",
             "in": "query",
             "required": false,
@@ -78,6 +59,42 @@
             "required": false,
             "type": "integer",
             "format": "int32"
+          },
+          {
+            "name": "gid",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "uid",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         ],
         "tags": [
@@ -328,18 +345,6 @@
         },
         "parameters": [
           {
-            "name": "gid",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "uid",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
             "name": "search_word",
             "in": "query",
             "required": false,
@@ -359,13 +364,6 @@
             "format": "boolean"
           },
           {
-            "name": "verbose",
-            "in": "query",
-            "required": false,
-            "type": "boolean",
-            "format": "boolean"
-          },
-          {
             "name": "offset",
             "in": "query",
             "required": false,
@@ -378,6 +376,60 @@
             "required": false,
             "type": "integer",
             "format": "int32"
+          },
+          {
+            "name": "gid",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "uid",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "phone_number",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         ],
         "tags": [
@@ -579,27 +631,6 @@
         }
       }
     },
-    "imGroupEx": {
-      "type": "object",
-      "properties": {
-        "group": {
-          "$ref": "#/definitions/imGroup"
-        },
-        "user": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/imUser"
-          }
-        },
-        "user_group_binding_time": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      }
-    },
     "imGroupIdList": {
       "type": "object",
       "properties": {
@@ -662,7 +693,7 @@
         "group": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/imGroupEx"
+            "$ref": "#/definitions/imGroup"
           }
         },
         "total": {
@@ -677,7 +708,7 @@
         "user": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/imUserEx"
+            "$ref": "#/definitions/imUser"
           }
         },
         "total": {
@@ -746,27 +777,6 @@
         "status_time": {
           "type": "string",
           "format": "date-time"
-        }
-      }
-    },
-    "imUserEx": {
-      "type": "object",
-      "properties": {
-        "user": {
-          "$ref": "#/definitions/imUser"
-        },
-        "group": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/imGroup"
-          }
-        },
-        "user_group_binding_time": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "date-time"
-          }
         }
       }
     },
