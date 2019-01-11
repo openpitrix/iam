@@ -7,6 +7,7 @@ package db
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
@@ -43,12 +44,43 @@ func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 		}
 	}
 
-	// TODO: check group_path valid
-
 	var dbGroup = db_spec.PBGroupToDB(req)
 	if err := dbGroup.ValidateForInsert(); err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
+	}
+
+	// check group_path valid
+	switch {
+	case dbGroup.GroupPath == dbGroup.Gid:
+		// skip root
+	case strings.HasSuffix(dbGroup.GroupPath, "."+dbGroup.Gid):
+		idx := len(dbGroup.GroupPath) - len(dbGroup.Gid)
+		parentGroupPath := dbGroup.GroupPath[:idx-1]
+
+		if parentGroupPath == "" {
+			err := status.Errorf(codes.InvalidArgument, "invalid parent group path: %s", parentGroupPath)
+			logger.Warnf(ctx, "%+v", err)
+			return nil, err
+		}
+
+		count, err := p.getGroupPathCount(ctx, parentGroupPath)
+		if err != nil {
+			logger.Warnf(ctx, "%+v", err)
+			return nil, err
+		}
+		if count != 1 {
+			err := status.Errorf(codes.InvalidArgument, "invalid group path: %s", dbGroup.GroupPath)
+			logger.Warnf(ctx, "%+v", err)
+			return nil, err
+		}
+
+		dbGroup.ParentGid = parentGroupPath
+		dbGroup.GroupPathLevel = strings.Count(dbGroup.GroupPath, ".") + 1
+
+		if idx = strings.LastIndex(parentGroupPath, "."); idx >= 0 {
+			dbGroup.ParentGid = parentGroupPath[idx:]
+		}
 	}
 
 	sql, values := pkgBuildSql_InsertInto(
@@ -141,6 +173,7 @@ func (p *Database) ModifyGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 
 	// ignore read only field
 	{
+		dbGroup.GroupPath = ""
 
 		dbGroup.CreateTime = time.Time{}
 		dbGroup.UpdateTime = time.Now()

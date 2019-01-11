@@ -14,6 +14,33 @@ import (
 	"openpitrix.io/logger"
 )
 
+func (p *Database) getGroupPathCount(ctx context.Context, groupPath string) (total int, err error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
+	var query = fmt.Sprintf(
+		"SELECT COUNT(*) FROM %s WHERE group_path = ?",
+		db_spec.UserGroupTableName,
+	)
+
+	rows, err := p.DB.QueryContext(ctx, query, groupPath)
+	if err != nil {
+		logger.Warnf(ctx, "%v, %s", query, groupPath)
+		logger.Warnf(ctx, "%+v", err)
+		return 0, err
+	}
+	defer rows.Close()
+
+	if rows.Next() {
+		if err := rows.Scan(&total); err != nil {
+			logger.Warnf(ctx, "%v", query)
+			logger.Warnf(ctx, "%+v", err)
+			return 0, err
+		}
+	}
+
+	return total, nil
+}
+
 func (p *Database) _ListGroups_all_count(ctx context.Context, req *pbim.Range) (total int, err error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
