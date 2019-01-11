@@ -7,6 +7,7 @@ package db
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
@@ -91,7 +92,13 @@ func (p *Database) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pb
 		req.Gid...,
 	)
 
-	_, err := p.DB.ExecContext(ctx, sql)
+	tx, err := p.DB.Beginx()
+	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	_, err = tx.ExecContext(ctx, sql)
 	if err != nil {
 		logger.Warnf(ctx, "%v", sql)
 		logger.Warnf(ctx, "%+v", err)
@@ -105,7 +112,7 @@ func (p *Database) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pb
 			db_spec.UserGroupBindingTableName,
 		)
 
-		_, err := p.DB.ExecContext(ctx, sql, gid)
+		_, err := tx.ExecContext(ctx, sql, gid)
 		if err != nil {
 			logger.Warnf(ctx, "%v", sql)
 			logger.Warnf(ctx, "%+v", err)
@@ -114,6 +121,12 @@ func (p *Database) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pb
 		if err != nil {
 			logger.Warnf(ctx, "gid = %v, err = %+v", gid, err)
 		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
 	}
 
 	reply := &pbim.Empty{}
@@ -131,6 +144,20 @@ func (p *Database) ModifyGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 
 	var dbGroup = db_spec.PBGroupToDB(req)
 
+	// ignore read only field
+	{
+
+		dbGroup.CreateTime = time.Time{}
+		dbGroup.UpdateTime = time.Now()
+
+		switch {
+		case dbGroup.Status == "":
+			dbGroup.StatusTime = time.Time{}
+		default:
+			dbGroup.StatusTime = time.Now()
+		}
+	}
+
 	if err := dbGroup.ValidateForUpdate(); err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -140,6 +167,9 @@ func (p *Database) ModifyGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 		db_spec.UserGroupTableName, dbGroup,
 		db_spec.UserGroupPrimaryKeyName,
 	)
+	if len(values) == 0 {
+		return p.GetGroup(ctx, &pbim.GroupId{Gid: req.Gid})
+	}
 
 	_, err := p.DB.ExecContext(ctx, sql, values...)
 	if err != nil {

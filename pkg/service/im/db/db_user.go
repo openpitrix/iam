@@ -7,6 +7,7 @@ package db
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/golang/protobuf/ptypes"
 	"golang.org/x/crypto/bcrypt"
@@ -108,7 +109,13 @@ func (p *Database) DeleteUsers(ctx context.Context, req *pbim.UserIdList) (*pbim
 		req.Uid...,
 	)
 
-	_, err := p.DB.ExecContext(ctx, sql)
+	tx, err := p.DB.Beginx()
+	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	_, err = tx.ExecContext(ctx, sql)
 	if err != nil {
 		logger.Warnf(ctx, "%v", sql)
 		logger.Warnf(ctx, "%+v", err)
@@ -122,7 +129,7 @@ func (p *Database) DeleteUsers(ctx context.Context, req *pbim.UserIdList) (*pbim
 			db_spec.UserGroupBindingTableName,
 		)
 
-		_, err := p.DB.ExecContext(ctx, sql, uid)
+		_, err := tx.ExecContext(ctx, sql, uid)
 		if err != nil {
 			logger.Warnf(ctx, "%v", sql)
 			logger.Warnf(ctx, "%+v", err)
@@ -131,6 +138,12 @@ func (p *Database) DeleteUsers(ctx context.Context, req *pbim.UserIdList) (*pbim
 		if err != nil {
 			logger.Warnf(ctx, "uid = %v, err = %+v", uid, err)
 		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
 	}
 
 	reply := &pbim.Empty{}
@@ -148,8 +161,20 @@ func (p *Database) ModifyUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 
 	var dbUser = db_spec.PBUserToDB(req)
 
-	// ignore Password
-	dbUser.Password = ""
+	// ignore read only field
+	{
+		dbUser.Password = ""
+
+		dbUser.CreateTime = time.Time{}
+		dbUser.UpdateTime = time.Now()
+
+		switch {
+		case dbUser.Status == "":
+			dbUser.StatusTime = time.Time{}
+		default:
+			dbUser.StatusTime = time.Now()
+		}
+	}
 
 	if err := dbUser.ValidateForUpdate(); err != nil {
 		logger.Warnf(ctx, "%+v", err)
@@ -160,6 +185,9 @@ func (p *Database) ModifyUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 		db_spec.UserTableName, dbUser,
 		db_spec.UserPrimaryKeyName,
 	)
+	if len(values) == 0 {
+		return p.GetUser(ctx, &pbim.UserId{Uid: req.Uid})
+	}
 
 	_, err := p.DB.ExecContext(ctx, sql, values...)
 	if err != nil {
