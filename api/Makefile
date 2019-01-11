@@ -27,9 +27,8 @@ generate: Makefile
 	make -C ../pkg/service/swagger-ui/
 
 gen_im:
-	# grpc service & validator
+	# grpc service
 	protoc $(PROTOC_FLAGS) --go_out=plugins=grpc:./_output ${IM_PBFILES}
-	protoc $(PROTOC_FLAGS) --govalidators_out=logtostderr=true,allow_delete_body=true:./_output ${IM_PBFILES}
 	cp ./_output/openpitrix.io/iam/pkg/pb/im/*.go ../pkg/pb/im/
 
 	# gateway
@@ -42,9 +41,8 @@ gen_im:
 	cp ./_output/openpitrix/iam/im/*.json ../pkg/service/swagger-ui/
 
 gen_am:
-	# grpc service & validator
+	# grpc service
 	protoc $(PROTOC_FLAGS) --go_out=plugins=grpc:./_output ${AM_PBFILES}
-	protoc $(PROTOC_FLAGS) --govalidators_out=logtostderr=true,allow_delete_body=true:./_output ${AM_PBFILES}
 	cp ./_output/openpitrix.io/iam/pkg/pb/am/*.go ../pkg/pb/am/
 
 	# gateway

@@ -43,11 +43,6 @@ func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 		}
 	}
 
-	if err := req.Validate(); err != nil {
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-
 	// TODO: check group_path valid
 
 	var dbGroup = db_spec.PBGroupToDB(req)

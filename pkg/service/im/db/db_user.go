@@ -50,11 +50,6 @@ func (p *Database) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 		return nil, err
 	}
 
-	if err := req.Validate(); err != nil {
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-
 	// TODO: check group_path valid
 
 	var dbUser = db_spec.PBUserToDB(req)

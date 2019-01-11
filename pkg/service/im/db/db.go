@@ -50,6 +50,14 @@ func OpenDatabase(cfg *config.Config) (*Database, error) {
 		}
 	}()
 
+	logger.Infof(nil, "DB config: begin")
+	logger.Infof(nil, "\tType: %s", cfg.DB.Type)
+	logger.Infof(nil, "\tHost: %s", cfg.DB.Host)
+	logger.Infof(nil, "\tPort: %d", cfg.DB.Port)
+	logger.Infof(nil, "\tUser: %s", cfg.DB.User)
+	logger.Infof(nil, "\tDatabase: %s", cfg.DB.Database)
+	logger.Infof(nil, "DB config: end")
+
 	db, err := sqlx.Open(cfg.DB.Type, cfg.DB.GetUrlWithParseTime())
 	if err != nil {
 		return nil, err

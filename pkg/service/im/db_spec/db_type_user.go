@@ -6,6 +6,7 @@ package db_spec
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
@@ -89,8 +90,33 @@ func (p *DBUser) ToPB() *pbim.User {
 }
 
 func (p *DBUser) ValidateForInsert() error {
+	if !reUid.MatchString(p.Uid) {
+		return fmt.Errorf("invalid uid: %q", p.Uid)
+	}
+	if p.Password == "" {
+		return fmt.Errorf("invalid password")
+	}
+
+	if p.Extra != "" {
+		var m = make(map[string]string)
+		if err := json.Unmarshal([]byte(p.Extra), &m); err != nil {
+			return fmt.Errorf("invalid extra")
+		}
+	}
+
 	return nil
 }
 func (p *DBUser) ValidateForUpdate() error {
+	if !reUid.MatchString(p.Uid) {
+		return fmt.Errorf("invalid uid: %q", p.Uid)
+	}
+
+	if p.Extra != "" {
+		var m = make(map[string]string)
+		if err := json.Unmarshal([]byte(p.Extra), &m); err != nil {
+			return fmt.Errorf("invalid extra")
+		}
+	}
+
 	return nil
 }

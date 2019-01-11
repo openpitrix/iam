@@ -6,6 +6,7 @@ package db_spec
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
@@ -92,8 +93,30 @@ func (p *DBGroup) ToPB() *pbim.Group {
 }
 
 func (p *DBGroup) ValidateForInsert() error {
+	if !reGid.MatchString(p.Gid) {
+		return fmt.Errorf("invalid gid: %q", p.Gid)
+	}
+
+	if p.Extra != "" {
+		var m = make(map[string]string)
+		if err := json.Unmarshal([]byte(p.Extra), &m); err != nil {
+			return fmt.Errorf("invalid extra")
+		}
+	}
+
 	return nil
 }
 func (p *DBGroup) ValidateForUpdate() error {
+	if !reGid.MatchString(p.Gid) {
+		return fmt.Errorf("invalid gid: %q", p.Gid)
+	}
+
+	if p.Extra != "" {
+		var m = make(map[string]string)
+		if err := json.Unmarshal([]byte(p.Extra), &m); err != nil {
+			return fmt.Errorf("invalid extra")
+		}
+	}
+
 	return nil
 }

@@ -134,6 +134,16 @@ EXAMPLE:
 }
 
 func serve(c *cli.Context) {
+	if !appConfig.TlsEnabled {
+		logger.Infof(nil, "version: %s", version.GetVersionString())
+		logger.Infof(nil, "IAM service http://%s:%d", appConfig.Host, appConfig.Port)
+		logger.Infof(nil, "IAM service http://%s:%d", getLocalIP(), appConfig.Port)
+	} else {
+		logger.Infof(nil, "version: %s", version.GetVersionString())
+		logger.Infof(nil, "IAM service https://%s:%d", appConfig.Host, appConfig.Port)
+		logger.Infof(nil, "IAM service https://%s:%d", getLocalIP(), appConfig.Port)
+	}
+
 	imService, err := im.OpenServer(appConfig)
 	if err != nil {
 		logger.Criticalf(nil, "%v", err)
@@ -141,9 +151,6 @@ func serve(c *cli.Context) {
 	}
 
 	if !appConfig.TlsEnabled {
-		logger.Infof(nil, version.GetVersionString())
-		logger.Infof(nil, "IAM service http://%s:%d", appConfig.Host, appConfig.Port)
-
 		err := web.ListenAndServe(
 			fmt.Sprintf(":%d", appConfig.Port),
 			[]web.GrpcServer{web.WithAccountManager(imService)},
@@ -154,9 +161,6 @@ func serve(c *cli.Context) {
 			os.Exit(1)
 		}
 	} else {
-		logger.Infof(nil, version.GetVersionString())
-		logger.Infof(nil, "IAM service https://%s:%d", appConfig.Host, appConfig.Port)
-
 		err := web.ListenAndServeTLS(
 			fmt.Sprintf(":%d", appConfig.Port),
 			appConfig.TlsCertFile, appConfig.TlsKeyFile,

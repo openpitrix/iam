@@ -37,10 +37,10 @@ swagger:
 
 list-method:
 	grpcurl -plaintext ${SERVER_HOST} list
-	grpcurl -plaintext ${SERVER_HOST} list openpitrix.iam.IAMManager
+	grpcurl -plaintext ${SERVER_HOST} list openpitrix.iam.im.AccountManager
 
 list-group:
-	grpcurl -plaintext ${SERVER_HOST} openpitrix.iam.IAMManager/DescribeGroups
+	grpcurl -plaintext ${SERVER_HOST} openpitrix.iam.im.AccountManager/ListGroups
 	@echo
 
 	curl ${SERVER_HOST}/v1.1/groups | jq .

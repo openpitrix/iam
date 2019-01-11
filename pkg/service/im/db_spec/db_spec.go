@@ -4,6 +4,14 @@
 
 package db_spec
 
+import "regexp"
+
+var (
+	reUid       = regexp.MustCompile(`^[a-z0-9-_]{2,64}$`)
+	reGid       = regexp.MustCompile(`^[a-z0-9-_]{2,64}$`)
+	reGroupPath = regexp.MustCompile(`^[a-z0-9_.-]{2,255}$`)
+)
+
 const (
 	UserTableName      = "user"
 	UserPrimaryKeyName = "user_id"
