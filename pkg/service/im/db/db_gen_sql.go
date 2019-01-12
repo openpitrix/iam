@@ -46,9 +46,23 @@ func genWhereCondition(
 	// name IN(name1,name2,...)
 	for name, values := range keyFileds {
 		if len(values) > 0 {
-			m[name] = fmt.Sprintf(
-				"%s IN(%s)", name, strings.Join(values, ","),
-			)
+			// GET /api/iam/im/users?uid=user1,user2,user3
+			// uid[0] == "user1,user2,user3"
+			if len(values) == 1 && strings.Contains(values[0], ",") {
+				values = strings.Split(values[0], ",")
+			}
+
+			var b strings.Builder
+			fmt.Fprintf(&b, "%s IN(", name)
+			for i, v := range values {
+				if i > 0 {
+					fmt.Fprintf(&b, ",'%s'", v)
+				} else {
+					fmt.Fprintf(&b, "'%s'", v)
+				}
+			}
+			fmt.Fprintf(&b, ")")
+			m[name] = b.String()
 		}
 	}
 

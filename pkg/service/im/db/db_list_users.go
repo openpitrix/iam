@@ -40,7 +40,7 @@ func (p *Database) listUsers_no_gid(ctx context.Context, req *pbim.ListUsersRequ
 			},
 			req.SearchWord,
 		)
-		if len(ss) >= 0 {
+		if len(ss) > 0 {
 			return "WHERE " + strings.Join(ss, " AND ")
 		}
 		return ""
@@ -121,6 +121,9 @@ func (p *Database) listUsers_with_gid(ctx context.Context, req *pbim.ListUsersRe
 			},
 			ss...,
 		)
+		if len(ss) > 0 {
+			return "WHERE " + strings.Join(ss, " AND ")
+		}
 
 		return "WHERE " + strings.Join(ss, " AND ")
 	}()

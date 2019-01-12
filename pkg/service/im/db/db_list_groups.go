@@ -37,9 +37,10 @@ func (p *Database) listGroups_no_uid(ctx context.Context, req *pbim.ListGroupsRe
 			},
 			req.SearchWord,
 		)
-		if len(ss) >= 0 {
+		if len(ss) > 0 {
 			return "WHERE " + strings.Join(ss, " AND ")
 		}
+
 		return ""
 	}()
 
@@ -114,6 +115,9 @@ func (p *Database) listGroups_with_uid(ctx context.Context, req *pbim.ListGroups
 			},
 			ss...,
 		)
+		if len(ss) > 0 {
+			return "WHERE " + strings.Join(ss, " AND ")
+		}
 
 		return "WHERE " + strings.Join(ss, " AND ")
 	}()
