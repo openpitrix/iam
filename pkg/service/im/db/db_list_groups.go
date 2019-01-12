@@ -14,6 +14,37 @@ import (
 	"openpitrix.io/logger"
 )
 
+func (p *Database) validateListGroupsReq(req *pbim.ListGroupsRequest) error {
+	if !isValidSearchWord(req.SearchWord) {
+		return fmt.Errorf("invalid search_word: %v", req.SearchWord)
+	}
+	if !isValidSortKey(req.SortKey) {
+		return fmt.Errorf("invalid sort_key: %v", req.SortKey)
+	}
+
+	if req.Offset < 0 {
+		return fmt.Errorf("invalid offset: %v", req.Offset)
+	}
+	if req.Limit < 0 || req.Limit > 200 {
+		return fmt.Errorf("invalid limit: %v", req.Limit)
+	}
+
+	if !isValidIds(req.Gid...) {
+		return fmt.Errorf("invalid gid: %v", req.Gid)
+	}
+	if !isValidIds(req.Uid...) {
+		return fmt.Errorf("invalid uid: %v", req.Uid)
+	}
+	if !isValidIds(req.Name...) {
+		return fmt.Errorf("invalid name: %v", req.Name)
+	}
+	if !isValidIds(req.Status...) {
+		return fmt.Errorf("invalid status: %v", req.Status)
+	}
+
+	return nil
+}
+
 func (p *Database) listGroups_no_uid(ctx context.Context, req *pbim.ListGroupsRequest) (*pbim.ListGroupsResponse, error) {
 	if len(req.Uid) > 0 {
 		panic("should use listGroups_with_uid")

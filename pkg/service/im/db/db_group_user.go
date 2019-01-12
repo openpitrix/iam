@@ -161,10 +161,12 @@ func (p *Database) GetGroupsByUserId(ctx context.Context, req *pbim.UserId) (*pb
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	const sql = `
-		select t2.* from
-		user t1, user_group t2, user_group_binding t3 
-		where t1.user_id=t3.user_id and t2.group_id=t3.group_id
-		and t1.user_id=?
+		select user_group.* from
+			user, user_group, user_group_binding 
+		where
+			user_group_binding.user_id=user.user_id and
+			user_group_binding.user_id=user_group.group_id and
+			user.user_id=?
 	`
 	var rows []db_spec.DBGroup
 	err := p.DB.Select(&rows, sql, req.GetUid())
@@ -189,10 +191,12 @@ func (p *Database) GetUsersByGroupId(ctx context.Context, req *pbim.GroupId) (*p
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	const sql = `
-		select t1.* from
-		user t1, user_group t2, user_group_binding t3 
-		where t1.user_id=t3.user_id and t2.group_id=t3.group_id
-		and t2.group_id=?
+		select user.* from
+			user, user_group, user_group_binding 
+		where
+			user_group_binding.user_id=user.user_id and
+			user_group_binding.user_id=user_group.group_id and
+			user_group.group_id=?
 	`
 	var rows []db_spec.DBUser
 	err := p.DB.Select(&rows, sql, req.GetGid())

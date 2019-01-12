@@ -22,6 +22,15 @@ func isValidDatabaseTableName(name string) bool {
 	return re.MatchString(name)
 }
 
+func isValidSearchWord(name string) bool {
+	var re = regexp.MustCompile(`^[a-z0-9_-]*$`)
+	return re.MatchString(name)
+}
+func isValidSortKey(name string) bool {
+	var re = regexp.MustCompile(`^[a-z0-9_]*$`)
+	return re.MatchString(name)
+}
+
 func isValidIds(ids ...string) bool {
 	var re = regexp.MustCompile(`^[a-z0-9-_]+$`)
 	for _, id := range ids {

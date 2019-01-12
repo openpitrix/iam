@@ -220,6 +220,10 @@ func (p *Database) GetUser(ctx context.Context, req *pbim.UserId) (*pbim.User, e
 func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*pbim.ListUsersResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
+	if err := p.validateListUsersReq(req); err != nil {
+		return nil, err
+	}
+
 	if len(req.Gid) > 0 {
 		return p.listUsers_with_gid(ctx, req)
 	} else {

@@ -237,6 +237,10 @@ func (p *Database) GetGroup(ctx context.Context, req *pbim.GroupId) (*pbim.Group
 func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) (*pbim.ListGroupsResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
+	if err := p.validateListGroupsReq(req); err != nil {
+		return nil, err
+	}
+
 	if len(req.Uid) > 0 {
 		return p.listGroups_with_uid(ctx, req)
 	} else {
