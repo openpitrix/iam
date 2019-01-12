@@ -7,7 +7,6 @@ package db
 import (
 	"context"
 	"fmt"
-	"sort"
 	"strings"
 
 	"openpitrix.io/iam/pkg/pb/im"
@@ -15,88 +14,48 @@ import (
 	"openpitrix.io/logger"
 )
 
-func (p *Database) listUsers(ctx context.Context, req *pbim.ListUsersRequest) (*pbim.ListUsersResponse, error) {
+func (p *Database) listUsers_no_gid(ctx context.Context, req *pbim.ListUsersRequest) (*pbim.ListUsersResponse, error) {
+	if len(req.Gid) > 0 {
+		panic("should use listUsers_with_gid")
+	}
+
 	// WHERE name IN (name1,name2) AND name LIKE '%search_word%'
 	var whereCondition = func() string {
-		m := make(map[string]string)
-
-		// name IN(name1,name2,...)
-		var keyFileds = []struct {
-			Name  string
-			Value []string
-		}{
-			{Name: "gid", Value: req.Gid},
-			{Name: "uid", Value: req.Uid},
-			{Name: "name", Value: req.Name},
-			{Name: "email", Value: req.Email},
-			{Name: "phone_number", Value: req.PhoneNumber},
-			{Name: "status", Value: req.Status},
-		}
-		for _, v := range keyFileds {
-			if len(v.Value) > 0 {
-				m[v.Name] = fmt.Sprintf(
-					"%s IN(%s)", v.Name, strings.Join(req.Gid, ","),
-				)
-			}
-		}
-
-		// name LIKE '%search_word%'
-		if req.SearchWord != "" {
-			var searchWordFieldNames = []string{
+		ss := genWhereCondition(
+			map[string][]string{
+				"gid":          req.Gid,
+				"uid":          req.Uid,
+				"name":         req.Name,
+				"email":        req.Email,
+				"phone_number": req.PhoneNumber,
+				"status":       req.Status,
+			},
+			[]string{
 				"user_id",
 				"user_name",
 				"email",
 				"phone_number",
 				"description",
 				"status",
-			}
-			for _, name := range searchWordFieldNames {
-				if _, exists := m[name]; !exists {
-					m[name] = fmt.Sprintf(
-						"%s LIKE '%%%s%%'", name, req.SearchWord,
-					)
-				}
-			}
+			},
+			req.SearchWord,
+		)
+		if len(ss) >= 0 {
+			return "WHERE " + strings.Join(ss, " AND ")
 		}
-		if len(m) == 0 {
-			return "" // no where condition
-		}
-
-		var ss []string
-		for _, v := range m {
-			ss = append(ss, v)
-		}
-		sort.Strings(ss)
-
-		// WHERE condition1 AND condition2 AND ...
-		return "WHERE " + strings.Join(ss, " AND ")
+		return ""
 	}()
 
 	// ORDER BY column ASC|DESC;
-	var orderBy = func() string {
-		if req.SortKey == "" {
-			return ""
-		}
-		if req.Reverse {
-			return "ORDER BY " + req.SortKey + " DESC"
-		} else {
-			return "ORDER BY " + req.SortKey + " ASC"
-		}
-	}()
+	var orderBy = genOrderBy(req.SortKey, req.Reverse)
 
 	// LIMIT 20 OFFSET 0
-	var limitOffset = func() string {
-		if offset, limit := req.GetOffset(), req.GetLimit(); offset > 0 || limit > 0 {
-			return fmt.Sprintf("LIMIT %d OFFSET %d", limit, offset)
-		} else {
-			return fmt.Sprintf("LIMIT %d OFFSET %d", 20, 0)
-		}
-	}()
+	var limitOffset = genLimitOffset(req.GetLimit(), req.GetOffset())
 
-	// SELECT COUNT(*) FROM {name} {WHERE ...}
+	// SELECT COUNT(*) FROM user {WHERE ...}
 	query := fmt.Sprintf(
-		"SELECT COUNT(*) FROM %s %s",
-		"user", whereCondition,
+		"SELECT COUNT(*) FROM user %s",
+		whereCondition,
 	)
 	total, err := p.getCountByQuery(ctx, query)
 	if err != nil {
@@ -105,15 +64,105 @@ func (p *Database) listUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 		return nil, err
 	}
 
-	// SELECT * FROM {name} {WHERE ...} {ORDER BY ...} {LIMIT ...}
+	// SELECT * FROM user {WHERE ...} {ORDER BY ...} {LIMIT ...}
 	query = fmt.Sprintf(
-		"SELECT COUNT(*) FROM %s %s %s %s",
-		"user", whereCondition,
-		orderBy, limitOffset,
+		"SELECT * FROM user %s %s %s",
+		whereCondition, orderBy, limitOffset,
 	)
+	reply, err := p.listUsersByQuery(ctx, query)
+	if err != nil {
+		logger.Warnf(ctx, "%v", query)
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
 
+	reply.Total = int32(total)
+	return reply, nil
+}
+
+func (p *Database) listUsers_with_gid(ctx context.Context, req *pbim.ListUsersRequest) (*pbim.ListUsersResponse, error) {
+	if len(req.Gid) == 0 {
+		panic("should use listUsers_no_gid")
+	}
+
+	// select user.* from
+	//     user, user_group, user_group_binding
+	// where
+	//     user_group_binding.user_id=user.user_id and
+	//     user_group_binding.user_id=user_group.group_id and
+	//     ...
+
+	// WHERE name IN (name1,name2) AND name LIKE '%search_word%'
+	var whereCondition = func() string {
+		ss := genWhereCondition(
+			map[string][]string{
+				"gid":          req.Gid,
+				"uid":          req.Uid,
+				"name":         req.Name,
+				"email":        req.Email,
+				"phone_number": req.PhoneNumber,
+				"status":       req.Status,
+			},
+			[]string{
+				"user_id",
+				"user_name",
+				"email",
+				"phone_number",
+				"description",
+				"status",
+			},
+			req.SearchWord,
+		)
+
+		ss = append(
+			[]string{
+				"user_group_binding.user_id=user.user_id",
+				"user_group_binding.user_id=user_group.group_id",
+			},
+			ss...,
+		)
+
+		return "WHERE " + strings.Join(ss, " AND ")
+	}()
+
+	// ORDER BY column ASC|DESC;
+	var orderBy = genOrderBy(req.SortKey, req.Reverse)
+
+	// LIMIT 20 OFFSET 0
+	var limitOffset = genLimitOffset(req.GetLimit(), req.GetOffset())
+
+	// SELECT COUNT(user.*) FROM user, user_group, user_group_binding {WHERE ...}
+	query := fmt.Sprintf(
+		"SELECT COUNT(user.*) FROM user, user_group, user_group_binding %s",
+		whereCondition,
+	)
+	total, err := p.getCountByQuery(ctx, query)
+	if err != nil {
+		logger.Warnf(ctx, "%v", query)
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	// SELECT user.* FROM user, user_group, user_group_binding
+	// {WHERE ...} {ORDER BY ...} {LIMIT ...}
+	query = fmt.Sprintf(
+		"SELECT user.* FROM user, user_group, user_group_binding %s %s %s",
+		whereCondition, orderBy, limitOffset,
+	)
+	reply, err := p.listUsersByQuery(ctx, query)
+	if err != nil {
+		logger.Warnf(ctx, "%v", query)
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	reply.Total = int32(total)
+	return reply, nil
+}
+
+func (p *Database) listUsersByQuery(ctx context.Context, query string) (*pbim.ListUsersResponse, error) {
 	var rows = []db_spec.DBUser{}
-	err = p.DB.SelectContext(ctx, &rows, query)
+	err := p.DB.SelectContext(ctx, &rows, query)
 	if err != nil {
 		logger.Warnf(ctx, "%v", query)
 		logger.Warnf(ctx, "%+v", err)
@@ -127,28 +176,8 @@ func (p *Database) listUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 	}
 
 	reply := &pbim.ListUsersResponse{
-		User:  sets,
-		Total: int32(total),
+		User: sets,
 	}
 
 	return reply, nil
-}
-
-func (p *Database) getCountByQuery(ctx context.Context, query string) (total int, err error) {
-	rows, err := p.DB.QueryContext(ctx, query)
-	if err != nil {
-		logger.Warnf(ctx, "%v", query)
-		logger.Warnf(ctx, "%+v", err)
-		return 0, err
-	}
-	defer rows.Close()
-
-	if rows.Next() {
-		if err := rows.Scan(&total); err != nil {
-			logger.Warnf(ctx, "%v", query)
-			logger.Warnf(ctx, "%+v", err)
-			return 0, err
-		}
-	}
-	return
 }
