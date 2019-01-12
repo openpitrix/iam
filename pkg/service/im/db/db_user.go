@@ -220,20 +220,9 @@ func (p *Database) GetUser(ctx context.Context, req *pbim.UserId) (*pbim.User, e
 func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*pbim.ListUsersResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if req.GetSortKey() != "" {
-		err := status.Errorf(codes.Unimplemented, "unsupport req.SortKey")
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-	if req.GetReverse() {
-		err := status.Errorf(codes.Unimplemented, "unsupport req.Reverse")
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-
-	if req.GetSearchWord() == "" {
-		return p._ListUsers_all(ctx, req)
+	if len(req.Gid) > 0 {
+		return p.listUsers_with_gid(ctx, req)
 	} else {
-		return p._ListUsers_bySearchWord(ctx, req)
+		return p.listUsers_no_gid(ctx, req)
 	}
 }

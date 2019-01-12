@@ -14,9 +14,9 @@ import (
 	"openpitrix.io/logger"
 )
 
-func (p *Database) listGroups_no_gid(ctx context.Context, req *pbim.ListGroupsRequest) (*pbim.ListGroupsResponse, error) {
-	if len(req.Gid) > 0 {
-		panic("should use listGroups_with_gid")
+func (p *Database) listGroups_no_uid(ctx context.Context, req *pbim.ListGroupsRequest) (*pbim.ListGroupsResponse, error) {
+	if len(req.Uid) > 0 {
+		panic("should use listGroups_with_uid")
 	}
 
 	// WHERE name IN (name1,name2) AND name LIKE '%search_word%'
@@ -77,9 +77,9 @@ func (p *Database) listGroups_no_gid(ctx context.Context, req *pbim.ListGroupsRe
 	return reply, nil
 }
 
-func (p *Database) listGroups_with_gid(ctx context.Context, req *pbim.ListGroupsRequest) (*pbim.ListGroupsResponse, error) {
-	if len(req.Gid) == 0 {
-		panic("should use listGroups_no_gid")
+func (p *Database) listGroups_with_uid(ctx context.Context, req *pbim.ListGroupsRequest) (*pbim.ListGroupsResponse, error) {
+	if len(req.Uid) == 0 {
+		panic("should use listGroups_no_uid")
 	}
 
 	// select user_group.* from

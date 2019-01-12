@@ -64,12 +64,17 @@ func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 			return nil, err
 		}
 
-		count, err := p.getGroupPathCount(ctx, parentGroupPath)
+		var query = fmt.Sprintf(
+			"SELECT COUNT(*) FROM %s WHERE group_path = '%s'",
+			db_spec.UserGroupTableName, parentGroupPath,
+		)
+		total, err := p.getCountByQuery(ctx, query)
 		if err != nil {
+			logger.Warnf(ctx, "%v", query)
 			logger.Warnf(ctx, "%+v", err)
 			return nil, err
 		}
-		if count != 1 {
+		if total != 1 {
 			err := status.Errorf(codes.InvalidArgument, "invalid group path: %s", dbGroup.GroupPath)
 			logger.Warnf(ctx, "%+v", err)
 			return nil, err
@@ -232,20 +237,9 @@ func (p *Database) GetGroup(ctx context.Context, req *pbim.GroupId) (*pbim.Group
 func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) (*pbim.ListGroupsResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if req.GetSortKey() != "" {
-		err := status.Errorf(codes.Unimplemented, "unsupport req.SortKey")
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-	if req.GetReverse() {
-		err := status.Errorf(codes.Unimplemented, "unsupport req.Reverse")
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-
-	if req.GetSearchWord() == "" {
-		return p._ListGroups_all(ctx, req)
+	if len(req.Uid) > 0 {
+		return p.listGroups_with_uid(ctx, req)
 	} else {
-		return p._ListGroups_bySearchWord(ctx, req)
+		return p.listGroups_no_uid(ctx, req)
 	}
 }
