@@ -23,8 +23,8 @@ func (p *Database) listUsers_no_gid(ctx context.Context, req *pbim.ListUsersRequ
 	var whereCondition = func() string {
 		ss := genWhereCondition(
 			map[string][]string{
-				"gid":          req.Gid,
-				"uid":          req.Uid,
+				"group_id":     req.Gid,
+				"user_id":      req.Uid,
 				"name":         req.Name,
 				"email":        req.Email,
 				"phone_number": req.PhoneNumber,
@@ -96,8 +96,8 @@ func (p *Database) listUsers_with_gid(ctx context.Context, req *pbim.ListUsersRe
 	var whereCondition = func() string {
 		ss := genWhereCondition(
 			map[string][]string{
-				"gid":          req.Gid,
-				"uid":          req.Uid,
+				"group_id":     req.Gid,
+				"user_id":      req.Uid,
 				"name":         req.Name,
 				"email":        req.Email,
 				"phone_number": req.PhoneNumber,
