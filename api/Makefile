@@ -6,7 +6,6 @@ PWD:=$(shell pwd)
 GOPATH:=$(shell go env GOPATH)
 
 IM_PBFILES+=./openpitrix/iam/im/im.proto
-IM_PBFILES+=./openpitrix/iam/im/filter.proto
 
 AM_PBFILES+=./openpitrix/iam/am/am.proto
 
