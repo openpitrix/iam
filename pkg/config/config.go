@@ -20,6 +20,12 @@ import (
 
 const EnvPrefix = "OPENPITRIX_IAM"
 
+// Connect to host from docker container
+// Linux: 172.17.0.1
+// macOS: docker.for.mac.localhost
+// Windows: docker.for.win.localhost
+// Vagrant: 10.0.2.2
+
 //
 // Environment:
 //
@@ -40,6 +46,11 @@ const EnvPrefix = "OPENPITRIX_IAM"
 // OPENPITRIX_IAM_LOG_LEVEL
 // OPENPITRIX_IAM_GRPC_SHOW_ERROR_CAUSE
 //
+
+// For Docker
+// Linux: OPENPITRIX_IAM_DB_HOST=172.17.0.1 docker run ...
+// macOS: OPENPITRIX_IAM_DB_HOST=docker.for.mac.localhost
+// Windows: OPENPITRIX_IAM_DB_HOST=docker.for.win.localhost
 
 type Config struct {
 	DB DBConfig

@@ -16,14 +16,31 @@ server:
 	go vet ./...
 	go run main.go
 
+mysql-up:
+	docker run --rm --name mysql-dev -p 3306:3306 -e MYSQL_ROOT_PASSWORD=password -d mysql:5.7
+
+mysql-down:
+	docker stop --name mysql-dev
+
 docker-build:
-	docker build -t openpitrix/iam:dev -f ./Dockerfile .
-	docker images openpitrix/iam:dev
+	docker build -t openpitrix/iam:latest -f ./Dockerfile .
+	docker images openpitrix/iam:latest
+
+docker-run-macos:
+	OPENPITRIX_IAM_DB_HOST=docker.for.mac.localhost \
+		docker run --rm -it -p 9115:9115 openpitrix/iam
+
+docker-run-linux:
+	OPENPITRIX_IAM_DB_HOST=172.17.0.1 \
+		docker run --rm -it -p 9115:9115 openpitrix/iam
+
+docker-run-windows:
+	OPENPITRIX_IAM_DB_HOST=docker.for.win.localhost \
+		docker run --rm -it -p 9115:9115 openpitrix/iam
 
 docker-run:
 	docker run --rm -it -p 9115:9115 -v `pwd`:/root \
-		openpitrix/iam:v0.2.2-dev iam \
-		-config=/root/config.json
+		openpitrix/iam iam -config=/root/config.json
 
 info:
 	curl ${SERVER_HOST}/hello

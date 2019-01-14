@@ -19,7 +19,7 @@ ENV CGO_ENABLED=0
 ENV GOOS=linux
 ENV GOBIN=/build-dir
 
-RUN echo module drone > /build-dir/go.mod
+RUN echo module iam > /build-dir/go.mod
 RUN git describe --tags --always > /build-dir/version
 RUN git describe --exact-match 2>/dev/null || git log -1 --format="%H" > /build-dir/version
 
