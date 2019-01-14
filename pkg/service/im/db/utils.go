@@ -48,7 +48,7 @@ func isValidEmails(emails ...string) bool {
 		if v == "" {
 			return false
 		}
-		if idx := strings.IndexByte(v, 'a'); idx <= 0 || idx >= len(v) {
+		if idx := strings.IndexByte(v, '@'); idx <= 0 || idx >= len(v) {
 			return false
 		}
 		if strings.Count(v, "@") != 1 {
