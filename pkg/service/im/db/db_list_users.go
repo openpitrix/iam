@@ -38,10 +38,10 @@ func (p *Database) validateListUsersReq(req *pbim.ListUsersRequest) error {
 	if !isValidIds(req.Name...) {
 		return fmt.Errorf("invalid name: %v", req.Name)
 	}
-	if !isValidIds(req.Email...) {
+	if !isValidEmails(req.Email...) {
 		return fmt.Errorf("invalid email: %v", req.Email)
 	}
-	if !isValidIds(req.PhoneNumber...) {
+	if !isValidPhoneNumbers(req.PhoneNumber...) {
 		return fmt.Errorf("invalid phone_number: %v", req.PhoneNumber)
 	}
 	if !isValidIds(req.Status...) {

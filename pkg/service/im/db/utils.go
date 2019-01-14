@@ -8,6 +8,8 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"regexp"
+	"strings"
+	"unicode"
 
 	"github.com/fatih/structs"
 	"github.com/golang/protobuf/ptypes/timestamp"
@@ -40,6 +42,37 @@ func isValidIds(ids ...string) bool {
 	}
 	return true
 }
+
+func isValidEmails(emails ...string) bool {
+	for _, v := range emails {
+		if v == "" {
+			return false
+		}
+		if idx := strings.IndexByte(v, 'a'); idx <= 0 || idx >= len(v) {
+			return false
+		}
+		if strings.Count(v, "@") != 1 {
+			return false
+		}
+		for _, c := range v {
+			if unicode.IsSpace(c) {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+func isValidPhoneNumbers(phoneNumbers ...string) bool {
+	var re = regexp.MustCompile(`^[0-9]+$`)
+	for _, id := range phoneNumbers {
+		if !re.MatchString(id) {
+			return false
+		}
+	}
+	return true
+}
+
 func isZeroTimestamp(x *timestamp.Timestamp) bool {
 	if x == nil {
 		return true
