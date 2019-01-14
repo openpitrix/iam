@@ -16,25 +16,25 @@ import (
 )
 
 func isValidDatabaseName(name string) bool {
-	var re = regexp.MustCompile(`^[a-z0-9_]+$`)
+	var re = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
 	return re.MatchString(name)
 }
 func isValidDatabaseTableName(name string) bool {
-	var re = regexp.MustCompile(`^[a-z0-9_]+$`)
+	var re = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
 	return re.MatchString(name)
 }
 
 func isValidSearchWord(name string) bool {
-	var re = regexp.MustCompile(`^[a-z0-9_-]*$`)
+	var re = regexp.MustCompile(`^[a-zA-Z0-9_-]*$`)
 	return re.MatchString(name)
 }
 func isValidSortKey(name string) bool {
-	var re = regexp.MustCompile(`^[a-z0-9_]*$`)
+	var re = regexp.MustCompile(`^[a-zA-Z0-9_]*$`)
 	return re.MatchString(name)
 }
 
 func isValidIds(ids ...string) bool {
-	var re = regexp.MustCompile(`^[a-z0-9-_]+$`)
+	var re = regexp.MustCompile(`^[a-zA-Z0-9-_]+$`)
 	for _, id := range ids {
 		if !re.MatchString(id) {
 			return false
@@ -178,7 +178,7 @@ func pkgGetDBTableStringFieldNames(v interface{}) (names []string) {
 	return
 }
 
-var reSearchWord = regexp.MustCompile(`^[a-z0-9-_]+$`)
+var reSearchWord = regexp.MustCompile(`^[a-zA-Z0-9-_]+$`)
 
 func pkgSearchWordValid(s string) bool {
 	return reSearchWord.MatchString(s)
