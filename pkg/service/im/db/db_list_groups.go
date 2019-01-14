@@ -30,16 +30,16 @@ func (p *Database) validateListGroupsReq(req *pbim.ListGroupsRequest) error {
 	}
 
 	// check repeaded fields
-	if !isValidIds(req.Gid...) {
+	if !isValidGids(req.Gid...) {
 		return fmt.Errorf("invalid gid: %v", req.Gid)
 	}
-	if !isValidIds(req.Uid...) {
+	if !isValidUids(req.Uid...) {
 		return fmt.Errorf("invalid uid: %v", req.Uid)
 	}
-	if !isValidIds(req.Name...) {
+	if !isValidNames(req.Name...) {
 		return fmt.Errorf("invalid name: %v", req.Name)
 	}
-	if !isValidIds(req.Status...) {
+	if !isValidStatus(req.Status...) {
 		return fmt.Errorf("invalid status: %v", req.Status)
 	}
 

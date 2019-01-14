@@ -29,13 +29,13 @@ func (p *Database) validateListUsersReq(req *pbim.ListUsersRequest) error {
 		return fmt.Errorf("invalid limit: %v", req.Limit)
 	}
 
-	if !isValidIds(req.Gid...) {
+	if !isValidGids(req.Gid...) {
 		return fmt.Errorf("invalid gid: %v", req.Gid)
 	}
-	if !isValidIds(req.Uid...) {
+	if !isValidUids(req.Uid...) {
 		return fmt.Errorf("invalid uid: %v", req.Uid)
 	}
-	if !isValidIds(req.Name...) {
+	if !isValidNames(req.Name...) {
 		return fmt.Errorf("invalid name: %v", req.Name)
 	}
 	if !isValidEmails(req.Email...) {
@@ -44,7 +44,7 @@ func (p *Database) validateListUsersReq(req *pbim.ListUsersRequest) error {
 	if !isValidPhoneNumbers(req.PhoneNumber...) {
 		return fmt.Errorf("invalid phone_number: %v", req.PhoneNumber)
 	}
-	if !isValidIds(req.Status...) {
+	if !isValidStatus(req.Status...) {
 		return fmt.Errorf("invalid status: %v", req.Status)
 	}
 

@@ -116,7 +116,7 @@ func (p *Database) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pb
 		req.Gid = strings.Split(req.Gid[0], ",")
 	}
 
-	if req == nil || len(req.Gid) == 0 || !isValidIds(req.Gid...) {
+	if req == nil || len(req.Gid) == 0 || !isValidGids(req.Gid...) {
 		err := status.Errorf(codes.InvalidArgument, "empty field")
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err

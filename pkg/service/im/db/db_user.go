@@ -97,7 +97,7 @@ func (p *Database) DeleteUsers(ctx context.Context, req *pbim.UserIdList) (*pbim
 		req.Uid = strings.Split(req.Uid[0], ",")
 	}
 
-	if req == nil || len(req.Uid) == 0 || !isValidIds(req.Uid...) {
+	if req == nil || len(req.Uid) == 0 || !isValidUids(req.Uid...) {
 		err := status.Errorf(codes.InvalidArgument, "empty field")
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err

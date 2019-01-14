@@ -33,7 +33,28 @@ func isValidSortKey(name string) bool {
 	return re.MatchString(name)
 }
 
-func isValidIds(ids ...string) bool {
+func isValidGids(ids ...string) bool {
+	var re = regexp.MustCompile(`^[a-zA-Z0-9-_]+$`)
+	for _, id := range ids {
+		if !re.MatchString(id) {
+			return false
+		}
+	}
+	return true
+}
+func isValidUids(ids ...string) bool {
+	var re = regexp.MustCompile(`^[a-zA-Z0-9-_]+$`)
+	for _, id := range ids {
+		if !re.MatchString(id) {
+			return false
+		}
+	}
+	return true
+}
+func isValidNames(ids ...string) bool {
+	return true
+}
+func isValidStatus(ids ...string) bool {
 	var re = regexp.MustCompile(`^[a-zA-Z0-9-_]+$`)
 	for _, id := range ids {
 		if !re.MatchString(id) {
