@@ -7,6 +7,7 @@ package db
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -19,6 +20,13 @@ import (
 
 func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*pbim.Empty, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
+
+	if len(req.Gid) == 1 && strings.Contains(req.Gid[0], ",") {
+		req.Gid = strings.Split(req.Gid[0], ",")
+	}
+	if len(req.Uid) == 1 && strings.Contains(req.Uid[0], ",") {
+		req.Uid = strings.Split(req.Uid[0], ",")
+	}
 
 	if len(req.Uid) == 0 || len(req.Gid) == 0 {
 		err := status.Errorf(codes.InvalidArgument, "empty uid or gid")
@@ -89,6 +97,13 @@ func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*
 
 func (p *Database) LeaveGroup(ctx context.Context, req *pbim.LeaveGroupRequest) (*pbim.Empty, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
+
+	if len(req.Gid) == 1 && strings.Contains(req.Gid[0], ",") {
+		req.Gid = strings.Split(req.Gid[0], ",")
+	}
+	if len(req.Uid) == 1 && strings.Contains(req.Uid[0], ",") {
+		req.Uid = strings.Split(req.Uid[0], ",")
+	}
 
 	if len(req.Uid) == 0 || len(req.Gid) == 0 {
 		err := status.Errorf(codes.InvalidArgument, "empty uid or gid")

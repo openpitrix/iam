@@ -7,6 +7,7 @@ package db
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
@@ -91,6 +92,10 @@ func (p *Database) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 
 func (p *Database) DeleteUsers(ctx context.Context, req *pbim.UserIdList) (*pbim.Empty, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
+
+	if len(req.Uid) == 1 && strings.Contains(req.Uid[0], ",") {
+		req.Uid = strings.Split(req.Uid[0], ",")
+	}
 
 	if req == nil || len(req.Uid) == 0 || !isValidIds(req.Uid...) {
 		err := status.Errorf(codes.InvalidArgument, "empty field")
@@ -219,6 +224,26 @@ func (p *Database) GetUser(ctx context.Context, req *pbim.UserId) (*pbim.User, e
 
 func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*pbim.ListUsersResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
+
+	// fix repeated fileds
+	if len(req.Gid) == 1 && strings.Contains(req.Gid[0], ",") {
+		req.Gid = strings.Split(req.Gid[0], ",")
+	}
+	if len(req.Uid) == 1 && strings.Contains(req.Uid[0], ",") {
+		req.Uid = strings.Split(req.Uid[0], ",")
+	}
+	if len(req.Name) == 1 && strings.Contains(req.Name[0], ",") {
+		req.Name = strings.Split(req.Name[0], ",")
+	}
+	if len(req.Email) == 1 && strings.Contains(req.Email[0], ",") {
+		req.Email = strings.Split(req.Email[0], ",")
+	}
+	if len(req.PhoneNumber) == 1 && strings.Contains(req.PhoneNumber[0], ",") {
+		req.PhoneNumber = strings.Split(req.PhoneNumber[0], ",")
+	}
+	if len(req.Status) == 1 && strings.Contains(req.Status[0], ",") {
+		req.Status = strings.Split(req.Status[0], ",")
+	}
 
 	if err := p.validateListUsersReq(req); err != nil {
 		return nil, err

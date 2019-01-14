@@ -29,6 +29,7 @@ func (p *Database) validateListGroupsReq(req *pbim.ListGroupsRequest) error {
 		return fmt.Errorf("invalid limit: %v", req.Limit)
 	}
 
+	// check repeaded fields
 	if !isValidIds(req.Gid...) {
 		return fmt.Errorf("invalid gid: %v", req.Gid)
 	}

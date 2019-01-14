@@ -16,6 +16,10 @@ server:
 	go vet ./...
 	go run main.go
 
+docker-build:
+	docker build -t openpitrix/iam:dev -f ./Dockerfile .
+	docker images openpitrix/iam:dev
+
 docker-run:
 	docker run --rm -it -p 9115:9115 -v `pwd`:/root \
 		openpitrix/iam:v0.2.2-dev iam \

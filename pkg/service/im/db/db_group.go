@@ -112,6 +112,10 @@ func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 func (p *Database) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pbim.Empty, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
+	if len(req.Gid) == 1 && strings.Contains(req.Gid[0], ",") {
+		req.Gid = strings.Split(req.Gid[0], ",")
+	}
+
 	if req == nil || len(req.Gid) == 0 || !isValidIds(req.Gid...) {
 		err := status.Errorf(codes.InvalidArgument, "empty field")
 		logger.Warnf(ctx, "%+v", err)
@@ -236,6 +240,20 @@ func (p *Database) GetGroup(ctx context.Context, req *pbim.GroupId) (*pbim.Group
 
 func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) (*pbim.ListGroupsResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
+
+	// fix repeated fileds
+	if len(req.Gid) == 1 && strings.Contains(req.Gid[0], ",") {
+		req.Gid = strings.Split(req.Gid[0], ",")
+	}
+	if len(req.Uid) == 1 && strings.Contains(req.Uid[0], ",") {
+		req.Uid = strings.Split(req.Uid[0], ",")
+	}
+	if len(req.Name) == 1 && strings.Contains(req.Name[0], ",") {
+		req.Name = strings.Split(req.Name[0], ",")
+	}
+	if len(req.Status) == 1 && strings.Contains(req.Status[0], ",") {
+		req.Status = strings.Split(req.Status[0], ",")
+	}
 
 	if err := p.validateListGroupsReq(req); err != nil {
 		return nil, err
