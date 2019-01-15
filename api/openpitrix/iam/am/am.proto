@@ -53,12 +53,12 @@ service AccessManager {
 			body: "*"
 		};
 	}
-	rpc DescribeRoles(Empty) returns (RoleList) {
+	rpc DescribeRoles(DescribeRolesRequest) returns (RoleList) {
 		option (google.api.http) = {
 			get: "/v1/am/roles"
 		};
 	}
-	rpc DescribeRolesVerbose(Empty) returns (RoleExList) {
+	rpc DescribeRolesVerbose(DescribeRolesVerboseRequest) returns (RoleExList) {
 		option (google.api.http) = {
 			get: "/v1/am/roles:verbose"
 		};
@@ -196,6 +196,17 @@ message ModifyRoleRequest {
 }
 message ModifyRoleResponse {
 	repeated Role role = 1;
+}
+
+message DescribeRolesRequest {
+	repeated string role_id = 1;
+	repeated string role_name = 2;
+	repeated string portal = 3;
+}
+message DescribeRolesVerboseRequest {
+	repeated string role_id = 1;
+	repeated string role_name = 2;
+	repeated string portal = 3;
 }
 
 // ----------------------------------------------------------------------------
