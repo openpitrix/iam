@@ -6,6 +6,7 @@ package pbam // import "openpitrix.io/iam/pkg/pb/am"
 import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
+import timestamp "github.com/golang/protobuf/ptypes/timestamp"
 import _ "google.golang.org/genproto/googleapis/api/annotations"
 
 import (
@@ -24,412 +25,6 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
-type Action struct {
-	RoleName             []string `protobuf:"bytes,1,rep,name=role_name,json=roleName,proto3" json:"role_name,omitempty"`
-	Xid                  []string `protobuf:"bytes,2,rep,name=xid,proto3" json:"xid,omitempty"`
-	Method               string   `protobuf:"bytes,3,opt,name=method,proto3" json:"method,omitempty"`
-	Namespace            string   `protobuf:"bytes,4,opt,name=namespace,proto3" json:"namespace,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *Action) Reset()         { *m = Action{} }
-func (m *Action) String() string { return proto.CompactTextString(m) }
-func (*Action) ProtoMessage()    {}
-func (*Action) Descriptor() ([]byte, []int) {
-	return fileDescriptor_am_d944bc332e86ab62, []int{0}
-}
-func (m *Action) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Action.Unmarshal(m, b)
-}
-func (m *Action) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Action.Marshal(b, m, deterministic)
-}
-func (dst *Action) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Action.Merge(dst, src)
-}
-func (m *Action) XXX_Size() int {
-	return xxx_messageInfo_Action.Size(m)
-}
-func (m *Action) XXX_DiscardUnknown() {
-	xxx_messageInfo_Action.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Action proto.InternalMessageInfo
-
-func (m *Action) GetRoleName() []string {
-	if m != nil {
-		return m.RoleName
-	}
-	return nil
-}
-
-func (m *Action) GetXid() []string {
-	if m != nil {
-		return m.Xid
-	}
-	return nil
-}
-
-func (m *Action) GetMethod() string {
-	if m != nil {
-		return m.Method
-	}
-	return ""
-}
-
-func (m *Action) GetNamespace() string {
-	if m != nil {
-		return m.Namespace
-	}
-	return ""
-}
-
-type ActionRule struct {
-	Name                 string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	MethodPattern        string   `protobuf:"bytes,2,opt,name=method_pattern,json=methodPattern,proto3" json:"method_pattern,omitempty"`
-	NamespacePattern     []string `protobuf:"bytes,3,rep,name=namespace_pattern,json=namespacePattern,proto3" json:"namespace_pattern,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *ActionRule) Reset()         { *m = ActionRule{} }
-func (m *ActionRule) String() string { return proto.CompactTextString(m) }
-func (*ActionRule) ProtoMessage()    {}
-func (*ActionRule) Descriptor() ([]byte, []int) {
-	return fileDescriptor_am_d944bc332e86ab62, []int{1}
-}
-func (m *ActionRule) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ActionRule.Unmarshal(m, b)
-}
-func (m *ActionRule) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ActionRule.Marshal(b, m, deterministic)
-}
-func (dst *ActionRule) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ActionRule.Merge(dst, src)
-}
-func (m *ActionRule) XXX_Size() int {
-	return xxx_messageInfo_ActionRule.Size(m)
-}
-func (m *ActionRule) XXX_DiscardUnknown() {
-	xxx_messageInfo_ActionRule.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ActionRule proto.InternalMessageInfo
-
-func (m *ActionRule) GetName() string {
-	if m != nil {
-		return m.Name
-	}
-	return ""
-}
-
-func (m *ActionRule) GetMethodPattern() string {
-	if m != nil {
-		return m.MethodPattern
-	}
-	return ""
-}
-
-func (m *ActionRule) GetNamespacePattern() []string {
-	if m != nil {
-		return m.NamespacePattern
-	}
-	return nil
-}
-
-type ActionRuleList struct {
-	Value                []*ActionRule `protobuf:"bytes,1,rep,name=value,proto3" json:"value,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
-	XXX_unrecognized     []byte        `json:"-"`
-	XXX_sizecache        int32         `json:"-"`
-}
-
-func (m *ActionRuleList) Reset()         { *m = ActionRuleList{} }
-func (m *ActionRuleList) String() string { return proto.CompactTextString(m) }
-func (*ActionRuleList) ProtoMessage()    {}
-func (*ActionRuleList) Descriptor() ([]byte, []int) {
-	return fileDescriptor_am_d944bc332e86ab62, []int{2}
-}
-func (m *ActionRuleList) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ActionRuleList.Unmarshal(m, b)
-}
-func (m *ActionRuleList) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ActionRuleList.Marshal(b, m, deterministic)
-}
-func (dst *ActionRuleList) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ActionRuleList.Merge(dst, src)
-}
-func (m *ActionRuleList) XXX_Size() int {
-	return xxx_messageInfo_ActionRuleList.Size(m)
-}
-func (m *ActionRuleList) XXX_DiscardUnknown() {
-	xxx_messageInfo_ActionRuleList.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ActionRuleList proto.InternalMessageInfo
-
-func (m *ActionRuleList) GetValue() []*ActionRule {
-	if m != nil {
-		return m.Value
-	}
-	return nil
-}
-
-type Role struct {
-	Name                 string        `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Rule                 []*ActionRule `protobuf:"bytes,2,rep,name=rule,proto3" json:"rule,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
-	XXX_unrecognized     []byte        `json:"-"`
-	XXX_sizecache        int32         `json:"-"`
-}
-
-func (m *Role) Reset()         { *m = Role{} }
-func (m *Role) String() string { return proto.CompactTextString(m) }
-func (*Role) ProtoMessage()    {}
-func (*Role) Descriptor() ([]byte, []int) {
-	return fileDescriptor_am_d944bc332e86ab62, []int{3}
-}
-func (m *Role) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Role.Unmarshal(m, b)
-}
-func (m *Role) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Role.Marshal(b, m, deterministic)
-}
-func (dst *Role) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Role.Merge(dst, src)
-}
-func (m *Role) XXX_Size() int {
-	return xxx_messageInfo_Role.Size(m)
-}
-func (m *Role) XXX_DiscardUnknown() {
-	xxx_messageInfo_Role.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Role proto.InternalMessageInfo
-
-func (m *Role) GetName() string {
-	if m != nil {
-		return m.Name
-	}
-	return ""
-}
-
-func (m *Role) GetRule() []*ActionRule {
-	if m != nil {
-		return m.Rule
-	}
-	return nil
-}
-
-type RoleList struct {
-	Value                []*Role  `protobuf:"bytes,1,rep,name=value,proto3" json:"value,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *RoleList) Reset()         { *m = RoleList{} }
-func (m *RoleList) String() string { return proto.CompactTextString(m) }
-func (*RoleList) ProtoMessage()    {}
-func (*RoleList) Descriptor() ([]byte, []int) {
-	return fileDescriptor_am_d944bc332e86ab62, []int{4}
-}
-func (m *RoleList) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_RoleList.Unmarshal(m, b)
-}
-func (m *RoleList) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_RoleList.Marshal(b, m, deterministic)
-}
-func (dst *RoleList) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_RoleList.Merge(dst, src)
-}
-func (m *RoleList) XXX_Size() int {
-	return xxx_messageInfo_RoleList.Size(m)
-}
-func (m *RoleList) XXX_DiscardUnknown() {
-	xxx_messageInfo_RoleList.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_RoleList proto.InternalMessageInfo
-
-func (m *RoleList) GetValue() []*Role {
-	if m != nil {
-		return m.Value
-	}
-	return nil
-}
-
-type RoleActionRuleBinding struct {
-	RoleName             string   `protobuf:"bytes,1,opt,name=role_name,json=roleName,proto3" json:"role_name,omitempty"`
-	ActionRuleId         string   `protobuf:"bytes,2,opt,name=action_rule_id,json=actionRuleId,proto3" json:"action_rule_id,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *RoleActionRuleBinding) Reset()         { *m = RoleActionRuleBinding{} }
-func (m *RoleActionRuleBinding) String() string { return proto.CompactTextString(m) }
-func (*RoleActionRuleBinding) ProtoMessage()    {}
-func (*RoleActionRuleBinding) Descriptor() ([]byte, []int) {
-	return fileDescriptor_am_d944bc332e86ab62, []int{5}
-}
-func (m *RoleActionRuleBinding) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_RoleActionRuleBinding.Unmarshal(m, b)
-}
-func (m *RoleActionRuleBinding) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_RoleActionRuleBinding.Marshal(b, m, deterministic)
-}
-func (dst *RoleActionRuleBinding) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_RoleActionRuleBinding.Merge(dst, src)
-}
-func (m *RoleActionRuleBinding) XXX_Size() int {
-	return xxx_messageInfo_RoleActionRuleBinding.Size(m)
-}
-func (m *RoleActionRuleBinding) XXX_DiscardUnknown() {
-	xxx_messageInfo_RoleActionRuleBinding.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_RoleActionRuleBinding proto.InternalMessageInfo
-
-func (m *RoleActionRuleBinding) GetRoleName() string {
-	if m != nil {
-		return m.RoleName
-	}
-	return ""
-}
-
-func (m *RoleActionRuleBinding) GetActionRuleId() string {
-	if m != nil {
-		return m.ActionRuleId
-	}
-	return ""
-}
-
-type RoleActionRuleBindingList struct {
-	Value                []*RoleActionRuleBinding `protobuf:"bytes,1,rep,name=value,proto3" json:"value,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}                 `json:"-"`
-	XXX_unrecognized     []byte                   `json:"-"`
-	XXX_sizecache        int32                    `json:"-"`
-}
-
-func (m *RoleActionRuleBindingList) Reset()         { *m = RoleActionRuleBindingList{} }
-func (m *RoleActionRuleBindingList) String() string { return proto.CompactTextString(m) }
-func (*RoleActionRuleBindingList) ProtoMessage()    {}
-func (*RoleActionRuleBindingList) Descriptor() ([]byte, []int) {
-	return fileDescriptor_am_d944bc332e86ab62, []int{6}
-}
-func (m *RoleActionRuleBindingList) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_RoleActionRuleBindingList.Unmarshal(m, b)
-}
-func (m *RoleActionRuleBindingList) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_RoleActionRuleBindingList.Marshal(b, m, deterministic)
-}
-func (dst *RoleActionRuleBindingList) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_RoleActionRuleBindingList.Merge(dst, src)
-}
-func (m *RoleActionRuleBindingList) XXX_Size() int {
-	return xxx_messageInfo_RoleActionRuleBindingList.Size(m)
-}
-func (m *RoleActionRuleBindingList) XXX_DiscardUnknown() {
-	xxx_messageInfo_RoleActionRuleBindingList.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_RoleActionRuleBindingList proto.InternalMessageInfo
-
-func (m *RoleActionRuleBindingList) GetValue() []*RoleActionRuleBinding {
-	if m != nil {
-		return m.Value
-	}
-	return nil
-}
-
-type RoleXidBinding struct {
-	RoleName             string   `protobuf:"bytes,1,opt,name=role_name,json=roleName,proto3" json:"role_name,omitempty"`
-	Xid                  string   `protobuf:"bytes,2,opt,name=xid,proto3" json:"xid,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *RoleXidBinding) Reset()         { *m = RoleXidBinding{} }
-func (m *RoleXidBinding) String() string { return proto.CompactTextString(m) }
-func (*RoleXidBinding) ProtoMessage()    {}
-func (*RoleXidBinding) Descriptor() ([]byte, []int) {
-	return fileDescriptor_am_d944bc332e86ab62, []int{7}
-}
-func (m *RoleXidBinding) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_RoleXidBinding.Unmarshal(m, b)
-}
-func (m *RoleXidBinding) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_RoleXidBinding.Marshal(b, m, deterministic)
-}
-func (dst *RoleXidBinding) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_RoleXidBinding.Merge(dst, src)
-}
-func (m *RoleXidBinding) XXX_Size() int {
-	return xxx_messageInfo_RoleXidBinding.Size(m)
-}
-func (m *RoleXidBinding) XXX_DiscardUnknown() {
-	xxx_messageInfo_RoleXidBinding.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_RoleXidBinding proto.InternalMessageInfo
-
-func (m *RoleXidBinding) GetRoleName() string {
-	if m != nil {
-		return m.RoleName
-	}
-	return ""
-}
-
-func (m *RoleXidBinding) GetXid() string {
-	if m != nil {
-		return m.Xid
-	}
-	return ""
-}
-
-type RoleXidBindingList struct {
-	Value                []*RoleXidBinding `protobuf:"bytes,1,rep,name=value,proto3" json:"value,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
-	XXX_unrecognized     []byte            `json:"-"`
-	XXX_sizecache        int32             `json:"-"`
-}
-
-func (m *RoleXidBindingList) Reset()         { *m = RoleXidBindingList{} }
-func (m *RoleXidBindingList) String() string { return proto.CompactTextString(m) }
-func (*RoleXidBindingList) ProtoMessage()    {}
-func (*RoleXidBindingList) Descriptor() ([]byte, []int) {
-	return fileDescriptor_am_d944bc332e86ab62, []int{8}
-}
-func (m *RoleXidBindingList) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_RoleXidBindingList.Unmarshal(m, b)
-}
-func (m *RoleXidBindingList) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_RoleXidBindingList.Marshal(b, m, deterministic)
-}
-func (dst *RoleXidBindingList) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_RoleXidBindingList.Merge(dst, src)
-}
-func (m *RoleXidBindingList) XXX_Size() int {
-	return xxx_messageInfo_RoleXidBindingList.Size(m)
-}
-func (m *RoleXidBindingList) XXX_DiscardUnknown() {
-	xxx_messageInfo_RoleXidBindingList.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_RoleXidBindingList proto.InternalMessageInfo
-
-func (m *RoleXidBindingList) GetValue() []*RoleXidBinding {
-	if m != nil {
-		return m.Value
-	}
-	return nil
-}
-
 type Empty struct {
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -440,7 +35,7 @@ func (m *Empty) Reset()         { *m = Empty{} }
 func (m *Empty) String() string { return proto.CompactTextString(m) }
 func (*Empty) ProtoMessage()    {}
 func (*Empty) Descriptor() ([]byte, []int) {
-	return fileDescriptor_am_d944bc332e86ab62, []int{9}
+	return fileDescriptor_am_ba05431bb70a32a8, []int{0}
 }
 func (m *Empty) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Empty.Unmarshal(m, b)
@@ -460,44 +55,6 @@ func (m *Empty) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Empty proto.InternalMessageInfo
 
-type Bool struct {
-	Value                bool     `protobuf:"varint,1,opt,name=value,proto3" json:"value,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *Bool) Reset()         { *m = Bool{} }
-func (m *Bool) String() string { return proto.CompactTextString(m) }
-func (*Bool) ProtoMessage()    {}
-func (*Bool) Descriptor() ([]byte, []int) {
-	return fileDescriptor_am_d944bc332e86ab62, []int{10}
-}
-func (m *Bool) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Bool.Unmarshal(m, b)
-}
-func (m *Bool) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Bool.Marshal(b, m, deterministic)
-}
-func (dst *Bool) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Bool.Merge(dst, src)
-}
-func (m *Bool) XXX_Size() int {
-	return xxx_messageInfo_Bool.Size(m)
-}
-func (m *Bool) XXX_DiscardUnknown() {
-	xxx_messageInfo_Bool.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Bool proto.InternalMessageInfo
-
-func (m *Bool) GetValue() bool {
-	if m != nil {
-		return m.Value
-	}
-	return false
-}
-
 type String struct {
 	Value                string   `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -509,7 +66,7 @@ func (m *String) Reset()         { *m = String{} }
 func (m *String) String() string { return proto.CompactTextString(m) }
 func (*String) ProtoMessage()    {}
 func (*String) Descriptor() ([]byte, []int) {
-	return fileDescriptor_am_d944bc332e86ab62, []int{11}
+	return fileDescriptor_am_ba05431bb70a32a8, []int{1}
 }
 func (m *String) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_String.Unmarshal(m, b)
@@ -536,194 +93,1461 @@ func (m *String) GetValue() string {
 	return ""
 }
 
-type Xid struct {
-	Value                string   `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
+type Action struct {
+	ActionId             string   `protobuf:"bytes,1,opt,name=action_id,json=actionId,proto3" json:"action_id,omitempty"`
+	ActionName           string   `protobuf:"bytes,2,opt,name=action_name,json=actionName,proto3" json:"action_name,omitempty"`
+	Method               string   `protobuf:"bytes,3,opt,name=method,proto3" json:"method,omitempty"`
+	Description          string   `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
+	FeatureId            string   `protobuf:"bytes,5,opt,name=feature_id,json=featureId,proto3" json:"feature_id,omitempty"`
+	FeatureName          string   `protobuf:"bytes,6,opt,name=feature_name,json=featureName,proto3" json:"feature_name,omitempty"`
+	ModuleId             string   `protobuf:"bytes,7,opt,name=module_id,json=moduleId,proto3" json:"module_id,omitempty"`
+	ModuleName           string   `protobuf:"bytes,8,opt,name=module_name,json=moduleName,proto3" json:"module_name,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *Xid) Reset()         { *m = Xid{} }
-func (m *Xid) String() string { return proto.CompactTextString(m) }
-func (*Xid) ProtoMessage()    {}
-func (*Xid) Descriptor() ([]byte, []int) {
-	return fileDescriptor_am_d944bc332e86ab62, []int{12}
+func (m *Action) Reset()         { *m = Action{} }
+func (m *Action) String() string { return proto.CompactTextString(m) }
+func (*Action) ProtoMessage()    {}
+func (*Action) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{2}
 }
-func (m *Xid) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Xid.Unmarshal(m, b)
+func (m *Action) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Action.Unmarshal(m, b)
 }
-func (m *Xid) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Xid.Marshal(b, m, deterministic)
+func (m *Action) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Action.Marshal(b, m, deterministic)
 }
-func (dst *Xid) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Xid.Merge(dst, src)
+func (dst *Action) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Action.Merge(dst, src)
 }
-func (m *Xid) XXX_Size() int {
-	return xxx_messageInfo_Xid.Size(m)
+func (m *Action) XXX_Size() int {
+	return xxx_messageInfo_Action.Size(m)
 }
-func (m *Xid) XXX_DiscardUnknown() {
-	xxx_messageInfo_Xid.DiscardUnknown(m)
+func (m *Action) XXX_DiscardUnknown() {
+	xxx_messageInfo_Action.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_Xid proto.InternalMessageInfo
+var xxx_messageInfo_Action proto.InternalMessageInfo
 
-func (m *Xid) GetValue() string {
+func (m *Action) GetActionId() string {
 	if m != nil {
-		return m.Value
+		return m.ActionId
 	}
 	return ""
 }
 
-type XidList struct {
-	Value                []string `protobuf:"bytes,1,rep,name=value,proto3" json:"value,omitempty"`
+func (m *Action) GetActionName() string {
+	if m != nil {
+		return m.ActionName
+	}
+	return ""
+}
+
+func (m *Action) GetMethod() string {
+	if m != nil {
+		return m.Method
+	}
+	return ""
+}
+
+func (m *Action) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *Action) GetFeatureId() string {
+	if m != nil {
+		return m.FeatureId
+	}
+	return ""
+}
+
+func (m *Action) GetFeatureName() string {
+	if m != nil {
+		return m.FeatureName
+	}
+	return ""
+}
+
+func (m *Action) GetModuleId() string {
+	if m != nil {
+		return m.ModuleId
+	}
+	return ""
+}
+
+func (m *Action) GetModuleName() string {
+	if m != nil {
+		return m.ModuleName
+	}
+	return ""
+}
+
+type DescribeActionsRequest struct {
+	Offset               int32    `protobuf:"varint,1,opt,name=offset,proto3" json:"offset,omitempty"`
+	Limit                int32    `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *XidList) Reset()         { *m = XidList{} }
-func (m *XidList) String() string { return proto.CompactTextString(m) }
-func (*XidList) ProtoMessage()    {}
-func (*XidList) Descriptor() ([]byte, []int) {
-	return fileDescriptor_am_d944bc332e86ab62, []int{13}
+func (m *DescribeActionsRequest) Reset()         { *m = DescribeActionsRequest{} }
+func (m *DescribeActionsRequest) String() string { return proto.CompactTextString(m) }
+func (*DescribeActionsRequest) ProtoMessage()    {}
+func (*DescribeActionsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{3}
 }
-func (m *XidList) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_XidList.Unmarshal(m, b)
+func (m *DescribeActionsRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DescribeActionsRequest.Unmarshal(m, b)
 }
-func (m *XidList) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_XidList.Marshal(b, m, deterministic)
+func (m *DescribeActionsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DescribeActionsRequest.Marshal(b, m, deterministic)
 }
-func (dst *XidList) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_XidList.Merge(dst, src)
+func (dst *DescribeActionsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DescribeActionsRequest.Merge(dst, src)
 }
-func (m *XidList) XXX_Size() int {
-	return xxx_messageInfo_XidList.Size(m)
+func (m *DescribeActionsRequest) XXX_Size() int {
+	return xxx_messageInfo_DescribeActionsRequest.Size(m)
 }
-func (m *XidList) XXX_DiscardUnknown() {
-	xxx_messageInfo_XidList.DiscardUnknown(m)
+func (m *DescribeActionsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DescribeActionsRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_XidList proto.InternalMessageInfo
+var xxx_messageInfo_DescribeActionsRequest proto.InternalMessageInfo
 
-func (m *XidList) GetValue() []string {
+func (m *DescribeActionsRequest) GetOffset() int32 {
 	if m != nil {
-		return m.Value
+		return m.Offset
+	}
+	return 0
+}
+
+func (m *DescribeActionsRequest) GetLimit() int32 {
+	if m != nil {
+		return m.Limit
+	}
+	return 0
+}
+
+type DescribeActionsResponse struct {
+	ActionSet            []*Action `protobuf:"bytes,1,rep,name=action_set,json=actionSet,proto3" json:"action_set,omitempty"`
+	TotalCount           int32     `protobuf:"varint,2,opt,name=total_count,json=totalCount,proto3" json:"total_count,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}  `json:"-"`
+	XXX_unrecognized     []byte    `json:"-"`
+	XXX_sizecache        int32     `json:"-"`
+}
+
+func (m *DescribeActionsResponse) Reset()         { *m = DescribeActionsResponse{} }
+func (m *DescribeActionsResponse) String() string { return proto.CompactTextString(m) }
+func (*DescribeActionsResponse) ProtoMessage()    {}
+func (*DescribeActionsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{4}
+}
+func (m *DescribeActionsResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DescribeActionsResponse.Unmarshal(m, b)
+}
+func (m *DescribeActionsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DescribeActionsResponse.Marshal(b, m, deterministic)
+}
+func (dst *DescribeActionsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DescribeActionsResponse.Merge(dst, src)
+}
+func (m *DescribeActionsResponse) XXX_Size() int {
+	return xxx_messageInfo_DescribeActionsResponse.Size(m)
+}
+func (m *DescribeActionsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_DescribeActionsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DescribeActionsResponse proto.InternalMessageInfo
+
+func (m *DescribeActionsResponse) GetActionSet() []*Action {
+	if m != nil {
+		return m.ActionSet
 	}
 	return nil
 }
 
-type NameFilter struct {
-	// Glob: See Pattern Syntax
-	GlobPattern string `protobuf:"bytes,1,opt,name=glob_pattern,json=globPattern,proto3" json:"glob_pattern,omitempty"`
-	// Use RE2 syntax
-	// See https://github.com/google/re2/wiki/Syntax
-	RegexpPattern        string   `protobuf:"bytes,2,opt,name=regexp_pattern,json=regexpPattern,proto3" json:"regexp_pattern,omitempty"`
+func (m *DescribeActionsResponse) GetTotalCount() int32 {
+	if m != nil {
+		return m.TotalCount
+	}
+	return 0
+}
+
+type CanDoActionRequest struct {
+	UserId               string   `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Method               string   `protobuf:"bytes,2,opt,name=method,proto3" json:"method,omitempty"`
+	AccessPath           string   `protobuf:"bytes,3,opt,name=access_path,json=accessPath,proto3" json:"access_path,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *NameFilter) Reset()         { *m = NameFilter{} }
-func (m *NameFilter) String() string { return proto.CompactTextString(m) }
-func (*NameFilter) ProtoMessage()    {}
-func (*NameFilter) Descriptor() ([]byte, []int) {
-	return fileDescriptor_am_d944bc332e86ab62, []int{14}
+func (m *CanDoActionRequest) Reset()         { *m = CanDoActionRequest{} }
+func (m *CanDoActionRequest) String() string { return proto.CompactTextString(m) }
+func (*CanDoActionRequest) ProtoMessage()    {}
+func (*CanDoActionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{5}
 }
-func (m *NameFilter) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_NameFilter.Unmarshal(m, b)
+func (m *CanDoActionRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CanDoActionRequest.Unmarshal(m, b)
 }
-func (m *NameFilter) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_NameFilter.Marshal(b, m, deterministic)
+func (m *CanDoActionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CanDoActionRequest.Marshal(b, m, deterministic)
 }
-func (dst *NameFilter) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_NameFilter.Merge(dst, src)
+func (dst *CanDoActionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CanDoActionRequest.Merge(dst, src)
 }
-func (m *NameFilter) XXX_Size() int {
-	return xxx_messageInfo_NameFilter.Size(m)
+func (m *CanDoActionRequest) XXX_Size() int {
+	return xxx_messageInfo_CanDoActionRequest.Size(m)
 }
-func (m *NameFilter) XXX_DiscardUnknown() {
-	xxx_messageInfo_NameFilter.DiscardUnknown(m)
+func (m *CanDoActionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_CanDoActionRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_NameFilter proto.InternalMessageInfo
+var xxx_messageInfo_CanDoActionRequest proto.InternalMessageInfo
 
-func (m *NameFilter) GetGlobPattern() string {
+func (m *CanDoActionRequest) GetUserId() string {
 	if m != nil {
-		return m.GlobPattern
+		return m.UserId
 	}
 	return ""
 }
 
-func (m *NameFilter) GetRegexpPattern() string {
+func (m *CanDoActionRequest) GetMethod() string {
 	if m != nil {
-		return m.RegexpPattern
+		return m.Method
 	}
 	return ""
 }
 
-type RoleBindingFilter struct {
-	Xid                  *NameFilter `protobuf:"bytes,1,opt,name=xid,proto3" json:"xid,omitempty"`
-	RoleName             *NameFilter `protobuf:"bytes,2,opt,name=role_name,json=roleName,proto3" json:"role_name,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
-	XXX_unrecognized     []byte      `json:"-"`
-	XXX_sizecache        int32       `json:"-"`
-}
-
-func (m *RoleBindingFilter) Reset()         { *m = RoleBindingFilter{} }
-func (m *RoleBindingFilter) String() string { return proto.CompactTextString(m) }
-func (*RoleBindingFilter) ProtoMessage()    {}
-func (*RoleBindingFilter) Descriptor() ([]byte, []int) {
-	return fileDescriptor_am_d944bc332e86ab62, []int{15}
-}
-func (m *RoleBindingFilter) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_RoleBindingFilter.Unmarshal(m, b)
-}
-func (m *RoleBindingFilter) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_RoleBindingFilter.Marshal(b, m, deterministic)
-}
-func (dst *RoleBindingFilter) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_RoleBindingFilter.Merge(dst, src)
-}
-func (m *RoleBindingFilter) XXX_Size() int {
-	return xxx_messageInfo_RoleBindingFilter.Size(m)
-}
-func (m *RoleBindingFilter) XXX_DiscardUnknown() {
-	xxx_messageInfo_RoleBindingFilter.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_RoleBindingFilter proto.InternalMessageInfo
-
-func (m *RoleBindingFilter) GetXid() *NameFilter {
+func (m *CanDoActionRequest) GetAccessPath() string {
 	if m != nil {
-		return m.Xid
+		return m.AccessPath
 	}
-	return nil
+	return ""
 }
 
-func (m *RoleBindingFilter) GetRoleName() *NameFilter {
+type CanDoActionResponse struct {
+	UserId               string   `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Ok                   bool     `protobuf:"varint,2,opt,name=ok,proto3" json:"ok,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *CanDoActionResponse) Reset()         { *m = CanDoActionResponse{} }
+func (m *CanDoActionResponse) String() string { return proto.CompactTextString(m) }
+func (*CanDoActionResponse) ProtoMessage()    {}
+func (*CanDoActionResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{6}
+}
+func (m *CanDoActionResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CanDoActionResponse.Unmarshal(m, b)
+}
+func (m *CanDoActionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CanDoActionResponse.Marshal(b, m, deterministic)
+}
+func (dst *CanDoActionResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CanDoActionResponse.Merge(dst, src)
+}
+func (m *CanDoActionResponse) XXX_Size() int {
+	return xxx_messageInfo_CanDoActionResponse.Size(m)
+}
+func (m *CanDoActionResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_CanDoActionResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CanDoActionResponse proto.InternalMessageInfo
+
+func (m *CanDoActionResponse) GetUserId() string {
+	if m != nil {
+		return m.UserId
+	}
+	return ""
+}
+
+func (m *CanDoActionResponse) GetOk() bool {
+	if m != nil {
+		return m.Ok
+	}
+	return false
+}
+
+type GetOwnerPathRequest struct {
+	UserId               string   `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Method               string   `protobuf:"bytes,2,opt,name=method,proto3" json:"method,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GetOwnerPathRequest) Reset()         { *m = GetOwnerPathRequest{} }
+func (m *GetOwnerPathRequest) String() string { return proto.CompactTextString(m) }
+func (*GetOwnerPathRequest) ProtoMessage()    {}
+func (*GetOwnerPathRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{7}
+}
+func (m *GetOwnerPathRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetOwnerPathRequest.Unmarshal(m, b)
+}
+func (m *GetOwnerPathRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetOwnerPathRequest.Marshal(b, m, deterministic)
+}
+func (dst *GetOwnerPathRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetOwnerPathRequest.Merge(dst, src)
+}
+func (m *GetOwnerPathRequest) XXX_Size() int {
+	return xxx_messageInfo_GetOwnerPathRequest.Size(m)
+}
+func (m *GetOwnerPathRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetOwnerPathRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetOwnerPathRequest proto.InternalMessageInfo
+
+func (m *GetOwnerPathRequest) GetUserId() string {
+	if m != nil {
+		return m.UserId
+	}
+	return ""
+}
+
+func (m *GetOwnerPathRequest) GetMethod() string {
+	if m != nil {
+		return m.Method
+	}
+	return ""
+}
+
+type GetOwnerPathResponse struct {
+	UserId               string   `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Method               string   `protobuf:"bytes,2,opt,name=method,proto3" json:"method,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GetOwnerPathResponse) Reset()         { *m = GetOwnerPathResponse{} }
+func (m *GetOwnerPathResponse) String() string { return proto.CompactTextString(m) }
+func (*GetOwnerPathResponse) ProtoMessage()    {}
+func (*GetOwnerPathResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{8}
+}
+func (m *GetOwnerPathResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetOwnerPathResponse.Unmarshal(m, b)
+}
+func (m *GetOwnerPathResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetOwnerPathResponse.Marshal(b, m, deterministic)
+}
+func (dst *GetOwnerPathResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetOwnerPathResponse.Merge(dst, src)
+}
+func (m *GetOwnerPathResponse) XXX_Size() int {
+	return xxx_messageInfo_GetOwnerPathResponse.Size(m)
+}
+func (m *GetOwnerPathResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetOwnerPathResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetOwnerPathResponse proto.InternalMessageInfo
+
+func (m *GetOwnerPathResponse) GetUserId() string {
+	if m != nil {
+		return m.UserId
+	}
+	return ""
+}
+
+func (m *GetOwnerPathResponse) GetMethod() string {
+	if m != nil {
+		return m.Method
+	}
+	return ""
+}
+
+type GetAccessPathRequest struct {
+	UserId               string   `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Method               string   `protobuf:"bytes,2,opt,name=method,proto3" json:"method,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GetAccessPathRequest) Reset()         { *m = GetAccessPathRequest{} }
+func (m *GetAccessPathRequest) String() string { return proto.CompactTextString(m) }
+func (*GetAccessPathRequest) ProtoMessage()    {}
+func (*GetAccessPathRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{9}
+}
+func (m *GetAccessPathRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetAccessPathRequest.Unmarshal(m, b)
+}
+func (m *GetAccessPathRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetAccessPathRequest.Marshal(b, m, deterministic)
+}
+func (dst *GetAccessPathRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetAccessPathRequest.Merge(dst, src)
+}
+func (m *GetAccessPathRequest) XXX_Size() int {
+	return xxx_messageInfo_GetAccessPathRequest.Size(m)
+}
+func (m *GetAccessPathRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetAccessPathRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetAccessPathRequest proto.InternalMessageInfo
+
+func (m *GetAccessPathRequest) GetUserId() string {
+	if m != nil {
+		return m.UserId
+	}
+	return ""
+}
+
+func (m *GetAccessPathRequest) GetMethod() string {
+	if m != nil {
+		return m.Method
+	}
+	return ""
+}
+
+type GetAccessPathResponse struct {
+	UserId               string   `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Path                 string   `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GetAccessPathResponse) Reset()         { *m = GetAccessPathResponse{} }
+func (m *GetAccessPathResponse) String() string { return proto.CompactTextString(m) }
+func (*GetAccessPathResponse) ProtoMessage()    {}
+func (*GetAccessPathResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{10}
+}
+func (m *GetAccessPathResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetAccessPathResponse.Unmarshal(m, b)
+}
+func (m *GetAccessPathResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetAccessPathResponse.Marshal(b, m, deterministic)
+}
+func (dst *GetAccessPathResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetAccessPathResponse.Merge(dst, src)
+}
+func (m *GetAccessPathResponse) XXX_Size() int {
+	return xxx_messageInfo_GetAccessPathResponse.Size(m)
+}
+func (m *GetAccessPathResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetAccessPathResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetAccessPathResponse proto.InternalMessageInfo
+
+func (m *GetAccessPathResponse) GetUserId() string {
+	if m != nil {
+		return m.UserId
+	}
+	return ""
+}
+
+func (m *GetAccessPathResponse) GetPath() string {
+	if m != nil {
+		return m.Path
+	}
+	return ""
+}
+
+type Role struct {
+	RoleId               string               `protobuf:"bytes,1,opt,name=role_id,json=roleId,proto3" json:"role_id,omitempty"`
+	RoleName             string               `protobuf:"bytes,2,opt,name=role_name,json=roleName,proto3" json:"role_name,omitempty"`
+	Description          string               `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	Portal               string               `protobuf:"bytes,4,opt,name=portal,proto3" json:"portal,omitempty"`
+	Owner                string               `protobuf:"bytes,5,opt,name=owner,proto3" json:"owner,omitempty"`
+	OwnerPath            string               `protobuf:"bytes,6,opt,name=owner_path,json=ownerPath,proto3" json:"owner_path,omitempty"`
+	CreateTime           *timestamp.Timestamp `protobuf:"bytes,7,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	UpdateTime           *timestamp.Timestamp `protobuf:"bytes,8,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
+	XXX_unrecognized     []byte               `json:"-"`
+	XXX_sizecache        int32                `json:"-"`
+}
+
+func (m *Role) Reset()         { *m = Role{} }
+func (m *Role) String() string { return proto.CompactTextString(m) }
+func (*Role) ProtoMessage()    {}
+func (*Role) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{11}
+}
+func (m *Role) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Role.Unmarshal(m, b)
+}
+func (m *Role) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Role.Marshal(b, m, deterministic)
+}
+func (dst *Role) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Role.Merge(dst, src)
+}
+func (m *Role) XXX_Size() int {
+	return xxx_messageInfo_Role.Size(m)
+}
+func (m *Role) XXX_DiscardUnknown() {
+	xxx_messageInfo_Role.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Role proto.InternalMessageInfo
+
+func (m *Role) GetRoleId() string {
+	if m != nil {
+		return m.RoleId
+	}
+	return ""
+}
+
+func (m *Role) GetRoleName() string {
 	if m != nil {
 		return m.RoleName
 	}
+	return ""
+}
+
+func (m *Role) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *Role) GetPortal() string {
+	if m != nil {
+		return m.Portal
+	}
+	return ""
+}
+
+func (m *Role) GetOwner() string {
+	if m != nil {
+		return m.Owner
+	}
+	return ""
+}
+
+func (m *Role) GetOwnerPath() string {
+	if m != nil {
+		return m.OwnerPath
+	}
+	return ""
+}
+
+func (m *Role) GetCreateTime() *timestamp.Timestamp {
+	if m != nil {
+		return m.CreateTime
+	}
 	return nil
 }
 
+func (m *Role) GetUpdateTime() *timestamp.Timestamp {
+	if m != nil {
+		return m.UpdateTime
+	}
+	return nil
+}
+
+type CreateRoleRequest struct {
+	UserId               string   `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Value                *Role    `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *CreateRoleRequest) Reset()         { *m = CreateRoleRequest{} }
+func (m *CreateRoleRequest) String() string { return proto.CompactTextString(m) }
+func (*CreateRoleRequest) ProtoMessage()    {}
+func (*CreateRoleRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{12}
+}
+func (m *CreateRoleRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateRoleRequest.Unmarshal(m, b)
+}
+func (m *CreateRoleRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateRoleRequest.Marshal(b, m, deterministic)
+}
+func (dst *CreateRoleRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateRoleRequest.Merge(dst, src)
+}
+func (m *CreateRoleRequest) XXX_Size() int {
+	return xxx_messageInfo_CreateRoleRequest.Size(m)
+}
+func (m *CreateRoleRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateRoleRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateRoleRequest proto.InternalMessageInfo
+
+func (m *CreateRoleRequest) GetUserId() string {
+	if m != nil {
+		return m.UserId
+	}
+	return ""
+}
+
+func (m *CreateRoleRequest) GetValue() *Role {
+	if m != nil {
+		return m.Value
+	}
+	return nil
+}
+
+type CreateRoleResponse struct {
+	UserId               string   `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	RoleId               string   `protobuf:"bytes,2,opt,name=role_id,json=roleId,proto3" json:"role_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *CreateRoleResponse) Reset()         { *m = CreateRoleResponse{} }
+func (m *CreateRoleResponse) String() string { return proto.CompactTextString(m) }
+func (*CreateRoleResponse) ProtoMessage()    {}
+func (*CreateRoleResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{13}
+}
+func (m *CreateRoleResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateRoleResponse.Unmarshal(m, b)
+}
+func (m *CreateRoleResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateRoleResponse.Marshal(b, m, deterministic)
+}
+func (dst *CreateRoleResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateRoleResponse.Merge(dst, src)
+}
+func (m *CreateRoleResponse) XXX_Size() int {
+	return xxx_messageInfo_CreateRoleResponse.Size(m)
+}
+func (m *CreateRoleResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateRoleResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateRoleResponse proto.InternalMessageInfo
+
+func (m *CreateRoleResponse) GetUserId() string {
+	if m != nil {
+		return m.UserId
+	}
+	return ""
+}
+
+func (m *CreateRoleResponse) GetRoleId() string {
+	if m != nil {
+		return m.RoleId
+	}
+	return ""
+}
+
+type DeleteRolesRequest struct {
+	UserId               string   `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	RoleId               []string `protobuf:"bytes,2,rep,name=role_id,json=roleId,proto3" json:"role_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DeleteRolesRequest) Reset()         { *m = DeleteRolesRequest{} }
+func (m *DeleteRolesRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteRolesRequest) ProtoMessage()    {}
+func (*DeleteRolesRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{14}
+}
+func (m *DeleteRolesRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteRolesRequest.Unmarshal(m, b)
+}
+func (m *DeleteRolesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteRolesRequest.Marshal(b, m, deterministic)
+}
+func (dst *DeleteRolesRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteRolesRequest.Merge(dst, src)
+}
+func (m *DeleteRolesRequest) XXX_Size() int {
+	return xxx_messageInfo_DeleteRolesRequest.Size(m)
+}
+func (m *DeleteRolesRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteRolesRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteRolesRequest proto.InternalMessageInfo
+
+func (m *DeleteRolesRequest) GetUserId() string {
+	if m != nil {
+		return m.UserId
+	}
+	return ""
+}
+
+func (m *DeleteRolesRequest) GetRoleId() []string {
+	if m != nil {
+		return m.RoleId
+	}
+	return nil
+}
+
+type DeleteRolesResponse struct {
+	RoleId               []string `protobuf:"bytes,2,rep,name=role_id,json=roleId,proto3" json:"role_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DeleteRolesResponse) Reset()         { *m = DeleteRolesResponse{} }
+func (m *DeleteRolesResponse) String() string { return proto.CompactTextString(m) }
+func (*DeleteRolesResponse) ProtoMessage()    {}
+func (*DeleteRolesResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{15}
+}
+func (m *DeleteRolesResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteRolesResponse.Unmarshal(m, b)
+}
+func (m *DeleteRolesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteRolesResponse.Marshal(b, m, deterministic)
+}
+func (dst *DeleteRolesResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteRolesResponse.Merge(dst, src)
+}
+func (m *DeleteRolesResponse) XXX_Size() int {
+	return xxx_messageInfo_DeleteRolesResponse.Size(m)
+}
+func (m *DeleteRolesResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteRolesResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteRolesResponse proto.InternalMessageInfo
+
+func (m *DeleteRolesResponse) GetRoleId() []string {
+	if m != nil {
+		return m.RoleId
+	}
+	return nil
+}
+
+type ModifyRoleRequest struct {
+	UserId               string   `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Value                *Role    `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *ModifyRoleRequest) Reset()         { *m = ModifyRoleRequest{} }
+func (m *ModifyRoleRequest) String() string { return proto.CompactTextString(m) }
+func (*ModifyRoleRequest) ProtoMessage()    {}
+func (*ModifyRoleRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{16}
+}
+func (m *ModifyRoleRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ModifyRoleRequest.Unmarshal(m, b)
+}
+func (m *ModifyRoleRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ModifyRoleRequest.Marshal(b, m, deterministic)
+}
+func (dst *ModifyRoleRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ModifyRoleRequest.Merge(dst, src)
+}
+func (m *ModifyRoleRequest) XXX_Size() int {
+	return xxx_messageInfo_ModifyRoleRequest.Size(m)
+}
+func (m *ModifyRoleRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ModifyRoleRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ModifyRoleRequest proto.InternalMessageInfo
+
+func (m *ModifyRoleRequest) GetUserId() string {
+	if m != nil {
+		return m.UserId
+	}
+	return ""
+}
+
+func (m *ModifyRoleRequest) GetValue() *Role {
+	if m != nil {
+		return m.Value
+	}
+	return nil
+}
+
+type ModifyRoleResponse struct {
+	RoleId               string   `protobuf:"bytes,2,opt,name=role_id,json=roleId,proto3" json:"role_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *ModifyRoleResponse) Reset()         { *m = ModifyRoleResponse{} }
+func (m *ModifyRoleResponse) String() string { return proto.CompactTextString(m) }
+func (*ModifyRoleResponse) ProtoMessage()    {}
+func (*ModifyRoleResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{17}
+}
+func (m *ModifyRoleResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ModifyRoleResponse.Unmarshal(m, b)
+}
+func (m *ModifyRoleResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ModifyRoleResponse.Marshal(b, m, deterministic)
+}
+func (dst *ModifyRoleResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ModifyRoleResponse.Merge(dst, src)
+}
+func (m *ModifyRoleResponse) XXX_Size() int {
+	return xxx_messageInfo_ModifyRoleResponse.Size(m)
+}
+func (m *ModifyRoleResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ModifyRoleResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ModifyRoleResponse proto.InternalMessageInfo
+
+func (m *ModifyRoleResponse) GetRoleId() string {
+	if m != nil {
+		return m.RoleId
+	}
+	return ""
+}
+
+type DescribeRolesRequest struct {
+	UserId               string            `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	KeyWord              map[string]string `protobuf:"bytes,2,rep,name=key_word,json=keyWord,proto3" json:"key_word,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	SearchWord           string            `protobuf:"bytes,3,opt,name=search_word,json=searchWord,proto3" json:"search_word,omitempty"`
+	Offset               int32             `protobuf:"varint,4,opt,name=offset,proto3" json:"offset,omitempty"`
+	Limit                int32             `protobuf:"varint,5,opt,name=limit,proto3" json:"limit,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
+	XXX_unrecognized     []byte            `json:"-"`
+	XXX_sizecache        int32             `json:"-"`
+}
+
+func (m *DescribeRolesRequest) Reset()         { *m = DescribeRolesRequest{} }
+func (m *DescribeRolesRequest) String() string { return proto.CompactTextString(m) }
+func (*DescribeRolesRequest) ProtoMessage()    {}
+func (*DescribeRolesRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{18}
+}
+func (m *DescribeRolesRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DescribeRolesRequest.Unmarshal(m, b)
+}
+func (m *DescribeRolesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DescribeRolesRequest.Marshal(b, m, deterministic)
+}
+func (dst *DescribeRolesRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DescribeRolesRequest.Merge(dst, src)
+}
+func (m *DescribeRolesRequest) XXX_Size() int {
+	return xxx_messageInfo_DescribeRolesRequest.Size(m)
+}
+func (m *DescribeRolesRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DescribeRolesRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DescribeRolesRequest proto.InternalMessageInfo
+
+func (m *DescribeRolesRequest) GetUserId() string {
+	if m != nil {
+		return m.UserId
+	}
+	return ""
+}
+
+func (m *DescribeRolesRequest) GetKeyWord() map[string]string {
+	if m != nil {
+		return m.KeyWord
+	}
+	return nil
+}
+
+func (m *DescribeRolesRequest) GetSearchWord() string {
+	if m != nil {
+		return m.SearchWord
+	}
+	return ""
+}
+
+func (m *DescribeRolesRequest) GetOffset() int32 {
+	if m != nil {
+		return m.Offset
+	}
+	return 0
+}
+
+func (m *DescribeRolesRequest) GetLimit() int32 {
+	if m != nil {
+		return m.Limit
+	}
+	return 0
+}
+
+type DescribeRolesResponse struct {
+	UserId               string   `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	RoleSet              []*Role  `protobuf:"bytes,2,rep,name=role_set,json=roleSet,proto3" json:"role_set,omitempty"`
+	TotalCount           int32    `protobuf:"varint,3,opt,name=total_count,json=totalCount,proto3" json:"total_count,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DescribeRolesResponse) Reset()         { *m = DescribeRolesResponse{} }
+func (m *DescribeRolesResponse) String() string { return proto.CompactTextString(m) }
+func (*DescribeRolesResponse) ProtoMessage()    {}
+func (*DescribeRolesResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{19}
+}
+func (m *DescribeRolesResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DescribeRolesResponse.Unmarshal(m, b)
+}
+func (m *DescribeRolesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DescribeRolesResponse.Marshal(b, m, deterministic)
+}
+func (dst *DescribeRolesResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DescribeRolesResponse.Merge(dst, src)
+}
+func (m *DescribeRolesResponse) XXX_Size() int {
+	return xxx_messageInfo_DescribeRolesResponse.Size(m)
+}
+func (m *DescribeRolesResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_DescribeRolesResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DescribeRolesResponse proto.InternalMessageInfo
+
+func (m *DescribeRolesResponse) GetUserId() string {
+	if m != nil {
+		return m.UserId
+	}
+	return ""
+}
+
+func (m *DescribeRolesResponse) GetRoleSet() []*Role {
+	if m != nil {
+		return m.RoleSet
+	}
+	return nil
+}
+
+func (m *DescribeRolesResponse) GetTotalCount() int32 {
+	if m != nil {
+		return m.TotalCount
+	}
+	return 0
+}
+
+type DescribeRolesVerboseRequest struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DescribeRolesVerboseRequest) Reset()         { *m = DescribeRolesVerboseRequest{} }
+func (m *DescribeRolesVerboseRequest) String() string { return proto.CompactTextString(m) }
+func (*DescribeRolesVerboseRequest) ProtoMessage()    {}
+func (*DescribeRolesVerboseRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{20}
+}
+func (m *DescribeRolesVerboseRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DescribeRolesVerboseRequest.Unmarshal(m, b)
+}
+func (m *DescribeRolesVerboseRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DescribeRolesVerboseRequest.Marshal(b, m, deterministic)
+}
+func (dst *DescribeRolesVerboseRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DescribeRolesVerboseRequest.Merge(dst, src)
+}
+func (m *DescribeRolesVerboseRequest) XXX_Size() int {
+	return xxx_messageInfo_DescribeRolesVerboseRequest.Size(m)
+}
+func (m *DescribeRolesVerboseRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DescribeRolesVerboseRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DescribeRolesVerboseRequest proto.InternalMessageInfo
+
+type DescribeRolesVerboseResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DescribeRolesVerboseResponse) Reset()         { *m = DescribeRolesVerboseResponse{} }
+func (m *DescribeRolesVerboseResponse) String() string { return proto.CompactTextString(m) }
+func (*DescribeRolesVerboseResponse) ProtoMessage()    {}
+func (*DescribeRolesVerboseResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{21}
+}
+func (m *DescribeRolesVerboseResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DescribeRolesVerboseResponse.Unmarshal(m, b)
+}
+func (m *DescribeRolesVerboseResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DescribeRolesVerboseResponse.Marshal(b, m, deterministic)
+}
+func (dst *DescribeRolesVerboseResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DescribeRolesVerboseResponse.Merge(dst, src)
+}
+func (m *DescribeRolesVerboseResponse) XXX_Size() int {
+	return xxx_messageInfo_DescribeRolesVerboseResponse.Size(m)
+}
+func (m *DescribeRolesVerboseResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_DescribeRolesVerboseResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DescribeRolesVerboseResponse proto.InternalMessageInfo
+
+type RoleModuleBinding struct {
+	BindingId            string               `protobuf:"bytes,1,opt,name=binding_id,json=bindingId,proto3" json:"binding_id,omitempty"`
+	RoleId               string               `protobuf:"bytes,2,opt,name=role_id,json=roleId,proto3" json:"role_id,omitempty"`
+	ModuleId             string               `protobuf:"bytes,3,opt,name=module_id,json=moduleId,proto3" json:"module_id,omitempty"`
+	DataLevel            string               `protobuf:"bytes,4,opt,name=data_level,json=dataLevel,proto3" json:"data_level,omitempty"`
+	EnabledActions       string               `protobuf:"bytes,5,opt,name=enabled_actions,json=enabledActions,proto3" json:"enabled_actions,omitempty"`
+	Owner                string               `protobuf:"bytes,8,opt,name=owner,proto3" json:"owner,omitempty"`
+	CreateTime           *timestamp.Timestamp `protobuf:"bytes,6,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	UpdateTime           *timestamp.Timestamp `protobuf:"bytes,7,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
+	XXX_unrecognized     []byte               `json:"-"`
+	XXX_sizecache        int32                `json:"-"`
+}
+
+func (m *RoleModuleBinding) Reset()         { *m = RoleModuleBinding{} }
+func (m *RoleModuleBinding) String() string { return proto.CompactTextString(m) }
+func (*RoleModuleBinding) ProtoMessage()    {}
+func (*RoleModuleBinding) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{22}
+}
+func (m *RoleModuleBinding) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_RoleModuleBinding.Unmarshal(m, b)
+}
+func (m *RoleModuleBinding) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_RoleModuleBinding.Marshal(b, m, deterministic)
+}
+func (dst *RoleModuleBinding) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RoleModuleBinding.Merge(dst, src)
+}
+func (m *RoleModuleBinding) XXX_Size() int {
+	return xxx_messageInfo_RoleModuleBinding.Size(m)
+}
+func (m *RoleModuleBinding) XXX_DiscardUnknown() {
+	xxx_messageInfo_RoleModuleBinding.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RoleModuleBinding proto.InternalMessageInfo
+
+func (m *RoleModuleBinding) GetBindingId() string {
+	if m != nil {
+		return m.BindingId
+	}
+	return ""
+}
+
+func (m *RoleModuleBinding) GetRoleId() string {
+	if m != nil {
+		return m.RoleId
+	}
+	return ""
+}
+
+func (m *RoleModuleBinding) GetModuleId() string {
+	if m != nil {
+		return m.ModuleId
+	}
+	return ""
+}
+
+func (m *RoleModuleBinding) GetDataLevel() string {
+	if m != nil {
+		return m.DataLevel
+	}
+	return ""
+}
+
+func (m *RoleModuleBinding) GetEnabledActions() string {
+	if m != nil {
+		return m.EnabledActions
+	}
+	return ""
+}
+
+func (m *RoleModuleBinding) GetOwner() string {
+	if m != nil {
+		return m.Owner
+	}
+	return ""
+}
+
+func (m *RoleModuleBinding) GetCreateTime() *timestamp.Timestamp {
+	if m != nil {
+		return m.CreateTime
+	}
+	return nil
+}
+
+func (m *RoleModuleBinding) GetUpdateTime() *timestamp.Timestamp {
+	if m != nil {
+		return m.UpdateTime
+	}
+	return nil
+}
+
+type BindRoleModuleRequest struct {
+	UserId               string   `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	RoleId               string   `protobuf:"bytes,2,opt,name=role_id,json=roleId,proto3" json:"role_id,omitempty"`
+	ModuleId             string   `protobuf:"bytes,3,opt,name=module_id,json=moduleId,proto3" json:"module_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *BindRoleModuleRequest) Reset()         { *m = BindRoleModuleRequest{} }
+func (m *BindRoleModuleRequest) String() string { return proto.CompactTextString(m) }
+func (*BindRoleModuleRequest) ProtoMessage()    {}
+func (*BindRoleModuleRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{23}
+}
+func (m *BindRoleModuleRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_BindRoleModuleRequest.Unmarshal(m, b)
+}
+func (m *BindRoleModuleRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_BindRoleModuleRequest.Marshal(b, m, deterministic)
+}
+func (dst *BindRoleModuleRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BindRoleModuleRequest.Merge(dst, src)
+}
+func (m *BindRoleModuleRequest) XXX_Size() int {
+	return xxx_messageInfo_BindRoleModuleRequest.Size(m)
+}
+func (m *BindRoleModuleRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_BindRoleModuleRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_BindRoleModuleRequest proto.InternalMessageInfo
+
+func (m *BindRoleModuleRequest) GetUserId() string {
+	if m != nil {
+		return m.UserId
+	}
+	return ""
+}
+
+func (m *BindRoleModuleRequest) GetRoleId() string {
+	if m != nil {
+		return m.RoleId
+	}
+	return ""
+}
+
+func (m *BindRoleModuleRequest) GetModuleId() string {
+	if m != nil {
+		return m.ModuleId
+	}
+	return ""
+}
+
+type BindRoleModuleResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *BindRoleModuleResponse) Reset()         { *m = BindRoleModuleResponse{} }
+func (m *BindRoleModuleResponse) String() string { return proto.CompactTextString(m) }
+func (*BindRoleModuleResponse) ProtoMessage()    {}
+func (*BindRoleModuleResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{24}
+}
+func (m *BindRoleModuleResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_BindRoleModuleResponse.Unmarshal(m, b)
+}
+func (m *BindRoleModuleResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_BindRoleModuleResponse.Marshal(b, m, deterministic)
+}
+func (dst *BindRoleModuleResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BindRoleModuleResponse.Merge(dst, src)
+}
+func (m *BindRoleModuleResponse) XXX_Size() int {
+	return xxx_messageInfo_BindRoleModuleResponse.Size(m)
+}
+func (m *BindRoleModuleResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_BindRoleModuleResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_BindRoleModuleResponse proto.InternalMessageInfo
+
+type UnBindRoleModuleRequest struct {
+	UserId               string   `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	RoleId               string   `protobuf:"bytes,2,opt,name=role_id,json=roleId,proto3" json:"role_id,omitempty"`
+	ModuleId             string   `protobuf:"bytes,3,opt,name=module_id,json=moduleId,proto3" json:"module_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *UnBindRoleModuleRequest) Reset()         { *m = UnBindRoleModuleRequest{} }
+func (m *UnBindRoleModuleRequest) String() string { return proto.CompactTextString(m) }
+func (*UnBindRoleModuleRequest) ProtoMessage()    {}
+func (*UnBindRoleModuleRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{25}
+}
+func (m *UnBindRoleModuleRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UnBindRoleModuleRequest.Unmarshal(m, b)
+}
+func (m *UnBindRoleModuleRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UnBindRoleModuleRequest.Marshal(b, m, deterministic)
+}
+func (dst *UnBindRoleModuleRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UnBindRoleModuleRequest.Merge(dst, src)
+}
+func (m *UnBindRoleModuleRequest) XXX_Size() int {
+	return xxx_messageInfo_UnBindRoleModuleRequest.Size(m)
+}
+func (m *UnBindRoleModuleRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_UnBindRoleModuleRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UnBindRoleModuleRequest proto.InternalMessageInfo
+
+func (m *UnBindRoleModuleRequest) GetUserId() string {
+	if m != nil {
+		return m.UserId
+	}
+	return ""
+}
+
+func (m *UnBindRoleModuleRequest) GetRoleId() string {
+	if m != nil {
+		return m.RoleId
+	}
+	return ""
+}
+
+func (m *UnBindRoleModuleRequest) GetModuleId() string {
+	if m != nil {
+		return m.ModuleId
+	}
+	return ""
+}
+
+type UnBindRoleModuleResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *UnBindRoleModuleResponse) Reset()         { *m = UnBindRoleModuleResponse{} }
+func (m *UnBindRoleModuleResponse) String() string { return proto.CompactTextString(m) }
+func (*UnBindRoleModuleResponse) ProtoMessage()    {}
+func (*UnBindRoleModuleResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{26}
+}
+func (m *UnBindRoleModuleResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UnBindRoleModuleResponse.Unmarshal(m, b)
+}
+func (m *UnBindRoleModuleResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UnBindRoleModuleResponse.Marshal(b, m, deterministic)
+}
+func (dst *UnBindRoleModuleResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UnBindRoleModuleResponse.Merge(dst, src)
+}
+func (m *UnBindRoleModuleResponse) XXX_Size() int {
+	return xxx_messageInfo_UnBindRoleModuleResponse.Size(m)
+}
+func (m *UnBindRoleModuleResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_UnBindRoleModuleResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UnBindRoleModuleResponse proto.InternalMessageInfo
+
+type BindUserRoleRequest struct {
+	UserId               string   `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	RoleId               string   `protobuf:"bytes,2,opt,name=role_id,json=roleId,proto3" json:"role_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *BindUserRoleRequest) Reset()         { *m = BindUserRoleRequest{} }
+func (m *BindUserRoleRequest) String() string { return proto.CompactTextString(m) }
+func (*BindUserRoleRequest) ProtoMessage()    {}
+func (*BindUserRoleRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{27}
+}
+func (m *BindUserRoleRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_BindUserRoleRequest.Unmarshal(m, b)
+}
+func (m *BindUserRoleRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_BindUserRoleRequest.Marshal(b, m, deterministic)
+}
+func (dst *BindUserRoleRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BindUserRoleRequest.Merge(dst, src)
+}
+func (m *BindUserRoleRequest) XXX_Size() int {
+	return xxx_messageInfo_BindUserRoleRequest.Size(m)
+}
+func (m *BindUserRoleRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_BindUserRoleRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_BindUserRoleRequest proto.InternalMessageInfo
+
+func (m *BindUserRoleRequest) GetUserId() string {
+	if m != nil {
+		return m.UserId
+	}
+	return ""
+}
+
+func (m *BindUserRoleRequest) GetRoleId() string {
+	if m != nil {
+		return m.RoleId
+	}
+	return ""
+}
+
+type BindUserRoleResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *BindUserRoleResponse) Reset()         { *m = BindUserRoleResponse{} }
+func (m *BindUserRoleResponse) String() string { return proto.CompactTextString(m) }
+func (*BindUserRoleResponse) ProtoMessage()    {}
+func (*BindUserRoleResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{28}
+}
+func (m *BindUserRoleResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_BindUserRoleResponse.Unmarshal(m, b)
+}
+func (m *BindUserRoleResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_BindUserRoleResponse.Marshal(b, m, deterministic)
+}
+func (dst *BindUserRoleResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BindUserRoleResponse.Merge(dst, src)
+}
+func (m *BindUserRoleResponse) XXX_Size() int {
+	return xxx_messageInfo_BindUserRoleResponse.Size(m)
+}
+func (m *BindUserRoleResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_BindUserRoleResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_BindUserRoleResponse proto.InternalMessageInfo
+
+type UnBindUserRoleRequest struct {
+	UserId               string   `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	RoleId               string   `protobuf:"bytes,2,opt,name=role_id,json=roleId,proto3" json:"role_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *UnBindUserRoleRequest) Reset()         { *m = UnBindUserRoleRequest{} }
+func (m *UnBindUserRoleRequest) String() string { return proto.CompactTextString(m) }
+func (*UnBindUserRoleRequest) ProtoMessage()    {}
+func (*UnBindUserRoleRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{29}
+}
+func (m *UnBindUserRoleRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UnBindUserRoleRequest.Unmarshal(m, b)
+}
+func (m *UnBindUserRoleRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UnBindUserRoleRequest.Marshal(b, m, deterministic)
+}
+func (dst *UnBindUserRoleRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UnBindUserRoleRequest.Merge(dst, src)
+}
+func (m *UnBindUserRoleRequest) XXX_Size() int {
+	return xxx_messageInfo_UnBindUserRoleRequest.Size(m)
+}
+func (m *UnBindUserRoleRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_UnBindUserRoleRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UnBindUserRoleRequest proto.InternalMessageInfo
+
+func (m *UnBindUserRoleRequest) GetUserId() string {
+	if m != nil {
+		return m.UserId
+	}
+	return ""
+}
+
+func (m *UnBindUserRoleRequest) GetRoleId() string {
+	if m != nil {
+		return m.RoleId
+	}
+	return ""
+}
+
+type UnBindUserRoleResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *UnBindUserRoleResponse) Reset()         { *m = UnBindUserRoleResponse{} }
+func (m *UnBindUserRoleResponse) String() string { return proto.CompactTextString(m) }
+func (*UnBindUserRoleResponse) ProtoMessage()    {}
+func (*UnBindUserRoleResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_am_ba05431bb70a32a8, []int{30}
+}
+func (m *UnBindUserRoleResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UnBindUserRoleResponse.Unmarshal(m, b)
+}
+func (m *UnBindUserRoleResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UnBindUserRoleResponse.Marshal(b, m, deterministic)
+}
+func (dst *UnBindUserRoleResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UnBindUserRoleResponse.Merge(dst, src)
+}
+func (m *UnBindUserRoleResponse) XXX_Size() int {
+	return xxx_messageInfo_UnBindUserRoleResponse.Size(m)
+}
+func (m *UnBindUserRoleResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_UnBindUserRoleResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UnBindUserRoleResponse proto.InternalMessageInfo
+
 func init() {
-	proto.RegisterType((*Action)(nil), "openpitrix.iam.am.Action")
-	proto.RegisterType((*ActionRule)(nil), "openpitrix.iam.am.ActionRule")
-	proto.RegisterType((*ActionRuleList)(nil), "openpitrix.iam.am.ActionRuleList")
-	proto.RegisterType((*Role)(nil), "openpitrix.iam.am.Role")
-	proto.RegisterType((*RoleList)(nil), "openpitrix.iam.am.RoleList")
-	proto.RegisterType((*RoleActionRuleBinding)(nil), "openpitrix.iam.am.RoleActionRuleBinding")
-	proto.RegisterType((*RoleActionRuleBindingList)(nil), "openpitrix.iam.am.RoleActionRuleBindingList")
-	proto.RegisterType((*RoleXidBinding)(nil), "openpitrix.iam.am.RoleXidBinding")
-	proto.RegisterType((*RoleXidBindingList)(nil), "openpitrix.iam.am.RoleXidBindingList")
 	proto.RegisterType((*Empty)(nil), "openpitrix.iam.am.Empty")
-	proto.RegisterType((*Bool)(nil), "openpitrix.iam.am.Bool")
 	proto.RegisterType((*String)(nil), "openpitrix.iam.am.String")
-	proto.RegisterType((*Xid)(nil), "openpitrix.iam.am.Xid")
-	proto.RegisterType((*XidList)(nil), "openpitrix.iam.am.XidList")
-	proto.RegisterType((*NameFilter)(nil), "openpitrix.iam.am.NameFilter")
-	proto.RegisterType((*RoleBindingFilter)(nil), "openpitrix.iam.am.RoleBindingFilter")
+	proto.RegisterType((*Action)(nil), "openpitrix.iam.am.Action")
+	proto.RegisterType((*DescribeActionsRequest)(nil), "openpitrix.iam.am.DescribeActionsRequest")
+	proto.RegisterType((*DescribeActionsResponse)(nil), "openpitrix.iam.am.DescribeActionsResponse")
+	proto.RegisterType((*CanDoActionRequest)(nil), "openpitrix.iam.am.CanDoActionRequest")
+	proto.RegisterType((*CanDoActionResponse)(nil), "openpitrix.iam.am.CanDoActionResponse")
+	proto.RegisterType((*GetOwnerPathRequest)(nil), "openpitrix.iam.am.GetOwnerPathRequest")
+	proto.RegisterType((*GetOwnerPathResponse)(nil), "openpitrix.iam.am.GetOwnerPathResponse")
+	proto.RegisterType((*GetAccessPathRequest)(nil), "openpitrix.iam.am.GetAccessPathRequest")
+	proto.RegisterType((*GetAccessPathResponse)(nil), "openpitrix.iam.am.GetAccessPathResponse")
+	proto.RegisterType((*Role)(nil), "openpitrix.iam.am.Role")
+	proto.RegisterType((*CreateRoleRequest)(nil), "openpitrix.iam.am.CreateRoleRequest")
+	proto.RegisterType((*CreateRoleResponse)(nil), "openpitrix.iam.am.CreateRoleResponse")
+	proto.RegisterType((*DeleteRolesRequest)(nil), "openpitrix.iam.am.DeleteRolesRequest")
+	proto.RegisterType((*DeleteRolesResponse)(nil), "openpitrix.iam.am.DeleteRolesResponse")
+	proto.RegisterType((*ModifyRoleRequest)(nil), "openpitrix.iam.am.ModifyRoleRequest")
+	proto.RegisterType((*ModifyRoleResponse)(nil), "openpitrix.iam.am.ModifyRoleResponse")
+	proto.RegisterType((*DescribeRolesRequest)(nil), "openpitrix.iam.am.DescribeRolesRequest")
+	proto.RegisterMapType((map[string]string)(nil), "openpitrix.iam.am.DescribeRolesRequest.KeyWordEntry")
+	proto.RegisterType((*DescribeRolesResponse)(nil), "openpitrix.iam.am.DescribeRolesResponse")
+	proto.RegisterType((*DescribeRolesVerboseRequest)(nil), "openpitrix.iam.am.DescribeRolesVerboseRequest")
+	proto.RegisterType((*DescribeRolesVerboseResponse)(nil), "openpitrix.iam.am.DescribeRolesVerboseResponse")
+	proto.RegisterType((*RoleModuleBinding)(nil), "openpitrix.iam.am.RoleModuleBinding")
+	proto.RegisterType((*BindRoleModuleRequest)(nil), "openpitrix.iam.am.BindRoleModuleRequest")
+	proto.RegisterType((*BindRoleModuleResponse)(nil), "openpitrix.iam.am.BindRoleModuleResponse")
+	proto.RegisterType((*UnBindRoleModuleRequest)(nil), "openpitrix.iam.am.UnBindRoleModuleRequest")
+	proto.RegisterType((*UnBindRoleModuleResponse)(nil), "openpitrix.iam.am.UnBindRoleModuleResponse")
+	proto.RegisterType((*BindUserRoleRequest)(nil), "openpitrix.iam.am.BindUserRoleRequest")
+	proto.RegisterType((*BindUserRoleResponse)(nil), "openpitrix.iam.am.BindUserRoleResponse")
+	proto.RegisterType((*UnBindUserRoleRequest)(nil), "openpitrix.iam.am.UnBindUserRoleRequest")
+	proto.RegisterType((*UnBindUserRoleResponse)(nil), "openpitrix.iam.am.UnBindUserRoleResponse")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -739,22 +1563,19 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type AccessManagerClient interface {
 	GetVersion(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*String, error)
-	CreateRole(ctx context.Context, in *Role, opts ...grpc.CallOption) (*Role, error)
-	DeleteRoleByName(ctx context.Context, in *String, opts ...grpc.CallOption) (*Empty, error)
-	CreateActionRule(ctx context.Context, in *Role, opts ...grpc.CallOption) (*Role, error)
-	DeleteActionRuleByName(ctx context.Context, in *String, opts ...grpc.CallOption) (*Empty, error)
-	CreateRoleXidBinding(ctx context.Context, in *RoleXidBindingList, opts ...grpc.CallOption) (*Empty, error)
-	DeleteRoleXidBindingByXid(ctx context.Context, in *XidList, opts ...grpc.CallOption) (*Empty, error)
-	ListRoles(ctx context.Context, in *NameFilter, opts ...grpc.CallOption) (*RoleList, error)
-	ListActionRules(ctx context.Context, in *NameFilter, opts ...grpc.CallOption) (*ActionRuleList, error)
-	ListRoleBindings(ctx context.Context, in *NameFilter, opts ...grpc.CallOption) (*RoleXidBindingList, error)
-	GetActionRuleByName(ctx context.Context, in *String, opts ...grpc.CallOption) (*Role, error)
-	GetActionRuleByRoleName(ctx context.Context, in *String, opts ...grpc.CallOption) (*Role, error)
-	GetActionRuleByXid(ctx context.Context, in *XidList, opts ...grpc.CallOption) (*RoleList, error)
-	GetXidListByRoleName(ctx context.Context, in *String, opts ...grpc.CallOption) (*XidList, error)
-	GetRoleListByByXid(ctx context.Context, in *XidList, opts ...grpc.CallOption) (*RoleList, error)
-	// check any of xid or role_name can do the action
-	CanDo(ctx context.Context, in *Action, opts ...grpc.CallOption) (*Empty, error)
+	DescribeActions(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*DescribeActionsResponse, error)
+	CanDo(ctx context.Context, in *CanDoActionRequest, opts ...grpc.CallOption) (*CanDoActionResponse, error)
+	GetOwnerPath(ctx context.Context, in *GetOwnerPathRequest, opts ...grpc.CallOption) (*GetOwnerPathResponse, error)
+	GetAccessPath(ctx context.Context, in *GetAccessPathRequest, opts ...grpc.CallOption) (*GetAccessPathResponse, error)
+	CreateRole(ctx context.Context, in *CreateRoleRequest, opts ...grpc.CallOption) (*CreateRoleResponse, error)
+	DeleteRoles(ctx context.Context, in *DeleteRolesRequest, opts ...grpc.CallOption) (*DeleteRolesResponse, error)
+	ModifyRole(ctx context.Context, in *ModifyRoleRequest, opts ...grpc.CallOption) (*ModifyRoleResponse, error)
+	DescribeRoles(ctx context.Context, in *DescribeRolesRequest, opts ...grpc.CallOption) (*DescribeRolesResponse, error)
+	DescribeRolesVerbose(ctx context.Context, in *DescribeRolesVerboseRequest, opts ...grpc.CallOption) (*DescribeRolesVerboseResponse, error)
+	BindRoleModule(ctx context.Context, in *BindRoleModuleRequest, opts ...grpc.CallOption) (*BindRoleModuleResponse, error)
+	UnBindRoleModule(ctx context.Context, in *UnBindRoleModuleRequest, opts ...grpc.CallOption) (*UnBindRoleModuleResponse, error)
+	BindUserRole(ctx context.Context, in *BindUserRoleRequest, opts ...grpc.CallOption) (*BindUserRoleResponse, error)
+	UnBindUserRole(ctx context.Context, in *UnBindUserRoleRequest, opts ...grpc.CallOption) (*UnBindUserRoleResponse, error)
 }
 
 type accessManagerClient struct {
@@ -774,8 +1595,44 @@ func (c *accessManagerClient) GetVersion(ctx context.Context, in *Empty, opts ..
 	return out, nil
 }
 
-func (c *accessManagerClient) CreateRole(ctx context.Context, in *Role, opts ...grpc.CallOption) (*Role, error) {
-	out := new(Role)
+func (c *accessManagerClient) DescribeActions(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*DescribeActionsResponse, error) {
+	out := new(DescribeActionsResponse)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.am.AccessManager/DescribeActions", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accessManagerClient) CanDo(ctx context.Context, in *CanDoActionRequest, opts ...grpc.CallOption) (*CanDoActionResponse, error) {
+	out := new(CanDoActionResponse)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.am.AccessManager/CanDo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accessManagerClient) GetOwnerPath(ctx context.Context, in *GetOwnerPathRequest, opts ...grpc.CallOption) (*GetOwnerPathResponse, error) {
+	out := new(GetOwnerPathResponse)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.am.AccessManager/GetOwnerPath", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accessManagerClient) GetAccessPath(ctx context.Context, in *GetAccessPathRequest, opts ...grpc.CallOption) (*GetAccessPathResponse, error) {
+	out := new(GetAccessPathResponse)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.am.AccessManager/GetAccessPath", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accessManagerClient) CreateRole(ctx context.Context, in *CreateRoleRequest, opts ...grpc.CallOption) (*CreateRoleResponse, error) {
+	out := new(CreateRoleResponse)
 	err := c.cc.Invoke(ctx, "/openpitrix.iam.am.AccessManager/CreateRole", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -783,126 +1640,72 @@ func (c *accessManagerClient) CreateRole(ctx context.Context, in *Role, opts ...
 	return out, nil
 }
 
-func (c *accessManagerClient) DeleteRoleByName(ctx context.Context, in *String, opts ...grpc.CallOption) (*Empty, error) {
-	out := new(Empty)
-	err := c.cc.Invoke(ctx, "/openpitrix.iam.am.AccessManager/DeleteRoleByName", in, out, opts...)
+func (c *accessManagerClient) DeleteRoles(ctx context.Context, in *DeleteRolesRequest, opts ...grpc.CallOption) (*DeleteRolesResponse, error) {
+	out := new(DeleteRolesResponse)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.am.AccessManager/DeleteRoles", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *accessManagerClient) CreateActionRule(ctx context.Context, in *Role, opts ...grpc.CallOption) (*Role, error) {
-	out := new(Role)
-	err := c.cc.Invoke(ctx, "/openpitrix.iam.am.AccessManager/CreateActionRule", in, out, opts...)
+func (c *accessManagerClient) ModifyRole(ctx context.Context, in *ModifyRoleRequest, opts ...grpc.CallOption) (*ModifyRoleResponse, error) {
+	out := new(ModifyRoleResponse)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.am.AccessManager/ModifyRole", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *accessManagerClient) DeleteActionRuleByName(ctx context.Context, in *String, opts ...grpc.CallOption) (*Empty, error) {
-	out := new(Empty)
-	err := c.cc.Invoke(ctx, "/openpitrix.iam.am.AccessManager/DeleteActionRuleByName", in, out, opts...)
+func (c *accessManagerClient) DescribeRoles(ctx context.Context, in *DescribeRolesRequest, opts ...grpc.CallOption) (*DescribeRolesResponse, error) {
+	out := new(DescribeRolesResponse)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.am.AccessManager/DescribeRoles", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *accessManagerClient) CreateRoleXidBinding(ctx context.Context, in *RoleXidBindingList, opts ...grpc.CallOption) (*Empty, error) {
-	out := new(Empty)
-	err := c.cc.Invoke(ctx, "/openpitrix.iam.am.AccessManager/CreateRoleXidBinding", in, out, opts...)
+func (c *accessManagerClient) DescribeRolesVerbose(ctx context.Context, in *DescribeRolesVerboseRequest, opts ...grpc.CallOption) (*DescribeRolesVerboseResponse, error) {
+	out := new(DescribeRolesVerboseResponse)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.am.AccessManager/DescribeRolesVerbose", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *accessManagerClient) DeleteRoleXidBindingByXid(ctx context.Context, in *XidList, opts ...grpc.CallOption) (*Empty, error) {
-	out := new(Empty)
-	err := c.cc.Invoke(ctx, "/openpitrix.iam.am.AccessManager/DeleteRoleXidBindingByXid", in, out, opts...)
+func (c *accessManagerClient) BindRoleModule(ctx context.Context, in *BindRoleModuleRequest, opts ...grpc.CallOption) (*BindRoleModuleResponse, error) {
+	out := new(BindRoleModuleResponse)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.am.AccessManager/BindRoleModule", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *accessManagerClient) ListRoles(ctx context.Context, in *NameFilter, opts ...grpc.CallOption) (*RoleList, error) {
-	out := new(RoleList)
-	err := c.cc.Invoke(ctx, "/openpitrix.iam.am.AccessManager/ListRoles", in, out, opts...)
+func (c *accessManagerClient) UnBindRoleModule(ctx context.Context, in *UnBindRoleModuleRequest, opts ...grpc.CallOption) (*UnBindRoleModuleResponse, error) {
+	out := new(UnBindRoleModuleResponse)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.am.AccessManager/UnBindRoleModule", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *accessManagerClient) ListActionRules(ctx context.Context, in *NameFilter, opts ...grpc.CallOption) (*ActionRuleList, error) {
-	out := new(ActionRuleList)
-	err := c.cc.Invoke(ctx, "/openpitrix.iam.am.AccessManager/ListActionRules", in, out, opts...)
+func (c *accessManagerClient) BindUserRole(ctx context.Context, in *BindUserRoleRequest, opts ...grpc.CallOption) (*BindUserRoleResponse, error) {
+	out := new(BindUserRoleResponse)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.am.AccessManager/BindUserRole", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *accessManagerClient) ListRoleBindings(ctx context.Context, in *NameFilter, opts ...grpc.CallOption) (*RoleXidBindingList, error) {
-	out := new(RoleXidBindingList)
-	err := c.cc.Invoke(ctx, "/openpitrix.iam.am.AccessManager/ListRoleBindings", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *accessManagerClient) GetActionRuleByName(ctx context.Context, in *String, opts ...grpc.CallOption) (*Role, error) {
-	out := new(Role)
-	err := c.cc.Invoke(ctx, "/openpitrix.iam.am.AccessManager/GetActionRuleByName", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *accessManagerClient) GetActionRuleByRoleName(ctx context.Context, in *String, opts ...grpc.CallOption) (*Role, error) {
-	out := new(Role)
-	err := c.cc.Invoke(ctx, "/openpitrix.iam.am.AccessManager/GetActionRuleByRoleName", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *accessManagerClient) GetActionRuleByXid(ctx context.Context, in *XidList, opts ...grpc.CallOption) (*RoleList, error) {
-	out := new(RoleList)
-	err := c.cc.Invoke(ctx, "/openpitrix.iam.am.AccessManager/GetActionRuleByXid", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *accessManagerClient) GetXidListByRoleName(ctx context.Context, in *String, opts ...grpc.CallOption) (*XidList, error) {
-	out := new(XidList)
-	err := c.cc.Invoke(ctx, "/openpitrix.iam.am.AccessManager/GetXidListByRoleName", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *accessManagerClient) GetRoleListByByXid(ctx context.Context, in *XidList, opts ...grpc.CallOption) (*RoleList, error) {
-	out := new(RoleList)
-	err := c.cc.Invoke(ctx, "/openpitrix.iam.am.AccessManager/GetRoleListByByXid", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *accessManagerClient) CanDo(ctx context.Context, in *Action, opts ...grpc.CallOption) (*Empty, error) {
-	out := new(Empty)
-	err := c.cc.Invoke(ctx, "/openpitrix.iam.am.AccessManager/CanDo", in, out, opts...)
+func (c *accessManagerClient) UnBindUserRole(ctx context.Context, in *UnBindUserRoleRequest, opts ...grpc.CallOption) (*UnBindUserRoleResponse, error) {
+	out := new(UnBindUserRoleResponse)
+	err := c.cc.Invoke(ctx, "/openpitrix.iam.am.AccessManager/UnBindUserRole", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -912,22 +1715,19 @@ func (c *accessManagerClient) CanDo(ctx context.Context, in *Action, opts ...grp
 // AccessManagerServer is the server API for AccessManager service.
 type AccessManagerServer interface {
 	GetVersion(context.Context, *Empty) (*String, error)
-	CreateRole(context.Context, *Role) (*Role, error)
-	DeleteRoleByName(context.Context, *String) (*Empty, error)
-	CreateActionRule(context.Context, *Role) (*Role, error)
-	DeleteActionRuleByName(context.Context, *String) (*Empty, error)
-	CreateRoleXidBinding(context.Context, *RoleXidBindingList) (*Empty, error)
-	DeleteRoleXidBindingByXid(context.Context, *XidList) (*Empty, error)
-	ListRoles(context.Context, *NameFilter) (*RoleList, error)
-	ListActionRules(context.Context, *NameFilter) (*ActionRuleList, error)
-	ListRoleBindings(context.Context, *NameFilter) (*RoleXidBindingList, error)
-	GetActionRuleByName(context.Context, *String) (*Role, error)
-	GetActionRuleByRoleName(context.Context, *String) (*Role, error)
-	GetActionRuleByXid(context.Context, *XidList) (*RoleList, error)
-	GetXidListByRoleName(context.Context, *String) (*XidList, error)
-	GetRoleListByByXid(context.Context, *XidList) (*RoleList, error)
-	// check any of xid or role_name can do the action
-	CanDo(context.Context, *Action) (*Empty, error)
+	DescribeActions(context.Context, *Empty) (*DescribeActionsResponse, error)
+	CanDo(context.Context, *CanDoActionRequest) (*CanDoActionResponse, error)
+	GetOwnerPath(context.Context, *GetOwnerPathRequest) (*GetOwnerPathResponse, error)
+	GetAccessPath(context.Context, *GetAccessPathRequest) (*GetAccessPathResponse, error)
+	CreateRole(context.Context, *CreateRoleRequest) (*CreateRoleResponse, error)
+	DeleteRoles(context.Context, *DeleteRolesRequest) (*DeleteRolesResponse, error)
+	ModifyRole(context.Context, *ModifyRoleRequest) (*ModifyRoleResponse, error)
+	DescribeRoles(context.Context, *DescribeRolesRequest) (*DescribeRolesResponse, error)
+	DescribeRolesVerbose(context.Context, *DescribeRolesVerboseRequest) (*DescribeRolesVerboseResponse, error)
+	BindRoleModule(context.Context, *BindRoleModuleRequest) (*BindRoleModuleResponse, error)
+	UnBindRoleModule(context.Context, *UnBindRoleModuleRequest) (*UnBindRoleModuleResponse, error)
+	BindUserRole(context.Context, *BindUserRoleRequest) (*BindUserRoleResponse, error)
+	UnBindUserRole(context.Context, *UnBindUserRoleRequest) (*UnBindUserRoleResponse, error)
 }
 
 func RegisterAccessManagerServer(s *grpc.Server, srv AccessManagerServer) {
@@ -952,260 +1752,26 @@ func _AccessManager_GetVersion_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AccessManager_CreateRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Role)
+func _AccessManager_DescribeActions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccessManagerServer).CreateRole(ctx, in)
+		return srv.(AccessManagerServer).DescribeActions(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/openpitrix.iam.am.AccessManager/CreateRole",
+		FullMethod: "/openpitrix.iam.am.AccessManager/DescribeActions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccessManagerServer).CreateRole(ctx, req.(*Role))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AccessManager_DeleteRoleByName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(String)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AccessManagerServer).DeleteRoleByName(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/openpitrix.iam.am.AccessManager/DeleteRoleByName",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccessManagerServer).DeleteRoleByName(ctx, req.(*String))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AccessManager_CreateActionRule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Role)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AccessManagerServer).CreateActionRule(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/openpitrix.iam.am.AccessManager/CreateActionRule",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccessManagerServer).CreateActionRule(ctx, req.(*Role))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AccessManager_DeleteActionRuleByName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(String)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AccessManagerServer).DeleteActionRuleByName(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/openpitrix.iam.am.AccessManager/DeleteActionRuleByName",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccessManagerServer).DeleteActionRuleByName(ctx, req.(*String))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AccessManager_CreateRoleXidBinding_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RoleXidBindingList)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AccessManagerServer).CreateRoleXidBinding(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/openpitrix.iam.am.AccessManager/CreateRoleXidBinding",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccessManagerServer).CreateRoleXidBinding(ctx, req.(*RoleXidBindingList))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AccessManager_DeleteRoleXidBindingByXid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(XidList)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AccessManagerServer).DeleteRoleXidBindingByXid(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/openpitrix.iam.am.AccessManager/DeleteRoleXidBindingByXid",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccessManagerServer).DeleteRoleXidBindingByXid(ctx, req.(*XidList))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AccessManager_ListRoles_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NameFilter)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AccessManagerServer).ListRoles(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/openpitrix.iam.am.AccessManager/ListRoles",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccessManagerServer).ListRoles(ctx, req.(*NameFilter))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AccessManager_ListActionRules_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NameFilter)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AccessManagerServer).ListActionRules(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/openpitrix.iam.am.AccessManager/ListActionRules",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccessManagerServer).ListActionRules(ctx, req.(*NameFilter))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AccessManager_ListRoleBindings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NameFilter)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AccessManagerServer).ListRoleBindings(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/openpitrix.iam.am.AccessManager/ListRoleBindings",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccessManagerServer).ListRoleBindings(ctx, req.(*NameFilter))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AccessManager_GetActionRuleByName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(String)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AccessManagerServer).GetActionRuleByName(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/openpitrix.iam.am.AccessManager/GetActionRuleByName",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccessManagerServer).GetActionRuleByName(ctx, req.(*String))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AccessManager_GetActionRuleByRoleName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(String)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AccessManagerServer).GetActionRuleByRoleName(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/openpitrix.iam.am.AccessManager/GetActionRuleByRoleName",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccessManagerServer).GetActionRuleByRoleName(ctx, req.(*String))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AccessManager_GetActionRuleByXid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(XidList)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AccessManagerServer).GetActionRuleByXid(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/openpitrix.iam.am.AccessManager/GetActionRuleByXid",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccessManagerServer).GetActionRuleByXid(ctx, req.(*XidList))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AccessManager_GetXidListByRoleName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(String)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AccessManagerServer).GetXidListByRoleName(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/openpitrix.iam.am.AccessManager/GetXidListByRoleName",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccessManagerServer).GetXidListByRoleName(ctx, req.(*String))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AccessManager_GetRoleListByByXid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(XidList)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AccessManagerServer).GetRoleListByByXid(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/openpitrix.iam.am.AccessManager/GetRoleListByByXid",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccessManagerServer).GetRoleListByByXid(ctx, req.(*XidList))
+		return srv.(AccessManagerServer).DescribeActions(ctx, req.(*Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _AccessManager_CanDo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Action)
+	in := new(CanDoActionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1217,7 +1783,205 @@ func _AccessManager_CanDo_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: "/openpitrix.iam.am.AccessManager/CanDo",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccessManagerServer).CanDo(ctx, req.(*Action))
+		return srv.(AccessManagerServer).CanDo(ctx, req.(*CanDoActionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AccessManager_GetOwnerPath_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetOwnerPathRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccessManagerServer).GetOwnerPath(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.am.AccessManager/GetOwnerPath",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccessManagerServer).GetOwnerPath(ctx, req.(*GetOwnerPathRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AccessManager_GetAccessPath_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAccessPathRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccessManagerServer).GetAccessPath(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.am.AccessManager/GetAccessPath",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccessManagerServer).GetAccessPath(ctx, req.(*GetAccessPathRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AccessManager_CreateRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateRoleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccessManagerServer).CreateRole(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.am.AccessManager/CreateRole",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccessManagerServer).CreateRole(ctx, req.(*CreateRoleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AccessManager_DeleteRoles_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteRolesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccessManagerServer).DeleteRoles(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.am.AccessManager/DeleteRoles",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccessManagerServer).DeleteRoles(ctx, req.(*DeleteRolesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AccessManager_ModifyRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ModifyRoleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccessManagerServer).ModifyRole(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.am.AccessManager/ModifyRole",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccessManagerServer).ModifyRole(ctx, req.(*ModifyRoleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AccessManager_DescribeRoles_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DescribeRolesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccessManagerServer).DescribeRoles(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.am.AccessManager/DescribeRoles",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccessManagerServer).DescribeRoles(ctx, req.(*DescribeRolesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AccessManager_DescribeRolesVerbose_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DescribeRolesVerboseRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccessManagerServer).DescribeRolesVerbose(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.am.AccessManager/DescribeRolesVerbose",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccessManagerServer).DescribeRolesVerbose(ctx, req.(*DescribeRolesVerboseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AccessManager_BindRoleModule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BindRoleModuleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccessManagerServer).BindRoleModule(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.am.AccessManager/BindRoleModule",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccessManagerServer).BindRoleModule(ctx, req.(*BindRoleModuleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AccessManager_UnBindRoleModule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnBindRoleModuleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccessManagerServer).UnBindRoleModule(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.am.AccessManager/UnBindRoleModule",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccessManagerServer).UnBindRoleModule(ctx, req.(*UnBindRoleModuleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AccessManager_BindUserRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BindUserRoleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccessManagerServer).BindUserRole(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.am.AccessManager/BindUserRole",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccessManagerServer).BindUserRole(ctx, req.(*BindUserRoleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AccessManager_UnBindUserRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnBindUserRoleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccessManagerServer).UnBindUserRole(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/openpitrix.iam.am.AccessManager/UnBindUserRole",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccessManagerServer).UnBindUserRole(ctx, req.(*UnBindUserRoleRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1231,122 +1995,151 @@ var _AccessManager_serviceDesc = grpc.ServiceDesc{
 			Handler:    _AccessManager_GetVersion_Handler,
 		},
 		{
-			MethodName: "CreateRole",
-			Handler:    _AccessManager_CreateRole_Handler,
-		},
-		{
-			MethodName: "DeleteRoleByName",
-			Handler:    _AccessManager_DeleteRoleByName_Handler,
-		},
-		{
-			MethodName: "CreateActionRule",
-			Handler:    _AccessManager_CreateActionRule_Handler,
-		},
-		{
-			MethodName: "DeleteActionRuleByName",
-			Handler:    _AccessManager_DeleteActionRuleByName_Handler,
-		},
-		{
-			MethodName: "CreateRoleXidBinding",
-			Handler:    _AccessManager_CreateRoleXidBinding_Handler,
-		},
-		{
-			MethodName: "DeleteRoleXidBindingByXid",
-			Handler:    _AccessManager_DeleteRoleXidBindingByXid_Handler,
-		},
-		{
-			MethodName: "ListRoles",
-			Handler:    _AccessManager_ListRoles_Handler,
-		},
-		{
-			MethodName: "ListActionRules",
-			Handler:    _AccessManager_ListActionRules_Handler,
-		},
-		{
-			MethodName: "ListRoleBindings",
-			Handler:    _AccessManager_ListRoleBindings_Handler,
-		},
-		{
-			MethodName: "GetActionRuleByName",
-			Handler:    _AccessManager_GetActionRuleByName_Handler,
-		},
-		{
-			MethodName: "GetActionRuleByRoleName",
-			Handler:    _AccessManager_GetActionRuleByRoleName_Handler,
-		},
-		{
-			MethodName: "GetActionRuleByXid",
-			Handler:    _AccessManager_GetActionRuleByXid_Handler,
-		},
-		{
-			MethodName: "GetXidListByRoleName",
-			Handler:    _AccessManager_GetXidListByRoleName_Handler,
-		},
-		{
-			MethodName: "GetRoleListByByXid",
-			Handler:    _AccessManager_GetRoleListByByXid_Handler,
+			MethodName: "DescribeActions",
+			Handler:    _AccessManager_DescribeActions_Handler,
 		},
 		{
 			MethodName: "CanDo",
 			Handler:    _AccessManager_CanDo_Handler,
+		},
+		{
+			MethodName: "GetOwnerPath",
+			Handler:    _AccessManager_GetOwnerPath_Handler,
+		},
+		{
+			MethodName: "GetAccessPath",
+			Handler:    _AccessManager_GetAccessPath_Handler,
+		},
+		{
+			MethodName: "CreateRole",
+			Handler:    _AccessManager_CreateRole_Handler,
+		},
+		{
+			MethodName: "DeleteRoles",
+			Handler:    _AccessManager_DeleteRoles_Handler,
+		},
+		{
+			MethodName: "ModifyRole",
+			Handler:    _AccessManager_ModifyRole_Handler,
+		},
+		{
+			MethodName: "DescribeRoles",
+			Handler:    _AccessManager_DescribeRoles_Handler,
+		},
+		{
+			MethodName: "DescribeRolesVerbose",
+			Handler:    _AccessManager_DescribeRolesVerbose_Handler,
+		},
+		{
+			MethodName: "BindRoleModule",
+			Handler:    _AccessManager_BindRoleModule_Handler,
+		},
+		{
+			MethodName: "UnBindRoleModule",
+			Handler:    _AccessManager_UnBindRoleModule_Handler,
+		},
+		{
+			MethodName: "BindUserRole",
+			Handler:    _AccessManager_BindUserRole_Handler,
+		},
+		{
+			MethodName: "UnBindUserRole",
+			Handler:    _AccessManager_UnBindUserRole_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "openpitrix/iam/am/am.proto",
 }
 
-func init() { proto.RegisterFile("openpitrix/iam/am/am.proto", fileDescriptor_am_d944bc332e86ab62) }
+func init() { proto.RegisterFile("openpitrix/iam/am/am.proto", fileDescriptor_am_ba05431bb70a32a8) }
 
-var fileDescriptor_am_d944bc332e86ab62 = []byte{
-	// 793 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x96, 0xeb, 0x6e, 0x12, 0x41,
-	0x14, 0xc7, 0xc3, 0xa5, 0xb4, 0x9c, 0xb6, 0x08, 0x53, 0xda, 0x52, 0x40, 0x6d, 0x37, 0x36, 0x21,
-	0x1a, 0xd9, 0xd8, 0x7e, 0x30, 0x56, 0xa3, 0x29, 0x6d, 0x25, 0x4d, 0xc4, 0x28, 0x4d, 0x2a, 0xa9,
-	0x46, 0x32, 0xc0, 0x04, 0x27, 0xee, 0xee, 0x6c, 0x76, 0xa7, 0x4d, 0xf9, 0x66, 0x7c, 0x05, 0x7d,
-	0x33, 0x5f, 0xc1, 0x07, 0x31, 0x33, 0xb3, 0x17, 0xa0, 0x2c, 0x50, 0x9b, 0x34, 0x29, 0x9c, 0xcb,
-	0x7f, 0x7e, 0x73, 0x2e, 0x13, 0xa0, 0xc8, 0x6c, 0x62, 0xd9, 0x94, 0x3b, 0xf4, 0x5a, 0xa7, 0xd8,
-	0xd4, 0xe5, 0x5f, 0xd5, 0x76, 0x18, 0x67, 0x28, 0x17, 0xfa, 0xaa, 0x14, 0x9b, 0x55, 0x6c, 0x16,
-	0xcb, 0x7d, 0xc6, 0xfa, 0x06, 0xd1, 0xb1, 0x4d, 0x75, 0x6c, 0x59, 0x8c, 0x63, 0x4e, 0x99, 0xe5,
-	0xaa, 0x04, 0xcd, 0x84, 0xd4, 0x61, 0x57, 0x18, 0x50, 0x09, 0xd2, 0x0e, 0x33, 0x48, 0xdb, 0xc2,
-	0x26, 0x29, 0xc4, 0xb6, 0x13, 0x95, 0x74, 0x73, 0x49, 0x18, 0xde, 0x63, 0x93, 0xa0, 0x2c, 0x24,
-	0xae, 0x69, 0xaf, 0x10, 0x97, 0x66, 0xf1, 0x11, 0x6d, 0x40, 0xca, 0x24, 0xfc, 0x1b, 0xeb, 0x15,
-	0x12, 0xdb, 0xb1, 0x4a, 0xba, 0xe9, 0x7d, 0x43, 0x65, 0x48, 0x0b, 0x05, 0xd7, 0xc6, 0x5d, 0x52,
-	0x48, 0x4a, 0x57, 0x68, 0xd0, 0x38, 0x80, 0x3a, 0xae, 0x79, 0x69, 0x10, 0x84, 0x20, 0xe9, 0x9d,
-	0x26, 0xc2, 0xe4, 0x67, 0xb4, 0x0b, 0x19, 0xa5, 0xd4, 0xb6, 0x31, 0xe7, 0xc4, 0xb1, 0x0a, 0x71,
-	0xe9, 0x5d, 0x55, 0xd6, 0x0f, 0xca, 0x88, 0x9e, 0x40, 0x2e, 0x50, 0x0d, 0x22, 0x13, 0x12, 0x2f,
-	0x1b, 0x38, 0xbc, 0x60, 0xed, 0x04, 0x32, 0xe1, 0xa9, 0xef, 0xa8, 0xcb, 0xd1, 0x3e, 0x2c, 0x5c,
-	0x61, 0xe3, 0x52, 0x5d, 0x74, 0x79, 0xef, 0x7e, 0xf5, 0x46, 0xdd, 0xaa, 0x61, 0x46, 0x53, 0xc5,
-	0x6a, 0x0d, 0x48, 0x36, 0x59, 0x04, 0xf6, 0x33, 0x48, 0x3a, 0x97, 0x06, 0x91, 0x15, 0x9a, 0xa9,
-	0x27, 0x43, 0xb5, 0x17, 0xb0, 0x24, 0xe4, 0x24, 0xcf, 0xd3, 0x51, 0x9e, 0xcd, 0x09, 0xf9, 0x22,
-	0xd6, 0x27, 0xb9, 0x80, 0x75, 0xf1, 0x35, 0x94, 0xac, 0x51, 0xab, 0x47, 0xad, 0xfe, 0x78, 0x13,
-	0x63, 0x23, 0x4d, 0x7c, 0x04, 0x19, 0x2c, 0x33, 0xda, 0xe2, 0xfc, 0xb6, 0xec, 0xa7, 0x88, 0x58,
-	0xc1, 0x81, 0xce, 0x69, 0x4f, 0xfb, 0x0c, 0x5b, 0x13, 0xb5, 0x25, 0xe7, 0xeb, 0x51, 0xce, 0x4a,
-	0x04, 0xe7, 0x8d, 0x64, 0x1f, 0xfc, 0x0d, 0x64, 0x84, 0xbf, 0x45, 0x7b, 0x73, 0x11, 0x07, 0x63,
-	0x17, 0xf3, 0xc6, 0x4e, 0x6b, 0x00, 0x1a, 0x15, 0x90, 0x58, 0xcf, 0x47, 0xb1, 0x76, 0x22, 0xb0,
-	0xc2, 0x2c, 0x9f, 0x67, 0x11, 0x16, 0x4e, 0x4c, 0x9b, 0x0f, 0xb4, 0x32, 0x24, 0x6b, 0x8c, 0x19,
-	0x28, 0x1f, 0x2a, 0xc5, 0x2a, 0x4b, 0x7e, 0xd8, 0x03, 0x48, 0x9d, 0x71, 0x47, 0xe0, 0x8e, 0xf8,
-	0xd3, 0xbe, 0xbf, 0x04, 0x89, 0x16, 0xed, 0x45, 0x38, 0x1f, 0xc2, 0x62, 0x8b, 0xf6, 0x24, 0x67,
-	0x7e, 0x98, 0x33, 0x08, 0x38, 0x07, 0x10, 0xb7, 0x7d, 0x4b, 0x0d, 0x4e, 0x1c, 0xb4, 0x03, 0x2b,
-	0x7d, 0x83, 0x75, 0x82, 0xa1, 0x56, 0x5a, 0xcb, 0xc2, 0xe6, 0x0f, 0xff, 0x2e, 0x64, 0x1c, 0xd2,
-	0x27, 0xd7, 0xf6, 0xf8, 0x8e, 0x28, 0xab, 0x3f, 0xf6, 0x3f, 0x62, 0x90, 0x13, 0xd7, 0xf6, 0xee,
-	0xec, 0xe9, 0xeb, 0xaa, 0xa6, 0x42, 0x76, 0xf2, 0xa0, 0x86, 0x2c, 0x6a, 0xd3, 0x0f, 0x86, 0x3b,
-	0x14, 0x9f, 0x27, 0x2d, 0x68, 0xe0, 0xde, 0x6f, 0x80, 0xd5, 0xc3, 0x6e, 0x97, 0xb8, 0x6e, 0x03,
-	0x5b, 0xb8, 0x4f, 0x1c, 0xf4, 0x15, 0xa0, 0x4e, 0xf8, 0x39, 0x71, 0x5c, 0xf1, 0xe8, 0x14, 0x26,
-	0x08, 0xc9, 0x86, 0x14, 0xb7, 0x26, 0x78, 0x54, 0x0f, 0xb4, 0xd2, 0xcf, 0x3f, 0x7f, 0x7f, 0xc5,
-	0xd7, 0xd1, 0x9a, 0x7c, 0xd3, 0xc4, 0x13, 0x48, 0x4d, 0xfd, 0xca, 0x53, 0xfc, 0x02, 0x70, 0xe4,
-	0x10, 0xcc, 0x89, 0x5c, 0xd5, 0xa8, 0x45, 0x2a, 0x46, 0x39, 0xb4, 0xb2, 0x14, 0xdf, 0xd0, 0x72,
-	0x81, 0x38, 0x36, 0x75, 0x71, 0x1f, 0xf7, 0x20, 0xf6, 0x18, 0xd5, 0x21, 0x7b, 0x4c, 0x0c, 0xa2,
-	0xd4, 0x6b, 0x03, 0x39, 0xa4, 0xd1, 0xa4, 0xc5, 0xc8, 0xeb, 0xa1, 0x63, 0xc8, 0x2a, 0xcc, 0xa1,
-	0xe7, 0xf0, 0xd6, 0xb0, 0xa8, 0x01, 0x1b, 0x0a, 0x67, 0x68, 0xe1, 0xee, 0x00, 0xf5, 0x09, 0xf2,
-	0x61, 0xed, 0x86, 0x76, 0x74, 0x77, 0xe6, 0x3e, 0x89, 0xe9, 0x9e, 0x22, 0xfc, 0x11, 0xb6, 0xc2,
-	0xb2, 0x85, 0x59, 0xb5, 0x81, 0xd8, 0x9a, 0xe2, 0x84, 0x34, 0x6f, 0x61, 0xa6, 0x48, 0xd6, 0x21,
-	0x2d, 0x22, 0x84, 0xa0, 0x8b, 0xa6, 0xcf, 0x63, 0xb1, 0x14, 0xc1, 0x2f, 0x77, 0xf2, 0x0c, 0xee,
-	0x89, 0xff, 0x61, 0x05, 0x67, 0xca, 0xed, 0x4c, 0x7d, 0xdd, 0xa5, 0x68, 0x0b, 0xb2, 0x3e, 0x9d,
-	0x77, 0xd7, 0x99, 0xaa, 0xf3, 0x15, 0x19, 0x9d, 0xc2, 0x5a, 0x9d, 0xf0, 0xdb, 0xf4, 0x7b, 0xca,
-	0xf4, 0x6c, 0x8e, 0x49, 0x35, 0xfd, 0x87, 0xf7, 0xff, 0xe4, 0xd0, 0x98, 0xdc, 0xac, 0xee, 0x4e,
-	0xed, 0x4b, 0x03, 0xf2, 0x75, 0xc2, 0xbd, 0xd0, 0xf9, 0xd0, 0xa6, 0x9c, 0xe5, 0xd1, 0xf9, 0xea,
-	0xb5, 0xc1, 0x1d, 0xe9, 0x5e, 0xc1, 0xc2, 0x11, 0xb6, 0x8e, 0xd9, 0x44, 0x1c, 0x55, 0x83, 0xe8,
-	0xe1, 0xad, 0x69, 0x17, 0xdb, 0xc3, 0x2e, 0x26, 0xdf, 0x19, 0xfb, 0x7b, 0x5f, 0xb7, 0x3b, 0x3a,
-	0x36, 0x5f, 0xda, 0x1d, 0x6c, 0x76, 0x52, 0xf2, 0x07, 0xda, 0xfe, 0xbf, 0x00, 0x00, 0x00, 0xff,
-	0xff, 0xc8, 0x90, 0xd7, 0x23, 0xef, 0x09, 0x00, 0x00,
+var fileDescriptor_am_ba05431bb70a32a8 = []byte{
+	// 1385 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x57, 0xdd, 0x6e, 0x1b, 0x45,
+	0x14, 0x96, 0xd7, 0xb1, 0x63, 0x1f, 0xe7, 0xa7, 0x99, 0x24, 0x8e, 0xd9, 0x26, 0x69, 0x59, 0xb5,
+	0xb4, 0x04, 0xd5, 0x16, 0x86, 0x8b, 0xaa, 0x95, 0x90, 0xda, 0xa6, 0x8d, 0x22, 0x28, 0x45, 0x2e,
+	0x2d, 0x52, 0x7b, 0x61, 0x8d, 0xbd, 0xe3, 0x64, 0x65, 0xef, 0xce, 0xb2, 0x3b, 0x4e, 0xb1, 0x50,
+	0x25, 0x04, 0xea, 0x45, 0xc5, 0x25, 0x12, 0x6f, 0xc0, 0x7b, 0xf0, 0x0e, 0xbc, 0x02, 0x4f, 0xc0,
+	0x13, 0xa0, 0xf9, 0xd9, 0xee, 0xdf, 0x38, 0xeb, 0xb6, 0x02, 0xc9, 0x17, 0x3b, 0x67, 0xce, 0x9c,
+	0xef, 0x9b, 0x73, 0xe6, 0xfc, 0x18, 0x4c, 0xea, 0x13, 0xcf, 0x77, 0x58, 0xe0, 0xfc, 0xd0, 0x71,
+	0xb0, 0xdb, 0x11, 0xbf, 0xb6, 0x1f, 0x50, 0x46, 0xd1, 0x46, 0xbc, 0xd7, 0x76, 0xb0, 0xdb, 0xc6,
+	0xae, 0xb9, 0x7b, 0x42, 0xe9, 0xc9, 0x84, 0x74, 0xb0, 0xef, 0x74, 0xb0, 0xe7, 0x51, 0x86, 0x99,
+	0x43, 0xbd, 0x50, 0x1e, 0x30, 0x2f, 0xa9, 0x5d, 0xb1, 0x1a, 0x4c, 0x47, 0x1d, 0xe6, 0xb8, 0x24,
+	0x64, 0xd8, 0xf5, 0xa5, 0x82, 0xb5, 0x0c, 0x95, 0xfb, 0xae, 0xcf, 0x66, 0xd6, 0x3e, 0x54, 0x1f,
+	0xb3, 0xc0, 0xf1, 0x4e, 0xd0, 0x16, 0x54, 0xce, 0xf0, 0x64, 0x4a, 0x5a, 0xa5, 0xcb, 0xa5, 0xeb,
+	0xf5, 0x9e, 0x5c, 0x58, 0x3f, 0x19, 0x50, 0xbd, 0x33, 0xe4, 0xb6, 0xd1, 0x45, 0xa8, 0x63, 0xf1,
+	0xd5, 0x77, 0x6c, 0xa5, 0x54, 0x93, 0x82, 0x63, 0x1b, 0x5d, 0x82, 0x86, 0xda, 0xf4, 0xb0, 0x4b,
+	0x5a, 0x86, 0xd8, 0x06, 0x29, 0xfa, 0x1a, 0xbb, 0x04, 0x35, 0xa1, 0xea, 0x12, 0x76, 0x4a, 0xed,
+	0x56, 0x59, 0xec, 0xa9, 0x15, 0xba, 0x0c, 0x0d, 0x9b, 0x84, 0xc3, 0xc0, 0xf1, 0xb9, 0x6a, 0x6b,
+	0x49, 0x6c, 0x26, 0x45, 0x68, 0x0f, 0x60, 0x44, 0x30, 0x9b, 0x06, 0x84, 0x03, 0x57, 0x84, 0x42,
+	0x5d, 0x49, 0x8e, 0x6d, 0xf4, 0x21, 0xac, 0x44, 0xdb, 0x02, 0xba, 0x2a, 0x2d, 0x28, 0x99, 0xc0,
+	0xbe, 0x08, 0x75, 0x97, 0xda, 0xd3, 0x89, 0x30, 0xb0, 0x2c, 0x99, 0x4b, 0x81, 0x64, 0xae, 0x36,
+	0xc5, 0xf1, 0x9a, 0x64, 0x2e, 0x45, 0xfc, 0xb4, 0xf5, 0x00, 0x9a, 0x87, 0x82, 0xce, 0x80, 0x48,
+	0x4f, 0x84, 0x3d, 0xf2, 0xfd, 0x94, 0x84, 0x8c, 0xdf, 0x89, 0x8e, 0x46, 0x21, 0x61, 0xc2, 0x1d,
+	0x95, 0x9e, 0x5a, 0x71, 0x57, 0x4e, 0x1c, 0xd7, 0x61, 0xc2, 0x0d, 0x95, 0x9e, 0x5c, 0x58, 0x0c,
+	0x76, 0x72, 0x76, 0x42, 0x9f, 0x7a, 0x21, 0x41, 0x37, 0x41, 0xb9, 0xaa, 0x2f, 0x8d, 0x95, 0xaf,
+	0x37, 0xba, 0x1f, 0xb4, 0x73, 0x51, 0x6f, 0xcb, 0x73, 0x3d, 0x15, 0x87, 0xc7, 0x84, 0x71, 0xf6,
+	0x8c, 0x32, 0x3c, 0xe9, 0x0f, 0xe9, 0xd4, 0x8b, 0x00, 0x41, 0x88, 0xee, 0x71, 0x89, 0x35, 0x02,
+	0x74, 0x0f, 0x7b, 0x87, 0x54, 0x1d, 0x55, 0xcc, 0x77, 0x60, 0x79, 0x1a, 0x92, 0x20, 0x8e, 0x64,
+	0x95, 0x2f, 0x8f, 0xed, 0x44, 0x98, 0x8c, 0x54, 0x98, 0x44, 0x7c, 0x87, 0x24, 0x0c, 0xfb, 0x3e,
+	0x66, 0xa7, 0x2a, 0x86, 0x20, 0x45, 0xdf, 0x60, 0x76, 0x6a, 0x7d, 0x01, 0x9b, 0x29, 0x1c, 0x75,
+	0xb3, 0xb9, 0x40, 0x6b, 0x60, 0xd0, 0xb1, 0x00, 0xa9, 0xf5, 0x0c, 0x3a, 0xb6, 0x1e, 0xc0, 0xe6,
+	0x11, 0x61, 0x8f, 0x5e, 0x78, 0x24, 0xe0, 0xf6, 0xde, 0x95, 0xa8, 0x75, 0x04, 0x5b, 0x69, 0x3b,
+	0x45, 0x44, 0xce, 0x37, 0x74, 0xe7, 0xcd, 0x0d, 0xdf, 0x99, 0xd1, 0x21, 0x6c, 0x67, 0x0c, 0x15,
+	0x51, 0x42, 0xb0, 0x24, 0xbc, 0x2c, 0xed, 0x88, 0x6f, 0xeb, 0x0f, 0x03, 0x96, 0x7a, 0x74, 0x22,
+	0x4e, 0x05, 0x54, 0x3e, 0x65, 0x75, 0x8a, 0x2f, 0x8f, 0x6d, 0xfe, 0xca, 0xc5, 0x46, 0x22, 0x01,
+	0x6b, 0x5c, 0x20, 0x52, 0x20, 0x93, 0x66, 0xe5, 0x7c, 0x9a, 0x35, 0xa1, 0xea, 0xd3, 0x80, 0xe1,
+	0x89, 0xca, 0x41, 0xb5, 0xe2, 0x8f, 0x99, 0x72, 0x6f, 0xaa, 0xcc, 0x93, 0x0b, 0x9e, 0x94, 0xe2,
+	0x43, 0x3e, 0x07, 0x99, 0x73, 0x75, 0x1a, 0x79, 0x1d, 0xdd, 0x86, 0xc6, 0x30, 0x20, 0x98, 0x91,
+	0x3e, 0xaf, 0x3c, 0x22, 0xe7, 0x1a, 0x5d, 0xb3, 0x2d, 0xcb, 0x52, 0x3b, 0x2a, 0x4b, 0xed, 0x6f,
+	0xa3, 0xb2, 0xd4, 0x03, 0xa9, 0xce, 0x05, 0xfc, 0xf0, 0xd4, 0xb7, 0xdf, 0x1c, 0xae, 0x15, 0x1f,
+	0x96, 0xea, 0x5c, 0x60, 0x3d, 0x87, 0x8d, 0x7b, 0xc2, 0x14, 0x77, 0x56, 0x61, 0xcc, 0x6e, 0x44,
+	0x45, 0xcf, 0x10, 0x20, 0x3b, 0x9a, 0x9c, 0x13, 0x76, 0x54, 0x35, 0x7c, 0x00, 0x28, 0x69, 0xbc,
+	0x28, 0x8e, 0x89, 0x50, 0x19, 0xc9, 0x50, 0x71, 0x3b, 0x87, 0x64, 0x42, 0xa4, 0x9d, 0xb0, 0x90,
+	0x65, 0xca, 0x4e, 0x39, 0x61, 0xa7, 0x0d, 0x9b, 0x29, 0x3b, 0x31, 0x21, 0xbd, 0xfe, 0x73, 0xd8,
+	0x78, 0x48, 0x6d, 0x67, 0x34, 0xfb, 0x2f, 0x9c, 0x73, 0x03, 0x50, 0xd2, 0xb8, 0x8e, 0x4b, 0xd2,
+	0x07, 0xbf, 0x1a, 0xb0, 0x15, 0xd5, 0xc3, 0xc5, 0xdc, 0xf0, 0x08, 0x6a, 0x63, 0x32, 0xeb, 0xbf,
+	0xa0, 0x81, 0xbc, 0x57, 0xa3, 0xfb, 0xb9, 0x86, 0x92, 0xce, 0x66, 0xfb, 0x4b, 0x32, 0xfb, 0x8e,
+	0x06, 0xf6, 0x7d, 0x8f, 0x05, 0xb3, 0xde, 0xf2, 0x58, 0xae, 0x78, 0x51, 0x0b, 0x09, 0x0e, 0x86,
+	0xa7, 0xd2, 0xa6, 0x2a, 0x6a, 0x52, 0x24, 0x14, 0xe2, 0x02, 0xbf, 0xa4, 0x2f, 0xf0, 0x95, 0x44,
+	0x81, 0x37, 0x6f, 0xc1, 0x4a, 0x12, 0x07, 0x5d, 0x80, 0xf2, 0x98, 0xcc, 0xd4, 0x25, 0xf8, 0x67,
+	0xdc, 0x63, 0x8d, 0x44, 0x8f, 0xbd, 0x65, 0xdc, 0x2c, 0x59, 0xaf, 0x4a, 0xb0, 0x9d, 0x61, 0x5e,
+	0xf4, 0xba, 0xba, 0x20, 0xd2, 0x5b, 0xb4, 0x0c, 0xe9, 0x8e, 0xb9, 0x11, 0x12, 0x21, 0xd0, 0xb4,
+	0x8b, 0x72, 0xae, 0x5d, 0xec, 0xc1, 0xc5, 0x14, 0x8d, 0xa7, 0x24, 0x18, 0xd0, 0x30, 0x7a, 0x2b,
+	0xd6, 0x3e, 0xec, 0xea, 0xb7, 0x25, 0x59, 0xeb, 0x4f, 0x03, 0x36, 0xf8, 0xc6, 0x43, 0xd1, 0x3e,
+	0xef, 0x3a, 0x9e, 0xcd, 0x47, 0x8b, 0x3d, 0x80, 0x81, 0xfc, 0x8c, 0x6f, 0x51, 0x57, 0x92, 0x73,
+	0xd2, 0x24, 0xdd, 0xb7, 0xcb, 0x99, 0xbe, 0xbd, 0x07, 0x60, 0x63, 0x86, 0xfb, 0x13, 0x72, 0x46,
+	0xa2, 0x9a, 0x55, 0xe7, 0x92, 0xaf, 0xb8, 0x00, 0x5d, 0x83, 0x75, 0xe2, 0xe1, 0xc1, 0x84, 0xd8,
+	0x7d, 0xd9, 0x2d, 0x43, 0x55, 0xc0, 0xd6, 0x94, 0x58, 0xf5, 0xe0, 0xb8, 0xbe, 0xd5, 0x92, 0xf5,
+	0x2d, 0x53, 0xc0, 0xaa, 0xef, 0x53, 0xc0, 0x96, 0xdf, 0xaa, 0x80, 0x8d, 0x60, 0x9b, 0xfb, 0x2d,
+	0xf6, 0xe2, 0xdb, 0x95, 0x87, 0x45, 0xfd, 0x67, 0xb5, 0xa0, 0x99, 0xc5, 0x51, 0x41, 0x3c, 0x85,
+	0x9d, 0x27, 0xde, 0xff, 0xc2, 0xc1, 0x84, 0x56, 0x1e, 0x49, 0xb1, 0x38, 0x82, 0x4d, 0xbe, 0xf3,
+	0x24, 0x24, 0xc1, 0x42, 0xd5, 0x6a, 0x6e, 0xa1, 0x69, 0xc2, 0x56, 0xda, 0x90, 0x02, 0x38, 0x86,
+	0x6d, 0x09, 0xfe, 0xfe, 0x10, 0x2d, 0x68, 0x66, 0x4d, 0x49, 0x90, 0xee, 0x3f, 0xab, 0xb0, 0x2a,
+	0x5b, 0xff, 0x43, 0xec, 0xe1, 0x13, 0x12, 0xa0, 0x67, 0x00, 0x47, 0x84, 0x3d, 0x25, 0x41, 0xc8,
+	0xbb, 0x6e, 0x4b, 0x93, 0xb2, 0x62, 0x32, 0x37, 0x75, 0xf3, 0x9f, 0x1c, 0xd5, 0xad, 0x9d, 0x9f,
+	0xff, 0xfa, 0xfb, 0x37, 0x63, 0x03, 0xad, 0x77, 0xce, 0x3e, 0x15, 0x7f, 0x16, 0xce, 0x94, 0x35,
+	0x1f, 0xd6, 0x33, 0x23, 0xe6, 0x39, 0x00, 0x07, 0xe7, 0x14, 0xcf, 0xcc, 0x80, 0x9a, 0x47, 0x54,
+	0x39, 0x85, 0x7c, 0xa8, 0x88, 0xb1, 0x0f, 0x5d, 0xd5, 0x58, 0xcb, 0x0f, 0x9e, 0xe6, 0x47, 0x45,
+	0x6a, 0x0a, 0xb0, 0x25, 0x00, 0x91, 0xb5, 0x1a, 0x01, 0x0e, 0xb1, 0x67, 0xd3, 0x5b, 0xa5, 0x03,
+	0xf4, 0xaa, 0x04, 0x2b, 0xc9, 0x09, 0x0f, 0xe9, 0x4c, 0x6a, 0x46, 0x49, 0xf3, 0x5a, 0xa1, 0x9e,
+	0xc2, 0xbe, 0x22, 0xb0, 0xf7, 0xd1, 0x6e, 0x84, 0x1d, 0x4f, 0x3a, 0x9d, 0x1f, 0xd5, 0xcb, 0x78,
+	0x89, 0x5e, 0x97, 0x60, 0x35, 0x35, 0xd7, 0xa1, 0x39, 0x00, 0xb9, 0x11, 0xd2, 0xbc, 0x5e, 0xac,
+	0xa8, 0xa8, 0x5c, 0x15, 0x54, 0x2e, 0xa1, 0xbd, 0xd8, 0xef, 0x6f, 0x86, 0xf0, 0x04, 0x97, 0x10,
+	0x20, 0x9e, 0x4b, 0xd0, 0x15, 0x9d, 0x8f, 0xb3, 0x33, 0x91, 0x79, 0xb5, 0x40, 0x6b, 0x5e, 0x20,
+	0xf8, 0x93, 0x0f, 0x79, 0x20, 0xce, 0xa0, 0x91, 0x18, 0x3e, 0xb4, 0x0f, 0x20, 0x3f, 0xe4, 0x68,
+	0x1f, 0x80, 0x66, 0x86, 0x89, 0x70, 0x0f, 0xf2, 0xb8, 0x21, 0x40, 0x3c, 0x67, 0x68, 0x2f, 0x9b,
+	0x9b, 0x71, 0xb4, 0x97, 0xcd, 0x0f, 0x2b, 0x11, 0x68, 0x37, 0x0f, 0x3a, 0x83, 0xd5, 0x54, 0xe3,
+	0xd3, 0x06, 0x5b, 0x37, 0x7a, 0x68, 0x83, 0xad, 0xed, 0xf4, 0xd6, 0xb6, 0x40, 0x5f, 0x47, 0x69,
+	0x74, 0xf4, 0x7b, 0x29, 0x33, 0x28, 0xa9, 0xa6, 0x8b, 0xda, 0x45, 0x96, 0xd3, 0xcd, 0xdb, 0xec,
+	0x2c, 0xac, 0xaf, 0x08, 0xed, 0x09, 0x42, 0x3b, 0x68, 0x3b, 0x45, 0x88, 0x57, 0x1b, 0x81, 0xff,
+	0xaa, 0x04, 0x6b, 0xe9, 0xe2, 0x8d, 0x74, 0x97, 0xd5, 0x76, 0x12, 0xf3, 0xe3, 0x05, 0x34, 0x15,
+	0x8d, 0x7d, 0x41, 0xa3, 0x65, 0x6d, 0x26, 0x69, 0xf4, 0x65, 0x13, 0xe1, 0xb1, 0x79, 0x5d, 0x82,
+	0x0b, 0xd9, 0x36, 0x82, 0x74, 0xd5, 0x6d, 0x4e, 0x57, 0x33, 0x3f, 0x59, 0x48, 0x57, 0xb1, 0xd9,
+	0x15, 0x6c, 0x9a, 0x07, 0x1b, 0x11, 0x1b, 0x91, 0x85, 0x9c, 0x12, 0xe7, 0xf2, 0x12, 0x56, 0x92,
+	0x7d, 0x40, 0x5b, 0x9c, 0x34, 0x3d, 0x47, 0x5b, 0x9c, 0xb4, 0x5d, 0x4b, 0xc1, 0x5b, 0x7a, 0xf8,
+	0x5f, 0x4a, 0xb0, 0x96, 0xee, 0x44, 0xda, 0x90, 0x68, 0xfb, 0x9e, 0x36, 0x24, 0xfa, 0xb6, 0x76,
+	0xbe, 0x13, 0xee, 0x5a, 0xcf, 0x2e, 0x27, 0x2d, 0x51, 0xa1, 0xe1, 0x8f, 0x4f, 0x3a, 0xfe, 0xa0,
+	0x83, 0xdd, 0xdb, 0xfe, 0x00, 0xbb, 0x83, 0xaa, 0x18, 0x83, 0x3e, 0xfb, 0x37, 0x00, 0x00, 0xff,
+	0xff, 0x2f, 0xa2, 0x0b, 0x05, 0xf8, 0x12, 0x00, 0x00,
 }
