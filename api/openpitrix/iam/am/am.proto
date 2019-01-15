@@ -18,84 +18,74 @@ import "google/protobuf/timestamp.proto";
 service AccessManager {
 	rpc GetVersion(Empty) returns (String) {
 		option (google.api.http) = {
-			get: "/v1/iam/version"
+			get: "/v1/am/version"
 		};
 	}
 
-	rpc DescribeActions(Empty) returns (DescribeActionsResponse) {
+	rpc DescribeActions(Empty) returns (ActionList) {
 		option (google.api.http) = {
-			get: "/v1/iam/actions"
+			get: "/v1/am/actions"
 		};
 	}
 
 	rpc CanDo(CanDoActionRequest) returns (CanDoActionResponse) {
 		option (google.api.http) = {
-			post: "/v1/iam/cando"
+			post: "/v1/am/cando"
 			body: "*"
-		};
-	}
-	rpc GetOwnerPath(GetOwnerPathRequest) returns (GetOwnerPathResponse) {
-		option (google.api.http) = {
-			get: "/v1/iam/owner_path/{user_id}"
-		};
-	}
-	rpc GetAccessPath(GetAccessPathRequest) returns (GetAccessPathResponse) {
-		option (google.api.http) = {
-			get: "/v1/iam/access_path/{user_id}"
 		};
 	}
 
 	rpc CreateRole(CreateRoleRequest) returns (CreateRoleResponse) {
 		option (google.api.http) = {
-			post: "/v1/iam/roles"
+			post: "/v1/am/roles"
 			body: "*"
 		};
 	}
 	rpc DeleteRoles(DeleteRolesRequest) returns (DeleteRolesResponse) {
 		option (google.api.http) = {
-			delete: "/v1/iam/roles"
+			delete: "/v1/am/roles"
 			body: "*"
 		};
 	}
 	rpc ModifyRole(ModifyRoleRequest) returns (ModifyRoleResponse) {
 		option (google.api.http) = {
-			patch: "/v1/iam/roles"
+			patch: "/v1/am/roles"
 			body: "*"
 		};
 	}
-	rpc DescribeRoles(DescribeRolesRequest) returns (DescribeRolesResponse) {
+	rpc DescribeRoles(Empty) returns (RoleList) {
 		option (google.api.http) = {
-			get: "/v1/iam/roles"
+			get: "/v1/am/roles"
 		};
 	}
-	rpc DescribeRolesVerbose(DescribeRolesVerboseRequest) returns (DescribeRolesVerboseResponse) {
+	rpc DescribeRolesVerbose(Empty) returns (RoleExList) {
 		option (google.api.http) = {
-			get: "/v1/iam/roles/verbose"
+			get: "/v1/am/roles:verbose"
 		};
 	}
 
-	rpc BindRoleModule(BindRoleModuleRequest) returns (BindRoleModuleResponse) {
+	rpc BindRoleActions(BindRoleActionsRequest) returns (BindRoleActionsResponse) {
 		option (google.api.http) = {
-			post: "/v1/iam/role_module"
+			post: "/v1/am/role:actions"
 			body: "*"
 		};
 	}
-	rpc UnBindRoleModule(UnBindRoleModuleRequest) returns (UnBindRoleModuleResponse) {
+	rpc UnBindRoleActions(UnBindRoleActionsRequest) returns (UnBindRoleActionsResponse) {
 		option (google.api.http) = {
-			delete: "/v1/iam/user_role"
+			delete: "/v1/am/role:actions"
 			body: "*"
 		};
 	}
 
 	rpc BindUserRole(BindUserRoleRequest) returns (BindUserRoleResponse) {
 		option (google.api.http) = {
-			post: "/v1/iam/user_role"
+			post: "/v1/am/user:role"
 			body: "*"
 		};
 	}
 	rpc UnBindUserRole(UnBindUserRoleRequest) returns (UnBindUserRoleResponse) {
 		option (google.api.http) = {
-			delete: "/v1/iam/user_role"
+			delete: "/v1/am/user:role"
 			body: "*"
 		};
 	}
@@ -128,13 +118,8 @@ message Action {
 	string module_name = 8;
 }
 
-message DescribeActionsRequest {
-	int32 offset = 1;
-	int32 limit = 2;
-}
-message DescribeActionsResponse {
-	repeated Action action_set = 1;
-	int32 total_count = 2;
+message ActionList {
+	repeated Action value = 1;
 }
 
 // ----------------------------------------------------------------------------
@@ -143,30 +128,13 @@ message DescribeActionsResponse {
 
 message CanDoActionRequest {
 	string user_id = 1;
-	string method = 2;
-	string access_path = 3;
+	string http_method = 2;
+	string request_path = 3;
 }
 message CanDoActionResponse {
 	string user_id = 1;
-	bool ok = 2;
-}
-
-message GetOwnerPathRequest {
-	string user_id = 1;
-	string method = 2;
-}
-message GetOwnerPathResponse {
-	string user_id = 1;
-	string method = 2;
-}
-
-message GetAccessPathRequest {
-	string user_id = 1;
-	string method = 2;
-}
-message GetAccessPathResponse {
-	string user_id = 1;
-	string path = 2;
+	string access_path = 2;
+	string owner_path = 3;
 }
 
 // ----------------------------------------------------------------------------
@@ -183,6 +151,24 @@ message Role {
 
 	google.protobuf.Timestamp create_time = 7;
 	google.protobuf.Timestamp update_time = 8;
+}
+message RoleList {
+	repeated Role value = 1;
+}
+
+message Module {
+	repeated Feature feature = 1;
+}
+message Feature {
+	repeated Action action = 1;
+}
+
+message RoleEx {
+	Role value = 1;
+	repeated Module module = 2;
+}
+message RoleExList {
+	repeated RoleEx value = 1;
 }
 
 message CreateRoleRequest {
@@ -210,29 +196,6 @@ message ModifyRoleResponse {
 	string role_id = 2;
 }
 
-
-message DescribeRolesRequest {
-	string user_id = 1;
-
-	map<string,string> key_word = 2; // x.key == word
-	string search_word = 3;          // x.[...] LIKE search_word
-
-	int32 offset = 4;
-	int32 limit = 5;
-}
-message DescribeRolesResponse {
-	string user_id = 1;
-	repeated Role role_set = 2;
-	int32 total_count = 3;
-}
-
-message DescribeRolesVerboseRequest {
-	//
-}
-message DescribeRolesVerboseResponse {
-	//
-}
-
 // ----------------------------------------------------------------------------
 // Binding
 // ----------------------------------------------------------------------------
@@ -249,35 +212,33 @@ message RoleModuleBinding {
 	google.protobuf.Timestamp update_time = 7;
 }
 
-message BindRoleModuleRequest {
-	string user_id = 1;
-	string role_id = 2;
-	string module_id = 3;
+message BindRoleActionsRequest {
+	string role_id = 1;
+	repeated string action_id = 2;
 }
-message BindRoleModuleResponse {
+message BindRoleActionsResponse {
 	//
 }
 
-message UnBindRoleModuleRequest {
-	string user_id = 1;
-	string role_id = 2;
-	string module_id = 3;
+message UnBindRoleActionsRequest {
+	string role_id = 1;
+	repeated string action_id = 2;
 }
-message UnBindRoleModuleResponse {
+message UnBindRoleActionsResponse {
 	//
 }
 
 message BindUserRoleRequest {
-	string user_id = 1;
-	string role_id = 2;
+	repeated string user_id = 1;
+	repeated string role_id = 2;
 }
 message BindUserRoleResponse {
 	//
 }
 
 message UnBindUserRoleRequest {
-	string user_id = 1;
-	string role_id = 2;
+	repeated string user_id = 1;
+	repeated string role_id = 2;
 }
 message UnBindUserRoleResponse {
 	//

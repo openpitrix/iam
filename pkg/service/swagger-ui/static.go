@@ -246,44 +246,14 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
     "application/json"
   ],
   "paths": {
-    "/v1/iam/access_path/{user_id}": {
-      "get": {
-        "operationId": "GetAccessPath",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/amGetAccessPathResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "method",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "AccessManager"
-        ]
-      }
-    },
-    "/v1/iam/actions": {
+    "/v1/am/actions": {
       "get": {
         "operationId": "DescribeActions",
         "responses": {
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/amDescribeActionsResponse"
+              "$ref": "#/definitions/amActionList"
             }
           }
         },
@@ -292,7 +262,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         ]
       }
     },
-    "/v1/iam/cando": {
+    "/v1/am/cando": {
       "post": {
         "operationId": "CanDo",
         "responses": {
@@ -318,44 +288,14 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         ]
       }
     },
-    "/v1/iam/owner_path/{user_id}": {
-      "get": {
-        "operationId": "GetOwnerPath",
+    "/v1/am/role:actions": {
+      "delete": {
+        "operationId": "UnBindRoleActions",
         "responses": {
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/amGetOwnerPathResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "method",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "AccessManager"
-        ]
-      }
-    },
-    "/v1/iam/role_module": {
-      "post": {
-        "operationId": "BindRoleModule",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/amBindRoleModuleResponse"
+              "$ref": "#/definitions/amUnBindRoleActionsResponse"
             }
           }
         },
@@ -365,7 +305,31 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/amBindRoleModuleRequest"
+              "$ref": "#/definitions/amUnBindRoleActionsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AccessManager"
+        ]
+      },
+      "post": {
+        "operationId": "BindRoleActions",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/amBindRoleActionsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/amBindRoleActionsRequest"
             }
           }
         ],
@@ -374,45 +338,17 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         ]
       }
     },
-    "/v1/iam/roles": {
+    "/v1/am/roles": {
       "get": {
         "operationId": "DescribeRoles",
         "responses": {
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/amDescribeRolesResponse"
+              "$ref": "#/definitions/amRoleList"
             }
           }
         },
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "search_word",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
         "tags": [
           "AccessManager"
         ]
@@ -490,14 +426,14 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         ]
       }
     },
-    "/v1/iam/roles/verbose": {
+    "/v1/am/roles:verbose": {
       "get": {
         "operationId": "DescribeRolesVerbose",
         "responses": {
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/amDescribeRolesVerboseResponse"
+              "$ref": "#/definitions/amRoleExList"
             }
           }
         },
@@ -506,7 +442,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         ]
       }
     },
-    "/v1/iam/user_role": {
+    "/v1/am/user:role": {
       "delete": {
         "operationId": "UnBindUserRole",
         "responses": {
@@ -556,7 +492,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         ]
       }
     },
-    "/v1/iam/version": {
+    "/v1/am/version": {
       "get": {
         "operationId": "GetVersion",
         "responses": {
@@ -603,31 +539,48 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         }
       }
     },
-    "amBindRoleModuleRequest": {
+    "amActionList": {
       "type": "object",
       "properties": {
-        "user_id": {
-          "type": "string"
-        },
-        "role_id": {
-          "type": "string"
-        },
-        "module_id": {
-          "type": "string"
+        "value": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/amAction"
+          }
         }
       }
     },
-    "amBindRoleModuleResponse": {
+    "amBindRoleActionsRequest": {
+      "type": "object",
+      "properties": {
+        "role_id": {
+          "type": "string"
+        },
+        "action_id": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "amBindRoleActionsResponse": {
       "type": "object"
     },
     "amBindUserRoleRequest": {
       "type": "object",
       "properties": {
         "user_id": {
-          "type": "string"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "role_id": {
-          "type": "string"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -640,10 +593,10 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "user_id": {
           "type": "string"
         },
-        "method": {
+        "http_method": {
           "type": "string"
         },
-        "access_path": {
+        "request_path": {
           "type": "string"
         }
       }
@@ -654,9 +607,11 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "user_id": {
           "type": "string"
         },
-        "ok": {
-          "type": "boolean",
-          "format": "boolean"
+        "access_path": {
+          "type": "string"
+        },
+        "owner_path": {
+          "type": "string"
         }
       }
     },
@@ -707,61 +662,14 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         }
       }
     },
-    "amDescribeActionsResponse": {
+    "amFeature": {
       "type": "object",
       "properties": {
-        "action_set": {
+        "action": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/amAction"
           }
-        },
-        "total_count": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "amDescribeRolesResponse": {
-      "type": "object",
-      "properties": {
-        "user_id": {
-          "type": "string"
-        },
-        "role_set": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/amRole"
-          }
-        },
-        "total_count": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "amDescribeRolesVerboseResponse": {
-      "type": "object"
-    },
-    "amGetAccessPathResponse": {
-      "type": "object",
-      "properties": {
-        "user_id": {
-          "type": "string"
-        },
-        "path": {
-          "type": "string"
-        }
-      }
-    },
-    "amGetOwnerPathResponse": {
-      "type": "object",
-      "properties": {
-        "user_id": {
-          "type": "string"
-        },
-        "method": {
-          "type": "string"
         }
       }
     },
@@ -781,6 +689,17 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
       "properties": {
         "role_id": {
           "type": "string"
+        }
+      }
+    },
+    "amModule": {
+      "type": "object",
+      "properties": {
+        "feature": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/amFeature"
+          }
         }
       }
     },
@@ -815,6 +734,42 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         }
       }
     },
+    "amRoleEx": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "$ref": "#/definitions/amRole"
+        },
+        "module": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/amModule"
+          }
+        }
+      }
+    },
+    "amRoleExList": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/amRoleEx"
+          }
+        }
+      }
+    },
+    "amRoleList": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/amRole"
+          }
+        }
+      }
+    },
     "amString": {
       "type": "object",
       "properties": {
@@ -823,31 +778,37 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         }
       }
     },
-    "amUnBindRoleModuleRequest": {
+    "amUnBindRoleActionsRequest": {
       "type": "object",
       "properties": {
-        "user_id": {
-          "type": "string"
-        },
         "role_id": {
           "type": "string"
         },
-        "module_id": {
-          "type": "string"
+        "action_id": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
-    "amUnBindRoleModuleResponse": {
+    "amUnBindRoleActionsResponse": {
       "type": "object"
     },
     "amUnBindUserRoleRequest": {
       "type": "object",
       "properties": {
         "user_id": {
-          "type": "string"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "role_id": {
-          "type": "string"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
