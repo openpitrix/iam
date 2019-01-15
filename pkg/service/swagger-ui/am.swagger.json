@@ -38,7 +38,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/amCanDoActionResponse"
+              "$ref": "#/definitions/amCanDoResponse"
             }
           }
         },
@@ -48,7 +48,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/amCanDoActionRequest"
+              "$ref": "#/definitions/amCanDoRequest"
             }
           }
         ],
@@ -64,7 +64,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/amUnBindRoleActionsResponse"
+              "$ref": "#/definitions/amEmpty"
             }
           }
         },
@@ -88,7 +88,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/amBindRoleActionsResponse"
+              "$ref": "#/definitions/amEmpty"
             }
           }
         },
@@ -128,7 +128,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/amDeleteRolesResponse"
+              "$ref": "#/definitions/amEmpty"
             }
           }
         },
@@ -138,7 +138,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/amDeleteRolesRequest"
+              "$ref": "#/definitions/amRoleIdList"
             }
           }
         ],
@@ -152,7 +152,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/amCreateRoleResponse"
+              "$ref": "#/definitions/amRole"
             }
           }
         },
@@ -162,7 +162,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/amCreateRoleRequest"
+              "$ref": "#/definitions/amRole"
             }
           }
         ],
@@ -176,7 +176,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/amModifyRoleResponse"
+              "$ref": "#/definitions/amRole"
             }
           }
         },
@@ -186,7 +186,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/amModifyRoleRequest"
+              "$ref": "#/definitions/amRole"
             }
           }
         ],
@@ -218,7 +218,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/amUnBindUserRoleResponse"
+              "$ref": "#/definitions/amEmpty"
             }
           }
         },
@@ -242,7 +242,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/amBindUserRoleResponse"
+              "$ref": "#/definitions/amEmpty"
             }
           }
         },
@@ -330,11 +330,11 @@
           "items": {
             "type": "string"
           }
+        },
+        "data_level": {
+          "type": "string"
         }
       }
-    },
-    "amBindRoleActionsResponse": {
-      "type": "object"
     },
     "amBindUserRoleRequest": {
       "type": "object",
@@ -353,10 +353,7 @@
         }
       }
     },
-    "amBindUserRoleResponse": {
-      "type": "object"
-    },
-    "amCanDoActionRequest": {
+    "amCanDoRequest": {
       "type": "object",
       "properties": {
         "user_id": {
@@ -370,7 +367,7 @@
         }
       }
     },
-    "amCanDoActionResponse": {
+    "amCanDoResponse": {
       "type": "object",
       "properties": {
         "user_id": {
@@ -384,52 +381,8 @@
         }
       }
     },
-    "amCreateRoleRequest": {
-      "type": "object",
-      "properties": {
-        "user_id": {
-          "type": "string"
-        },
-        "value": {
-          "$ref": "#/definitions/amRole"
-        }
-      }
-    },
-    "amCreateRoleResponse": {
-      "type": "object",
-      "properties": {
-        "user_id": {
-          "type": "string"
-        },
-        "role_id": {
-          "type": "string"
-        }
-      }
-    },
-    "amDeleteRolesRequest": {
-      "type": "object",
-      "properties": {
-        "user_id": {
-          "type": "string"
-        },
-        "role_id": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "amDeleteRolesResponse": {
-      "type": "object",
-      "properties": {
-        "role_id": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
+    "amEmpty": {
+      "type": "object"
     },
     "amFeature": {
       "type": "object",
@@ -439,25 +392,6 @@
           "items": {
             "$ref": "#/definitions/amAction"
           }
-        }
-      }
-    },
-    "amModifyRoleRequest": {
-      "type": "object",
-      "properties": {
-        "user_id": {
-          "type": "string"
-        },
-        "value": {
-          "$ref": "#/definitions/amRole"
-        }
-      }
-    },
-    "amModifyRoleResponse": {
-      "type": "object",
-      "properties": {
-        "role_id": {
-          "type": "string"
         }
       }
     },
@@ -528,6 +462,17 @@
         }
       }
     },
+    "amRoleIdList": {
+      "type": "object",
+      "properties": {
+        "role_id": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "amRoleList": {
       "type": "object",
       "properties": {
@@ -561,9 +506,6 @@
         }
       }
     },
-    "amUnBindRoleActionsResponse": {
-      "type": "object"
-    },
     "amUnBindUserRoleRequest": {
       "type": "object",
       "properties": {
@@ -580,9 +522,6 @@
           }
         }
       }
-    },
-    "amUnBindUserRoleResponse": {
-      "type": "object"
     }
   }
 }

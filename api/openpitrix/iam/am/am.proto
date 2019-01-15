@@ -28,26 +28,26 @@ service AccessManager {
 		};
 	}
 
-	rpc CanDo(CanDoActionRequest) returns (CanDoActionResponse) {
+	rpc CanDo(CanDoRequest) returns (CanDoResponse) {
 		option (google.api.http) = {
 			post: "/v1/am/cando"
 			body: "*"
 		};
 	}
 
-	rpc CreateRole(CreateRoleRequest) returns (CreateRoleResponse) {
+	rpc CreateRole(Role) returns (Role) {
 		option (google.api.http) = {
 			post: "/v1/am/roles"
 			body: "*"
 		};
 	}
-	rpc DeleteRoles(DeleteRolesRequest) returns (DeleteRolesResponse) {
+	rpc DeleteRoles(RoleIdList) returns (Empty) {
 		option (google.api.http) = {
 			delete: "/v1/am/roles"
 			body: "*"
 		};
 	}
-	rpc ModifyRole(ModifyRoleRequest) returns (ModifyRoleResponse) {
+	rpc ModifyRole(Role) returns (Role) {
 		option (google.api.http) = {
 			patch: "/v1/am/roles"
 			body: "*"
@@ -64,26 +64,26 @@ service AccessManager {
 		};
 	}
 
-	rpc BindRoleActions(BindRoleActionsRequest) returns (BindRoleActionsResponse) {
+	rpc BindRoleActions(BindRoleActionsRequest) returns (Empty) {
 		option (google.api.http) = {
 			post: "/v1/am/role:actions"
 			body: "*"
 		};
 	}
-	rpc UnBindRoleActions(UnBindRoleActionsRequest) returns (UnBindRoleActionsResponse) {
+	rpc UnBindRoleActions(UnBindRoleActionsRequest) returns (Empty) {
 		option (google.api.http) = {
 			delete: "/v1/am/role:actions"
 			body: "*"
 		};
 	}
 
-	rpc BindUserRole(BindUserRoleRequest) returns (BindUserRoleResponse) {
+	rpc BindUserRole(BindUserRoleRequest) returns (Empty) {
 		option (google.api.http) = {
 			post: "/v1/am/user:role"
 			body: "*"
 		};
 	}
-	rpc UnBindUserRole(UnBindUserRoleRequest) returns (UnBindUserRoleResponse) {
+	rpc UnBindUserRole(UnBindUserRoleRequest) returns (Empty) {
 		option (google.api.http) = {
 			delete: "/v1/am/user:role"
 			body: "*"
@@ -123,15 +123,15 @@ message ActionList {
 }
 
 // ----------------------------------------------------------------------------
-// CanDoAction
+// CanDo
 // ----------------------------------------------------------------------------
 
-message CanDoActionRequest {
+message CanDoRequest {
 	string user_id = 1;
 	string http_method = 2;
 	string request_path = 3;
 }
-message CanDoActionResponse {
+message CanDoResponse {
 	string user_id = 1;
 	string access_path = 2;
 	string owner_path = 3;
@@ -141,11 +141,17 @@ message CanDoActionResponse {
 // Role
 // ----------------------------------------------------------------------------
 
+message RoleId {
+	string role_id = 1;
+}
+message RoleIdList {
+	repeated string role_id = 1;
+}
 message Role {
 	string role_id = 1;
-	string role_name = 2;
-	string description = 3;
-	string portal = 4;
+	string role_name = 2;   // enable modify
+	string description = 3; // enable modify
+	string portal = 4;      // enable modify
 	string owner = 5;
 	string owner_path = 6;
 
@@ -172,76 +178,49 @@ message RoleExList {
 }
 
 message CreateRoleRequest {
-	string user_id = 1;
-	Role value = 2;
+	Role role = 1;
 }
 message CreateRoleResponse {
-	string user_id = 1;
-	string role_id = 2;
+	string role_id = 1;
 }
 
 message DeleteRolesRequest {
-	string user_id = 1;
-	repeated string role_id = 2;
+	repeated string role_id = 1;
 }
 message DeleteRolesResponse {
-	repeated string role_id = 2;
+	repeated string role_id = 1;
 }
 
 message ModifyRoleRequest {
-	string user_id = 1;
-	Role value = 2;
+	repeated Role role = 1;
 }
 message ModifyRoleResponse {
-	string role_id = 2;
+	repeated Role role = 1;
 }
 
 // ----------------------------------------------------------------------------
 // Binding
 // ----------------------------------------------------------------------------
 
-message RoleModuleBinding {
-	string binding_id = 1;
-	string role_id = 2;
-	string module_id = 3;
-	string data_level = 4;
-	string enabled_actions = 5; // 001:createapp, 002:modifyapp
-	string owner = 8;
-
-	google.protobuf.Timestamp create_time = 6;
-	google.protobuf.Timestamp update_time = 7;
-}
-
 message BindRoleActionsRequest {
 	string role_id = 1;
 	repeated string action_id = 2;
-}
-message BindRoleActionsResponse {
-	//
+	string data_level = 3;
 }
 
 message UnBindRoleActionsRequest {
 	string role_id = 1;
 	repeated string action_id = 2;
 }
-message UnBindRoleActionsResponse {
-	//
-}
 
 message BindUserRoleRequest {
 	repeated string user_id = 1;
 	repeated string role_id = 2;
 }
-message BindUserRoleResponse {
-	//
-}
 
 message UnBindUserRoleRequest {
 	repeated string user_id = 1;
 	repeated string role_id = 2;
-}
-message UnBindUserRoleResponse {
-	//
 }
 
 // ----------------------------------------------------------------------------

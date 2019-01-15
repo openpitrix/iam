@@ -47,7 +47,7 @@ func request_AccessManager_DescribeActions_0(ctx context.Context, marshaler runt
 }
 
 func request_AccessManager_CanDo_0(ctx context.Context, marshaler runtime.Marshaler, client AccessManagerClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq CanDoActionRequest
+	var protoReq CanDoRequest
 	var metadata runtime.ServerMetadata
 
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil {
@@ -60,7 +60,7 @@ func request_AccessManager_CanDo_0(ctx context.Context, marshaler runtime.Marsha
 }
 
 func request_AccessManager_CreateRole_0(ctx context.Context, marshaler runtime.Marshaler, client AccessManagerClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq CreateRoleRequest
+	var protoReq Role
 	var metadata runtime.ServerMetadata
 
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil {
@@ -73,7 +73,7 @@ func request_AccessManager_CreateRole_0(ctx context.Context, marshaler runtime.M
 }
 
 func request_AccessManager_DeleteRoles_0(ctx context.Context, marshaler runtime.Marshaler, client AccessManagerClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq DeleteRolesRequest
+	var protoReq RoleIdList
 	var metadata runtime.ServerMetadata
 
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil {
@@ -86,7 +86,7 @@ func request_AccessManager_DeleteRoles_0(ctx context.Context, marshaler runtime.
 }
 
 func request_AccessManager_ModifyRole_0(ctx context.Context, marshaler runtime.Marshaler, client AccessManagerClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ModifyRoleRequest
+	var protoReq Role
 	var metadata runtime.ServerMetadata
 
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil {
