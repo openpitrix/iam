@@ -6,13 +6,14 @@ package db
 
 import (
 	"crypto/rand"
-	"encoding/base64"
 	"regexp"
 	"strings"
 	"unicode"
 
 	"github.com/fatih/structs"
 	"github.com/golang/protobuf/ptypes/timestamp"
+
+	"openpitrix.io/iam/pkg/internal/base58"
 )
 
 func isValidDatabaseName(name string) bool {
@@ -107,20 +108,20 @@ func isZeroTimestamp(x *timestamp.Timestamp) bool {
 func genGid() string {
 	buf := make([]byte, 8)
 	rand.Read(buf)
-	s := base64.StdEncoding.EncodeToString(buf)
+	s := string(base58.EncodeBase58(buf))
 	return "gid-" + s[:8]
 }
 
 func genUid() string {
 	buf := make([]byte, 8)
 	rand.Read(buf)
-	s := base64.StdEncoding.EncodeToString(buf)
+	s := string(base58.EncodeBase58(buf))
 	return "uid-" + s[:8]
 }
 func genXid() string {
 	buf := make([]byte, 8)
 	rand.Read(buf)
-	s := base64.StdEncoding.EncodeToString(buf)
+	s := string(base58.EncodeBase58(buf))
 	return "xid-" + s[:8]
 }
 
