@@ -52,8 +52,8 @@ var TableMap = map[string]struct{ Name, PrimaryKey, Sql string }{
 		Name:       FeatureTableName,
 		PrimaryKey: FeaturePrimaryKeyName,
 		Sql: `CREATE TABLE IF NOT EXISTS ` + FeatureTableName + ` (
-			feature_id   varchar(50) not null,
 			module_id    varchar(50),
+			feature_id   varchar(50) not null,
 			feature_name varchar(50),
 
 			primary key(` + FeaturePrimaryKeyName + `)
