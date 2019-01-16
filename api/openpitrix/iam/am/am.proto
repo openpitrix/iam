@@ -22,7 +22,7 @@ service AccessManager {
 		};
 	}
 
-	rpc DescribeActions(Empty) returns (ActionList) {
+	rpc DescribeActions(DescribeActionsRequest) returns (ActionList) {
 		option (google.api.http) = {
 			get: "/v1/am/actions"
 		};
@@ -58,21 +58,21 @@ service AccessManager {
 			get: "/v1/am/roles"
 		};
 	}
-	rpc DescribeRolesVerbose(DescribeRolesVerboseRequest) returns (RoleExList) {
+
+	rpc DescribeUsersWithRole(DescribeUsersWithRoleRequest) returns (DescribeUsersWithRoleResponse) {
 		option (google.api.http) = {
-			get: "/v1/am/roles:verbose"
+			get: "/v1/am/users"
 		};
 	}
 
-	rpc BindRoleActions(BindRoleActionsRequest) returns (Empty) {
+	rpc GetRoleModule(RoleId) returns (RoleModule) {
 		option (google.api.http) = {
-			post: "/v1/am/role:actions"
-			body: "*"
+			get: "/v1/am/roles:module"
 		};
 	}
-	rpc UnBindRoleActions(UnBindRoleActionsRequest) returns (Empty) {
+	rpc ModifyRoleModule(RoleModule) returns (RoleModule) {
 		option (google.api.http) = {
-			delete: "/v1/am/role:actions"
+			patch: "/v1/am/roles:module"
 			body: "*"
 		};
 	}
@@ -83,7 +83,7 @@ service AccessManager {
 			body: "*"
 		};
 	}
-	rpc UnBindUserRole(UnBindUserRoleRequest) returns (Empty) {
+	rpc UnbindUserRole(UnbindUserRoleRequest) returns (Empty) {
 		option (google.api.http) = {
 			delete: "/v1/am/user:role"
 			body: "*"
@@ -116,10 +116,17 @@ message Action {
 	string feature_name = 6;
 	string module_id = 7;
 	string module_name = 8;
+	string url = 9;
+	string url_method = 10;
 }
 
 message ActionList {
 	repeated Action value = 1;
+}
+
+message DescribeActionsRequest {
+	string role_id = 1;
+	string portal = 2;
 }
 
 // ----------------------------------------------------------------------------
@@ -164,17 +171,17 @@ message RoleList {
 
 message Module {
 	repeated Feature feature = 1;
+	repeated string checked_action_id = 2;
+	string data_level = 3;
+	bool check_all = 4;
 }
 message Feature {
 	repeated Action action = 1;
 }
 
-message RoleEx {
-	Role value = 1;
+message RoleModule {
+	string role_id = 1;
 	repeated Module module = 2;
-}
-message RoleExList {
-	repeated RoleEx value = 1;
 }
 
 message CreateRoleRequest {
@@ -202,11 +209,47 @@ message DescribeRolesRequest {
 	repeated string role_id = 1;
 	repeated string role_name = 2;
 	repeated string portal = 3;
+	repeated string user_id = 4;
 }
 message DescribeRolesVerboseRequest {
 	repeated string role_id = 1;
 	repeated string role_name = 2;
 	repeated string portal = 3;
+}
+
+// ----------------------------------------------------------------------------
+// User
+// ----------------------------------------------------------------------------
+
+// keep same as openpitrix.iam.im.User
+message UserWithRole {
+	string user_id = 1; // regexp: ^[a-z0-9_-]{2,32}$, primary key
+	string user_name = 2;
+	string email = 3;
+	string phone_number = 4;
+	string description = 5;
+	string password = 6; // only for create user
+	string status = 7;
+	map<string,string> extra = 8;
+
+	google.protobuf.Timestamp create_time = 9;  // read only
+	google.protobuf.Timestamp update_time = 10; // read only
+	google.protobuf.Timestamp status_time = 11; // read only
+
+	Role role = 12;
+}
+
+message DescribeUsersWithRoleRequest {
+	repeated string user_id = 1;
+	repeated string role_id = 2;
+
+	int32 limit = 3;
+	int32 offset = 4;
+}
+
+message DescribeUsersWithRoleResponse {
+	repeated UserWithRole user = 1;
+	int32 total = 2;
 }
 
 // ----------------------------------------------------------------------------
@@ -219,7 +262,7 @@ message BindRoleActionsRequest {
 	string data_level = 3;
 }
 
-message UnBindRoleActionsRequest {
+message UnbindRoleActionsRequest {
 	string role_id = 1;
 	repeated string action_id = 2;
 }
@@ -229,7 +272,7 @@ message BindUserRoleRequest {
 	repeated string role_id = 2;
 }
 
-message UnBindUserRoleRequest {
+message UnbindUserRoleRequest {
 	repeated string user_id = 1;
 	repeated string role_id = 2;
 }

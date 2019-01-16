@@ -6,6 +6,8 @@ package db_spec
 
 import (
 	"time"
+
+	"openpitrix.io/iam/pkg/pb/am"
 )
 
 type DBRole struct {
@@ -13,8 +15,12 @@ type DBRole struct {
 	RoleName    string    `db:"role_name"`
 	Description string    `db:"description"`
 	Portal      string    `db:"portal"`
-	CreateTime  time.Time `db:"create_time"`
-	UpdateTime  time.Time `db:"update_time"`
 	Owner       string    `db:"owner"`
 	OwnerPath   string    `db:"owner_path"`
+	CreateTime  time.Time `db:"create_time"`
+	UpdateTime  time.Time `db:"update_time"`
+}
+
+func (p *DBRole) ToPB() *pbam.Role {
+	return nil
 }
