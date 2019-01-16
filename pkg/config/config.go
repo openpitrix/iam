@@ -38,6 +38,7 @@ const EnvPrefix = "OPENPITRIX_IAM"
 //
 // OPENPITRIX_IAM_HOST
 // OPENPITRIX_IAM_PORT
+// OPENPITRIX_IAM_STATIC_DIR
 //
 // OPENPITRIX_IAM_TLS_ENABLED
 // OPENPITRIX_IAM_TLS_CERT_FILE
@@ -55,8 +56,10 @@ const EnvPrefix = "OPENPITRIX_IAM"
 type Config struct {
 	DB DBConfig
 
-	Host        string `default:"openpitrix-iam2-service"`
-	Port        int    `default:"9119"`
+	Host      string `default:"openpitrix-iam2-service"`
+	Port      int    `default:"9119"`
+	StaticDir string `default:"public"`
+
 	TlsEnabled  bool   `default:"false"`
 	TlsCertFile string `default:"server.cert"`
 	TlsKeyFile  string `default:"server.key"`
