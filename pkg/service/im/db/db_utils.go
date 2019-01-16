@@ -10,7 +10,18 @@ import (
 )
 
 func pkgBuildSql_InsertInto(tableName string, v interface{}) (sql string, values []interface{}) {
-	names, values := pkgGetAllDBTableFiledNamesAndValues(v)
+	_names, _values := pkgGetAllDBTableFiledNamesAndValues(v)
+
+	var names []string
+	for i := 0; i < len(_names); i++ {
+		if _names[i] == "extra" {
+			if s, ok := _values[i].(string); ok && s == "" {
+				continue // skip empty json
+			}
+		}
+		names = append(names, _names[i])
+		values = append(values, _values[i])
+	}
 	if len(names) == 0 {
 		return "", nil
 	}
