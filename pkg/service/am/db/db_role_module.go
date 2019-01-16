@@ -8,11 +8,15 @@ import (
 	"context"
 
 	pbam "openpitrix.io/iam/pkg/pb/am"
+	"openpitrix.io/iam/pkg/util/funcutil"
+	"openpitrix.io/logger"
 )
 
-func (p *Database) GetRoleModule(context.Context, *pbam.RoleId) (*pbam.RoleModule, error) {
+func (p *Database) GetRoleModule(ctx context.Context, req *pbam.RoleId) (*pbam.RoleModule, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
 	panic("todo")
 }
-func (p *Database) ModifyRoleModule(context.Context, *pbam.RoleModule) (*pbam.RoleModule, error) {
+func (p *Database) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (*pbam.RoleModule, error) {
 	panic("todo")
 }

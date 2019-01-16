@@ -8,8 +8,12 @@ import (
 	"context"
 
 	pbam "openpitrix.io/iam/pkg/pb/am"
+	"openpitrix.io/iam/pkg/util/funcutil"
+	"openpitrix.io/logger"
 )
 
-func (p *Database) CanDo(context.Context, *pbam.CanDoRequest) (*pbam.CanDoResponse, error) {
+func (p *Database) CanDo(ctx context.Context, req *pbam.CanDoRequest) (*pbam.CanDoResponse, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
 	panic("todo")
 }

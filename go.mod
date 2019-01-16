@@ -22,5 +22,6 @@ require (
 	google.golang.org/grpc v1.17.0
 	gopkg.in/yaml.v2 v2.2.2
 	openpitrix.io/logger v0.1.0
+	openpitrix.io/openpitrix v0.3.5 // indirect
 	rsc.io/goversion v1.2.0
 )

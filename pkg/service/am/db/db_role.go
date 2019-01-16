@@ -8,17 +8,27 @@ import (
 	"context"
 
 	pbam "openpitrix.io/iam/pkg/pb/am"
+	"openpitrix.io/iam/pkg/util/funcutil"
+	"openpitrix.io/logger"
 )
 
-func (p *Database) CreateRole(context.Context, *pbam.Role) (*pbam.Role, error) {
+func (p *Database) CreateRole(ctx context.Context, req *pbam.Role) (*pbam.Role, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
 	panic("todo")
 }
-func (p *Database) DeleteRoles(context.Context, *pbam.RoleIdList) (*pbam.Empty, error) {
+func (p *Database) DeleteRoles(ctx context.Context, req *pbam.RoleIdList) (*pbam.Empty, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
 	panic("todo")
 }
-func (p *Database) ModifyRole(context.Context, *pbam.Role) (*pbam.Role, error) {
+func (p *Database) ModifyRole(ctx context.Context, req *pbam.Role) (*pbam.Role, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
 	panic("todo")
 }
-func (p *Database) DescribeRoles(context.Context, *pbam.DescribeRolesRequest) (*pbam.RoleList, error) {
+func (p *Database) DescribeRoles(ctx context.Context, req *pbam.DescribeRolesRequest) (*pbam.RoleList, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
 	panic("todo")
 }

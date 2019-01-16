@@ -8,12 +8,15 @@ import (
 	"context"
 	"fmt"
 
-	"openpitrix.io/logger"
-	"openpitrix.io/iam/pkg/pb/am"
+	pbam "openpitrix.io/iam/pkg/pb/am"
 	"openpitrix.io/iam/pkg/service/am/db_spec"
+	"openpitrix.io/iam/pkg/util/funcutil"
+	"openpitrix.io/logger"
 )
 
 func (p *Database) DescribeActions(ctx context.Context, req *pbam.DescribeActionsRequest) (*pbam.ActionList, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
 	// SELECT * FROM name
 	var query = fmt.Sprintf(
 		"SELECT * FROM %s;", db_spec.ActionTableName,

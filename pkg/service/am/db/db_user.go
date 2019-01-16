@@ -8,8 +8,12 @@ import (
 	"context"
 
 	pbam "openpitrix.io/iam/pkg/pb/am"
+	"openpitrix.io/iam/pkg/util/funcutil"
+	"openpitrix.io/logger"
 )
 
-func (p *Database) DescribeUsersWithRole(context.Context, *pbam.DescribeUsersWithRoleRequest) (*pbam.DescribeUsersWithRoleResponse, error) {
+func (p *Database) DescribeUsersWithRole(ctx context.Context, req *pbam.DescribeUsersWithRoleRequest) (*pbam.DescribeUsersWithRoleResponse, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
 	panic("todo")
 }
