@@ -18,40 +18,41 @@ func (p *Server) GetVersion(context.Context, *pbam.Empty) (*pbam.String, error) 
 	return reply, nil
 }
 
-func (p *Server) DescribeActions(context.Context, *pbam.DescribeActionsRequest) (*pbam.ActionList, error) {
-	panic("todo")
+func (p *Server) DescribeActions(ctx context.Context, req *pbam.DescribeActionsRequest) (*pbam.ActionList, error) {
+	return p.db.DescribeActions(ctx, req)
 }
 
-func (p *Server) CanDo(context.Context, *pbam.CanDoRequest) (*pbam.CanDoResponse, error) {
-	panic("todo")
-}
-func (p *Server) CreateRole(context.Context, *pbam.Role) (*pbam.Role, error) {
-	panic("todo")
-}
-func (p *Server) DeleteRoles(context.Context, *pbam.RoleIdList) (*pbam.Empty, error) {
-	panic("todo")
-}
-func (p *Server) ModifyRole(context.Context, *pbam.Role) (*pbam.Role, error) {
-	panic("todo")
-}
-func (p *Server) DescribeRoles(context.Context, *pbam.DescribeRolesRequest) (*pbam.RoleList, error) {
-	panic("todo")
+func (p *Server) CanDo(ctx context.Context, req *pbam.CanDoRequest) (*pbam.CanDoResponse, error) {
+	return p.db.CanDo(ctx, req)
 }
 
-func (p *Server) DescribeUsersWithRole(context.Context, *pbam.DescribeUsersWithRoleRequest) (*pbam.DescribeUsersWithRoleResponse, error) {
-	panic("todo")
+func (p *Server) CreateRole(ctx context.Context, req *pbam.Role) (*pbam.Role, error) {
+	return p.db.CreateRole(ctx, req)
+}
+func (p *Server) DeleteRoles(ctx context.Context, req *pbam.RoleIdList) (*pbam.Empty, error) {
+	return p.db.DeleteRoles(ctx, req)
+}
+func (p *Server) ModifyRole(ctx context.Context, req *pbam.Role) (*pbam.Role, error) {
+	return p.db.ModifyRole(ctx, req)
+}
+func (p *Server) DescribeRoles(ctx context.Context, req *pbam.DescribeRolesRequest) (*pbam.RoleList, error) {
+	return p.db.DescribeRoles(ctx, req)
 }
 
-func (p *Server) GetRoleModule(context.Context, *pbam.RoleId) (*pbam.RoleModule, error) {
-	panic("todo")
-}
-func (p *Server) ModifyRoleModule(context.Context, *pbam.RoleModule) (*pbam.RoleModule, error) {
-	panic("todo")
+func (p *Server) DescribeUsersWithRole(ctx context.Context, req *pbam.DescribeUsersWithRoleRequest) (*pbam.DescribeUsersWithRoleResponse, error) {
+	return p.db.DescribeUsersWithRole(ctx, req)
 }
 
-func (p *Server) BindUserRole(context.Context, *pbam.BindUserRoleRequest) (*pbam.Empty, error) {
-	panic("todo")
+func (p *Server) GetRoleModule(ctx context.Context, req *pbam.RoleId) (*pbam.RoleModule, error) {
+	return p.db.GetRoleModule(ctx, req)
 }
-func (p *Server) UnbindUserRole(context.Context, *pbam.UnbindUserRoleRequest) (*pbam.Empty, error) {
-	panic("todo")
+func (p *Server) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (*pbam.RoleModule, error) {
+	return p.db.ModifyRoleModule(ctx, req)
+}
+
+func (p *Server) BindUserRole(ctx context.Context, req *pbam.BindUserRoleRequest) (*pbam.Empty, error) {
+	return p.db.BindUserRole(ctx, req)
+}
+func (p *Server) UnbindUserRole(ctx context.Context, req *pbam.UnbindUserRoleRequest) (*pbam.Empty, error) {
+	return p.db.UnbindUserRole(ctx, req)
 }
