@@ -154,7 +154,7 @@ func (p *Database) listUsers_with_gid(ctx context.Context, req *pbim.ListUsersRe
 		ss = append(
 			[]string{
 				"user_group_binding.user_id=user.user_id",
-				"user_group_binding.user_id=user_group.group_id",
+				"user_group_binding.group_id=user_group.group_id",
 			},
 			ss...,
 		)

@@ -59,7 +59,6 @@ func (p *DBRole) ToPB() *pbam.Role {
 	q.UpdateTime, _ = ptypes.TimestampProto(p.UpdateTime)
 
 	return q
-	return nil
 }
 
 func (p *DBRole) ValidateForInsert() error {
