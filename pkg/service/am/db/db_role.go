@@ -7,6 +7,7 @@ package db
 import (
 	"context"
 	"strings"
+	"time"
 
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
@@ -113,6 +114,46 @@ func (p *Database) DeleteRoles(ctx context.Context, req *pbam.RoleIdList) (*pbam
 	return &pbam.Empty{}, nil
 }
 func (p *Database) ModifyRole(ctx context.Context, req *pbam.Role) (*pbam.Role, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
+	if req == nil || req.RoleId == "" {
+		err := status.Errorf(codes.InvalidArgument, "empty field")
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	var dbRole = db_spec.PBRoleToDB(req)
+
+	// ignore read only field
+	{
+		dbRole.CreateTime = time.Time{}
+		dbRole.UpdateTime = time.Now()
+	}
+
+	if err := dbRole.ValidateForUpdate(); err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	sql, values := pkgBuildSql_Update(
+		db_spec.RoleTableName, dbRole,
+		db_spec.RolePrimaryKeyName,
+	)
+	if len(values) == 0 {
+		return p.GetRole(ctx, &pbam.RoleId{RoleId: req.RoleId})
+	}
+
+	_, err := p.DB.ExecContext(ctx, sql, values...)
+	if err != nil {
+		logger.Warnf(ctx, "%v, %v", sql, values)
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	return p.GetRole(ctx, &pbam.RoleId{RoleId: req.RoleId})
+}
+
+func (p *Database) GetRole(ctx context.Context, req *pbam.RoleId) (*pbam.Role, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	panic("todo")

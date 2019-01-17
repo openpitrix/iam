@@ -65,3 +65,6 @@ func (p *DBRole) ToPB() *pbam.Role {
 func (p *DBRole) ValidateForInsert() error {
 	return nil
 }
+func (p *DBRole) ValidateForUpdate() error {
+	return nil
+}
