@@ -6,6 +6,7 @@ package db
 
 import (
 	"context"
+	"strings"
 
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
@@ -84,7 +85,32 @@ func (p *Database) CreateRole(ctx context.Context, req *pbam.Role) (*pbam.Role, 
 func (p *Database) DeleteRoles(ctx context.Context, req *pbam.RoleIdList) (*pbam.Empty, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	panic("todo")
+	if len(req.RoleId) == 1 && strings.Contains(req.RoleId[0], ",") {
+		req.RoleId = strings.Split(req.RoleId[0], ",")
+	}
+
+	if req == nil || len(req.RoleId) == 0 || !isValidGids(req.RoleId...) {
+		err := status.Errorf(codes.InvalidArgument, "empty field")
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	sql := pkgBuildSql_Delete(
+		db_spec.RoleTableName,
+		db_spec.RolePrimaryKeyName,
+		req.RoleId...,
+	)
+
+	_, err := p.DB.ExecContext(ctx, sql)
+	if err != nil {
+		logger.Warnf(ctx, "%v", sql)
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	// TODO: delete binding
+
+	return &pbam.Empty{}, nil
 }
 func (p *Database) ModifyRole(ctx context.Context, req *pbam.Role) (*pbam.Role, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
