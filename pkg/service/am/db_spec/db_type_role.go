@@ -7,7 +7,9 @@ package db_spec
 import (
 	"time"
 
-	"openpitrix.io/iam/pkg/pb/am"
+	"github.com/golang/protobuf/ptypes"
+
+	pbam "openpitrix.io/iam/pkg/pb/am"
 )
 
 type DBRole struct {
@@ -21,6 +23,45 @@ type DBRole struct {
 	UpdateTime  time.Time `db:"update_time"`
 }
 
+func PBRoleToDB(p *pbam.Role) *DBRole {
+	if p == nil {
+		return new(DBRole)
+	}
+	var q = &DBRole{
+		RoleId:      p.RoleId,
+		RoleName:    p.RoleName,
+		Description: p.Description,
+		Portal:      p.Portal,
+		Owner:       p.Owner,
+		OwnerPath:   p.OwnerPath,
+	}
+
+	q.CreateTime, _ = ptypes.Timestamp(p.CreateTime)
+	q.UpdateTime, _ = ptypes.Timestamp(p.UpdateTime)
+
+	return q
+}
+
 func (p *DBRole) ToPB() *pbam.Role {
+	if p == nil {
+		return new(pbam.Role)
+	}
+	var q = &pbam.Role{
+		RoleId:      p.RoleId,
+		RoleName:    p.RoleName,
+		Description: p.Description,
+		Portal:      p.Portal,
+		Owner:       p.Owner,
+		OwnerPath:   p.OwnerPath,
+	}
+
+	q.CreateTime, _ = ptypes.TimestampProto(p.CreateTime)
+	q.UpdateTime, _ = ptypes.TimestampProto(p.UpdateTime)
+
+	return q
+	return nil
+}
+
+func (p *DBRole) ValidateForInsert() error {
 	return nil
 }

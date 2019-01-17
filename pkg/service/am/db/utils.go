@@ -118,6 +118,12 @@ func genUid() string {
 	s := string(base58.EncodeBase58(buf))
 	return "uid-" + s[:8]
 }
+func genRoleId() string {
+	buf := make([]byte, 8)
+	rand.Read(buf)
+	s := string(base58.EncodeBase58(buf))
+	return "role-" + s[:8]
+}
 func genXid() string {
 	buf := make([]byte, 8)
 	rand.Read(buf)
