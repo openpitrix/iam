@@ -8,9 +8,9 @@ import (
 	"context"
 	"fmt"
 
+	"openpitrix.io/iam/pkg/internal/funcutil"
 	pbam "openpitrix.io/iam/pkg/pb/am"
 	"openpitrix.io/iam/pkg/service/am/db_spec"
-	"openpitrix.io/iam/pkg/util/funcutil"
 	"openpitrix.io/logger"
 )
 

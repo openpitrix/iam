@@ -14,6 +14,7 @@ import (
 	"github.com/urfave/cli"
 
 	"openpitrix.io/iam/pkg/config"
+	"openpitrix.io/iam/pkg/service/am"
 	"openpitrix.io/iam/pkg/service/im"
 	"openpitrix.io/iam/pkg/service/web"
 	"openpitrix.io/iam/pkg/version"
@@ -149,11 +150,19 @@ func serve(c *cli.Context) {
 		logger.Criticalf(nil, "%v", err)
 		os.Exit(1)
 	}
+	amService, err := am.OpenServer(appConfig)
+	if err != nil {
+		logger.Criticalf(nil, "%v", err)
+		os.Exit(1)
+	}
 
 	if !appConfig.TlsEnabled {
 		err := web.ListenAndServe(
 			fmt.Sprintf(":%d", appConfig.Port),
-			[]web.GrpcServer{web.WithAccountManager(imService)},
+			[]web.GrpcServer{
+				web.WithAccountManager(imService),
+				web.WithAccessManager(amService),
+			},
 			nil,
 		)
 		if err != nil {
@@ -164,7 +173,10 @@ func serve(c *cli.Context) {
 		err := web.ListenAndServeTLS(
 			fmt.Sprintf(":%d", appConfig.Port),
 			appConfig.TlsCertFile, appConfig.TlsKeyFile,
-			[]web.GrpcServer{web.WithAccountManager(imService)},
+			[]web.GrpcServer{
+				web.WithAccountManager(imService),
+				web.WithAccessManager(amService),
+			},
 			nil,
 		)
 		if err != nil {

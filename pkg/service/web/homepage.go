@@ -18,6 +18,8 @@ const homepage = `<!doctype html>
 
 	<p>
 	<a href="/api/iam/im/version">IM Version</a>
+	<p>
+	<a href="/v1/am/version">AM Version</a>
 </body>
 </html>
 `

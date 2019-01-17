@@ -7,8 +7,8 @@ package db
 import (
 	"context"
 
+	"openpitrix.io/iam/pkg/internal/funcutil"
 	pbam "openpitrix.io/iam/pkg/pb/am"
-	"openpitrix.io/iam/pkg/util/funcutil"
 	"openpitrix.io/logger"
 )
 
