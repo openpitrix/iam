@@ -15,5 +15,9 @@ import (
 func (p *Database) CanDo(ctx context.Context, req *pbam.CanDoRequest) (*pbam.CanDoResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
+	// 1. get role list by user_id
+	// 2. get action list by role_id
+	// 3. check action rule
+
 	panic("todo")
 }

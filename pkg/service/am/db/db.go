@@ -11,6 +11,7 @@ import (
 
 	"github.com/fatih/structs"
 	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/jinzhu/gorm"
 	"github.com/jmoiron/sqlx"
 
 	"openpitrix.io/iam/pkg/config"
