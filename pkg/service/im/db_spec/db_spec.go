@@ -53,7 +53,7 @@ var TableMap = map[string]struct{ Name, PrimaryKey, Sql string }{
 			description     varchar(1000),
 			status          varchar(10),
 			create_time     timestamp,
-			update_time  timestamp default CURRENT_TIMESTAMP,
+			update_time     timestamp default CURRENT_TIMESTAMP,
 			status_time     timestamp,
 			extra           json,
 

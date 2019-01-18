@@ -40,30 +40,36 @@ func (p *Database) BindUserRole(ctx context.Context, req *pbam.BindUserRoleReque
 		return nil, err
 	}
 
+	type UserRoleBinding struct {
+		Id     string
+		RoleId string
+		UserId string
+	}
+
 	switch {
 	case len(req.UserId) == len(req.RoleId):
 		for i := 0; i < len(req.RoleId); i++ {
-			//xid := genXid()
-			//role_id := req.RoleId[i]
-			//user_id := req.UserId[i]
-
-			panic("todo")
+			p.DB.NewRecord(UserRoleBinding{
+				Id:     genXid(),
+				RoleId: req.RoleId[i],
+				UserId: req.UserId[i],
+			})
 		}
 	case len(req.UserId) == 1:
 		for i := 0; i < len(req.RoleId); i++ {
-			//xid := genXid()
-			//role_id := req.RoleId[i]
-			//user_id := req.UserId[0]
-
-			panic("todo")
+			p.DB.NewRecord(UserRoleBinding{
+				Id:     genXid(),
+				RoleId: req.RoleId[i],
+				UserId: req.UserId[0],
+			})
 		}
 	case len(req.RoleId) == 1:
 		for i := 0; i < len(req.UserId); i++ {
-			//xid := genXid()
-			//role_id := req.RoleId[0]
-			//user_id := req.UserId[i]
-
-			panic("todo")
+			p.DB.NewRecord(UserRoleBinding{
+				Id:     genXid(),
+				RoleId: req.RoleId[0],
+				UserId: req.UserId[i],
+			})
 		}
 	}
 
@@ -94,30 +100,32 @@ func (p *Database) UnbindUserRole(ctx context.Context, req *pbam.UnbindUserRoleR
 		return nil, err
 	}
 
+	type UserRoleBinding struct {
+		Id     string
+		RoleId string
+		UserId string
+	}
 	switch {
 	case len(req.UserId) == len(req.RoleId):
 		for i := 0; i < len(req.RoleId); i++ {
-			//xid := genXid()
-			//role_id := req.RoleId[i]
-			//user_id := req.UserId[i]
-
-			panic("todo")
+			p.DB.Delete(UserRoleBinding{
+				RoleId: req.RoleId[i],
+				UserId: req.UserId[i],
+			})
 		}
 	case len(req.UserId) == 1:
 		for i := 0; i < len(req.RoleId); i++ {
-			//xid := genXid()
-			//role_id := req.RoleId[i]
-			//user_id := req.UserId[0]
-
-			panic("todo")
+			p.DB.Delete(UserRoleBinding{
+				RoleId: req.RoleId[1],
+				UserId: req.UserId[0],
+			})
 		}
 	case len(req.RoleId) == 1:
 		for i := 0; i < len(req.UserId); i++ {
-			//xid := genXid()
-			//role_id := req.RoleId[0]
-			//user_id := req.UserId[i]
-
-			panic("todo")
+			p.DB.Delete(UserRoleBinding{
+				RoleId: req.RoleId[0],
+				UserId: req.UserId[i],
+			})
 		}
 	}
 
