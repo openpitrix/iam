@@ -6,7 +6,6 @@ package db
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"google.golang.org/grpc/codes"
@@ -14,7 +13,6 @@ import (
 
 	"openpitrix.io/iam/pkg/internal/funcutil"
 	pbam "openpitrix.io/iam/pkg/pb/am"
-	"openpitrix.io/iam/pkg/service/am/db_spec"
 	"openpitrix.io/logger"
 )
 
@@ -42,53 +40,31 @@ func (p *Database) BindUserRole(ctx context.Context, req *pbam.BindUserRoleReque
 		return nil, err
 	}
 
-	sql := fmt.Sprintf(
-		`insert into %s (id, user_id, role_id) values(?,?,?)`,
-		db_spec.UserRoleBindingTableName,
-	)
 
 	switch {
 	case len(req.UserId) == len(req.RoleId):
 		for i := 0; i < len(req.RoleId); i++ {
-			xid := genXid()
-			role_id := req.RoleId[i]
-			user_id := req.UserId[i]
+			//xid := genXid()
+			//role_id := req.RoleId[i]
+			//user_id := req.UserId[i]
 
-			_, err := p.DB.ExecContext(ctx, sql, xid, user_id, role_id)
-			if err != nil {
-				logger.Warnf(ctx, "%v", sql)
-				logger.Warnf(ctx, "%v, %v, %v", xid, user_id, role_id)
-				logger.Warnf(ctx, "%+v", err)
-				return nil, err
-			}
+			panic("todo")
 		}
 	case len(req.UserId) == 1:
 		for i := 0; i < len(req.RoleId); i++ {
-			xid := genXid()
-			role_id := req.RoleId[i]
-			user_id := req.UserId[0]
+			//xid := genXid()
+			//role_id := req.RoleId[i]
+			//user_id := req.UserId[0]
 
-			_, err := p.DB.ExecContext(ctx, sql, xid, user_id, role_id)
-			if err != nil {
-				logger.Warnf(ctx, "%v", sql)
-				logger.Warnf(ctx, "%v, %v, %v", xid, user_id, role_id)
-				logger.Warnf(ctx, "%+v", err)
-				return nil, err
-			}
+			panic("todo")
 		}
 	case len(req.RoleId) == 1:
 		for i := 0; i < len(req.UserId); i++ {
-			xid := genXid()
-			role_id := req.RoleId[0]
-			user_id := req.UserId[i]
+			//xid := genXid()
+			//role_id := req.RoleId[0]
+			//user_id := req.UserId[i]
 
-			_, err := p.DB.ExecContext(ctx, sql, xid, user_id, role_id)
-			if err != nil {
-				logger.Warnf(ctx, "%v", sql)
-				logger.Warnf(ctx, "%v, %v, %v", xid, user_id, role_id)
-				logger.Warnf(ctx, "%+v", err)
-				return nil, err
-			}
+			panic("todo")
 		}
 	}
 
@@ -119,53 +95,31 @@ func (p *Database) UnbindUserRole(ctx context.Context, req *pbam.UnbindUserRoleR
 		return nil, err
 	}
 
-	sql := fmt.Sprintf(
-		`delete from %s where user_id=? AND role_id=?`,
-		db_spec.UserRoleBindingTableName,
-	)
 
 	switch {
 	case len(req.UserId) == len(req.RoleId):
 		for i := 0; i < len(req.RoleId); i++ {
-			xid := genXid()
-			role_id := req.RoleId[i]
-			user_id := req.UserId[i]
+			//xid := genXid()
+			//role_id := req.RoleId[i]
+			//user_id := req.UserId[i]
 
-			_, err := p.DB.ExecContext(ctx, sql, xid, user_id, role_id)
-			if err != nil {
-				logger.Warnf(ctx, "%v", sql)
-				logger.Warnf(ctx, "%v, %v, %v", xid, user_id, role_id)
-				logger.Warnf(ctx, "%+v", err)
-				return nil, err
-			}
+			panic("todo")
 		}
 	case len(req.UserId) == 1:
 		for i := 0; i < len(req.RoleId); i++ {
-			xid := genXid()
-			role_id := req.RoleId[i]
-			user_id := req.UserId[0]
+			//xid := genXid()
+			//role_id := req.RoleId[i]
+			//user_id := req.UserId[0]
 
-			_, err := p.DB.ExecContext(ctx, sql, xid, user_id, role_id)
-			if err != nil {
-				logger.Warnf(ctx, "%v", sql)
-				logger.Warnf(ctx, "%v, %v, %v", xid, user_id, role_id)
-				logger.Warnf(ctx, "%+v", err)
-				return nil, err
-			}
+			panic("todo")
 		}
 	case len(req.RoleId) == 1:
 		for i := 0; i < len(req.UserId); i++ {
-			xid := genXid()
-			role_id := req.RoleId[0]
-			user_id := req.UserId[i]
+			//xid := genXid()
+			//role_id := req.RoleId[0]
+			//user_id := req.UserId[i]
 
-			_, err := p.DB.ExecContext(ctx, sql, xid, user_id, role_id)
-			if err != nil {
-				logger.Warnf(ctx, "%v", sql)
-				logger.Warnf(ctx, "%v, %v, %v", xid, user_id, role_id)
-				logger.Warnf(ctx, "%+v", err)
-				return nil, err
-			}
+			panic("todo")
 		}
 	}
 

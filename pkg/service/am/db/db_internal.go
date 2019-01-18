@@ -14,7 +14,7 @@ import (
 
 func (p *Database) GetUser(ctx context.Context, req *pbam.String) (*pbam.UserWithRole, error) {
 	var user db_spec.DBUserWithRole
-	if err := p.ormDB.Table("user").Where("user_id = ?", req.Value).First(&user).Error; err != nil {
+	if err := p.DB.Table("user").Where("user_id = ?", req.Value).First(&user).Error; err != nil {
 		return nil, err
 	}
 	return user.ToPB(), nil

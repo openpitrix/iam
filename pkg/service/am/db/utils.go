@@ -10,7 +10,6 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/fatih/structs"
 	"github.com/golang/protobuf/ptypes/timestamp"
 
 	"openpitrix.io/iam/pkg/internal/base58"
@@ -129,85 +128,4 @@ func genXid() string {
 	rand.Read(buf)
 	s := string(base58.EncodeBase58(buf))
 	return "xid-" + s[:8]
-}
-
-func pkgGetDBTableFiledNames(v interface{}) (names []string) {
-	for _, f := range structs.Fields(v) {
-		if !f.IsExported() || f.Tag("db") == "-" {
-			continue
-		}
-
-		var fieldName = f.Name()
-		if s := f.Tag("db"); s != "" {
-			fieldName = s
-		}
-
-		names = append(names, fieldName)
-	}
-	return
-}
-func pkgGetNonZeroDBTableFiledNamesAndValues(v interface{}) (names []string, values []interface{}) {
-	for _, f := range structs.Fields(v) {
-		if !f.IsExported() || f.IsZero() || f.Tag("db") == "-" {
-			continue
-		}
-
-		var (
-			fieldName  = f.Name()
-			fieldValue = f.Value()
-		)
-		if s := f.Tag("db"); s != "" {
-			fieldName = s
-		}
-
-		names = append(names, fieldName)
-		values = append(values, fieldValue)
-	}
-	return
-}
-func pkgGetAllDBTableFiledNamesAndValues(v interface{}) (names []string, values []interface{}) {
-	for _, f := range structs.Fields(v) {
-		if !f.IsExported() || f.Tag("db") == "-" {
-			continue
-		}
-
-		var (
-			fieldName  = f.Name()
-			fieldValue = f.Value()
-		)
-		if s := f.Tag("db"); s != "" {
-			fieldName = s
-		}
-
-		names = append(names, fieldName)
-		values = append(values, fieldValue)
-	}
-	return
-}
-
-func pkgGetDBTableStringFieldNames(v interface{}) (names []string) {
-	for _, f := range structs.Fields(v) {
-		if !f.IsExported() || f.Tag("db") == "-" {
-			continue
-		}
-
-		var (
-			fieldName  = f.Name()
-			fieldValue = f.Value()
-		)
-		if s := f.Tag("db"); s != "" {
-			fieldName = s
-		}
-
-		if _, ok := fieldValue.(string); ok {
-			names = append(names, fieldName)
-		}
-	}
-	return
-}
-
-var reSearchWord = regexp.MustCompile(`^[a-zA-Z0-9-_]+$`)
-
-func pkgSearchWordValid(s string) bool {
-	return reSearchWord.MatchString(s)
 }

@@ -9,7 +9,6 @@ import (
 
 	"openpitrix.io/iam/pkg/internal/funcutil"
 	pbam "openpitrix.io/iam/pkg/pb/am"
-	"openpitrix.io/iam/pkg/service/am/db_spec"
 	"openpitrix.io/logger"
 )
 
@@ -18,8 +17,8 @@ func (p *Database) DescribeActions(ctx context.Context, req *pbam.DescribeAction
 
 	var query = sqlDescribeActionsBy_RoleId_Protal
 
-	var rows = []db_spec.DBAction{}
-	err := p.ormDB.Raw(query, req.RoleId, req.Portal).Scan(&rows).Error
+	var rows = []DBAction{}
+	err := p.DB.Raw(query, req.RoleId, req.Portal).Scan(&rows).Error
 	if err != nil {
 		logger.Warnf(ctx, "%v", query)
 		logger.Warnf(ctx, "%+v", err)
