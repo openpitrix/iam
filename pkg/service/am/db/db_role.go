@@ -6,6 +6,7 @@ package db
 
 import (
 	"context"
+	"time"
 
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
@@ -72,8 +73,30 @@ func (p *Database) ModifyRole(ctx context.Context, req *pbam.Role) (*pbam.Role, 
 		return nil, err
 	}
 
-	logger.Infof(ctx, "TODO")
-	return nil, nil
+	var m = map[string]interface{}{}
+	if req.RoleName != "" {
+		m["role_name"] = req.RoleName
+	}
+	if req.Description != "" {
+		m["description"] = req.Description
+	}
+	if req.Portal != "" {
+		m["portal"] = req.Portal
+	}
+
+	if len(m) == 0 {
+		err := status.Errorf(codes.InvalidArgument, "empty field")
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	m["update_time"] = time.Now()
+	if err := p.DB.Table("role").Update(m).Error; err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	return p.GetRole(ctx, &pbam.RoleId{RoleId: req.RoleId})
 }
 
 func (p *Database) GetRole(ctx context.Context, req *pbam.RoleId) (*pbam.Role, error) {
