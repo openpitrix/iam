@@ -154,9 +154,8 @@ message DescribeActionsRequest {
 
 message CanDoRequest {
 	string user_id = 1;
-	string user_path = 2;
-	string url = 3;
-	string url_method = 4;
+	string url = 2;
+	string url_method = 3;
 }
 message CanDoResponse {
 	string user_id = 1;

@@ -705,9 +705,6 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "user_id": {
           "type": "string"
         },
-        "user_path": {
-          "type": "string"
-        },
         "url": {
           "type": "string"
         },

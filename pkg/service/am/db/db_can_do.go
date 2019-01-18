@@ -6,8 +6,6 @@ package db
 
 import (
 	"context"
-	"regexp"
-	"strings"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -19,13 +17,6 @@ import (
 
 func (p *Database) CanDo(ctx context.Context, req *pbam.CanDoRequest) (*pbam.CanDoResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
-
-	// skip version /v123/
-	if matched, _ := regexp.MatchString(`/v\d+`, req.UrlMethod); matched {
-		if idx := strings.Index(req.UrlMethod[2:], "/"); idx > 0 {
-			req.UrlMethod = req.UrlMethod[idx+1:]
-		}
-	}
 
 	type DBCanDo struct {
 		Url       string

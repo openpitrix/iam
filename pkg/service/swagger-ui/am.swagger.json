@@ -474,9 +474,6 @@
         "user_id": {
           "type": "string"
         },
-        "user_path": {
-          "type": "string"
-        },
         "url": {
           "type": "string"
         },
