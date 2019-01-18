@@ -40,7 +40,6 @@ func (p *Database) BindUserRole(ctx context.Context, req *pbam.BindUserRoleReque
 		return nil, err
 	}
 
-
 	switch {
 	case len(req.UserId) == len(req.RoleId):
 		for i := 0; i < len(req.RoleId); i++ {
@@ -94,7 +93,6 @@ func (p *Database) UnbindUserRole(ctx context.Context, req *pbam.UnbindUserRoleR
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
-
 
 	switch {
 	case len(req.UserId) == len(req.RoleId):

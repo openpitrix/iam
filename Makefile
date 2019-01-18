@@ -11,10 +11,15 @@ default:
 	go vet ./...
 	@echo ${SERVER_HOST}
 
-server:
+im-server:
 	go fmt ./...
 	go vet ./...
-	go run main.go
+	go run ./cmd/im/main.go
+
+am-server:
+	go fmt ./...
+	go vet ./...
+	go run ./cmd/am/main.go
 
 mysql-up:
 	docker run --rm --name mysql-dev -p 3306:3306 -e MYSQL_ROOT_PASSWORD=password -d mysql:5.7

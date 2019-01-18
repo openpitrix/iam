@@ -15,7 +15,11 @@
 .idea
 
 go.sum
-config.json
+
+/config.json
+/config-im.json
+/config-am.json
+
 /iam
 /cmd/im/im
 /cmd/am/am

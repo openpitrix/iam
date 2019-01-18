@@ -69,12 +69,12 @@ type Config struct {
 }
 
 type DBConfig struct {
-	Type        string `default:"mysql"`
-	Host        string `default:"openpitrix-db"`
-	Port        int    `default:"3306"`
-	User        string `default:"root"`
-	Password    string `default:"password"`
-	Database string    `default:"am"`
+	Type     string `default:"mysql"`
+	Host     string `default:"openpitrix-db"`
+	Port     int    `default:"3306"`
+	User     string `default:"root"`
+	Password string `default:"password"`
+	Database string `default:"am"`
 }
 
 func (m *Config) Clone() *Config {
@@ -95,7 +95,6 @@ func (m *DBConfig) GetUrl() string {
 	}
 	return m.Database
 }
-
 
 func Default() *Config {
 	conf := new(Config)

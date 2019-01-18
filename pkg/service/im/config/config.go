@@ -69,12 +69,12 @@ type Config struct {
 }
 
 type DBConfig struct {
-	Type        string `default:"mysql"`
-	Host        string `default:"openpitrix-db"`
-	Port        int    `default:"3306"`
-	User        string `default:"root"`
-	Password    string `default:"password"`
-	Database string    `default:"im"`
+	Type     string `default:"mysql"`
+	Host     string `default:"openpitrix-db"`
+	Port     int    `default:"3306"`
+	User     string `default:"root"`
+	Password string `default:"password"`
+	Database string `default:"im"`
 }
 
 func (m *Config) Clone() *Config {
@@ -91,8 +91,6 @@ func (m *DBConfig) GetHostUrl() string {
 	}
 	return m.Database
 }
-
-
 
 func (m *DBConfig) GetUrl() string {
 	if m.Type == "sqlite3" {

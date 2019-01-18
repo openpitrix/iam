@@ -39,7 +39,7 @@ EXAMPLE:
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:   "config",
-			Value:  "config.json",
+			Value:  "config-am.json",
 			Usage:  "iam config file",
 			EnvVar: "OPENPITRIX_AM_CONFIG",
 		},

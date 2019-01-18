@@ -13,8 +13,8 @@ import (
 
 	"github.com/urfave/cli"
 
-	"openpitrix.io/iam/pkg/service/im/config"
 	"openpitrix.io/iam/pkg/service/im"
+	"openpitrix.io/iam/pkg/service/im/config"
 	"openpitrix.io/iam/pkg/service/web"
 	"openpitrix.io/iam/pkg/version"
 	"openpitrix.io/logger"
@@ -39,19 +39,14 @@ EXAMPLE:
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:   "config",
-			Value:  "config.json",
-			Usage:  "iam config file",
-			EnvVar: "OPENPITRIX_IAM_CONFIG",
+			Value:  "config-im.json",
+			Usage:  "im config file",
+			EnvVar: "OPENPITRIX_IM_CONFIG",
 		},
 		cli.StringFlag{
 			Name:   "host",
-			Value:  "openpitrix-iam2-service",
-			EnvVar: "OPENPITRIX_IAM_HOST",
-		},
-
-		cli.StringFlag{
-			Name:  "readme",
-			Value: "_readme.md",
+			Value:  "openpitrix-im-service",
+			EnvVar: "OPENPITRIX_IM_HOST",
 		},
 	}
 
