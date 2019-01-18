@@ -69,12 +69,13 @@ type Config struct {
 }
 
 type DBConfig struct {
-	Type     string `default:"mysql"`
-	Host     string `default:"openpitrix-db"`
-	Port     int    `default:"3306"`
-	User     string `default:"root"`
-	Password string `default:"password"`
-	Database string `default:"iam2"`
+	Type        string `default:"mysql"`
+	Host        string `default:"openpitrix-db"`
+	Port        int    `default:"3306"`
+	User        string `default:"root"`
+	Password    string `default:"password"`
+	Database_IM string `default:"im"`
+	Database_AM string `default:"am"`
 }
 
 func (m *Config) Clone() *Config {
@@ -82,47 +83,56 @@ func (m *Config) Clone() *Config {
 	return &q
 }
 
-func (m *DBConfig) GetHostUrl() string {
+func (m *DBConfig) GetHostUrl_AM() string {
 	if m.Type == "sqlite3" {
-		return m.Database
+		return m.Database_AM
 	}
 	if m.Type == "mysql" {
 		return fmt.Sprintf("%s:%s@tcp(%s:%d)/", m.User, m.Password, m.Host, m.Port)
 	}
-	return m.Database
+	return m.Database_AM
+}
+func (m *DBConfig) GetHostUrl_IM() string {
+	if m.Type == "sqlite3" {
+		return m.Database_IM
+	}
+	if m.Type == "mysql" {
+		return fmt.Sprintf("%s:%s@tcp(%s:%d)/", m.User, m.Password, m.Host, m.Port)
+	}
+	return m.Database_IM
 }
 
-func (m *DBConfig) GetGormUrl() string {
+func (m *DBConfig) GetGormUrl_AM() string {
 	if m.Type == "sqlite3" {
-		return m.Database
+		return m.Database_AM
 	}
 	if m.Type == "mysql" {
 		return fmt.Sprintf(
 			"%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local",
 			m.User, m.Password, m.Host, m.Port,
-			m.Database,
+			m.Database_AM,
 		)
 	}
-	return m.Database
+	return m.Database_AM
 }
 
 func (m *DBConfig) GetUrl() string {
 	if m.Type == "sqlite3" {
-		return m.Database
+		return m.Database_IM
 	}
 	if m.Type == "mysql" {
-		return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", m.User, m.Password, m.Host, m.Port, m.Database)
+		return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", m.User, m.Password, m.Host, m.Port, m.Database_IM)
 	}
-	return m.Database
+	return m.Database_IM
 }
 func (m *DBConfig) GetUrlWithParseTime() string {
 	if m.Type == "sqlite3" {
-		return m.Database
+		return m.Database_IM
 	}
 	if m.Type == "mysql" {
-		return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true", m.User, m.Password, m.Host, m.Port, m.Database)
+		return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true", m.User, m.Password, m.Host, m.Port, m.Database_IM)
 	}
-	return m.Database
+	return m.Database_IM
 }
 
 func Default() *Config {

@@ -29,11 +29,11 @@ func OpenDatabase(cfg *config.Config) (*Database, error) {
 	// init db
 	func() {
 		if strings.EqualFold(cfg.DB.Type, "mysql") {
-			if !isValidDatabaseName(cfg.DB.Database) {
-				logger.Warnf(nil, "invalid db name %s", cfg.DB.Database)
+			if !isValidDatabaseName(cfg.DB.Database_IM) {
+				logger.Warnf(nil, "invalid db name %s", cfg.DB.Database_IM)
 			}
 
-			db, err := sql.Open("mysql", cfg.DB.GetHostUrl())
+			db, err := sql.Open("mysql", cfg.DB.GetHostUrl_IM())
 			if err != nil {
 				logger.Warnf(nil, "%v", err)
 			}
@@ -41,7 +41,7 @@ func OpenDatabase(cfg *config.Config) (*Database, error) {
 
 			query := fmt.Sprintf(
 				"CREATE DATABASE IF NOT EXISTS %s CHARACTER SET utf8 COLLATE utf8_general_ci;",
-				cfg.DB.Database,
+				cfg.DB.Database_IM,
 			)
 			_, err = db.Exec(query)
 			if err != nil {
@@ -55,7 +55,7 @@ func OpenDatabase(cfg *config.Config) (*Database, error) {
 	logger.Infof(nil, "\tHost: %s", cfg.DB.Host)
 	logger.Infof(nil, "\tPort: %d", cfg.DB.Port)
 	logger.Infof(nil, "\tUser: %s", cfg.DB.User)
-	logger.Infof(nil, "\tDatabase: %s", cfg.DB.Database)
+	logger.Infof(nil, "\tDatabase: %s", cfg.DB.Database_IM)
 	logger.Infof(nil, "DB config: end")
 
 	db, err := sqlx.Open(cfg.DB.Type, cfg.DB.GetUrlWithParseTime())
