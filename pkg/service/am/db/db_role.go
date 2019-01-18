@@ -49,8 +49,18 @@ func (p *Database) CreateRole(ctx context.Context, req *pbam.Role) (*pbam.Role, 
 func (p *Database) DeleteRoles(ctx context.Context, req *pbam.RoleIdList) (*pbam.Empty, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	logger.Infof(ctx, "TODO")
-	return nil, nil
+	tx := p.DB.Begin()
+	{
+		tx.Raw("delete from role where role_id in (?)", req.RoleId)
+		tx.Raw("delete from user_role_binding where role_id in (?)", req.RoleId)
+		tx.Raw("delete from role_module_binding where role_id in (?)", req.RoleId)
+	}
+	if err := tx.Commit().Error; err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	return &pbam.Empty{}, nil
 }
 
 func (p *Database) ModifyRole(ctx context.Context, req *pbam.Role) (*pbam.Role, error) {
@@ -122,7 +132,8 @@ func (p *Database) DescribeRoles(ctx context.Context, req *pbam.DescribeRolesReq
 			and t1.role_id in
 				(select t2.role_id
 					from user_role_binding t1, role t2
-					where  t1.role_id=t2.role_id and t1.user_id in (?))
+					where  t1.role_id=t2.role_id and t1.user_id in (?)
+				)
 		`,
 		req.RoleId,
 		req.RoleName,
