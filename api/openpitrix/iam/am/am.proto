@@ -91,14 +91,6 @@ service AccessManager {
 	}
 }
 
-service InternalAccessManager {
-	rpc GetUser(String) returns (UserWithRole) {
-		option (google.api.http) = {
-			get: "/v1/am/internal/users/{value}"
-		};
-	}
-}
-
 // ----------------------------------------------------------------------------
 // common types
 // ----------------------------------------------------------------------------

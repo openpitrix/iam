@@ -34,9 +34,6 @@ func WithAccountManager(s pbim.AccountManagerServer) GrpcServer {
 func WithAccessManager(s pbam.AccessManagerServer) GrpcServer {
 	return &amGrpcServer{s}
 }
-func WithInternalAccessManager(s pbam.InternalAccessManagerServer) GrpcServer {
-	return &amInternalGrpcServer{s}
-}
 
 func MakeDefaultGrpcServerOptions() []grpc.ServerOption {
 	return []grpc.ServerOption{
@@ -78,22 +75,6 @@ func (p *amGrpcServer) RegisterGrpcHandlerFromEndpoint(
 	endpoint string, opts []grpc.DialOption,
 ) error {
 	return pbam.RegisterAccessManagerHandlerFromEndpoint(
-		ctx, mux, endpoint, opts,
-	)
-}
-
-type amInternalGrpcServer struct {
-	s pbam.InternalAccessManagerServer
-}
-
-func (p *amInternalGrpcServer) RegisterGrpcServer(s *grpc.Server) {
-	pbam.RegisterInternalAccessManagerServer(s, p.s)
-}
-func (p *amInternalGrpcServer) RegisterGrpcHandlerFromEndpoint(
-	ctx context.Context, mux *runtime.ServeMux,
-	endpoint string, opts []grpc.DialOption,
-) error {
-	return pbam.RegisterInternalAccessManagerHandlerFromEndpoint(
 		ctx, mux, endpoint, opts,
 	)
 }

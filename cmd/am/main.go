@@ -150,7 +150,6 @@ func serve(c *cli.Context) {
 			fmt.Sprintf(":%d", appConfig.Port),
 			[]web.GrpcServer{
 				web.WithAccessManager(amService),
-				web.WithInternalAccessManager(amService),
 			},
 			nil,
 		)
@@ -164,7 +163,6 @@ func serve(c *cli.Context) {
 			appConfig.TlsCertFile, appConfig.TlsKeyFile,
 			[]web.GrpcServer{
 				web.WithAccessManager(amService),
-				web.WithInternalAccessManager(amService),
 			},
 			nil,
 		)
