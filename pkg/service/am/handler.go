@@ -49,9 +49,6 @@ func (p *Server) DescribeUsersWithRole(ctx context.Context, req *pbam.DescribeUs
 	return p.db.DescribeUsersWithRole(ctx, req)
 }
 
-func (p *Server) GetRoleModule(ctx context.Context, req *pbam.RoleId) (*pbam.RoleModule, error) {
-	return p.db.GetRoleModule(ctx, req)
-}
 func (p *Server) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (*pbam.RoleModule, error) {
 	return p.db.ModifyRoleModule(ctx, req)
 }

@@ -75,11 +75,6 @@ service AccessManager {
 		};
 	}
 
-	rpc GetRoleModule(RoleId) returns (RoleModule) {
-		option (google.api.http) = {
-			get: "/v1/am/roles:module"
-		};
-	}
 	rpc ModifyRoleModule(RoleModule) returns (RoleModule) {
 		option (google.api.http) = {
 			patch: "/v1/am/roles:module"

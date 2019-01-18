@@ -222,28 +222,6 @@
       }
     },
     "/v1/am/roles:module": {
-      "get": {
-        "operationId": "GetRoleModule",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/amRoleModule"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "role_id",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "AccessManager"
-        ]
-      },
       "patch": {
         "operationId": "ModifyRoleModule",
         "responses": {

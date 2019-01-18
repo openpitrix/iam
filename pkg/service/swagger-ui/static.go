@@ -453,28 +453,6 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
       }
     },
     "/v1/am/roles:module": {
-      "get": {
-        "operationId": "GetRoleModule",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/amRoleModule"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "role_id",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "AccessManager"
-        ]
-      },
       "patch": {
         "operationId": "ModifyRoleModule",
         "responses": {
