@@ -302,6 +302,30 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         ]
       }
     },
+    "/v1/am/internal/users/{value}": {
+      "get": {
+        "operationId": "GetUser",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/amUserWithRole"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "value",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "InternalAccessManager"
+        ]
+      }
+    },
     "/v1/am/roles": {
       "get": {
         "operationId": "DescribeRoles",
@@ -625,6 +649,12 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
           "type": "string"
         },
         "url_method": {
+          "type": "string"
+        },
+        "api_id": {
+          "type": "string"
+        },
+        "api_method": {
           "type": "string"
         }
       }

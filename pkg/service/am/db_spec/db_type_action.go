@@ -9,7 +9,7 @@ import (
 )
 
 type DBAction struct {
-	ActionId    string `db:"action_id"`
+	ActionId    string `db:"action_id" gorm:"primary_key"`
 	ActionName  string `db:"action_name"`
 	Method      string `db:"method"`
 	Description string `db:"description"`
@@ -19,6 +19,8 @@ type DBAction struct {
 	ModuleName  string `db:"module_name"`
 	Url         string `db:"url"`
 	UrlMethod   string `db:"url_method"`
+	Api         string `db:"api"`
+	ApiMethod   string `db:"api_method"`
 }
 
 func (p *DBAction) ToPB() *pbam.Action {

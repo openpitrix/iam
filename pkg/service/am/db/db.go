@@ -11,7 +11,10 @@ import (
 
 	"github.com/fatih/structs"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/jmoiron/sqlx"
 
 	"openpitrix.io/iam/pkg/config"
@@ -22,6 +25,7 @@ import (
 type Database struct {
 	cfg *config.Config
 	*sqlx.DB
+	ormDB *gorm.DB
 }
 
 func OpenDatabase(cfg *config.Config) (*Database, error) {
@@ -89,9 +93,24 @@ func OpenDatabase(cfg *config.Config) (*Database, error) {
 	}
 	logger.Infof(nil, "DB stats: end")
 
+	// open grom
+	p.ormDB, err = gorm.Open(cfg.DB.Type, cfg.DB.GetGormUrl())
+	if err != nil {
+		return nil, err
+	}
+
 	return p, nil
 }
 
 func (p *Database) Close() error {
-	return p.DB.Close()
+	err1 := p.DB.Close()
+	err2 := p.ormDB.Close()
+
+	if err1 != nil {
+		return err1
+	}
+	if err2 != nil {
+		return err2
+	}
+	return nil
 }

@@ -15,7 +15,7 @@ import (
 )
 
 type DBUserWithRole struct {
-	UserId      string    `db:"user_id"`
+	UserId      string    `db:"user_id" gorm:"primary_key"`
 	UserName    string    `db:"user_name"`
 	Email       string    `db:"email"`
 	PhoneNumber string    `db:"phone_number"`

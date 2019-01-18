@@ -91,6 +91,14 @@ service AccessManager {
 	}
 }
 
+service InternalAccessManager {
+	rpc GetUser(String) returns (UserWithRole) {
+		option (google.api.http) = {
+			get: "/v1/am/internal/users/{value}"
+		};
+	}
+}
+
 // ----------------------------------------------------------------------------
 // common types
 // ----------------------------------------------------------------------------
@@ -118,6 +126,8 @@ message Action {
 	string module_name = 8;
 	string url = 9;
 	string url_method = 10;
+	string api_id = 11;
+	string api_method = 12;
 }
 
 message ActionList {

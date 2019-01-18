@@ -92,6 +92,20 @@ func (m *DBConfig) GetHostUrl() string {
 	return m.Database
 }
 
+func (m *DBConfig) GetGormUrl() string {
+	if m.Type == "sqlite3" {
+		return m.Database
+	}
+	if m.Type == "mysql" {
+		return fmt.Sprintf(
+			"%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local",
+			m.User, m.Password, m.Host, m.Port,
+			m.Database,
+		)
+	}
+	return m.Database
+}
+
 func (m *DBConfig) GetUrl() string {
 	if m.Type == "sqlite3" {
 		return m.Database

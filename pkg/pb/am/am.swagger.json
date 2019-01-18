@@ -71,6 +71,30 @@
         ]
       }
     },
+    "/v1/am/internal/users/{value}": {
+      "get": {
+        "operationId": "GetUser",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/amUserWithRole"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "value",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "InternalAccessManager"
+        ]
+      }
+    },
     "/v1/am/roles": {
       "get": {
         "operationId": "DescribeRoles",
@@ -394,6 +418,12 @@
           "type": "string"
         },
         "url_method": {
+          "type": "string"
+        },
+        "api_id": {
+          "type": "string"
+        },
+        "api_method": {
           "type": "string"
         }
       }

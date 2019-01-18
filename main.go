@@ -162,6 +162,7 @@ func serve(c *cli.Context) {
 			[]web.GrpcServer{
 				web.WithAccountManager(imService),
 				web.WithAccessManager(amService),
+				web.WithInternalAccessManager(amService),
 			},
 			nil,
 		)
@@ -176,6 +177,7 @@ func serve(c *cli.Context) {
 			[]web.GrpcServer{
 				web.WithAccountManager(imService),
 				web.WithAccessManager(amService),
+				web.WithInternalAccessManager(amService),
 			},
 			nil,
 		)

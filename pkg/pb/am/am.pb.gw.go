@@ -196,6 +196,33 @@ func request_AccessManager_UnbindUserRole_0(ctx context.Context, marshaler runti
 
 }
 
+func request_InternalAccessManager_GetUser_0(ctx context.Context, marshaler runtime.Marshaler, client InternalAccessManagerClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq String
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["value"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "value")
+	}
+
+	protoReq.Value, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "value", err)
+	}
+
+	msg, err := client.GetUser(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
 // RegisterAccessManagerHandlerFromEndpoint is same as RegisterAccessManagerHandler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
 func RegisterAccessManagerHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
@@ -635,4 +662,82 @@ var (
 	forward_AccessManager_BindUserRole_0 = runtime.ForwardResponseMessage
 
 	forward_AccessManager_UnbindUserRole_0 = runtime.ForwardResponseMessage
+)
+
+// RegisterInternalAccessManagerHandlerFromEndpoint is same as RegisterInternalAccessManagerHandler but
+// automatically dials to "endpoint" and closes the connection when "ctx" gets done.
+func RegisterInternalAccessManagerHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
+	conn, err := grpc.Dial(endpoint, opts...)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err != nil {
+			if cerr := conn.Close(); cerr != nil {
+				grpclog.Printf("Failed to close conn to %s: %v", endpoint, cerr)
+			}
+			return
+		}
+		go func() {
+			<-ctx.Done()
+			if cerr := conn.Close(); cerr != nil {
+				grpclog.Printf("Failed to close conn to %s: %v", endpoint, cerr)
+			}
+		}()
+	}()
+
+	return RegisterInternalAccessManagerHandler(ctx, mux, conn)
+}
+
+// RegisterInternalAccessManagerHandler registers the http handlers for service InternalAccessManager to "mux".
+// The handlers forward requests to the grpc endpoint over "conn".
+func RegisterInternalAccessManagerHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
+	return RegisterInternalAccessManagerHandlerClient(ctx, mux, NewInternalAccessManagerClient(conn))
+}
+
+// RegisterInternalAccessManagerHandler registers the http handlers for service InternalAccessManager to "mux".
+// The handlers forward requests to the grpc endpoint over the given implementation of "InternalAccessManagerClient".
+// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "InternalAccessManagerClient"
+// doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
+// "InternalAccessManagerClient" to call the correct interceptors.
+func RegisterInternalAccessManagerHandlerClient(ctx context.Context, mux *runtime.ServeMux, client InternalAccessManagerClient) error {
+
+	mux.Handle("GET", pattern_InternalAccessManager_GetUser_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(ctx)
+		defer cancel()
+		if cn, ok := w.(http.CloseNotifier); ok {
+			go func(done <-chan struct{}, closed <-chan bool) {
+				select {
+				case <-done:
+				case <-closed:
+					cancel()
+				}
+			}(ctx.Done(), cn.CloseNotify())
+		}
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_InternalAccessManager_GetUser_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_InternalAccessManager_GetUser_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	return nil
+}
+
+var (
+	pattern_InternalAccessManager_GetUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"v1", "am", "internal", "users", "value"}, ""))
+)
+
+var (
+	forward_InternalAccessManager_GetUser_0 = runtime.ForwardResponseMessage
 )
