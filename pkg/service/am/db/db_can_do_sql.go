@@ -59,6 +59,7 @@ where
 	(select t2.role_id from user_role_binding t1, role t2 where  t1.role_id=t2.role_id and t1.user_id='uid-PYu7bdqa')
 	and t4.action_id=t3.action_id
 	and t3.module_id=(
-		select module_id from action2 where url_method='{{UrlMethod}}' and url='{{Url}}'
+		select module_id from action2 where url_method='{{UrlMethod}}' and
+		right(url,length(url)-locate( '/',url, 2))='{{Url}}'
 	)
 `

@@ -6,7 +6,6 @@ package db
 
 import (
 	"context"
-	"strings"
 
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
@@ -113,20 +112,32 @@ func (p *Database) GetRoleListByUserId(ctx context.Context, req *pbam.UserId) (*
 func (p *Database) DescribeRoles(ctx context.Context, req *pbam.DescribeRolesRequest) (*pbam.RoleList, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	// fix repeated fileds
-	if len(req.RoleId) == 1 && strings.Contains(req.RoleId[0], ",") {
-		req.RoleId = strings.Split(req.RoleId[0], ",")
-	}
-	if len(req.RoleName) == 1 && strings.Contains(req.RoleName[0], ",") {
-		req.RoleName = strings.Split(req.RoleName[0], ",")
-	}
-	if len(req.Portal) == 1 && strings.Contains(req.Portal[0], ",") {
-		req.Portal = strings.Split(req.Portal[0], ",")
-	}
-	if len(req.UserId) == 1 && strings.Contains(req.UserId[0], ",") {
-		req.UserId = strings.Split(req.UserId[0], ",")
+	var rows []DBRole
+	p.DB.Raw(
+		`select distinct t1.*
+			from  role t1
+			where t1.role_id  in(?)
+			and t1.role_name in (?)
+			and t1.portal in (?)
+			and t1.role_id in
+				(select t2.role_id
+					from user_role_binding t1, role t2
+					where  t1.role_id=t2.role_id and t1.user_id in (?))
+		`,
+		req.RoleId,
+		req.RoleName,
+		req.Portal,
+		req.UserId,
+	).Find(&rows)
+
+	var sets []*pbam.Role
+	for _, v := range rows {
+		sets = append(sets, v.ToPB())
 	}
 
-	logger.Infof(ctx, "TODO")
-	return nil, nil
+	reply := &pbam.RoleList{
+		Value: sets,
+	}
+
+	return reply, nil
 }

@@ -7,6 +7,8 @@ package db
 import (
 	"context"
 	"fmt"
+	"regexp"
+	"strings"
 
 	"github.com/cbroglie/mustache"
 	"google.golang.org/grpc"
@@ -21,6 +23,13 @@ import (
 
 func (p *Database) CanDo(ctx context.Context, req *pbam.CanDoRequest) (*pbam.CanDoResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
+
+	// /v1/apps => apps
+	if matched, _ := regexp.MatchString(`/v\d+`, req.Url); matched {
+		if idx := strings.Index(req.Url[2:], "/"); idx >= 0 {
+			req.Url = req.Url[idx+1:]
+		}
+	}
 
 	type DBCanDo struct {
 		Url       string
@@ -44,9 +53,12 @@ func (p *Database) CanDo(ctx context.Context, req *pbam.CanDoRequest) (*pbam.Can
 
 	// get owner path from IM server
 	ownerPath, err := p.getOwnerPathByUserId(ctx, req.UserId)
-	if len(rows) == 0 {
+	if err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
+	}
+	if ownerPath == "" {
+		//
 	}
 
 	// get access path

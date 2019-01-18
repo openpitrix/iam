@@ -19,7 +19,13 @@ type Database struct {
 	*gorm.DB
 }
 
-func OpenDatabase(cfg *config.Config) (*Database, error) {
+type Options struct {
+	SqlInitDB    []string
+	SqlInitTable []string
+	SqlInitData  []string
+}
+
+func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 	cfg = cfg.Clone()
 
 	logger.Infof(nil, "DB config: begin")

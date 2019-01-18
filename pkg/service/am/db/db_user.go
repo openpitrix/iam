@@ -78,7 +78,8 @@ func (p *Database) DescribeUsersWithRole(ctx context.Context, req *pbam.Describe
 	}
 
 	var rows []Result
-	err := p.DB.Table("user_role_binding").Where("user_id in (?) AND role_id in (?)",
+	err := p.DB.Raw(
+		"select * from user_role_binding where user_id in (?) AND role_id in (?)",
 		req.UserId, req.RoleId,
 	).Limit(limit).Offset(offset).Find(&rows).Error
 	if err != nil {
@@ -86,14 +87,56 @@ func (p *Database) DescribeUsersWithRole(ctx context.Context, req *pbam.Describe
 		return nil, err
 	}
 
-	var users []*pbam.UserWithRole
-	for i := 0; i < len(rows); i++ {
-		v, err := p.GetUserWithRole(ctx, &pbam.UserId{UserId: rows[i].UserId})
-		if err != nil {
-			logger.Warnf(ctx, "%+v", err)
-			return nil, err
+	var userIdList, roleIdList []string
+	for _, v := range rows {
+		userIdList = append(userIdList, v.UserId)
+		roleIdList = append(roleIdList, v.RoleId)
+	}
+	rawUsers, err := p.getUserList(ctx, userIdList...)
+	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	type RoleEx struct {
+		UserId string
+		DBRole
+	}
+
+	var roles []RoleEx
+	err = p.DB.Raw(
+		`select t2.user_id, t1.*
+			from role t1, user_role_binding t2
+			where t1.role_id=t2.role_id and t2.user_id in (?)
+		`,
+		userIdList,
+	).Find(&roles).Error
+	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	var users = make([]*pbam.UserWithRole, len(rawUsers))
+	for i := 0; i < len(rawUsers); i++ {
+		var pRole *DBRole
+		for j := 0; j < len(roles); j++ {
+			if rawUsers[i].Uid == roles[j].UserId {
+				pRole = &roles[j].DBRole
+			}
 		}
-		users = append(users, v)
+
+		users[i] = &pbam.UserWithRole{
+			UserId:      rawUsers[i].Uid,
+			UserName:    rawUsers[i].Name,
+			Email:       rawUsers[i].Email,
+			PhoneNumber: rawUsers[i].PhoneNumber,
+			Description: rawUsers[i].Description,
+			Status:      rawUsers[i].Status,
+			Extra:       rawUsers[i].Extra,
+		}
+		if pRole != nil {
+			users[i].Role = []*pbam.Role{pRole.ToPB()}
+		}
 	}
 
 	reply := &pbam.DescribeUsersWithRoleResponse{
@@ -102,4 +145,23 @@ func (p *Database) DescribeUsersWithRole(ctx context.Context, req *pbam.Describe
 	}
 
 	return reply, nil
+}
+
+func (p *Database) getUserList(ctx context.Context, uid ...string) ([]*pbim.User, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
+	conn, err := grpc.Dial(fmt.Sprintf("%s:%d", p.cfg.ImHost, p.cfg.ImPort), grpc.WithInsecure())
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+
+	client := pbim.NewAccountManagerClient(conn)
+	reply, err := client.ListUsers(ctx, &pbim.ListUsersRequest{Uid: uid})
+	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	return reply.User, nil
 }

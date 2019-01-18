@@ -19,7 +19,7 @@ type Server struct {
 func OpenServer(cfg *config.Config) (*Server, error) {
 	cfg = cfg.Clone()
 
-	db, err := db.OpenDatabase(cfg)
+	db, err := db.OpenDatabase(cfg, nil)
 	if err != nil {
 		logger.Criticalf(nil, "%v", err)
 	}
