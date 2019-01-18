@@ -52,9 +52,9 @@ func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 
 	// check group_path valid
 	switch {
-	case dbGroup.GroupPath == dbGroup.Gid:
+	case dbGroup.GroupPath == dbGroup.Gid+".":
 		// skip root
-	case strings.HasSuffix(dbGroup.GroupPath, "."+dbGroup.Gid):
+	case strings.HasSuffix(dbGroup.GroupPath, "."+dbGroup.Gid+"."):
 		idx := len(dbGroup.GroupPath) - len(dbGroup.Gid)
 		parentGroupPath := dbGroup.GroupPath[:idx-1]
 

@@ -60,6 +60,9 @@ type Config struct {
 	Port      int    `default:"9120"`
 	StaticDir string `default:"public"`
 
+	ImHost string `default:"openpitrix-im-service"`
+	ImPort int    `default:"9119"`
+
 	TlsEnabled  bool   `default:"false"`
 	TlsCertFile string `default:"server.cert"`
 	TlsKeyFile  string `default:"server.key"`
