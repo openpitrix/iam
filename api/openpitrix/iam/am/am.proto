@@ -255,7 +255,7 @@ message UserWithRole {
 	google.protobuf.Timestamp update_time = 10; // read only
 	google.protobuf.Timestamp status_time = 11; // read only
 
-	Role role = 12;
+	repeated Role role = 12;
 }
 
 message DescribeUsersWithRoleRequest {

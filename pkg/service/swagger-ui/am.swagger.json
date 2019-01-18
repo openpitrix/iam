@@ -684,7 +684,10 @@
           "format": "date-time"
         },
         "role": {
-          "$ref": "#/definitions/amRole"
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/amRole"
+          }
         }
       },
       "title": "keep same as openpitrix.iam.im.User"
