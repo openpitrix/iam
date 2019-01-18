@@ -102,33 +102,40 @@ func (p *Database) UnbindUserRole(ctx context.Context, req *pbam.UnbindUserRoleR
 		return nil, err
 	}
 
-	type UserRoleBinding struct {
-		Id     string
-		RoleId string
-		UserId string
-	}
+	tx := p.DB.Begin()
+
 	switch {
 	case len(req.UserId) == len(req.RoleId):
 		for i := 0; i < len(req.RoleId); i++ {
-			p.DB.Delete(UserRoleBinding{
-				RoleId: req.RoleId[i],
-				UserId: req.UserId[i],
-			})
+			logger.Infof(ctx, "req: %v", req)
+
+			p.DB.Exec(
+				`delete from user_role_binding where user_id=? and role_id=?`,
+				req.UserId[i],
+				req.RoleId[i],
+			)
 		}
 	case len(req.UserId) == 1:
 		for i := 0; i < len(req.RoleId); i++ {
-			p.DB.Delete(UserRoleBinding{
-				RoleId: req.RoleId[1],
-				UserId: req.UserId[0],
-			})
+			p.DB.Exec(
+				`delete from user_role_binding where user_id=? and role_id=?`,
+				req.UserId[0],
+				req.RoleId[i],
+			)
 		}
 	case len(req.RoleId) == 1:
 		for i := 0; i < len(req.UserId); i++ {
-			p.DB.Delete(UserRoleBinding{
-				RoleId: req.RoleId[0],
-				UserId: req.UserId[i],
-			})
+			p.DB.Exec(
+				`delete from user_role_binding where user_id=? and role_id=?`,
+				req.UserId[i],
+				req.RoleId[0],
+			)
 		}
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
 	}
 
 	return &pbam.Empty{}, nil

@@ -49,7 +49,7 @@ func (p *Server) DescribeUsersWithRole(ctx context.Context, req *pbam.DescribeUs
 	return p.db.DescribeUsersWithRole(ctx, req)
 }
 
-func (p *Server) ModifyRoleModuleBinding(ctx context.Context, req *pbam.RoleModule) (*pbam.RoleModule, error) {
+func (p *Server) ModifyRoleModuleBinding(ctx context.Context, req *pbam.ModifyRoleModuleBindingRequest) (*pbam.ActionList, error) {
 	return p.db.ModifyRoleModuleBinding(ctx, req)
 }
 
