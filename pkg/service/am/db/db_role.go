@@ -6,11 +6,13 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
 	"openpitrix.io/iam/pkg/internal/funcutil"
 	pbam "openpitrix.io/iam/pkg/pb/am"
 	"openpitrix.io/logger"
@@ -145,24 +147,51 @@ func (p *Database) GetRoleListByUserId(ctx context.Context, req *pbam.UserId) (*
 func (p *Database) DescribeRoles(ctx context.Context, req *pbam.DescribeRolesRequest) (*pbam.RoleList, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	var rows []DBRole
-	p.DB.Raw(
-		`select distinct t1.*
-			from  role t1
-			where t1.role_id  in(?)
-			and t1.role_name in (?)
-			and t1.portal in (?)
+	var (
+		args                 []interface{}
+		sqlRoleIdCondition   string
+		sqlRoleNameCondition string
+		sqlPortalCondition   string
+		sqlUserIdCondition   string
+	)
+
+	if len(req.RoleId) > 0 {
+		sqlRoleIdCondition = `and t1.role_id in(?)`
+		args = append(args, req.RoleId)
+	}
+	if len(req.RoleName) > 0 {
+		sqlRoleNameCondition = `and t1.role_name in (?)`
+		args = append(args, req.RoleName)
+	}
+	if len(req.Portal) > 0 {
+		sqlPortalCondition = `and t1.portal in (?)`
+		args = append(args, req.Portal)
+	}
+	if len(req.UserId) > 0 {
+		sqlUserIdCondition = `and t1.user_id in (?)`
+		args = append(args, req.UserId)
+	}
+
+	query := fmt.Sprintf(
+		`select distinct t1.* from role t1 where 1=1
+			%s -- and t1.role_id in(?)
+			%s -- and t1.role_name in (?)
+			%s -- and t1.portal in (?) {{/Portal}}
 			and t1.role_id in
 				(select t2.role_id
 					from user_role_binding t1, role t2
-					where  t1.role_id=t2.role_id and t1.user_id in (?)
+					where t1.role_id=t2.role_id
+						%s -- and t1.user_id in (?)
 				)
 		`,
-		req.RoleId,
-		req.RoleName,
-		req.Portal,
-		req.UserId,
-	).Find(&rows)
+		sqlRoleIdCondition,
+		sqlRoleNameCondition,
+		sqlPortalCondition,
+		sqlUserIdCondition,
+	)
+
+	var rows []DBRole
+	p.DB.Raw(query, args...).Find(&rows)
 
 	var sets []*pbam.Role
 	for _, v := range rows {
