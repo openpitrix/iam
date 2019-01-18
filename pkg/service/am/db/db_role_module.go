@@ -12,7 +12,7 @@ import (
 	"openpitrix.io/logger"
 )
 
-func (p *Database) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (*pbam.RoleModule, error) {
+func (p *Database) ModifyRoleModuleBinding(ctx context.Context, req *pbam.RoleModule) (*pbam.RoleModule, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	logger.Infof(ctx, "TODO")

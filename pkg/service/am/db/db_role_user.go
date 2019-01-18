@@ -39,39 +39,41 @@ func (p *Database) BindUserRole(ctx context.Context, req *pbam.BindUserRoleReque
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
+	logger.Infof(ctx, funcutil.CallerName(1)+":11")
+	logger.Infof(ctx, "req: %v", req)
 
-	type UserRoleBinding struct {
-		Id     string
-		RoleId string
-		UserId string
-	}
+	tx := p.DB.Begin()
 
 	switch {
 	case len(req.UserId) == len(req.RoleId):
 		for i := 0; i < len(req.RoleId); i++ {
-			p.DB.NewRecord(UserRoleBinding{
-				Id:     genXid(),
-				RoleId: req.RoleId[i],
-				UserId: req.UserId[i],
-			})
+			tx.Exec(
+				`INSERT INTO user_role_binding (id, user_id, role_id) VALUES (?,?,?)`,
+				genXid(), req.UserId[i], req.RoleId[i],
+			)
 		}
 	case len(req.UserId) == 1:
+		logger.Infof(ctx, "debug: req: %v", req)
 		for i := 0; i < len(req.RoleId); i++ {
-			p.DB.NewRecord(UserRoleBinding{
-				Id:     genXid(),
-				RoleId: req.RoleId[i],
-				UserId: req.UserId[0],
-			})
+			tx.Exec(
+				`INSERT INTO user_role_binding (id, user_id, role_id) VALUES (?,?,?)`,
+				genXid(), req.UserId[0], req.RoleId[i],
+			)
 		}
 	case len(req.RoleId) == 1:
 		for i := 0; i < len(req.UserId); i++ {
-			p.DB.NewRecord(UserRoleBinding{
-				Id:     genXid(),
-				RoleId: req.RoleId[0],
-				UserId: req.UserId[i],
-			})
+			tx.Exec(
+				`INSERT INTO user_role_binding (id, user_id, role_id) VALUES (?,?,?)`,
+				genXid(), req.UserId[i], req.RoleId[0],
+			)
 		}
 	}
+
+	if err := tx.Commit().Error; err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+	logger.Infof(ctx, funcutil.CallerName(1)+":22")
 
 	return &pbam.Empty{}, nil
 }

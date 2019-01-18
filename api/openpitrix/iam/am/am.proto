@@ -75,7 +75,7 @@ service AccessManager {
 		};
 	}
 
-	rpc ModifyRoleModule(RoleModule) returns (RoleModule) {
+	rpc ModifyRoleModuleBinding(ModifyRoleModuleBindingRequest) returns (ActionList) {
 		option (google.api.http) = {
 			patch: "/v1/am/roles:module"
 			body: "*"
@@ -191,7 +191,7 @@ message RoleList {
 
 message Module {
 	repeated Feature feature = 1;
-	repeated string checked_action_id = 2;
+	//repeated string checked_action_id = 2;
 	string data_level = 3;
 	bool check_all = 4;
 }
@@ -199,7 +199,7 @@ message Feature {
 	repeated Action action = 1;
 }
 
-message RoleModule {
+message ModifyRoleModuleBindingRequest {
 	string role_id = 1;
 	repeated Module module = 2;
 }
