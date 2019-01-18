@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/cbroglie/mustache"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -42,32 +43,58 @@ func (p *Database) CanDo(ctx context.Context, req *pbam.CanDoRequest) (*pbam.Can
 	}
 
 	// get owner path from IM server
-	ownerPath, err := p.GetOwnerPathByUserId(ctx, req.UserId)
+	ownerPath, err := p.getOwnerPathByUserId(ctx, req.UserId)
 	if len(rows) == 0 {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
 	// get access path
-
-	_ = ownerPath
-
-	// 1. get role list by user_id
-	// 2. get action list by role_id
-	// 3. check action rule
-
-	// try get OwnerPath from user_path
+	accessPath, err := p.getAccessPathBy(ctx, req, ownerPath)
+	if len(rows) == 0 {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
 
 	reply := &pbam.CanDoResponse{
 		UserId:     req.UserId,
 		OwnerPath:  ownerPath,
-		AccessPath: "AccessPath-todo",
+		AccessPath: accessPath,
 	}
 
 	return reply, nil
 }
 
-func (p *Database) GetOwnerPathByUserId(ctx context.Context, userId string) (string, error) {
+func (p *Database) getAccessPathBy(ctx context.Context, req *pbam.CanDoRequest, ownerPath string) (string, error) {
+	query, err := mustache.Render(sqlGetAccessPath_mustache, &sqlGetAccessPath_args{
+		UserId:    req.UserId,
+		OwnerPath: ownerPath,
+		Url:       req.Url,
+		UrlMethod: req.UrlMethod,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	type Result struct {
+		AccessPath string
+	}
+	var rows []Result
+
+	err = p.DB.Raw(query).Scan(&rows).Error
+	if err != nil {
+		logger.Warnf(ctx, "%v", query)
+		logger.Warnf(ctx, "%+v", err)
+		return "", err
+	}
+	if len(rows) == 0 {
+		return "", nil
+	}
+
+	return rows[0].AccessPath, nil
+}
+
+func (p *Database) getOwnerPathByUserId(ctx context.Context, userId string) (string, error) {
 	conn, err := grpc.Dial(fmt.Sprintf("%s:%d", p.cfg.ImHost, p.cfg.ImPort), grpc.WithInsecure())
 	if err != nil {
 		return "", err
