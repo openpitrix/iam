@@ -35,10 +35,16 @@ func (p *Server) DeleteRoles(ctx context.Context, req *pbam.RoleIdList) (*pbam.E
 func (p *Server) ModifyRole(ctx context.Context, req *pbam.Role) (*pbam.Role, error) {
 	return p.db.ModifyRole(ctx, req)
 }
+func (p *Server) GetRole(ctx context.Context, req *pbam.RoleId) (*pbam.Role, error) {
+	return p.db.GetRole(ctx, req)
+}
 func (p *Server) DescribeRoles(ctx context.Context, req *pbam.DescribeRolesRequest) (*pbam.RoleList, error) {
 	return p.db.DescribeRoles(ctx, req)
 }
 
+func (p *Server) GetUserWithRole(ctx context.Context, req *pbam.UserId) (*pbam.UserWithRole, error) {
+	return p.db.GetUserWithRole(ctx, req)
+}
 func (p *Server) DescribeUsersWithRole(ctx context.Context, req *pbam.DescribeUsersWithRoleRequest) (*pbam.DescribeUsersWithRoleResponse, error) {
 	return p.db.DescribeUsersWithRole(ctx, req)
 }

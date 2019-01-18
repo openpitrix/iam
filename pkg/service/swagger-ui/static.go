@@ -302,30 +302,6 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         ]
       }
     },
-    "/v1/am/internal/users/{value}": {
-      "get": {
-        "operationId": "GetUser",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/amUserWithRole"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "value",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "InternalAccessManager"
-        ]
-      }
-    },
     "/v1/am/roles": {
       "get": {
         "operationId": "DescribeRoles",
@@ -445,6 +421,30 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
             "schema": {
               "$ref": "#/definitions/amRole"
             }
+          }
+        ],
+        "tags": [
+          "AccessManager"
+        ]
+      }
+    },
+    "/v1/am/roles/{role_id}": {
+      "get": {
+        "operationId": "GetRole",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/amRole"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "role_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
           }
         ],
         "tags": [
@@ -593,6 +593,30 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
             "required": false,
             "type": "integer",
             "format": "int32"
+          }
+        ],
+        "tags": [
+          "AccessManager"
+        ]
+      }
+    },
+    "/v1/am/users/{user_id}": {
+      "get": {
+        "operationId": "GetUserWithRole",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/amUserWithRole"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
           }
         ],
         "tags": [

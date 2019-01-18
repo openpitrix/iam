@@ -53,12 +53,22 @@ service AccessManager {
 			body: "*"
 		};
 	}
+	rpc GetRole(RoleId) returns (Role) {
+		option (google.api.http) = {
+			get: "/v1/am/roles/{role_id}"
+		};
+	}
 	rpc DescribeRoles(DescribeRolesRequest) returns (RoleList) {
 		option (google.api.http) = {
 			get: "/v1/am/roles"
 		};
 	}
 
+	rpc GetUserWithRole(UserId) returns (UserWithRole) {
+		option (google.api.http) = {
+			get: "/v1/am/users/{user_id}"
+		};
+	}
 	rpc DescribeUsersWithRole(DescribeUsersWithRoleRequest) returns (DescribeUsersWithRoleResponse) {
 		option (google.api.http) = {
 			get: "/v1/am/users"
@@ -101,6 +111,10 @@ message Empty {
 
 message String {
 	string value = 1;
+}
+
+message UserId {
+	string user_id = 1;
 }
 
 // ----------------------------------------------------------------------------

@@ -15,8 +15,12 @@ import (
 func (p *Database) GetRoleModule(ctx context.Context, req *pbam.RoleId) (*pbam.RoleModule, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	panic("todo")
+	logger.Infof(ctx, "TODO")
+	return nil, nil
 }
 func (p *Database) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (*pbam.RoleModule, error) {
-	panic("todo")
+	logger.Infof(ctx, funcutil.CallerName(1))
+
+	logger.Infof(ctx, "TODO")
+	return nil, nil
 }
