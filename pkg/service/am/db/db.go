@@ -30,7 +30,7 @@ func OpenDatabase(cfg *config.Config) (*Database, error) {
 	logger.Infof(nil, "\tDatabase: %s", cfg.DB.Database)
 	logger.Infof(nil, "DB config: end")
 
-	var p = new(Database)
+	var p = &Database{cfg: cfg}
 	var err error
 
 	p.DB, err = gorm.Open(cfg.DB.Type, cfg.DB.GetUrl())

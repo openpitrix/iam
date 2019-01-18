@@ -177,10 +177,10 @@ func (p *Database) GetGroupsByUserId(ctx context.Context, req *pbim.UserId) (*pb
 
 	const sql = `
 		select user_group.* from
-			user, user_group, user_group_binding 
+			user, user_group, user_group_binding
 		where
 			user_group_binding.user_id=user.user_id and
-			user_group_binding.user_id=user_group.group_id and
+			user_group_binding.group_id=user_group.group_id and
 			user.user_id=?
 	`
 	var rows []db_spec.DBGroup
@@ -190,6 +190,8 @@ func (p *Database) GetGroupsByUserId(ctx context.Context, req *pbim.UserId) (*pb
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
+
+	logger.Infof(ctx, "rows: %v", rows)
 
 	var sets []*pbim.Group
 	for _, v := range rows {
@@ -207,7 +209,7 @@ func (p *Database) GetUsersByGroupId(ctx context.Context, req *pbim.GroupId) (*p
 
 	const sql = `
 		select user.* from
-			user, user_group, user_group_binding 
+			user, user_group, user_group_binding
 		where
 			user_group_binding.user_id=user.user_id and
 			user_group_binding.user_id=user_group.group_id and

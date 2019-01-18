@@ -106,7 +106,8 @@ func (p *Database) getOwnerPathByUserId(ctx context.Context, userId string) (str
 	if err != nil {
 		return "", err
 	}
-	fmt.Println(reply.GetValue())
+
+	logger.Infof(ctx, "getOwnerPathByUserId: %v", reply.GetValue())
 
 	// no group
 	if len(reply.Value) == 0 {
