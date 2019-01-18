@@ -24,12 +24,13 @@ import (
 func (p *Database) CanDo(ctx context.Context, req *pbam.CanDoRequest) (*pbam.CanDoResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	// /v1/apps => apps
-	if matched, _ := regexp.MatchString(`/v\d+`, req.Url); matched {
+	if matched, _ := regexp.MatchString(`^/v\d+`, req.Url); matched {
 		if idx := strings.Index(req.Url[2:], "/"); idx >= 0 {
-			req.Url = req.Url[idx+1:]
+			req.Url = req.Url[2:][idx+1:]
 		}
 	}
+
+	logger.Infof(nil, "req.Url: %v", req.Url)
 
 	type DBCanDo struct {
 		Url       string

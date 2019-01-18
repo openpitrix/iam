@@ -27,7 +27,7 @@ where
 			t1.user_id=?
 	) and
 	t4.action_id=t3.action_id and
-	t3.url=? and
+	right(t3.url,length(t3.url)-locate( '/',t3.url, 2))=? and
 	t3.url_method=?
 `
 
