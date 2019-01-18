@@ -37,14 +37,21 @@ func (p *Database) CreateRole(ctx context.Context, req *pbam.Role) (*pbam.Role, 
 		}
 	}
 
-	// TODO: delete binding
+	if !p.DB.NewRecord(PBRoleToDB(req)) {
+		// failed
+	}
+	if err := p.DB.Error; err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
 
-	panic("todo")
+	return p.GetRole(ctx, &pbam.RoleId{RoleId: req.RoleId})
 }
 func (p *Database) DeleteRoles(ctx context.Context, req *pbam.RoleIdList) (*pbam.Empty, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	panic("todo")
+	logger.Infof(ctx, "TODO")
+	return nil, nil
 }
 
 func (p *Database) ModifyRole(ctx context.Context, req *pbam.Role) (*pbam.Role, error) {
@@ -56,14 +63,23 @@ func (p *Database) ModifyRole(ctx context.Context, req *pbam.Role) (*pbam.Role, 
 		return nil, err
 	}
 
-	panic("TODO")
+	logger.Infof(ctx, "TODO")
+	return nil, nil
 }
 
 func (p *Database) GetRole(ctx context.Context, req *pbam.RoleId) (*pbam.Role, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	panic("TODO")
+	var role = DBRole{
+		RoleId: req.RoleId,
+	}
+
+	if err := p.DB.First(&role).Error; err != nil {
+		return nil, err
+	}
+	return role.ToPB(), nil
 }
+
 func (p *Database) DescribeRoles(ctx context.Context, req *pbam.DescribeRolesRequest) (*pbam.RoleList, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
@@ -81,5 +97,6 @@ func (p *Database) DescribeRoles(ctx context.Context, req *pbam.DescribeRolesReq
 		req.UserId = strings.Split(req.UserId[0], ",")
 	}
 
-	panic("TODO")
+	logger.Infof(ctx, "TODO")
+	return nil, nil
 }

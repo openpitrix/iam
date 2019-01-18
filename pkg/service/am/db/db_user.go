@@ -15,5 +15,6 @@ import (
 func (p *Database) DescribeUsersWithRole(ctx context.Context, req *pbam.DescribeUsersWithRoleRequest) (*pbam.DescribeUsersWithRoleResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	panic("TODO")
+	logger.Infof(ctx, "TODO")
+	return nil, nil
 }
