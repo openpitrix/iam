@@ -474,10 +474,13 @@
         "user_id": {
           "type": "string"
         },
-        "http_method": {
+        "user_path": {
           "type": "string"
         },
-        "request_path": {
+        "url": {
+          "type": "string"
+        },
+        "url_method": {
           "type": "string"
         }
       }
