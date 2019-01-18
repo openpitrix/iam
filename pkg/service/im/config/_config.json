@@ -1,0 +1,15 @@
+{
+	"Port": 3999,
+	"TlsEnabled": false,
+	"TlsCertFile": "3999.cert",
+	"TlsKeyFile": "3999.key",
+	"LogLevel": "warn",
+	"DB": {
+		"Type": "mysql-3999",
+		"Host": "host-3999",
+		"Port": 3999,
+		"User": "root-3999",
+		"Password": "password-3999",
+		"Database": "IAM2-3999"
+	}
+}

@@ -7,7 +7,7 @@ package im
 import (
 	"openpitrix.io/logger"
 
-	"openpitrix.io/iam/pkg/config"
+	"openpitrix.io/iam/pkg/service/im/config"
 	"openpitrix.io/iam/pkg/service/im/db"
 )
 

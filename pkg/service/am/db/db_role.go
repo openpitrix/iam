@@ -41,6 +41,12 @@ func (p *Database) CreateRole(ctx context.Context, req *pbam.Role) (*pbam.Role, 
 
 	panic("todo")
 }
+func (p *Database) DeleteRoles(ctx context.Context, req *pbam.RoleIdList) (*pbam.Empty, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
+
+	panic("todo")}
+
 func (p *Database) ModifyRole(ctx context.Context, req *pbam.Role) (*pbam.Role, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 

@@ -17,5 +17,5 @@
 go.sum
 config.json
 /iam
-im
-am
+/cmd/im/im
+/cmd/am/am

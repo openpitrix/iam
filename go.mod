@@ -18,12 +18,11 @@ require (
 	github.com/koding/multiconfig v0.0.0-20171124222453-69c27309b2d7
 	github.com/urfave/cli v1.20.0
 	golang.org/x/crypto v0.0.0-20190103213133-ff983b9c42bc
-	golang.org/x/net v0.0.0-20190108225652-1e06a53dbb7e
-	golang.org/x/tools v0.0.0-20190108222858-421f03a57a64
+	golang.org/x/net v0.0.0-20190110200230-915654e7eabc
+	golang.org/x/tools v0.0.0-20190111214448-fc1d57b08d7b
 	google.golang.org/genproto v0.0.0-20181202183823-bd91e49a0898
-	google.golang.org/grpc v1.17.0
+	google.golang.org/grpc v1.18.0
 	gopkg.in/yaml.v2 v2.2.2
 	openpitrix.io/logger v0.1.0
-	openpitrix.io/openpitrix v0.3.5 // indirect
 	rsc.io/goversion v1.2.0
 )
