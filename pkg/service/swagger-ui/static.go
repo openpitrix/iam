@@ -621,22 +621,13 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
     "amAction": {
       "type": "object",
       "properties": {
-        "action_id": {
+        "role_id": {
           "type": "string"
         },
-        "action_name": {
+        "role_name": {
           "type": "string"
         },
-        "method": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "feature_id": {
-          "type": "string"
-        },
-        "feature_name": {
+        "portal": {
           "type": "string"
         },
         "module_id": {
@@ -645,16 +636,37 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "module_name": {
           "type": "string"
         },
-        "url": {
+        "data_level": {
           "type": "string"
         },
-        "url_method": {
+        "feature_id": {
+          "type": "string"
+        },
+        "feature_name": {
+          "type": "string"
+        },
+        "action_id": {
+          "type": "string"
+        },
+        "action_name": {
+          "type": "string"
+        },
+        "action_enabled": {
           "type": "string"
         },
         "api_id": {
           "type": "string"
         },
         "api_method": {
+          "type": "string"
+        },
+        "api_description": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "url_method": {
           "type": "string"
         }
       }

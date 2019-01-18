@@ -116,18 +116,27 @@ message String {
 // ----------------------------------------------------------------------------
 
 message Action {
-	string action_id = 1;
-	string action_name = 2;
-	string method = 3;
-	string description = 4;
-	string feature_id = 5;
-	string feature_name = 6;
-	string module_id = 7;
-	string module_name = 8;
-	string url = 9;
-	string url_method = 10;
-	string api_id = 11;
-	string api_method = 12;
+	string role_id = 1;
+	string role_name = 2;
+	string portal = 3;
+
+	string module_id = 4;
+	string module_name = 5;
+	string data_level = 6;
+
+	string feature_id = 7;
+	string feature_name = 8;
+
+	string action_id = 9;
+	string action_name = 10;
+	string action_enabled = 11;
+
+	string api_id = 12;
+	string api_method = 13;
+	string api_description = 14;
+
+	string url = 15;
+	string url_method = 16;
 }
 
 message ActionList {

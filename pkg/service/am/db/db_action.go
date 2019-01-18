@@ -6,7 +6,6 @@ package db
 
 import (
 	"context"
-	"fmt"
 
 	"openpitrix.io/iam/pkg/internal/funcutil"
 	pbam "openpitrix.io/iam/pkg/pb/am"
@@ -17,13 +16,10 @@ import (
 func (p *Database) DescribeActions(ctx context.Context, req *pbam.DescribeActionsRequest) (*pbam.ActionList, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	// SELECT * FROM name
-	var query = fmt.Sprintf(
-		"SELECT * FROM %s;", db_spec.ActionTableName,
-	)
+	var query = sqlDescribeActionsBy_RoleId_Protal
 
 	var rows = []db_spec.DBAction{}
-	err := p.DB.SelectContext(ctx, &rows, query)
+	err := p.ormDB.Raw(query, req.RoleId, req.Portal).Scan(&rows).Error
 	if err != nil {
 		logger.Warnf(ctx, "%v", query)
 		logger.Warnf(ctx, "%+v", err)
