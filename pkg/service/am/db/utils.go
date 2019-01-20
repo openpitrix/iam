@@ -129,3 +129,20 @@ func genXid() string {
 	s := string(base58.EncodeBase58(buf))
 	return "xid-" + s[:8]
 }
+func genId(prefix string, maxLen int) string {
+	if prefix == "" {
+		prefix = "xid-"
+	}
+	if maxLen <= 0 {
+		maxLen = 12
+	}
+
+	if maxLen <= len(prefix) {
+		maxLen += len(prefix)
+	}
+
+	buf := make([]byte, maxLen-len(prefix))
+	rand.Read(buf)
+	s := string(base58.EncodeBase58(buf))
+	return prefix + s[:len(buf)]
+}

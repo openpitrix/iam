@@ -602,6 +602,9 @@
         "group_path": {
           "type": "string"
         },
+        "parent_id": {
+          "type": "string"
+        },
         "name": {
           "type": "string"
         },

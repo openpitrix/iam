@@ -533,6 +533,12 @@
         "role_id": {
           "type": "string"
         },
+        "module_id": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "module": {
           "type": "array",
           "items": {
@@ -551,8 +557,7 @@
           }
         },
         "data_level": {
-          "type": "string",
-          "title": "repeated string checked_action_id = 2;"
+          "type": "string"
         },
         "check_all": {
           "type": "boolean",

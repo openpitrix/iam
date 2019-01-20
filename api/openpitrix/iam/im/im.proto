@@ -37,15 +37,16 @@ message UserList {
 message Group {
 	string gid = 1;        // regexp: ^[a-z0-9_-]{2,255}$, primary key
 	string group_path = 2; // regexp: ^[a-z0-9_.-]{2,255}$, read only
+	string parent_id = 3;
 
-	string name = 3;
-	string description = 4;
-	string status = 5;
-	map<string,string> extra = 6;
+	string name = 4;
+	string description = 5;
+	string status = 6;
+	map<string,string> extra = 7;
 
-	google.protobuf.Timestamp create_time = 7; // read only
-	google.protobuf.Timestamp update_time = 8; // read only
-	google.protobuf.Timestamp status_time = 9; // read only
+	google.protobuf.Timestamp create_time = 8;  // read only
+	google.protobuf.Timestamp update_time = 9;  // read only
+	google.protobuf.Timestamp status_time = 10; // read only
 }
 message GroupList {
 	repeated Group value = 1;

@@ -764,6 +764,12 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "role_id": {
           "type": "string"
         },
+        "module_id": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "module": {
           "type": "array",
           "items": {
@@ -782,8 +788,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
           }
         },
         "data_level": {
-          "type": "string",
-          "title": "repeated string checked_action_id = 2;"
+          "type": "string"
         },
         "check_all": {
           "type": "boolean",
@@ -1526,6 +1531,9 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
           "type": "string"
         },
         "group_path": {
+          "type": "string"
+        },
+        "parent_id": {
           "type": "string"
         },
         "name": {
