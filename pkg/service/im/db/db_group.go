@@ -119,16 +119,8 @@ func (p *Database) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pb
 
 	tx := p.DB.Begin()
 
-	tx.Raw(pkgBuildSql_Delete(
-		db_spec.UserGroupTableName,
-		db_spec.UserGroupPrimaryKeyName,
-		req.GroupId...,
-	))
-
-	// delete binding
-	for _, gid := range req.GroupId {
-		tx.Raw(`delete from user_group_binding where group_id=?`, gid)
-	}
+	tx.Raw(`delete from user_group where group_id in (?)`, req.GroupId)
+	tx.Raw(`delete from user_group_binding where group_id=?`, req.GroupId)
 
 	if err := tx.Commit().Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)

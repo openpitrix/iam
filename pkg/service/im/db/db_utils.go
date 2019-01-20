@@ -60,26 +60,6 @@ func pkgBuildSql_InsertInto(tableName string, v interface{}) (sql string, values
 	return
 }
 
-func pkgBuildSql_Delete(tableName, primaryKeyName string, key ...string) (sql string) {
-	primaryKeyValues := func() string {
-		var b strings.Builder
-		for i := 0; i < len(key); i++ {
-			if i == 0 {
-				fmt.Fprintf(&b, `"%s"`, key[i])
-			} else {
-				fmt.Fprintf(&b, `,"%s"`, key[i])
-			}
-		}
-		return b.String()
-	}()
-
-	// delete * from group where group_id in ("group1","group2")
-	return fmt.Sprintf(
-		"DELETE FROM %s WHERE %s IN (%s);",
-		tableName, primaryKeyName, primaryKeyValues,
-	)
-}
-
 func pkgBuildSql_Update(
 	tableName string, v interface{}, primaryKeyName string,
 ) (sql string, values []interface{}) {

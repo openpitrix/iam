@@ -103,19 +103,10 @@ func (p *Database) DeleteUsers(ctx context.Context, req *pbim.UserIdList) (*pbim
 		return nil, err
 	}
 
-	sql := pkgBuildSql_Delete(
-		db_spec.UserTableName,
-		db_spec.UserPrimaryKeyName,
-		req.UserId...,
-	)
-
 	tx := p.DB.Begin()
-	tx.Exec(sql)
 
-	// delete binding
-	for _, uid := range req.UserId {
-		tx.Exec(`delete from user_group_binding where user_id=?`, uid)
-	}
+	tx.Exec(`delete from user where user_id in (?)`, req.UserId)
+	tx.Exec(`delete from user_group_binding where user_id in (?)`, req.UserId)
 
 	if err := tx.Commit().Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)
