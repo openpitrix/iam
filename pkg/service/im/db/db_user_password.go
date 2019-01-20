@@ -6,7 +6,6 @@ package db
 
 import (
 	"context"
-	"fmt"
 
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
@@ -22,13 +21,13 @@ func (p *Database) ComparePassword(ctx context.Context, req *pbim.Password) (*pb
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	var user db_spec.DBUser
-	err := p.dbx.Get(&user, "select * from user where user_id=?", req.UserId)
-	if err != nil {
+	p.DB.Raw("select * from user where user_id=?", req.UserId).Scan(&user)
+	if err := p.DB.Error; err != nil {
 		logger.Warnf(ctx, "uid = %s, err = %+v", req.UserId, err)
 		return nil, err
 	}
 
-	err = bcrypt.CompareHashAndPassword(
+	err := bcrypt.CompareHashAndPassword(
 		[]byte(user.Password), []byte(req.GetPassword()),
 	)
 	if err != nil {
@@ -41,13 +40,6 @@ func (p *Database) ComparePassword(ctx context.Context, req *pbim.Password) (*pb
 func (p *Database) ModifyPassword(ctx context.Context, req *pbim.Password) (*pbim.Empty, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	var user db_spec.DBUser
-	err := p.dbx.Get(&user, "select * from user where user_id=?", req.UserId)
-	if err != nil {
-		logger.Warnf(ctx, "uid = %s, err = %+v", req.UserId, err)
-		return nil, err
-	}
-
 	hashedPass, err := bcrypt.GenerateFromPassword(
 		[]byte(req.GetPassword()), bcrypt.DefaultCost,
 	)
@@ -57,17 +49,13 @@ func (p *Database) ModifyPassword(ctx context.Context, req *pbim.Password) (*pbi
 		return nil, err
 	}
 
-	sql := fmt.Sprintf(
-		`update %s set password="%s" where user_id="%s"`,
-		db_spec.UserTableName,
+	p.DB.Raw(
+		`update user set password=? where user_id=?`,
 		string(hashedPass),
 		req.UserId,
 	)
-
-	_, err = p.dbx.ExecContext(ctx, sql)
-	if err != nil {
-		logger.Warnf(ctx, "%v", sql)
-		logger.Warnf(ctx, "%+v", err)
+	if err := p.DB.Error; err != nil {
+		logger.Warnf(ctx, "uid = %s, err = %+v", req.UserId, err)
 		return nil, err
 	}
 
