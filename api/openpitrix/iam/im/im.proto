@@ -16,9 +16,8 @@ import "google/protobuf/timestamp.proto";
 // ----------------------------------------------------------------------------
 
 message User {
-	string uid = 1; // regexp: ^[a-z0-9_-]{2,32}$, primary key
-
-	string name = 2;
+	string user_id = 1; // regexp: ^[a-z0-9_-]{2,32}$, primary key
+	string user_name = 2;
 	string email = 3;
 	string phone_number = 4;
 	string description = 5;
@@ -35,11 +34,10 @@ message UserList {
 }
 
 message Group {
-	string gid = 1;        // regexp: ^[a-z0-9_-]{2,255}$, primary key
-	string group_path = 2; // regexp: ^[a-z0-9_.-]{2,255}$, read only
-	string parent_id = 3;
-
-	string name = 4;
+	string parent_group_id = 1;
+	string group_id = 2;   // regexp: ^[a-z0-9_-]{2,255}$, primary key
+	string group_path = 3; // regexp: ^[a-z0-9_.-]{2,255}$, read only
+	string group_name = 4;
 	string description = 5;
 	string status = 6;
 	map<string,string> extra = 7;
@@ -77,13 +75,13 @@ service AccountManager {
 	}
 	rpc ModifyGroup(Group) returns (Group) {
 		option (google.api.http) = {
-			patch: "/api/iam/im/groups/{gid}"
+			patch: "/api/iam/im/groups"
 			body: "*"
 		};
 	}
 	rpc GetGroup(GroupId) returns (Group) {
 		option (google.api.http) = {
-			get: "/api/iam/im/groups/{gid}"
+			get: "/api/iam/im/groups/{group_id}"
 		};
 	}
 	rpc ListGroups(ListGroupsRequest) returns (ListGroupsResponse) {
@@ -106,13 +104,13 @@ service AccountManager {
 	}
 	rpc ModifyUser(User) returns (User) {
 		option (google.api.http) = {
-			patch: "/api/iam/im/users/{uid}"
+			patch: "/api/iam/im/users"
 			body: "*"
 		};
 	}
 	rpc GetUser(UserId) returns (User) {
 		option (google.api.http) = {
-			get: "/api/iam/im/users/{uid}"
+			get: "/api/iam/im/users/{user_id}"
 		};
 	}
 	rpc ListUsers(ListUsersRequest) returns (ListUsersResponse) {
@@ -135,12 +133,12 @@ service AccountManager {
 	}
 	rpc GetGroupsByUserId(UserId) returns (GroupList) {
 		option (google.api.http) = {
-			get: "/api/iam/im/users/{uid}/groups"
+			get: "/api/iam/im/users/{user_id}/groups"
 		};
 	}
 	rpc GetUsersByGroupId(GroupId) returns (UserList) {
 		option (google.api.http) = {
-			get: "/api/iam/im/groups/{gid}/users"
+			get: "/api/iam/im/groups/{group_id}/users"
 		};
 	}
 
@@ -173,21 +171,21 @@ message String {
 }
 
 message UserId {
-	string uid = 1;
+	string user_id = 1;
 }
 message UserIdList {
-	repeated string uid = 1;
+	repeated string user_id = 1;
 }
 
 message GroupId {
-	string gid = 1;
+	string group_id = 1;
 }
 message GroupIdList {
-	repeated string gid = 1;
+	repeated string group_id = 1;
 }
 
 message Password {
-	string uid = 1;
+	string user_id = 1;
 	string password = 2;
 }
 
@@ -198,9 +196,9 @@ message ListUsersRequest {
 	int32 offset = 4;
 	int32 limit = 5;
 
-	repeated string gid = 6;
-	repeated string uid = 7;
-	repeated string name = 8;
+	repeated string group_id = 6;
+	repeated string user_id = 7;
+	repeated string user_name = 8;
 	repeated string email = 9;
 	repeated string phone_number = 10;
 	repeated string status = 11;
@@ -217,9 +215,9 @@ message ListGroupsRequest {
 	int32 offset = 4;
 	int32 limit = 5;
 
-	repeated string gid = 6;
-	repeated string uid = 7;
-	repeated string name = 8;
+	repeated string group_id = 6;
+	repeated string group_name = 7;
+	repeated string user_id = 8;
 	repeated string status = 9;
 }
 message ListGroupsResponse {
@@ -228,12 +226,12 @@ message ListGroupsResponse {
 }
 
 message JoinGroupRequest {
-	repeated string gid = 1;
-	repeated string uid = 2;
+	repeated string group_id = 1;
+	repeated string user_id = 2;
 }
 message LeaveGroupRequest {
-	repeated string gid = 1;
-	repeated string uid = 2;
+	repeated string group_id = 1;
+	repeated string user_id = 2;
 }
 
 // ----------------------------------------------------------------------------

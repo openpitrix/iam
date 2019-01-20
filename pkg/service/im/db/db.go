@@ -10,7 +10,10 @@ import (
 	"strings"
 
 	"github.com/fatih/structs"
-	_ "github.com/go-sql-driver/mysql"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/jmoiron/sqlx"
 
 	"openpitrix.io/iam/pkg/service/im/config"
@@ -21,9 +24,16 @@ import (
 type Database struct {
 	cfg *config.Config
 	dbx *sqlx.DB
+	*gorm.DB
 }
 
-func OpenDatabase(cfg *config.Config) (*Database, error) {
+type Options struct {
+	SqlInitDB    []string
+	SqlInitTable []string
+	SqlInitData  []string
+}
+
+func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 	cfg = cfg.Clone()
 
 	// init db
@@ -58,14 +68,21 @@ func OpenDatabase(cfg *config.Config) (*Database, error) {
 	logger.Infof(nil, "\tDatabase: %s", cfg.DB.Database)
 	logger.Infof(nil, "DB config: end")
 
-	db, err := sqlx.Open(cfg.DB.Type, cfg.DB.GetUrlWithParseTime())
+	dbx, err := sqlx.Open(cfg.DB.Type, cfg.DB.GetUrlWithParseTime())
 	if err != nil {
+		return nil, err
+	}
+
+	orm, err := gorm.Open(cfg.DB.Type, cfg.DB.GetUrl())
+	if err != nil {
+		dbx.Close()
 		return nil, err
 	}
 
 	p := &Database{
 		cfg: cfg,
-		dbx: db,
+		dbx: dbx,
+		DB:  orm,
 	}
 	for _, v := range db_spec.TableMap {
 		if !isValidDatabaseTableName(v.Name) {
@@ -92,5 +109,26 @@ func OpenDatabase(cfg *config.Config) (*Database, error) {
 }
 
 func (p *Database) Close() error {
-	return p.dbx.Close()
+	var err1, err2 error
+
+	// sqlx
+	if p.dbx != nil {
+		err1 = p.dbx.Close()
+		p.dbx = nil
+	}
+
+	// gorm
+	if p.DB != nil {
+		err2 = p.DB.Close()
+		p.DB = nil
+	}
+
+	if err1 != nil {
+		return err1
+	}
+	if err2 != nil {
+		return err2
+	}
+
+	return nil
 }

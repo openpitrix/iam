@@ -30,8 +30,8 @@ func (p *Database) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 		return nil, err
 	}
 	if req != nil {
-		if req.Uid == "" {
-			req.Uid = genUid()
+		if req.UserId == "" {
+			req.UserId = genUid()
 		}
 
 		if isZeroTimestamp(req.CreateTime) {
@@ -45,7 +45,7 @@ func (p *Database) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 		}
 	}
 
-	if req.Uid == "" || req.Password == "" {
+	if req.UserId == "" || req.Password == "" {
 		err := status.Errorf(codes.InvalidArgument, "empty uid or password")
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -93,11 +93,11 @@ func (p *Database) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 func (p *Database) DeleteUsers(ctx context.Context, req *pbim.UserIdList) (*pbim.Empty, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if len(req.Uid) == 1 && strings.Contains(req.Uid[0], ",") {
-		req.Uid = strings.Split(req.Uid[0], ",")
+	if len(req.UserId) == 1 && strings.Contains(req.UserId[0], ",") {
+		req.UserId = strings.Split(req.UserId[0], ",")
 	}
 
-	if req == nil || len(req.Uid) == 0 || !isValidUids(req.Uid...) {
+	if req == nil || len(req.UserId) == 0 || !isValidUids(req.UserId...) {
 		err := status.Errorf(codes.InvalidArgument, "empty field")
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -106,7 +106,7 @@ func (p *Database) DeleteUsers(ctx context.Context, req *pbim.UserIdList) (*pbim
 	sql := pkgBuildSql_Delete(
 		db_spec.UserTableName,
 		db_spec.UserPrimaryKeyName,
-		req.Uid...,
+		req.UserId...,
 	)
 
 	tx, err := p.dbx.Beginx()
@@ -123,7 +123,7 @@ func (p *Database) DeleteUsers(ctx context.Context, req *pbim.UserIdList) (*pbim
 	}
 
 	// delete binding
-	for _, uid := range req.Uid {
+	for _, uid := range req.UserId {
 		sql := fmt.Sprintf(
 			`delete from %s where user_id=?`,
 			db_spec.UserGroupBindingTableName,
@@ -153,7 +153,7 @@ func (p *Database) DeleteUsers(ctx context.Context, req *pbim.UserIdList) (*pbim
 func (p *Database) ModifyUser(ctx context.Context, req *pbim.User) (*pbim.User, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if req == nil || req.Uid == "" {
+	if req == nil || req.UserId == "" {
 		err := status.Errorf(codes.InvalidArgument, "empty field")
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -186,7 +186,7 @@ func (p *Database) ModifyUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 		db_spec.UserPrimaryKeyName,
 	)
 	if len(values) == 0 {
-		return p.GetUser(ctx, &pbim.UserId{Uid: req.Uid})
+		return p.GetUser(ctx, &pbim.UserId{UserId: req.UserId})
 	}
 
 	_, err := p.dbx.ExecContext(ctx, sql, values...)
@@ -196,7 +196,7 @@ func (p *Database) ModifyUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 		return nil, err
 	}
 
-	return p.GetUser(ctx, &pbim.UserId{Uid: req.Uid})
+	return p.GetUser(ctx, &pbim.UserId{UserId: req.UserId})
 }
 
 func (p *Database) GetUser(ctx context.Context, req *pbim.UserId) (*pbim.User, error) {
@@ -209,7 +209,7 @@ func (p *Database) GetUser(ctx context.Context, req *pbim.UserId) (*pbim.User, e
 	)
 
 	var v = db_spec.DBUser{}
-	err := p.dbx.GetContext(ctx, &v, query, req.GetUid())
+	err := p.dbx.GetContext(ctx, &v, query, req.UserId)
 	if err != nil {
 		logger.Warnf(ctx, "%v", query)
 		logger.Warnf(ctx, "%+v", err)
@@ -226,14 +226,14 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	// fix repeated fileds
-	if len(req.Gid) == 1 && strings.Contains(req.Gid[0], ",") {
-		req.Gid = strings.Split(req.Gid[0], ",")
+	if len(req.GroupId) == 1 && strings.Contains(req.GroupId[0], ",") {
+		req.GroupId = strings.Split(req.GroupId[0], ",")
 	}
-	if len(req.Uid) == 1 && strings.Contains(req.Uid[0], ",") {
-		req.Uid = strings.Split(req.Uid[0], ",")
+	if len(req.UserId) == 1 && strings.Contains(req.UserId[0], ",") {
+		req.UserId = strings.Split(req.UserId[0], ",")
 	}
-	if len(req.Name) == 1 && strings.Contains(req.Name[0], ",") {
-		req.Name = strings.Split(req.Name[0], ",")
+	if len(req.UserName) == 1 && strings.Contains(req.UserName[0], ",") {
+		req.UserName = strings.Split(req.UserName[0], ",")
 	}
 	if len(req.Email) == 1 && strings.Contains(req.Email[0], ",") {
 		req.Email = strings.Split(req.Email[0], ",")
@@ -249,7 +249,7 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 		return nil, err
 	}
 
-	if len(req.Gid) > 0 {
+	if len(req.GroupId) > 0 {
 		return p.listUsers_with_gid(ctx, req)
 	} else {
 		return p.listUsers_no_gid(ctx, req)

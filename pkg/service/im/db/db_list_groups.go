@@ -30,14 +30,14 @@ func (p *Database) validateListGroupsReq(req *pbim.ListGroupsRequest) error {
 	}
 
 	// check repeaded fields
-	if !isValidGids(req.Gid...) {
-		return fmt.Errorf("invalid gid: %v", req.Gid)
+	if !isValidGids(req.GroupId...) {
+		return fmt.Errorf("invalid gid: %v", req.GroupId)
 	}
-	if !isValidUids(req.Uid...) {
-		return fmt.Errorf("invalid uid: %v", req.Uid)
+	if !isValidUids(req.UserId...) {
+		return fmt.Errorf("invalid uid: %v", req.UserId)
 	}
-	if !isValidNames(req.Name...) {
-		return fmt.Errorf("invalid name: %v", req.Name)
+	if !isValidNames(req.GroupName...) {
+		return fmt.Errorf("invalid name: %v", req.GroupName)
 	}
 	if !isValidStatus(req.Status...) {
 		return fmt.Errorf("invalid status: %v", req.Status)
@@ -47,7 +47,7 @@ func (p *Database) validateListGroupsReq(req *pbim.ListGroupsRequest) error {
 }
 
 func (p *Database) listGroups_no_uid(ctx context.Context, req *pbim.ListGroupsRequest) (*pbim.ListGroupsResponse, error) {
-	if len(req.Uid) > 0 {
+	if len(req.UserId) > 0 {
 		panic("should use listGroups_with_uid")
 	}
 
@@ -55,9 +55,9 @@ func (p *Database) listGroups_no_uid(ctx context.Context, req *pbim.ListGroupsRe
 	var whereCondition = func() string {
 		ss := genWhereCondition(
 			map[string][]string{
-				"group_id": req.Gid,
-				"user_id":  req.Uid,
-				"name":     req.Name,
+				"group_id": req.GroupId,
+				"user_id":  req.UserId,
+				"name":     req.GroupName,
 				"status":   req.Status,
 			},
 			[]string{
@@ -111,7 +111,7 @@ func (p *Database) listGroups_no_uid(ctx context.Context, req *pbim.ListGroupsRe
 }
 
 func (p *Database) listGroups_with_uid(ctx context.Context, req *pbim.ListGroupsRequest) (*pbim.ListGroupsResponse, error) {
-	if len(req.Uid) == 0 {
+	if len(req.UserId) == 0 {
 		panic("should use listGroups_no_uid")
 	}
 
@@ -126,9 +126,9 @@ func (p *Database) listGroups_with_uid(ctx context.Context, req *pbim.ListGroups
 	var whereCondition = func() string {
 		ss := genWhereCondition(
 			map[string][]string{
-				"group_id": req.Gid,
-				"user_id":  req.Uid,
-				"name":     req.Name,
+				"group_id": req.GroupId,
+				"user_id":  req.UserId,
+				"name":     req.GroupName,
 				"status":   req.Status,
 			},
 			[]string{

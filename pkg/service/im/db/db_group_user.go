@@ -21,22 +21,22 @@ import (
 func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*pbim.Empty, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if len(req.Gid) == 1 && strings.Contains(req.Gid[0], ",") {
-		req.Gid = strings.Split(req.Gid[0], ",")
+	if len(req.GroupId) == 1 && strings.Contains(req.GroupId[0], ",") {
+		req.GroupId = strings.Split(req.GroupId[0], ",")
 	}
-	if len(req.Uid) == 1 && strings.Contains(req.Uid[0], ",") {
-		req.Uid = strings.Split(req.Uid[0], ",")
+	if len(req.UserId) == 1 && strings.Contains(req.UserId[0], ",") {
+		req.UserId = strings.Split(req.UserId[0], ",")
 	}
 
-	if len(req.Uid) == 0 || len(req.Gid) == 0 {
+	if len(req.UserId) == 0 || len(req.GroupId) == 0 {
 		err := status.Errorf(codes.InvalidArgument, "empty uid or gid")
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
-	if !(len(req.Uid) == 1 || len(req.Gid) == 1 || len(req.Uid) == len(req.Gid)) {
+	if !(len(req.UserId) == 1 || len(req.GroupId) == 1 || len(req.UserId) == len(req.GroupId)) {
 		err := status.Errorf(codes.InvalidArgument,
 			"uid and gid donot math: gid = %v, uid = %v",
-			req.Gid, req.Uid,
+			req.GroupId, req.UserId,
 		)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -48,11 +48,11 @@ func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*
 	)
 
 	switch {
-	case len(req.Uid) == len(req.Gid):
-		for i := 0; i < len(req.Gid); i++ {
+	case len(req.UserId) == len(req.GroupId):
+		for i := 0; i < len(req.GroupId); i++ {
 			xid := genXid()
-			gid := req.Gid[i]
-			uid := req.Uid[i]
+			gid := req.GroupId[i]
+			uid := req.UserId[i]
 
 			_, err := p.dbx.ExecContext(ctx, sql, xid, uid, gid)
 			if err != nil {
@@ -62,11 +62,11 @@ func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*
 				return nil, err
 			}
 		}
-	case len(req.Uid) == 1:
-		for i := 0; i < len(req.Gid); i++ {
+	case len(req.UserId) == 1:
+		for i := 0; i < len(req.GroupId); i++ {
 			xid := genXid()
-			gid := req.Gid[i]
-			uid := req.Uid[0]
+			gid := req.GroupId[i]
+			uid := req.UserId[0]
 
 			_, err := p.dbx.ExecContext(ctx, sql, xid, uid, gid)
 			if err != nil {
@@ -76,11 +76,11 @@ func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*
 				return nil, err
 			}
 		}
-	case len(req.Gid) == 1:
-		for i := 0; i < len(req.Uid); i++ {
+	case len(req.GroupId) == 1:
+		for i := 0; i < len(req.UserId); i++ {
 			xid := genXid()
-			gid := req.Gid[0]
-			uid := req.Uid[i]
+			gid := req.GroupId[0]
+			uid := req.UserId[i]
 
 			_, err := p.dbx.ExecContext(ctx, sql, xid, uid, gid)
 			if err != nil {
@@ -98,22 +98,22 @@ func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*
 func (p *Database) LeaveGroup(ctx context.Context, req *pbim.LeaveGroupRequest) (*pbim.Empty, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if len(req.Gid) == 1 && strings.Contains(req.Gid[0], ",") {
-		req.Gid = strings.Split(req.Gid[0], ",")
+	if len(req.GroupId) == 1 && strings.Contains(req.GroupId[0], ",") {
+		req.GroupId = strings.Split(req.GroupId[0], ",")
 	}
-	if len(req.Uid) == 1 && strings.Contains(req.Uid[0], ",") {
-		req.Uid = strings.Split(req.Uid[0], ",")
+	if len(req.UserId) == 1 && strings.Contains(req.UserId[0], ",") {
+		req.UserId = strings.Split(req.UserId[0], ",")
 	}
 
-	if len(req.Uid) == 0 || len(req.Gid) == 0 {
+	if len(req.UserId) == 0 || len(req.GroupId) == 0 {
 		err := status.Errorf(codes.InvalidArgument, "empty uid or gid")
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
-	if !(len(req.Uid) == 1 || len(req.Gid) == 1 || len(req.Uid) == len(req.Gid)) {
+	if !(len(req.UserId) == 1 || len(req.GroupId) == 1 || len(req.UserId) == len(req.GroupId)) {
 		err := status.Errorf(codes.InvalidArgument,
 			"uid and gid donot math: gid = %v, uid = %v",
-			req.Gid, req.Uid,
+			req.GroupId, req.UserId,
 		)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -125,11 +125,11 @@ func (p *Database) LeaveGroup(ctx context.Context, req *pbim.LeaveGroupRequest) 
 	)
 
 	switch {
-	case len(req.Uid) == len(req.Gid):
-		for i := 0; i < len(req.Gid); i++ {
+	case len(req.UserId) == len(req.GroupId):
+		for i := 0; i < len(req.GroupId); i++ {
 			xid := genXid()
-			gid := req.Gid[i]
-			uid := req.Uid[i]
+			gid := req.GroupId[i]
+			uid := req.UserId[i]
 
 			_, err := p.dbx.ExecContext(ctx, sql, xid, uid, gid)
 			if err != nil {
@@ -139,11 +139,11 @@ func (p *Database) LeaveGroup(ctx context.Context, req *pbim.LeaveGroupRequest) 
 				return nil, err
 			}
 		}
-	case len(req.Uid) == 1:
-		for i := 0; i < len(req.Gid); i++ {
+	case len(req.UserId) == 1:
+		for i := 0; i < len(req.GroupId); i++ {
 			xid := genXid()
-			gid := req.Gid[i]
-			uid := req.Uid[0]
+			gid := req.GroupId[i]
+			uid := req.UserId[0]
 
 			_, err := p.dbx.ExecContext(ctx, sql, xid, uid, gid)
 			if err != nil {
@@ -153,11 +153,11 @@ func (p *Database) LeaveGroup(ctx context.Context, req *pbim.LeaveGroupRequest) 
 				return nil, err
 			}
 		}
-	case len(req.Gid) == 1:
-		for i := 0; i < len(req.Uid); i++ {
+	case len(req.GroupId) == 1:
+		for i := 0; i < len(req.UserId); i++ {
 			xid := genXid()
-			gid := req.Gid[0]
-			uid := req.Uid[i]
+			gid := req.GroupId[0]
+			uid := req.UserId[i]
 
 			_, err := p.dbx.ExecContext(ctx, sql, xid, uid, gid)
 			if err != nil {
@@ -184,7 +184,7 @@ func (p *Database) GetGroupsByUserId(ctx context.Context, req *pbim.UserId) (*pb
 			user.user_id=?
 	`
 	var rows []db_spec.DBGroup
-	err := p.dbx.Select(&rows, sql, req.GetUid())
+	err := p.dbx.Select(&rows, sql, req.UserId)
 	if err != nil {
 		logger.Warnf(ctx, "%v", sql)
 		logger.Warnf(ctx, "%+v", err)
@@ -216,7 +216,7 @@ func (p *Database) GetUsersByGroupId(ctx context.Context, req *pbim.GroupId) (*p
 			user_group.group_id=?
 	`
 	var rows []db_spec.DBUser
-	err := p.dbx.Select(&rows, sql, req.GetGid())
+	err := p.dbx.Select(&rows, sql, req.GroupId)
 	if err != nil {
 		logger.Warnf(ctx, "%v", sql)
 		logger.Warnf(ctx, "%+v", err)

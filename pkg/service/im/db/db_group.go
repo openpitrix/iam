@@ -29,8 +29,8 @@ func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 		return nil, err
 	}
 	if req != nil {
-		if req.Gid == "" {
-			req.Gid = genGid()
+		if req.GroupId == "" {
+			req.GroupId = genGid()
 		}
 
 		if isZeroTimestamp(req.CreateTime) {
@@ -52,10 +52,10 @@ func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 
 	// check group_path valid
 	switch {
-	case dbGroup.GroupPath == dbGroup.Gid+".":
+	case dbGroup.GroupPath == dbGroup.GroupId+".":
 		// skip root
-	case strings.HasSuffix(dbGroup.GroupPath, "."+dbGroup.Gid+"."):
-		idx := len(dbGroup.GroupPath) - len(dbGroup.Gid)
+	case strings.HasSuffix(dbGroup.GroupPath, "."+dbGroup.GroupId+"."):
+		idx := len(dbGroup.GroupPath) - len(dbGroup.GroupId)
 		parentGroupPath := dbGroup.GroupPath[:idx-1]
 
 		if parentGroupPath == "" {
@@ -80,11 +80,11 @@ func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 			return nil, err
 		}
 
-		dbGroup.ParentGid = parentGroupPath
+		dbGroup.ParentGroupId = parentGroupPath
 		dbGroup.GroupPathLevel = strings.Count(dbGroup.GroupPath, ".") + 1
 
 		if idx = strings.LastIndex(parentGroupPath, "."); idx >= 0 {
-			dbGroup.ParentGid = parentGroupPath[idx:]
+			dbGroup.ParentGroupId = parentGroupPath[idx:]
 		}
 	}
 
@@ -112,11 +112,11 @@ func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 func (p *Database) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pbim.Empty, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if len(req.Gid) == 1 && strings.Contains(req.Gid[0], ",") {
-		req.Gid = strings.Split(req.Gid[0], ",")
+	if len(req.GroupId) == 1 && strings.Contains(req.GroupId[0], ",") {
+		req.GroupId = strings.Split(req.GroupId[0], ",")
 	}
 
-	if req == nil || len(req.Gid) == 0 || !isValidGids(req.Gid...) {
+	if req == nil || len(req.GroupId) == 0 || !isValidGids(req.GroupId...) {
 		err := status.Errorf(codes.InvalidArgument, "empty field")
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -125,7 +125,7 @@ func (p *Database) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pb
 	sql := pkgBuildSql_Delete(
 		db_spec.UserGroupTableName,
 		db_spec.UserGroupPrimaryKeyName,
-		req.Gid...,
+		req.GroupId...,
 	)
 
 	tx, err := p.dbx.Beginx()
@@ -142,7 +142,7 @@ func (p *Database) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pb
 	}
 
 	// delete binding
-	for _, gid := range req.Gid {
+	for _, gid := range req.GroupId {
 		sql := fmt.Sprintf(
 			`delete from %s where group_id=?`,
 			db_spec.UserGroupBindingTableName,
@@ -172,7 +172,7 @@ func (p *Database) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pb
 func (p *Database) ModifyGroup(ctx context.Context, req *pbim.Group) (*pbim.Group, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if req == nil || req.Gid == "" {
+	if req == nil || req.GroupId == "" {
 		err := status.Errorf(codes.InvalidArgument, "empty field")
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -205,7 +205,7 @@ func (p *Database) ModifyGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 		db_spec.UserGroupPrimaryKeyName,
 	)
 	if len(values) == 0 {
-		return p.GetGroup(ctx, &pbim.GroupId{Gid: req.Gid})
+		return p.GetGroup(ctx, &pbim.GroupId{GroupId: req.GroupId})
 	}
 
 	_, err := p.dbx.ExecContext(ctx, sql, values...)
@@ -215,7 +215,7 @@ func (p *Database) ModifyGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 		return nil, err
 	}
 
-	return p.GetGroup(ctx, &pbim.GroupId{Gid: req.Gid})
+	return p.GetGroup(ctx, &pbim.GroupId{GroupId: req.GroupId})
 }
 
 func (p *Database) GetGroup(ctx context.Context, req *pbim.GroupId) (*pbim.Group, error) {
@@ -228,7 +228,7 @@ func (p *Database) GetGroup(ctx context.Context, req *pbim.GroupId) (*pbim.Group
 	)
 
 	var v = db_spec.DBGroup{}
-	err := p.dbx.GetContext(ctx, &v, query, req.GetGid())
+	err := p.dbx.GetContext(ctx, &v, query, req.GroupId)
 	if err != nil {
 		logger.Warnf(ctx, "%v", query)
 		logger.Warnf(ctx, "%+v", err)
@@ -242,14 +242,14 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	// fix repeated fileds
-	if len(req.Gid) == 1 && strings.Contains(req.Gid[0], ",") {
-		req.Gid = strings.Split(req.Gid[0], ",")
+	if len(req.GroupId) == 1 && strings.Contains(req.GroupId[0], ",") {
+		req.GroupId = strings.Split(req.GroupId[0], ",")
 	}
-	if len(req.Uid) == 1 && strings.Contains(req.Uid[0], ",") {
-		req.Uid = strings.Split(req.Uid[0], ",")
+	if len(req.UserId) == 1 && strings.Contains(req.UserId[0], ",") {
+		req.UserId = strings.Split(req.UserId[0], ",")
 	}
-	if len(req.Name) == 1 && strings.Contains(req.Name[0], ",") {
-		req.Name = strings.Split(req.Name[0], ",")
+	if len(req.GroupName) == 1 && strings.Contains(req.GroupName[0], ",") {
+		req.GroupName = strings.Split(req.GroupName[0], ",")
 	}
 	if len(req.Status) == 1 && strings.Contains(req.Status[0], ",") {
 		req.Status = strings.Split(req.Status[0], ",")
@@ -259,7 +259,7 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 		return nil, err
 	}
 
-	if len(req.Uid) > 0 {
+	if len(req.UserId) > 0 {
 		return p.listGroups_with_uid(ctx, req)
 	} else {
 		return p.listGroups_no_uid(ctx, req)

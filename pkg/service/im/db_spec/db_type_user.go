@@ -16,8 +16,8 @@ import (
 )
 
 type DBUser struct {
-	Uid         string    `db:"user_id"`
-	Name        string    `db:"user_name"`
+	UserId      string    `db:"user_id"`
+	UserName    string    `db:"user_name"`
 	Email       string    `db:"email"`
 	PhoneNumber string    `db:"phone_number"`
 	Description string    `db:"description"`
@@ -34,8 +34,8 @@ func PBUserToDB(p *pbim.User) *DBUser {
 		return new(DBUser)
 	}
 	var q = &DBUser{
-		Uid:         p.Uid,
-		Name:        p.Name,
+		UserId:      p.UserId,
+		UserName:    p.UserName,
 		Email:       p.Email,
 		PhoneNumber: p.PhoneNumber,
 		Description: p.Description,
@@ -63,8 +63,8 @@ func (p *DBUser) ToPB() *pbim.User {
 		return new(pbim.User)
 	}
 	var q = &pbim.User{
-		Uid:         p.Uid,
-		Name:        p.Name,
+		UserId:      p.UserId,
+		UserName:    p.UserName,
 		Email:       p.Email,
 		PhoneNumber: p.PhoneNumber,
 		Description: p.Description,
@@ -90,8 +90,8 @@ func (p *DBUser) ToPB() *pbim.User {
 }
 
 func (p *DBUser) ValidateForInsert() error {
-	if !reUid.MatchString(p.Uid) {
-		return fmt.Errorf("invalid uid: %q", p.Uid)
+	if !reUserId.MatchString(p.UserId) {
+		return fmt.Errorf("invalid uid: %q", p.UserId)
 	}
 	if p.Password == "" {
 		return fmt.Errorf("invalid password")
@@ -107,8 +107,8 @@ func (p *DBUser) ValidateForInsert() error {
 	return nil
 }
 func (p *DBUser) ValidateForUpdate() error {
-	if !reUid.MatchString(p.Uid) {
-		return fmt.Errorf("invalid uid: %q", p.Uid)
+	if !reUserId.MatchString(p.UserId) {
+		return fmt.Errorf("invalid uid: %q", p.UserId)
 	}
 
 	if p.Extra != "" {

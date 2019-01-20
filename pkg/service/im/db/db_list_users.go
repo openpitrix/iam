@@ -29,14 +29,14 @@ func (p *Database) validateListUsersReq(req *pbim.ListUsersRequest) error {
 		return fmt.Errorf("invalid limit: %v", req.Limit)
 	}
 
-	if !isValidGids(req.Gid...) {
-		return fmt.Errorf("invalid gid: %v", req.Gid)
+	if !isValidGids(req.GroupId...) {
+		return fmt.Errorf("invalid gid: %v", req.GroupId)
 	}
-	if !isValidUids(req.Uid...) {
-		return fmt.Errorf("invalid uid: %v", req.Uid)
+	if !isValidUids(req.UserId...) {
+		return fmt.Errorf("invalid uid: %v", req.UserId)
 	}
-	if !isValidNames(req.Name...) {
-		return fmt.Errorf("invalid name: %v", req.Name)
+	if !isValidNames(req.UserName...) {
+		return fmt.Errorf("invalid name: %v", req.UserName)
 	}
 	if !isValidEmails(req.Email...) {
 		return fmt.Errorf("invalid email: %v", req.Email)
@@ -52,7 +52,7 @@ func (p *Database) validateListUsersReq(req *pbim.ListUsersRequest) error {
 }
 
 func (p *Database) listUsers_no_gid(ctx context.Context, req *pbim.ListUsersRequest) (*pbim.ListUsersResponse, error) {
-	if len(req.Gid) > 0 {
+	if len(req.GroupId) > 0 {
 		panic("should use listUsers_with_gid")
 	}
 
@@ -60,9 +60,9 @@ func (p *Database) listUsers_no_gid(ctx context.Context, req *pbim.ListUsersRequ
 	var whereCondition = func() string {
 		ss := genWhereCondition(
 			map[string][]string{
-				"group_id":     req.Gid,
-				"user_id":      req.Uid,
-				"name":         req.Name,
+				"group_id":     req.GroupId,
+				"user_id":      req.UserId,
+				"user_name":    req.UserName,
 				"email":        req.Email,
 				"phone_number": req.PhoneNumber,
 				"status":       req.Status,
@@ -118,7 +118,7 @@ func (p *Database) listUsers_no_gid(ctx context.Context, req *pbim.ListUsersRequ
 }
 
 func (p *Database) listUsers_with_gid(ctx context.Context, req *pbim.ListUsersRequest) (*pbim.ListUsersResponse, error) {
-	if len(req.Gid) == 0 {
+	if len(req.GroupId) == 0 {
 		panic("should use listUsers_no_gid")
 	}
 
@@ -133,9 +133,9 @@ func (p *Database) listUsers_with_gid(ctx context.Context, req *pbim.ListUsersRe
 	var whereCondition = func() string {
 		ss := genWhereCondition(
 			map[string][]string{
-				"group_id":     req.Gid,
-				"user_id":      req.Uid,
-				"name":         req.Name,
+				"group_id":     req.GroupId,
+				"user_id":      req.UserId,
+				"user_name":    req.UserName,
 				"email":        req.Email,
 				"phone_number": req.PhoneNumber,
 				"status":       req.Status,

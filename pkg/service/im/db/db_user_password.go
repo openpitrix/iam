@@ -22,9 +22,9 @@ func (p *Database) ComparePassword(ctx context.Context, req *pbim.Password) (*pb
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	var user db_spec.DBUser
-	err := p.dbx.Get(&user, "select * from user where user_id=?", req.GetUid())
+	err := p.dbx.Get(&user, "select * from user where user_id=?", req.UserId)
 	if err != nil {
-		logger.Warnf(ctx, "uid = %s, err = %+v", req.GetUid(), err)
+		logger.Warnf(ctx, "uid = %s, err = %+v", req.UserId, err)
 		return nil, err
 	}
 
@@ -42,9 +42,9 @@ func (p *Database) ModifyPassword(ctx context.Context, req *pbim.Password) (*pbi
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	var user db_spec.DBUser
-	err := p.dbx.Get(&user, "select * from user where user_id=?", req.GetUid())
+	err := p.dbx.Get(&user, "select * from user where user_id=?", req.UserId)
 	if err != nil {
-		logger.Warnf(ctx, "uid = %s, err = %+v", req.GetUid(), err)
+		logger.Warnf(ctx, "uid = %s, err = %+v", req.UserId, err)
 		return nil, err
 	}
 
@@ -61,7 +61,7 @@ func (p *Database) ModifyPassword(ctx context.Context, req *pbim.Password) (*pbi
 		`update %s set password="%s" where user_id="%s"`,
 		db_spec.UserTableName,
 		string(hashedPass),
-		req.GetUid(),
+		req.UserId,
 	)
 
 	_, err = p.dbx.ExecContext(ctx, sql)

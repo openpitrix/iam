@@ -16,9 +16,9 @@ import (
 )
 
 type DBGroup struct {
-	Gid         string    `db:"group_id"`
+	GroupId     string    `db:"group_id"`
 	GroupPath   string    `db:"group_path"`
-	Name        string    `db:"group_name"`
+	GroupName   string    `db:"group_name"`
 	Description string    `db:"description"`
 	Status      string    `db:"status"`
 	CreateTime  time.Time `db:"create_time"`
@@ -27,7 +27,7 @@ type DBGroup struct {
 	Extra       string    `db:"extra"` // JSON
 
 	// DB internal fields
-	ParentGid      string `db:"parent_group_id"`
+	ParentGroupId  string `db:"parent_group_id"`
 	GroupPathLevel int    `db:"level"`
 }
 
@@ -36,14 +36,14 @@ func PBGroupToDB(p *pbim.Group) *DBGroup {
 		return new(DBGroup)
 	}
 	var q = &DBGroup{
-		Gid:         p.Gid,
+		GroupId:     p.GroupId,
 		GroupPath:   p.GroupPath,
-		Name:        p.Name,
+		GroupName:   p.GroupName,
 		Description: p.Description,
 		Status:      p.Status,
 
 		// DB internal fields
-		ParentGid:      "<nil>",
+		ParentGroupId:  "<nil>",
 		GroupPathLevel: -1,
 	}
 
@@ -68,9 +68,9 @@ func (p *DBGroup) ToPB() *pbim.Group {
 		return new(pbim.Group)
 	}
 	var q = &pbim.Group{
-		Gid:         p.Gid,
+		GroupId:     p.GroupId,
 		GroupPath:   p.GroupPath,
-		Name:        p.Name,
+		GroupName:   p.GroupName,
 		Description: p.Description,
 		Status:      p.Status,
 	}
@@ -93,8 +93,8 @@ func (p *DBGroup) ToPB() *pbim.Group {
 }
 
 func (p *DBGroup) ValidateForInsert() error {
-	if !reGid.MatchString(p.Gid) {
-		return fmt.Errorf("invalid gid: %q", p.Gid)
+	if !reGroupId.MatchString(p.GroupId) {
+		return fmt.Errorf("invalid GroupId: %q", p.GroupId)
 	}
 
 	if p.Extra != "" {
@@ -107,8 +107,8 @@ func (p *DBGroup) ValidateForInsert() error {
 	return nil
 }
 func (p *DBGroup) ValidateForUpdate() error {
-	if !reGid.MatchString(p.Gid) {
-		return fmt.Errorf("invalid gid: %q", p.Gid)
+	if !reGroupId.MatchString(p.GroupId) {
+		return fmt.Errorf("invalid GroupId: %q", p.GroupId)
 	}
 
 	if p.Extra != "" {

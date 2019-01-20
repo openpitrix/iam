@@ -115,7 +115,7 @@ func (p *Database) getOwnerPathByUserId(ctx context.Context, userId string) (str
 	defer conn.Close()
 
 	client := pbim.NewAccountManagerClient(conn)
-	reply, err := client.GetGroupsByUserId(ctx, &pbim.UserId{Uid: userId})
+	reply, err := client.GetGroupsByUserId(ctx, &pbim.UserId{UserId: userId})
 	if err != nil {
 		return "", err
 	}

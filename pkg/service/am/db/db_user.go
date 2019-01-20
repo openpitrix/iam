@@ -28,15 +28,15 @@ func (p *Database) GetUserWithRole(ctx context.Context, req *pbam.UserId) (*pbam
 	defer conn.Close()
 
 	client := pbim.NewAccountManagerClient(conn)
-	imUser, err := client.GetUser(ctx, &pbim.UserId{Uid: req.UserId})
+	imUser, err := client.GetUser(ctx, &pbim.UserId{UserId: req.UserId})
 	if err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
 	user := &pbam.UserWithRole{
-		UserId:      imUser.Uid,
-		UserName:    imUser.Name,
+		UserId:      imUser.UserId,
+		UserName:    imUser.UserName,
 		Email:       imUser.Email,
 		PhoneNumber: imUser.PhoneNumber,
 		Description: imUser.Description,
@@ -120,14 +120,14 @@ func (p *Database) DescribeUsersWithRole(ctx context.Context, req *pbam.Describe
 	for i := 0; i < len(rawUsers); i++ {
 		var pRole *DBRole
 		for j := 0; j < len(roles); j++ {
-			if rawUsers[i].Uid == roles[j].UserId {
+			if rawUsers[i].UserId == roles[j].UserId {
 				pRole = &roles[j].DBRole
 			}
 		}
 
 		users[i] = &pbam.UserWithRole{
-			UserId:      rawUsers[i].Uid,
-			UserName:    rawUsers[i].Name,
+			UserId:      rawUsers[i].UserId,
+			UserName:    rawUsers[i].UserName,
 			Email:       rawUsers[i].Email,
 			PhoneNumber: rawUsers[i].PhoneNumber,
 			Description: rawUsers[i].Description,
@@ -157,7 +157,7 @@ func (p *Database) getUserList(ctx context.Context, uid ...string) ([]*pbim.User
 	defer conn.Close()
 
 	client := pbim.NewAccountManagerClient(conn)
-	reply, err := client.ListUsers(ctx, &pbim.ListUsersRequest{Uid: uid})
+	reply, err := client.ListUsers(ctx, &pbim.ListUsersRequest{UserId: uid})
 	if err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
