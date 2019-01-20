@@ -80,8 +80,8 @@ func (p *Database) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 		return nil, err
 	}
 
-	_, err = p.dbx.ExecContext(ctx, sql, values...)
-	if err != nil {
+	p.DB.Raw(sql, values...)
+	if err := p.DB.Error; err != nil {
 		logger.Warnf(ctx, "%v, %v", sql, values)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -109,39 +109,15 @@ func (p *Database) DeleteUsers(ctx context.Context, req *pbim.UserIdList) (*pbim
 		req.UserId...,
 	)
 
-	tx, err := p.dbx.Beginx()
-	if err != nil {
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-
-	_, err = tx.ExecContext(ctx, sql)
-	if err != nil {
-		logger.Warnf(ctx, "%v", sql)
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
+	tx := p.DB.Begin()
+	tx.Exec(sql)
 
 	// delete binding
 	for _, uid := range req.UserId {
-		sql := fmt.Sprintf(
-			`delete from %s where user_id=?`,
-			db_spec.UserGroupBindingTableName,
-		)
-
-		_, err := tx.ExecContext(ctx, sql, uid)
-		if err != nil {
-			logger.Warnf(ctx, "%v", sql)
-			logger.Warnf(ctx, "%+v", err)
-			return nil, err
-		}
-		if err != nil {
-			logger.Warnf(ctx, "uid = %v, err = %+v", uid, err)
-		}
+		tx.Exec(`delete from user_group_binding where user_id=?`, uid)
 	}
 
-	err = tx.Commit()
-	if err != nil {
+	if err := tx.Commit().Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
@@ -189,8 +165,7 @@ func (p *Database) ModifyUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 		return p.GetUser(ctx, &pbim.UserId{UserId: req.UserId})
 	}
 
-	_, err := p.dbx.ExecContext(ctx, sql, values...)
-	if err != nil {
+	if err := p.DB.Raw(sql, values...).Error; err != nil {
 		logger.Warnf(ctx, "%v, %v", sql, values)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -209,8 +184,8 @@ func (p *Database) GetUser(ctx context.Context, req *pbim.UserId) (*pbim.User, e
 	)
 
 	var v = db_spec.DBUser{}
-	err := p.dbx.GetContext(ctx, &v, query, req.UserId)
-	if err != nil {
+	p.DB.Raw(query, req.UserId).Scan(&v)
+	if err := p.DB.Error; err != nil {
 		logger.Warnf(ctx, "%v", query)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err

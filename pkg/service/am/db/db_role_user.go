@@ -109,7 +109,7 @@ func (p *Database) UnbindUserRole(ctx context.Context, req *pbam.UnbindUserRoleR
 		for i := 0; i < len(req.RoleId); i++ {
 			logger.Infof(ctx, "req: %v", req)
 
-			p.DB.Exec(
+			tx.Exec(
 				`delete from user_role_binding where user_id=? and role_id=?`,
 				req.UserId[i],
 				req.RoleId[i],
@@ -117,7 +117,7 @@ func (p *Database) UnbindUserRole(ctx context.Context, req *pbam.UnbindUserRoleR
 		}
 	case len(req.UserId) == 1:
 		for i := 0; i < len(req.RoleId); i++ {
-			p.DB.Exec(
+			tx.Exec(
 				`delete from user_role_binding where user_id=? and role_id=?`,
 				req.UserId[0],
 				req.RoleId[i],
@@ -125,7 +125,7 @@ func (p *Database) UnbindUserRole(ctx context.Context, req *pbam.UnbindUserRoleR
 		}
 	case len(req.RoleId) == 1:
 		for i := 0; i < len(req.UserId); i++ {
-			p.DB.Exec(
+			tx.Exec(
 				`delete from user_role_binding where user_id=? and role_id=?`,
 				req.UserId[i],
 				req.RoleId[0],

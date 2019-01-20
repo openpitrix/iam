@@ -6,7 +6,6 @@ package db
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"google.golang.org/grpc/codes"
@@ -42,25 +41,19 @@ func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*
 		return nil, err
 	}
 
-	sql := fmt.Sprintf(
-		`insert into %s (id, user_id, group_id) values(?,?,?)`,
-		db_spec.UserGroupBindingTableName,
-	)
+	tx := p.DB.Begin()
 
 	switch {
 	case len(req.UserId) == len(req.GroupId):
 		for i := 0; i < len(req.GroupId); i++ {
 			xid := genXid()
-			gid := req.GroupId[i]
 			uid := req.UserId[i]
+			gid := req.GroupId[i]
 
-			_, err := p.dbx.ExecContext(ctx, sql, xid, uid, gid)
-			if err != nil {
-				logger.Warnf(ctx, "%v", sql)
-				logger.Warnf(ctx, "%v, %v, %v", xid, uid, gid)
-				logger.Warnf(ctx, "%+v", err)
-				return nil, err
-			}
+			tx.Exec(
+				`INSERT INTO user_group_binding (id, user_id, group_id) VALUES (?,?,?)`,
+				xid, uid, gid,
+			)
 		}
 	case len(req.UserId) == 1:
 		for i := 0; i < len(req.GroupId); i++ {
@@ -68,13 +61,10 @@ func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*
 			gid := req.GroupId[i]
 			uid := req.UserId[0]
 
-			_, err := p.dbx.ExecContext(ctx, sql, xid, uid, gid)
-			if err != nil {
-				logger.Warnf(ctx, "%v", sql)
-				logger.Warnf(ctx, "%v, %v, %v", xid, uid, gid)
-				logger.Warnf(ctx, "%+v", err)
-				return nil, err
-			}
+			tx.Exec(
+				`INSERT INTO user_group_binding (id, user_id, group_id) VALUES (?,?,?)`,
+				xid, uid, gid,
+			)
 		}
 	case len(req.GroupId) == 1:
 		for i := 0; i < len(req.UserId); i++ {
@@ -82,14 +72,16 @@ func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*
 			gid := req.GroupId[0]
 			uid := req.UserId[i]
 
-			_, err := p.dbx.ExecContext(ctx, sql, xid, uid, gid)
-			if err != nil {
-				logger.Warnf(ctx, "%v", sql)
-				logger.Warnf(ctx, "%v, %v, %v", xid, uid, gid)
-				logger.Warnf(ctx, "%+v", err)
-				return nil, err
-			}
+			tx.Exec(
+				`INSERT INTO user_group_binding (id, user_id, group_id) VALUES (?,?,?)`,
+				xid, uid, gid,
+			)
 		}
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
 	}
 
 	return &pbim.Empty{}, nil
@@ -119,54 +111,44 @@ func (p *Database) LeaveGroup(ctx context.Context, req *pbim.LeaveGroupRequest) 
 		return nil, err
 	}
 
-	sql := fmt.Sprintf(
-		`delete from %s where user_id=? AND group_id=?`,
-		db_spec.UserGroupBindingTableName,
-	)
+	tx := p.DB.Begin()
 
 	switch {
 	case len(req.UserId) == len(req.GroupId):
 		for i := 0; i < len(req.GroupId); i++ {
-			xid := genXid()
 			gid := req.GroupId[i]
 			uid := req.UserId[i]
 
-			_, err := p.dbx.ExecContext(ctx, sql, xid, uid, gid)
-			if err != nil {
-				logger.Warnf(ctx, "%v", sql)
-				logger.Warnf(ctx, "%v, %v, %v", xid, uid, gid)
-				logger.Warnf(ctx, "%+v", err)
-				return nil, err
-			}
+			tx.Exec(
+				`delete from user_group_binding where user_id=? and group_id=?`,
+				uid, gid,
+			)
 		}
 	case len(req.UserId) == 1:
 		for i := 0; i < len(req.GroupId); i++ {
-			xid := genXid()
 			gid := req.GroupId[i]
 			uid := req.UserId[0]
 
-			_, err := p.dbx.ExecContext(ctx, sql, xid, uid, gid)
-			if err != nil {
-				logger.Warnf(ctx, "%v", sql)
-				logger.Warnf(ctx, "%v, %v, %v", xid, uid, gid)
-				logger.Warnf(ctx, "%+v", err)
-				return nil, err
-			}
+			tx.Exec(
+				`delete from user_group_binding where user_id=? and group_id=?`,
+				uid, gid,
+			)
 		}
 	case len(req.GroupId) == 1:
 		for i := 0; i < len(req.UserId); i++ {
-			xid := genXid()
 			gid := req.GroupId[0]
 			uid := req.UserId[i]
 
-			_, err := p.dbx.ExecContext(ctx, sql, xid, uid, gid)
-			if err != nil {
-				logger.Warnf(ctx, "%v", sql)
-				logger.Warnf(ctx, "%v, %v, %v", xid, uid, gid)
-				logger.Warnf(ctx, "%+v", err)
-				return nil, err
-			}
+			tx.Exec(
+				`delete from user_group_binding where user_id=? and group_id=?`,
+				uid, gid,
+			)
 		}
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
 	}
 
 	return &pbim.Empty{}, nil
@@ -184,8 +166,8 @@ func (p *Database) GetGroupsByUserId(ctx context.Context, req *pbim.UserId) (*pb
 			user.user_id=?
 	`
 	var rows []db_spec.DBGroup
-	err := p.dbx.Select(&rows, sql, req.UserId)
-	if err != nil {
+	p.DB.Raw(sql, sql, req.UserId).Scan(&rows)
+	if err := p.DB.Error; err != nil {
 		logger.Warnf(ctx, "%v", sql)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -216,8 +198,8 @@ func (p *Database) GetUsersByGroupId(ctx context.Context, req *pbim.GroupId) (*p
 			user_group.group_id=?
 	`
 	var rows []db_spec.DBUser
-	err := p.dbx.Select(&rows, sql, req.GroupId)
-	if err != nil {
+	p.DB.Raw(sql, sql, req.GroupId).Scan(&rows)
+	if err := p.DB.Error; err != nil {
 		logger.Warnf(ctx, "%v", sql)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err

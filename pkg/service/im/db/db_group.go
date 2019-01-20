@@ -95,8 +95,7 @@ func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 		return nil, err
 	}
 
-	_, err := p.dbx.ExecContext(ctx, sql, values...)
-	if err != nil {
+	if err := p.DB.Raw(sql, values...).Error; err != nil {
 		logger.Warnf(ctx, "%v, %v", sql, values)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -118,45 +117,20 @@ func (p *Database) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pb
 		return nil, err
 	}
 
-	sql := pkgBuildSql_Delete(
+	tx := p.DB.Begin()
+
+	tx.Raw(pkgBuildSql_Delete(
 		db_spec.UserGroupTableName,
 		db_spec.UserGroupPrimaryKeyName,
 		req.GroupId...,
-	)
-
-	tx, err := p.dbx.Beginx()
-	if err != nil {
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-
-	_, err = tx.ExecContext(ctx, sql)
-	if err != nil {
-		logger.Warnf(ctx, "%v", sql)
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
+	))
 
 	// delete binding
 	for _, gid := range req.GroupId {
-		sql := fmt.Sprintf(
-			`delete from %s where group_id=?`,
-			db_spec.UserGroupBindingTableName,
-		)
-
-		_, err := tx.ExecContext(ctx, sql, gid)
-		if err != nil {
-			logger.Warnf(ctx, "%v", sql)
-			logger.Warnf(ctx, "%+v", err)
-			return nil, err
-		}
-		if err != nil {
-			logger.Warnf(ctx, "gid = %v, err = %+v", gid, err)
-		}
+		tx.Raw(`delete from user_group_binding where group_id=?`, gid)
 	}
 
-	err = tx.Commit()
-	if err != nil {
+	if err := tx.Commit().Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
@@ -204,8 +178,7 @@ func (p *Database) ModifyGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 		return p.GetGroup(ctx, &pbim.GroupId{GroupId: req.GroupId})
 	}
 
-	_, err := p.dbx.ExecContext(ctx, sql, values...)
-	if err != nil {
+	if err := p.DB.Raw(sql, values...).Error; err != nil {
 		logger.Warnf(ctx, "%v, %v", sql, values)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -224,8 +197,8 @@ func (p *Database) GetGroup(ctx context.Context, req *pbim.GroupId) (*pbim.Group
 	)
 
 	var v = db_spec.DBGroup{}
-	err := p.dbx.GetContext(ctx, &v, query, req.GroupId)
-	if err != nil {
+	p.DB.Raw(query, req.GroupId).Scan(&v)
+	if err := p.DB.Error; err != nil {
 		logger.Warnf(ctx, "%v", query)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
