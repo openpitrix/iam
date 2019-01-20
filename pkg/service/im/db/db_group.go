@@ -64,14 +64,10 @@ func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 			return nil, err
 		}
 
-		var query = fmt.Sprintf(
-			"SELECT COUNT(*) FROM %s WHERE group_path = '%s'",
-			db_spec.UserGroupTableName, parentGroupPath,
-		)
-		total, err := p.getCountByQuery(ctx, query)
-		if err != nil {
-			logger.Warnf(ctx, "%v", query)
-			logger.Warnf(ctx, "%+v", err)
+		var total int
+		p.DB.Raw("SELECT COUNT(*) FROM user_group WHERE group_path=?", parentGroupPath).Count(&total)
+		if err := p.DB.Error; err != nil {
+			logger.Warnf(ctx, "uid = %s, err = %+v", req.GroupId, err)
 			return nil, err
 		}
 		if total != 1 {

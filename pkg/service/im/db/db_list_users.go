@@ -94,8 +94,9 @@ func (p *Database) listUsers_no_gid(ctx context.Context, req *pbim.ListUsersRequ
 		"SELECT COUNT(*) FROM user %s",
 		whereCondition,
 	)
-	total, err := p.getCountByQuery(ctx, query)
-	if err != nil {
+	var total int
+	p.DB.Raw(query).Count(&total)
+	if err := p.DB.Error; err != nil {
 		logger.Warnf(ctx, "%v", query)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -176,8 +177,9 @@ func (p *Database) listUsers_with_gid(ctx context.Context, req *pbim.ListUsersRe
 		"SELECT COUNT(user.*) FROM user, user_group, user_group_binding %s",
 		whereCondition,
 	)
-	total, err := p.getCountByQuery(ctx, query)
-	if err != nil {
+	var total int
+	p.DB.Raw(query).Count(&total)
+	if err := p.DB.Error; err != nil {
 		logger.Warnf(ctx, "%v", query)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err

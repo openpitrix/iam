@@ -87,8 +87,9 @@ func (p *Database) listGroups_no_uid(ctx context.Context, req *pbim.ListGroupsRe
 		"SELECT COUNT(*) FROM user_group %s",
 		whereCondition,
 	)
-	total, err := p.getCountByQuery(ctx, query)
-	if err != nil {
+	var total int
+	p.DB.Raw(query).Count(&total)
+	if err := p.DB.Error; err != nil {
 		logger.Warnf(ctx, "%v", query)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -165,8 +166,10 @@ func (p *Database) listGroups_with_uid(ctx context.Context, req *pbim.ListGroups
 		"SELECT COUNT(user_group.*) FROM user, user_group, user_group_binding %s",
 		whereCondition,
 	)
-	total, err := p.getCountByQuery(ctx, query)
-	if err != nil {
+
+	var total int
+	p.DB.Raw(query).Count(&total)
+	if err := p.DB.Error; err != nil {
 		logger.Warnf(ctx, "%v", query)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
