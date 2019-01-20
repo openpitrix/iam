@@ -99,7 +99,7 @@ func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 		return nil, err
 	}
 
-	_, err := p.DB.ExecContext(ctx, sql, values...)
+	_, err := p.dbx.ExecContext(ctx, sql, values...)
 	if err != nil {
 		logger.Warnf(ctx, "%v, %v", sql, values)
 		logger.Warnf(ctx, "%+v", err)
@@ -128,7 +128,7 @@ func (p *Database) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pb
 		req.Gid...,
 	)
 
-	tx, err := p.DB.Beginx()
+	tx, err := p.dbx.Beginx()
 	if err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -208,7 +208,7 @@ func (p *Database) ModifyGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 		return p.GetGroup(ctx, &pbim.GroupId{Gid: req.Gid})
 	}
 
-	_, err := p.DB.ExecContext(ctx, sql, values...)
+	_, err := p.dbx.ExecContext(ctx, sql, values...)
 	if err != nil {
 		logger.Warnf(ctx, "%v, %v", sql, values)
 		logger.Warnf(ctx, "%+v", err)
@@ -228,7 +228,7 @@ func (p *Database) GetGroup(ctx context.Context, req *pbim.GroupId) (*pbim.Group
 	)
 
 	var v = db_spec.DBGroup{}
-	err := p.DB.GetContext(ctx, &v, query, req.GetGid())
+	err := p.dbx.GetContext(ctx, &v, query, req.GetGid())
 	if err != nil {
 		logger.Warnf(ctx, "%v", query)
 		logger.Warnf(ctx, "%+v", err)

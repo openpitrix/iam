@@ -22,7 +22,7 @@ func (p *Database) ComparePassword(ctx context.Context, req *pbim.Password) (*pb
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	var user db_spec.DBUser
-	err := p.DB.Get(&user, "select * from user where user_id=?", req.GetUid())
+	err := p.dbx.Get(&user, "select * from user where user_id=?", req.GetUid())
 	if err != nil {
 		logger.Warnf(ctx, "uid = %s, err = %+v", req.GetUid(), err)
 		return nil, err
@@ -42,7 +42,7 @@ func (p *Database) ModifyPassword(ctx context.Context, req *pbim.Password) (*pbi
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	var user db_spec.DBUser
-	err := p.DB.Get(&user, "select * from user where user_id=?", req.GetUid())
+	err := p.dbx.Get(&user, "select * from user where user_id=?", req.GetUid())
 	if err != nil {
 		logger.Warnf(ctx, "uid = %s, err = %+v", req.GetUid(), err)
 		return nil, err
@@ -64,7 +64,7 @@ func (p *Database) ModifyPassword(ctx context.Context, req *pbim.Password) (*pbi
 		req.GetUid(),
 	)
 
-	_, err = p.DB.ExecContext(ctx, sql)
+	_, err = p.dbx.ExecContext(ctx, sql)
 	if err != nil {
 		logger.Warnf(ctx, "%v", sql)
 		logger.Warnf(ctx, "%+v", err)

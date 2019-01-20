@@ -11,7 +11,7 @@ import (
 )
 
 func (p *Database) getCountByQuery(ctx context.Context, query string) (total int, err error) {
-	rows, err := p.DB.QueryContext(ctx, query)
+	rows, err := p.dbx.QueryContext(ctx, query)
 	if err != nil {
 		logger.Warnf(ctx, "%v", query)
 		logger.Warnf(ctx, "%+v", err)

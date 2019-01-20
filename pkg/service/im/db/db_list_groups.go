@@ -191,7 +191,7 @@ func (p *Database) listGroups_with_uid(ctx context.Context, req *pbim.ListGroups
 
 func (p *Database) listGroupsByQuery(ctx context.Context, query string) (*pbim.ListGroupsResponse, error) {
 	var rows = []db_spec.DBGroup{}
-	err := p.DB.SelectContext(ctx, &rows, query)
+	err := p.dbx.SelectContext(ctx, &rows, query)
 	if err != nil {
 		logger.Warnf(ctx, "%v", query)
 		logger.Warnf(ctx, "%+v", err)

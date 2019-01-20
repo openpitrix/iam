@@ -80,7 +80,7 @@ func (p *Database) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 		return nil, err
 	}
 
-	_, err = p.DB.ExecContext(ctx, sql, values...)
+	_, err = p.dbx.ExecContext(ctx, sql, values...)
 	if err != nil {
 		logger.Warnf(ctx, "%v, %v", sql, values)
 		logger.Warnf(ctx, "%+v", err)
@@ -109,7 +109,7 @@ func (p *Database) DeleteUsers(ctx context.Context, req *pbim.UserIdList) (*pbim
 		req.Uid...,
 	)
 
-	tx, err := p.DB.Beginx()
+	tx, err := p.dbx.Beginx()
 	if err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -189,7 +189,7 @@ func (p *Database) ModifyUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 		return p.GetUser(ctx, &pbim.UserId{Uid: req.Uid})
 	}
 
-	_, err := p.DB.ExecContext(ctx, sql, values...)
+	_, err := p.dbx.ExecContext(ctx, sql, values...)
 	if err != nil {
 		logger.Warnf(ctx, "%v, %v", sql, values)
 		logger.Warnf(ctx, "%+v", err)
@@ -209,7 +209,7 @@ func (p *Database) GetUser(ctx context.Context, req *pbim.UserId) (*pbim.User, e
 	)
 
 	var v = db_spec.DBUser{}
-	err := p.DB.GetContext(ctx, &v, query, req.GetUid())
+	err := p.dbx.GetContext(ctx, &v, query, req.GetUid())
 	if err != nil {
 		logger.Warnf(ctx, "%v", query)
 		logger.Warnf(ctx, "%+v", err)

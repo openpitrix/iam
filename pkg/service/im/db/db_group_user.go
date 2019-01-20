@@ -54,7 +54,7 @@ func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*
 			gid := req.Gid[i]
 			uid := req.Uid[i]
 
-			_, err := p.DB.ExecContext(ctx, sql, xid, uid, gid)
+			_, err := p.dbx.ExecContext(ctx, sql, xid, uid, gid)
 			if err != nil {
 				logger.Warnf(ctx, "%v", sql)
 				logger.Warnf(ctx, "%v, %v, %v", xid, uid, gid)
@@ -68,7 +68,7 @@ func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*
 			gid := req.Gid[i]
 			uid := req.Uid[0]
 
-			_, err := p.DB.ExecContext(ctx, sql, xid, uid, gid)
+			_, err := p.dbx.ExecContext(ctx, sql, xid, uid, gid)
 			if err != nil {
 				logger.Warnf(ctx, "%v", sql)
 				logger.Warnf(ctx, "%v, %v, %v", xid, uid, gid)
@@ -82,7 +82,7 @@ func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*
 			gid := req.Gid[0]
 			uid := req.Uid[i]
 
-			_, err := p.DB.ExecContext(ctx, sql, xid, uid, gid)
+			_, err := p.dbx.ExecContext(ctx, sql, xid, uid, gid)
 			if err != nil {
 				logger.Warnf(ctx, "%v", sql)
 				logger.Warnf(ctx, "%v, %v, %v", xid, uid, gid)
@@ -131,7 +131,7 @@ func (p *Database) LeaveGroup(ctx context.Context, req *pbim.LeaveGroupRequest) 
 			gid := req.Gid[i]
 			uid := req.Uid[i]
 
-			_, err := p.DB.ExecContext(ctx, sql, xid, uid, gid)
+			_, err := p.dbx.ExecContext(ctx, sql, xid, uid, gid)
 			if err != nil {
 				logger.Warnf(ctx, "%v", sql)
 				logger.Warnf(ctx, "%v, %v, %v", xid, uid, gid)
@@ -145,7 +145,7 @@ func (p *Database) LeaveGroup(ctx context.Context, req *pbim.LeaveGroupRequest) 
 			gid := req.Gid[i]
 			uid := req.Uid[0]
 
-			_, err := p.DB.ExecContext(ctx, sql, xid, uid, gid)
+			_, err := p.dbx.ExecContext(ctx, sql, xid, uid, gid)
 			if err != nil {
 				logger.Warnf(ctx, "%v", sql)
 				logger.Warnf(ctx, "%v, %v, %v", xid, uid, gid)
@@ -159,7 +159,7 @@ func (p *Database) LeaveGroup(ctx context.Context, req *pbim.LeaveGroupRequest) 
 			gid := req.Gid[0]
 			uid := req.Uid[i]
 
-			_, err := p.DB.ExecContext(ctx, sql, xid, uid, gid)
+			_, err := p.dbx.ExecContext(ctx, sql, xid, uid, gid)
 			if err != nil {
 				logger.Warnf(ctx, "%v", sql)
 				logger.Warnf(ctx, "%v, %v, %v", xid, uid, gid)
@@ -184,7 +184,7 @@ func (p *Database) GetGroupsByUserId(ctx context.Context, req *pbim.UserId) (*pb
 			user.user_id=?
 	`
 	var rows []db_spec.DBGroup
-	err := p.DB.Select(&rows, sql, req.GetUid())
+	err := p.dbx.Select(&rows, sql, req.GetUid())
 	if err != nil {
 		logger.Warnf(ctx, "%v", sql)
 		logger.Warnf(ctx, "%+v", err)
@@ -216,7 +216,7 @@ func (p *Database) GetUsersByGroupId(ctx context.Context, req *pbim.GroupId) (*p
 			user_group.group_id=?
 	`
 	var rows []db_spec.DBUser
-	err := p.DB.Select(&rows, sql, req.GetGid())
+	err := p.dbx.Select(&rows, sql, req.GetGid())
 	if err != nil {
 		logger.Warnf(ctx, "%v", sql)
 		logger.Warnf(ctx, "%+v", err)

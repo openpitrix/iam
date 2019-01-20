@@ -202,7 +202,7 @@ func (p *Database) listUsers_with_gid(ctx context.Context, req *pbim.ListUsersRe
 
 func (p *Database) listUsersByQuery(ctx context.Context, query string) (*pbim.ListUsersResponse, error) {
 	var rows = []db_spec.DBUser{}
-	err := p.DB.SelectContext(ctx, &rows, query)
+	err := p.dbx.SelectContext(ctx, &rows, query)
 	if err != nil {
 		logger.Warnf(ctx, "%v", query)
 		logger.Warnf(ctx, "%+v", err)

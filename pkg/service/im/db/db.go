@@ -20,7 +20,7 @@ import (
 
 type Database struct {
 	cfg *config.Config
-	*sqlx.DB
+	dbx *sqlx.DB
 }
 
 func OpenDatabase(cfg *config.Config) (*Database, error) {
@@ -65,25 +65,25 @@ func OpenDatabase(cfg *config.Config) (*Database, error) {
 
 	p := &Database{
 		cfg: cfg,
-		DB:  db,
+		dbx: db,
 	}
 	for _, v := range db_spec.TableMap {
 		if !isValidDatabaseTableName(v.Name) {
 			logger.Warnf(nil, "invalid table name %s", v.Name)
 		}
-		if _, err := p.Exec(v.Sql); err != nil {
+		if _, err := p.dbx.Exec(v.Sql); err != nil {
 			logger.Warnf(nil, "%s: %v", v.Name, err)
 		}
 	}
 
-	if err := p.DB.Ping(); err != nil {
+	if err := p.dbx.Ping(); err != nil {
 		logger.Warnf(nil, "ping faild: %#v", err)
 	} else {
 		logger.Infof(nil, "ping ok")
 	}
 
 	logger.Infof(nil, "DB stats: begin")
-	for _, f := range structs.Fields(p.DB.Stats()) {
+	for _, f := range structs.Fields(p.dbx.Stats()) {
 		logger.Infof(nil, "\t%s: %v", f.Name(), f.Value())
 	}
 	logger.Infof(nil, "DB stats: end")
@@ -92,5 +92,5 @@ func OpenDatabase(cfg *config.Config) (*Database, error) {
 }
 
 func (p *Database) Close() error {
-	return p.DB.Close()
+	return p.dbx.Close()
 }
