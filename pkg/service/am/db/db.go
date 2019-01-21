@@ -138,6 +138,35 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 		}
 	}
 
+	// greate tables
+	{
+		if !p.DB.HasTable(&Action2{}) {
+			if err := p.DB.CreateTable(&Action2{}).Error; err != nil {
+				logger.Warnf(nil, "%+v", err)
+			}
+		}
+		if !p.DB.HasTable(&EnableAction{}) {
+			if err := p.DB.CreateTable(&EnableAction{}).Error; err != nil {
+				logger.Warnf(nil, "%+v", err)
+			}
+		}
+		if !p.DB.HasTable(&Role{}) {
+			if err := p.DB.CreateTable(&Role{}).Error; err != nil {
+				logger.Warnf(nil, "%+v", err)
+			}
+		}
+		if !p.DB.HasTable(&RoleModuleBinding{}) {
+			if err := p.DB.CreateTable(&RoleModuleBinding{}).Error; err != nil {
+				logger.Warnf(nil, "%+v", err)
+			}
+		}
+		if !p.DB.HasTable(&UserRoleBinding{}) {
+			if err := p.DB.CreateTable(&UserRoleBinding{}).Error; err != nil {
+				logger.Warnf(nil, "%+v", err)
+			}
+		}
+	}
+
 	return p, nil
 }
 
