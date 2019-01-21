@@ -129,20 +129,7 @@ func (p *Database) ModifyUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 		}
 	}
 
-	if err := dbUser.ValidateForUpdate(); err != nil {
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-
-	sql, values := pkgBuildSql_Update(
-		"user", dbUser, "user_id",
-	)
-	if len(values) == 0 {
-		return p.GetUser(ctx, &pbim.UserId{UserId: req.UserId})
-	}
-
-	if err := p.DB.Raw(sql, values...).Error; err != nil {
-		logger.Warnf(ctx, "%v, %v", sql, values)
+	if err := p.DB.Model(dbUser).Updates(dbUser).Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}

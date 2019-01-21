@@ -16,7 +16,7 @@ import (
 )
 
 type UserGroup struct {
-	GroupId     string
+	GroupId     string `gorm:"primary_key"`
 	GroupPath   string
 	GroupName   string
 	Description string

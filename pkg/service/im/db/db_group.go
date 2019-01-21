@@ -144,20 +144,7 @@ func (p *Database) ModifyGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 		}
 	}
 
-	if err := dbGroup.ValidateForUpdate(); err != nil {
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-
-	sql, values := pkgBuildSql_Update(
-		"user_group", dbGroup, "group_id",
-	)
-	if len(values) == 0 {
-		return p.GetGroup(ctx, &pbim.GroupId{GroupId: req.GroupId})
-	}
-
-	if err := p.DB.Raw(sql, values...).Error; err != nil {
-		logger.Warnf(ctx, "%v, %v", sql, values)
+	if err := p.DB.Model(dbGroup).Updates(dbGroup).Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
