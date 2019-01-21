@@ -11,7 +11,6 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 
 	"openpitrix.io/iam/pkg/service/im/config"
-	"openpitrix.io/iam/pkg/service/im/db_spec"
 	"openpitrix.io/logger"
 )
 
@@ -37,23 +36,15 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 	logger.Infof(nil, "\tDatabase: %s", cfg.DB.Database)
 	logger.Infof(nil, "DB config: end")
 
-	orm, err := gorm.Open(cfg.DB.Type, cfg.DB.GetUrl())
+	var p = &Database{cfg: cfg}
+	var err error
+
+	p.DB, err = gorm.Open(cfg.DB.Type, cfg.DB.GetUrl())
 	if err != nil {
 		return nil, err
 	}
 
-	p := &Database{
-		cfg: cfg,
-		DB:  orm,
-	}
-	for _, v := range db_spec.TableMap {
-		if !isValidDatabaseTableName(v.Name) {
-			logger.Warnf(nil, "invalid table name %s", v.Name)
-		}
-		if err := p.DB.Exec(v.Sql).Error; err != nil {
-			logger.Warnf(nil, "%s: %v", v.Name, err)
-		}
-	}
+	p.DB.SingularTable(true)
 
 	return p, nil
 }

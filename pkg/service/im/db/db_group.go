@@ -16,7 +16,6 @@ import (
 
 	"openpitrix.io/iam/pkg/internal/funcutil"
 	"openpitrix.io/iam/pkg/pb/im"
-	"openpitrix.io/iam/pkg/service/im/db_spec"
 	"openpitrix.io/logger"
 )
 
@@ -84,20 +83,8 @@ func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 		}
 	}
 
-	sql, values := pkgBuildSql_InsertInto(
-		db_spec.UserGroupTableName,
-		dbGroup,
-	)
-	if len(values) == 0 {
-		err := status.Errorf(codes.InvalidArgument, "empty field")
-		logger.Warnf(ctx, "%v, %v", sql, values)
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-
-	if err := p.DB.Raw(sql, values...).Error; err != nil {
-		logger.Warnf(ctx, "%v, %v", sql, values)
-		logger.Warnf(ctx, "%+v", err)
+	if err := p.DB.Create(dbGroup).Error; err != nil {
+		logger.Warnf(ctx, "%+v, %v", err, dbGroup)
 		return nil, err
 	}
 
@@ -163,8 +150,7 @@ func (p *Database) ModifyGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 	}
 
 	sql, values := pkgBuildSql_Update(
-		db_spec.UserGroupTableName, dbGroup,
-		db_spec.UserGroupPrimaryKeyName,
+		"user_group", dbGroup, "group_id",
 	)
 	if len(values) == 0 {
 		return p.GetGroup(ctx, &pbim.GroupId{GroupId: req.GroupId})
@@ -183,10 +169,7 @@ func (p *Database) GetGroup(ctx context.Context, req *pbim.GroupId) (*pbim.Group
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	var query = fmt.Sprintf(
-		"SELECT * FROM %s WHERE %s=? LIMIT 1 OFFSET 0;",
-		db_spec.UserGroupTableName,
-		db_spec.UserGroupPrimaryKeyName,
-	)
+		"SELECT * FROM user_group WHERE group_id=? LIMIT 1 OFFSET 0;")
 
 	var v = UserGroup{}
 	p.DB.Raw(query, req.GroupId).Scan(&v)

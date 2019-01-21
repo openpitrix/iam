@@ -9,57 +9,6 @@ import (
 	"strings"
 )
 
-func pkgBuildSql_InsertInto(tableName string, v interface{}) (sql string, values []interface{}) {
-	_names, _values := pkgGetAllDBTableFiledNamesAndValues(v)
-
-	var names []string
-	for i := 0; i < len(_names); i++ {
-		if _names[i] == "extra" {
-			if s, ok := _values[i].(string); ok && s == "" {
-				continue // skip empty json
-			}
-		}
-		names = append(names, _names[i])
-		values = append(values, _values[i])
-	}
-	if len(names) == 0 {
-		return "", nil
-	}
-
-	tableFieldName := strings.Join(names, ",")
-
-	taleFieldValue := func() string { // table field values
-		// postgres
-		// "$1",
-		// "$1, $2"
-		// "$1, $2, $3"
-		//
-		// mysql & sqlite3
-		// ?, ?
-		var b strings.Builder
-		for i := 0; i < len(values); i++ {
-			if i == 0 {
-				fmt.Fprintf(&b, "?")
-			} else {
-				fmt.Fprintf(&b, ",?")
-			}
-		}
-		return b.String()
-	}()
-
-	// postgres: VALUES ($1, $2)
-	// mysql & sqlite3: VALUES (?, ?)
-	// db.Exec("INSERT INTO place (country, telcode) VALUES ($1, $2)", "Singapore", "65")
-	sql = fmt.Sprintf(
-		"INSERT INTO %s (%s) VALUES (%s);",
-		tableName,
-		tableFieldName,
-		taleFieldValue,
-	)
-
-	return
-}
-
 func pkgBuildSql_Update(
 	tableName string, v interface{}, primaryKeyName string,
 ) (sql string, values []interface{}) {

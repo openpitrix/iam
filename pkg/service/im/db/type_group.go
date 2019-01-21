@@ -16,19 +16,19 @@ import (
 )
 
 type UserGroup struct {
-	GroupId     string    `db:"group_id"`
-	GroupPath   string    `db:"group_path"`
-	GroupName   string    `db:"group_name"`
-	Description string    `db:"description"`
-	Status      string    `db:"status"`
-	CreateTime  time.Time `db:"create_time"`
-	UpdateTime  time.Time `db:"update_time"`
-	StatusTime  time.Time `db:"status_time"`
-	Extra       string    `db:"extra"` // JSON
+	GroupId     string
+	GroupPath   string
+	GroupName   string
+	Description string
+	Status      string
+	CreateTime  time.Time
+	UpdateTime  time.Time
+	StatusTime  time.Time
+	Extra       string // JSON
 
 	// DB internal fields
-	ParentGroupId  string `db:"parent_group_id"`
-	GroupPathLevel int    `db:"level"`
+	ParentGroupId  string
+	GroupPathLevel int
 }
 
 func NewUserGroupFromPB(p *pbim.Group) *UserGroup {
@@ -90,6 +90,24 @@ func (p *UserGroup) ToPB() *pbim.Group {
 		}
 	}
 	return q
+}
+
+func (p *UserGroup) BeforeCreate() (err error) {
+	if p.GroupId == "" {
+		p.GroupId = genGid()
+	}
+
+	if p.CreateTime == (time.Time{}) {
+		p.CreateTime = time.Now()
+	}
+
+	return
+}
+func (p *UserGroup) BeforeUpdate() (err error) {
+	if p.UpdateTime == (time.Time{}) {
+		p.UpdateTime = time.Now()
+	}
+	return
 }
 
 func (p *UserGroup) ValidateForInsert() error {

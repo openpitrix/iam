@@ -44,6 +44,8 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 		return nil, err
 	}
 
+	p.DB.SingularTable(true)
+
 	return p, nil
 }
 

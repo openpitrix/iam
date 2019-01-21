@@ -17,7 +17,6 @@ import (
 
 	"openpitrix.io/iam/pkg/internal/funcutil"
 	"openpitrix.io/iam/pkg/pb/im"
-	"openpitrix.io/iam/pkg/service/im/db_spec"
 	"openpitrix.io/logger"
 )
 
@@ -69,21 +68,8 @@ func (p *Database) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 	}
 	dbUser.Password = string(hashedPass)
 
-	sql, values := pkgBuildSql_InsertInto(
-		db_spec.UserTableName,
-		dbUser,
-	)
-	if len(values) == 0 {
-		err := status.Errorf(codes.InvalidArgument, "empty field")
-		logger.Warnf(ctx, "%v, %v", sql, values)
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-
-	p.DB.Raw(sql, values...)
-	if err := p.DB.Error; err != nil {
-		logger.Warnf(ctx, "%v, %v", sql, values)
-		logger.Warnf(ctx, "%+v", err)
+	if err := p.DB.Create(dbUser).Error; err != nil {
+		logger.Warnf(ctx, "%+v, %v", err, dbUser)
 		return nil, err
 	}
 
@@ -149,8 +135,7 @@ func (p *Database) ModifyUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 	}
 
 	sql, values := pkgBuildSql_Update(
-		db_spec.UserTableName, dbUser,
-		db_spec.UserPrimaryKeyName,
+		"user", dbUser, "user_id",
 	)
 	if len(values) == 0 {
 		return p.GetUser(ctx, &pbim.UserId{UserId: req.UserId})
@@ -169,10 +154,7 @@ func (p *Database) GetUser(ctx context.Context, req *pbim.UserId) (*pbim.User, e
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	var query = fmt.Sprintf(
-		"SELECT * FROM %s WHERE %s=? LIMIT 1 OFFSET 0;",
-		db_spec.UserTableName,
-		db_spec.UserPrimaryKeyName,
-	)
+		"SELECT * FROM user WHERE user_id=? LIMIT 1 OFFSET 0;")
 
 	var v = User{}
 	p.DB.Raw(query, req.UserId).Scan(&v)

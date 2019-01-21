@@ -10,23 +10,24 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
+	"golang.org/x/crypto/bcrypt"
 
 	"openpitrix.io/iam/pkg/pb/im"
 	"openpitrix.io/logger"
 )
 
 type User struct {
-	UserId      string    `db:"user_id"`
-	UserName    string    `db:"user_name"`
-	Email       string    `db:"email"`
-	PhoneNumber string    `db:"phone_number"`
-	Description string    `db:"description"`
-	Password    string    `db:"password"`
-	Status      string    `db:"status"`
-	CreateTime  time.Time `db:"create_time"`
-	UpdateTime  time.Time `db:"update_time"`
-	StatusTime  time.Time `db:"status_time"`
-	Extra       string    `db:"extra"` // JSON
+	UserId      string
+	UserName    string
+	Email       string
+	PhoneNumber string
+	Description string
+	Password    string
+	Status      string
+	CreateTime  time.Time
+	UpdateTime  time.Time
+	StatusTime  time.Time
+	Extra       string // JSON
 }
 
 func NewUserFromPB(p *pbim.User) *User {
@@ -87,6 +88,34 @@ func (p *User) ToPB() *pbim.User {
 		}
 	}
 	return q
+}
+
+func (p *User) BeforeCreate() (err error) {
+	if p.UserId == "" {
+		p.UserId = genUid()
+	}
+	if p.Password != "" {
+		hashedPass, err := bcrypt.GenerateFromPassword(
+			[]byte(p.Password), bcrypt.DefaultCost,
+		)
+		if err != nil {
+			return err
+		}
+		p.Password = string(hashedPass)
+	}
+
+	if p.CreateTime == (time.Time{}) {
+		p.CreateTime = time.Now()
+	}
+
+	return
+}
+func (p *User) BeforeUpdate() (err error) {
+	if p.UpdateTime == (time.Time{}) {
+		p.UpdateTime = time.Now()
+	}
+	p.Password = ""
+	return
 }
 
 func (p *User) ValidateForInsert() error {
