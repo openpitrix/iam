@@ -35,6 +35,10 @@ func (p *Database) ModifyRoleModuleBinding(ctx context.Context, req *pbam.Modify
 			req.RoleId,
 			req.ModuleId,
 		)
+		if err := tx.Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
 
 		tx.Raw(
 			`
@@ -49,6 +53,10 @@ func (p *Database) ModifyRoleModuleBinding(ctx context.Context, req *pbam.Modify
 			req.RoleId,
 			req.ModuleId,
 		)
+		if err := tx.Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
 
 		for i, v := range req.Module {
 
@@ -88,6 +96,11 @@ func (p *Database) ModifyRoleModuleBinding(ctx context.Context, req *pbam.Modify
 				updateTime,
 				owner,
 			)
+			if err := tx.Error; err != nil {
+				tx.Rollback()
+				return nil, err
+			}
+
 			tx.Raw(
 				`
 				insert into enable_action (
@@ -101,27 +114,10 @@ func (p *Database) ModifyRoleModuleBinding(ctx context.Context, req *pbam.Modify
 				action_id,
 			)
 		}
-
-		// bind_id = gen
-		/*
-			insert into
-			    role_module_binding(
-			        bind_id,
-			        role_id,
-			        module_id,
-			        data_level,
-			        create_time,
-			        update_time,
-			        owner
-			    )
-			values(
-			    'xxxxid',
-			    'xxxrole_id',
-			    'm_0001',
-			    'data_level',
-			    ...
-			)
-		*/
+		if err := tx.Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
 	}
 
 	if err := tx.Commit().Error; err != nil {

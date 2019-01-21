@@ -51,6 +51,10 @@ func (p *Database) BindUserRole(ctx context.Context, req *pbam.BindUserRoleReque
 				`INSERT INTO user_role_binding (id, user_id, role_id) VALUES (?,?,?)`,
 				genXid(), req.UserId[i], req.RoleId[i],
 			)
+			if err := tx.Error; err != nil {
+				tx.Rollback()
+				return nil, err
+			}
 		}
 	case len(req.UserId) == 1:
 		logger.Infof(ctx, "debug: req: %v", req)
@@ -59,6 +63,10 @@ func (p *Database) BindUserRole(ctx context.Context, req *pbam.BindUserRoleReque
 				`INSERT INTO user_role_binding (id, user_id, role_id) VALUES (?,?,?)`,
 				genXid(), req.UserId[0], req.RoleId[i],
 			)
+			if err := tx.Error; err != nil {
+				tx.Rollback()
+				return nil, err
+			}
 		}
 	case len(req.RoleId) == 1:
 		for i := 0; i < len(req.UserId); i++ {
@@ -66,6 +74,10 @@ func (p *Database) BindUserRole(ctx context.Context, req *pbam.BindUserRoleReque
 				`INSERT INTO user_role_binding (id, user_id, role_id) VALUES (?,?,?)`,
 				genXid(), req.UserId[i], req.RoleId[0],
 			)
+			if err := tx.Error; err != nil {
+				tx.Rollback()
+				return nil, err
+			}
 		}
 	}
 
@@ -114,6 +126,10 @@ func (p *Database) UnbindUserRole(ctx context.Context, req *pbam.UnbindUserRoleR
 				req.UserId[i],
 				req.RoleId[i],
 			)
+			if err := tx.Error; err != nil {
+				tx.Rollback()
+				return nil, err
+			}
 		}
 	case len(req.UserId) == 1:
 		for i := 0; i < len(req.RoleId); i++ {
@@ -122,6 +138,10 @@ func (p *Database) UnbindUserRole(ctx context.Context, req *pbam.UnbindUserRoleR
 				req.UserId[0],
 				req.RoleId[i],
 			)
+			if err := tx.Error; err != nil {
+				tx.Rollback()
+				return nil, err
+			}
 		}
 	case len(req.RoleId) == 1:
 		for i := 0; i < len(req.UserId); i++ {
@@ -130,6 +150,10 @@ func (p *Database) UnbindUserRole(ctx context.Context, req *pbam.UnbindUserRoleR
 				req.UserId[i],
 				req.RoleId[0],
 			)
+			if err := tx.Error; err != nil {
+				tx.Rollback()
+				return nil, err
+			}
 		}
 	}
 

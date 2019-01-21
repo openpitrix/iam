@@ -53,6 +53,10 @@ func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*
 				`INSERT INTO user_group_binding (id, user_id, group_id) VALUES (?,?,?)`,
 				xid, uid, gid,
 			)
+			if err := tx.Error; err != nil {
+				tx.Rollback()
+				return nil, err
+			}
 		}
 	case len(req.UserId) == 1:
 		for i := 0; i < len(req.GroupId); i++ {
@@ -64,6 +68,10 @@ func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*
 				`INSERT INTO user_group_binding (id, user_id, group_id) VALUES (?,?,?)`,
 				xid, uid, gid,
 			)
+			if err := tx.Error; err != nil {
+				tx.Rollback()
+				return nil, err
+			}
 		}
 	case len(req.GroupId) == 1:
 		for i := 0; i < len(req.UserId); i++ {
@@ -75,6 +83,10 @@ func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*
 				`INSERT INTO user_group_binding (id, user_id, group_id) VALUES (?,?,?)`,
 				xid, uid, gid,
 			)
+			if err := tx.Error; err != nil {
+				tx.Rollback()
+				return nil, err
+			}
 		}
 	}
 
@@ -122,6 +134,10 @@ func (p *Database) LeaveGroup(ctx context.Context, req *pbim.LeaveGroupRequest) 
 				`delete from user_group_binding where user_id=? and group_id=?`,
 				uid, gid,
 			)
+			if err := tx.Error; err != nil {
+				tx.Rollback()
+				return nil, err
+			}
 		}
 	case len(req.UserId) == 1:
 		for i := 0; i < len(req.GroupId); i++ {
@@ -132,6 +148,10 @@ func (p *Database) LeaveGroup(ctx context.Context, req *pbim.LeaveGroupRequest) 
 				`delete from user_group_binding where user_id=? and group_id=?`,
 				uid, gid,
 			)
+			if err := tx.Error; err != nil {
+				tx.Rollback()
+				return nil, err
+			}
 		}
 	case len(req.GroupId) == 1:
 		for i := 0; i < len(req.UserId); i++ {
@@ -142,6 +162,10 @@ func (p *Database) LeaveGroup(ctx context.Context, req *pbim.LeaveGroupRequest) 
 				`delete from user_group_binding where user_id=? and group_id=?`,
 				uid, gid,
 			)
+			if err := tx.Error; err != nil {
+				tx.Rollback()
+				return nil, err
+			}
 		}
 	}
 

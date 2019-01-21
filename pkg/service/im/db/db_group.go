@@ -10,7 +10,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -22,27 +21,6 @@ import (
 func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Group, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if req == nil {
-		err := status.Errorf(codes.InvalidArgument, "empty field")
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-	if req != nil {
-		if req.GroupId == "" {
-			req.GroupId = genGid()
-		}
-
-		if isZeroTimestamp(req.CreateTime) {
-			req.CreateTime = ptypes.TimestampNow()
-		}
-		if isZeroTimestamp(req.UpdateTime) {
-			req.UpdateTime = ptypes.TimestampNow()
-		}
-		if isZeroTimestamp(req.StatusTime) {
-			req.StatusTime = ptypes.TimestampNow()
-		}
-	}
-
 	var dbGroup = NewUserGroupFromPB(req)
 	if err := dbGroup.ValidateForInsert(); err != nil {
 		logger.Warnf(ctx, "%+v", err)
@@ -51,36 +29,32 @@ func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 
 	// check group_path valid
 	switch {
+	case dbGroup.GroupPath == "":
+		dbGroup.GroupPath = dbGroup.GroupId + "."
+
 	case dbGroup.GroupPath == dbGroup.GroupId+".":
 		// skip root
+
 	case strings.HasSuffix(dbGroup.GroupPath, "."+dbGroup.GroupId+"."):
-		idx := len(dbGroup.GroupPath) - len(dbGroup.GroupId)
-		parentGroupPath := dbGroup.GroupPath[:idx-1]
+		prefixPath := dbGroup.GroupPath[:len(dbGroup.GroupPath)-len("."+dbGroup.GroupId+".")]
+		ids := strings.Split(prefixPath, ".")
 
-		if parentGroupPath == "" {
-			err := status.Errorf(codes.InvalidArgument, "invalid parent group path: %s", parentGroupPath)
-			logger.Warnf(ctx, "%+v", err)
-			return nil, err
-		}
-
-		var total int
-		p.DB.Raw("SELECT COUNT(*) FROM user_group WHERE group_path=?", parentGroupPath).Count(&total)
+		var count int
+		p.DB.Model(&UserGroup{}).Where("group_id in (?)", ids).Count(&count)
 		if err := p.DB.Error; err != nil {
-			logger.Warnf(ctx, "uid = %s, err = %+v", req.GroupId, err)
+			logger.Warnf(ctx, "%+v", err)
 			return nil, err
 		}
-		if total != 1 {
-			err := status.Errorf(codes.InvalidArgument, "invalid group path: %s", dbGroup.GroupPath)
+		if count != len(ids) {
+			err := status.Errorf(codes.InvalidArgument, "invalid parent group path: %s", dbGroup.GroupPath)
 			logger.Warnf(ctx, "%+v", err)
 			return nil, err
 		}
 
-		dbGroup.ParentGroupId = parentGroupPath
-		dbGroup.GroupPathLevel = strings.Count(dbGroup.GroupPath, ".") + 1
-
-		if idx = strings.LastIndex(parentGroupPath, "."); idx >= 0 {
-			dbGroup.ParentGroupId = parentGroupPath[idx:]
-		}
+	default: // check parent path
+		err := status.Errorf(codes.InvalidArgument, "invalid parent group path: %s", dbGroup.GroupPath)
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
 	}
 
 	if err := p.DB.Create(dbGroup).Error; err != nil {
@@ -105,9 +79,16 @@ func (p *Database) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pb
 	}
 
 	tx := p.DB.Begin()
-
-	tx.Raw(`delete from user_group where group_id in (?)`, req.GroupId)
-	tx.Raw(`delete from user_group_binding where group_id=?`, req.GroupId)
+	{
+		if err := tx.Model(&UserGroup{}).Where("group_id in (?)", req.GroupId).Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+		if err := tx.Model(&UserGroupBinding{}).Where("group_id in (?)", req.GroupId).Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+	}
 
 	if err := tx.Commit().Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)

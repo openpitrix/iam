@@ -8,8 +8,6 @@ import (
 	"context"
 
 	"golang.org/x/crypto/bcrypt"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 
 	"openpitrix.io/iam/pkg/internal/funcutil"
 	"openpitrix.io/iam/pkg/pb/im"
@@ -20,8 +18,7 @@ func (p *Database) ComparePassword(ctx context.Context, req *pbim.Password) (*pb
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	var user User
-	p.DB.Raw("select * from user where user_id=?", req.UserId).Scan(&user)
-	if err := p.DB.Error; err != nil {
+	if err := p.DB.First(&user).Error; err != nil {
 		logger.Warnf(ctx, "uid = %s, err = %+v", req.UserId, err)
 		return nil, err
 	}
@@ -36,25 +33,16 @@ func (p *Database) ComparePassword(ctx context.Context, req *pbim.Password) (*pb
 	// OK
 	return &pbim.Bool{Value: true}, nil
 }
+
 func (p *Database) ModifyPassword(ctx context.Context, req *pbim.Password) (*pbim.Empty, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	hashedPass, err := bcrypt.GenerateFromPassword(
-		[]byte(req.GetPassword()), bcrypt.DefaultCost,
-	)
-	if err != nil {
-		err := status.Errorf(codes.Internal, "bcrypt failed")
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
+	var dbUser = &User{
+		UserId:   req.UserId,
+		Password: req.Password,
 	}
-
-	p.DB.Raw(
-		`update user set password=? where user_id=?`,
-		string(hashedPass),
-		req.UserId,
-	)
-	if err := p.DB.Error; err != nil {
-		logger.Warnf(ctx, "uid = %s, err = %+v", req.UserId, err)
+	if err := p.DB.Model(dbUser).Updates(dbUser).Error; err != nil {
+		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
