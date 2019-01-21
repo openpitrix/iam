@@ -91,7 +91,7 @@ func (m *DBConfig) GetHost() string {
 	}
 	if m.Type == "mysql" {
 		return fmt.Sprintf(
-			"%s:%s@tcp(%s:%d)",
+			"%s:%s@tcp(%s:%d)/",
 			m.User, m.Password, m.Host, m.Port,
 		)
 	}

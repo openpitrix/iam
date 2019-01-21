@@ -5,6 +5,10 @@
 package db
 
 import (
+	"database/sql"
+	"fmt"
+	"strings"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -28,6 +32,23 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 	cfg = cfg.Clone()
 
 	// create db if not exists
+	if strings.EqualFold(cfg.DB.Type, "mysql") {
+		db, err := sql.Open("mysql", cfg.DB.GetHost())
+		if err != nil {
+			logger.Warnf(nil, "%v", err)
+		}
+		defer db.Close()
+
+		query := fmt.Sprintf(
+			"CREATE DATABASE IF NOT EXISTS %s DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_unicode_ci;",
+			cfg.DB.Database,
+		)
+
+		_, err = db.Exec(query)
+		if err != nil {
+			logger.Warnf(nil, "query = %s, err = %v", query, err)
+		}
+	}
 
 	logger.Infof(nil, "DB config: begin")
 	logger.Infof(nil, "\tType: %s", cfg.DB.Type)
