@@ -23,7 +23,8 @@ RUN echo module iam > /build-dir/go.mod
 RUN git describe --tags --always > /build-dir/version
 RUN git describe --exact-match 2>/dev/null || git log -1 --format="%H" > /build-dir/version
 
-RUN go get -ldflags '-w -s' -tags netgo openpitrix.io/iam@$(cat /build-dir/version)
+RUN go get -ldflags '-w -s' -tags netgo openpitrix.io/iam/cmd/im@$(cat /build-dir/version)
+RUN go get -ldflags '-w -s' -tags netgo openpitrix.io/iam/cmd/am@$(cat /build-dir/version)
 
 RUN echo version: $(cat /build-dir/version)
 
@@ -33,9 +34,10 @@ RUN echo version: $(cat /build-dir/version)
 
 FROM alpine:3.7
 
-COPY --from=builder /build-dir/iam /usr/local/bin/
+COPY --from=builder /build-dir/im /usr/local/bin/
+COPY --from=builder /build-dir/am /usr/local/bin/
 
-CMD ["iam"]
+CMD ["im"]
 
 # -----------------------------------------------------------------------------
 # END

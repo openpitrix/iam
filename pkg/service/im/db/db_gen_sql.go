@@ -70,7 +70,7 @@ func genWhereCondition(
 	}
 
 	if len(m) == 0 {
-		var s = "1==0"
+		var s = "1=0"
 		for _, name := range searchWordFieldNames {
 			s += fmt.Sprintf(
 				" OR %s LIKE '%%%s%%'", name, searchWord,
