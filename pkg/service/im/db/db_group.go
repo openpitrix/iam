@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 	"strings"
-	"time"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -68,10 +67,6 @@ func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 func (p *Database) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pbim.Empty, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if len(req.GroupId) == 1 && strings.Contains(req.GroupId[0], ",") {
-		req.GroupId = strings.Split(req.GroupId[0], ",")
-	}
-
 	if req == nil || len(req.GroupId) == 0 || !isValidGids(req.GroupId...) {
 		err := status.Errorf(codes.InvalidArgument, "empty field")
 		logger.Warnf(ctx, "%+v", err)
@@ -102,29 +97,13 @@ func (p *Database) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pb
 func (p *Database) ModifyGroup(ctx context.Context, req *pbim.Group) (*pbim.Group, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if req == nil || req.GroupId == "" {
+	if req.GroupId == "" {
 		err := status.Errorf(codes.InvalidArgument, "empty field")
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
 	var dbGroup = NewUserGroupFromPB(req)
-
-	// ignore read only field
-	{
-		dbGroup.GroupPath = ""
-
-		dbGroup.CreateTime = time.Time{}
-		dbGroup.UpdateTime = time.Now()
-
-		switch {
-		case dbGroup.Status == "":
-			dbGroup.StatusTime = time.Time{}
-		default:
-			dbGroup.StatusTime = time.Now()
-		}
-	}
-
 	if err := p.DB.Model(dbGroup).Updates(dbGroup).Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -139,9 +118,8 @@ func (p *Database) GetGroup(ctx context.Context, req *pbim.GroupId) (*pbim.Group
 	var query = fmt.Sprintf(
 		"SELECT * FROM user_group WHERE group_id=? LIMIT 1 OFFSET 0;")
 
-	var v = UserGroup{}
-	p.DB.Raw(query, req.GroupId).Scan(&v)
-	if err := p.DB.Error; err != nil {
+	var v = UserGroup{GroupId: req.GroupId}
+	if err := p.DB.Model(User{}).Take(&v).Error; err != nil {
 		logger.Warnf(ctx, "%v", query)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err

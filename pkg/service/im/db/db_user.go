@@ -6,12 +6,8 @@ package db
 
 import (
 	"context"
-	"fmt"
 	"strings"
-	"time"
 
-	"github.com/golang/protobuf/ptypes"
-	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -23,51 +19,7 @@ import (
 func (p *Database) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if req == nil {
-		err := status.Errorf(codes.InvalidArgument, "empty field")
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-	if req != nil {
-		if req.UserId == "" {
-			req.UserId = genId("uid-", 12)
-		}
-
-		if isZeroTimestamp(req.CreateTime) {
-			req.CreateTime = ptypes.TimestampNow()
-		}
-		if isZeroTimestamp(req.UpdateTime) {
-			req.UpdateTime = ptypes.TimestampNow()
-		}
-		if isZeroTimestamp(req.StatusTime) {
-			req.StatusTime = ptypes.TimestampNow()
-		}
-	}
-
-	if req.UserId == "" || req.Password == "" {
-		err := status.Errorf(codes.InvalidArgument, "empty uid or password")
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-
-	// TODO: check group_path valid
-
 	var dbUser = NewUserFromPB(req)
-	if err := dbUser.ValidateForInsert(); err != nil {
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-
-	hashedPass, err := bcrypt.GenerateFromPassword(
-		[]byte(dbUser.Password), bcrypt.DefaultCost,
-	)
-	if err != nil {
-		err := status.Errorf(codes.Internal, "bcrypt failed")
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-	dbUser.Password = string(hashedPass)
-
 	if err := p.DB.Create(dbUser).Error; err != nil {
 		logger.Warnf(ctx, "%+v, %v", err, dbUser)
 		return nil, err
@@ -78,10 +30,6 @@ func (p *Database) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 
 func (p *Database) DeleteUsers(ctx context.Context, req *pbim.UserIdList) (*pbim.Empty, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
-
-	if len(req.UserId) == 1 && strings.Contains(req.UserId[0], ",") {
-		req.UserId = strings.Split(req.UserId[0], ",")
-	}
 
 	if req == nil || len(req.UserId) == 0 || !isValidUids(req.UserId...) {
 		err := status.Errorf(codes.InvalidArgument, "empty field")
@@ -116,29 +64,13 @@ func (p *Database) DeleteUsers(ctx context.Context, req *pbim.UserIdList) (*pbim
 func (p *Database) ModifyUser(ctx context.Context, req *pbim.User) (*pbim.User, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if req == nil || req.UserId == "" {
+	if req.UserId == "" {
 		err := status.Errorf(codes.InvalidArgument, "empty field")
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
 	var dbUser = NewUserFromPB(req)
-
-	// ignore read only field
-	{
-		dbUser.Password = ""
-
-		dbUser.CreateTime = time.Time{}
-		dbUser.UpdateTime = time.Now()
-
-		switch {
-		case dbUser.Status == "":
-			dbUser.StatusTime = time.Time{}
-		default:
-			dbUser.StatusTime = time.Now()
-		}
-	}
-
 	if err := p.DB.Model(dbUser).Updates(dbUser).Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -150,13 +82,8 @@ func (p *Database) ModifyUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 func (p *Database) GetUser(ctx context.Context, req *pbim.UserId) (*pbim.User, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	var query = fmt.Sprintf(
-		"SELECT * FROM user WHERE user_id=? LIMIT 1 OFFSET 0;")
-
-	var v = User{}
-	p.DB.Raw(query, req.UserId).Scan(&v)
-	if err := p.DB.Error; err != nil {
-		logger.Warnf(ctx, "%v", query)
+	var v = User{UserId: req.UserId}
+	if err := p.DB.Model(User{}).Take(&v).Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
