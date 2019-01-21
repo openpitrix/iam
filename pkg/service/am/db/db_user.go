@@ -100,7 +100,7 @@ func (p *Database) DescribeUsersWithRole(ctx context.Context, req *pbam.Describe
 
 	type RoleEx struct {
 		UserId string
-		DBRole
+		Role
 	}
 
 	var roles []RoleEx
@@ -118,10 +118,10 @@ func (p *Database) DescribeUsersWithRole(ctx context.Context, req *pbam.Describe
 
 	var users = make([]*pbam.UserWithRole, len(rawUsers))
 	for i := 0; i < len(rawUsers); i++ {
-		var pRole *DBRole
+		var pRole *Role
 		for j := 0; j < len(roles); j++ {
 			if rawUsers[i].UserId == roles[j].UserId {
-				pRole = &roles[j].DBRole
+				pRole = &roles[j].Role
 			}
 		}
 

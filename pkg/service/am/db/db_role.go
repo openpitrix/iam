@@ -118,7 +118,7 @@ func (p *Database) ModifyRole(ctx context.Context, req *pbam.Role) (*pbam.Role, 
 func (p *Database) GetRole(ctx context.Context, req *pbam.RoleId) (*pbam.Role, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	var role = DBRole{
+	var role = Role{
 		RoleId: req.RoleId,
 	}
 
@@ -141,7 +141,7 @@ func (p *Database) GetRoleListByUserId(ctx context.Context, req *pbam.UserId) (*
 			user_role_binding.user_id=?
 	`
 
-	var rows []DBRole
+	var rows []Role
 	if err := p.DB.Raw(query, req.UserId).Find(&rows).Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -204,7 +204,7 @@ func (p *Database) DescribeRoles(ctx context.Context, req *pbam.DescribeRolesReq
 		sqlUserIdCondition,
 	)
 
-	var rows []DBRole
+	var rows []Role
 	p.DB.Raw(query, args...).Find(&rows)
 
 	var sets []*pbam.Role

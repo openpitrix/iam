@@ -12,22 +12,22 @@ import (
 	pbam "openpitrix.io/iam/pkg/pb/am"
 )
 
-type DBRole struct {
+type Role struct {
 	RoleId      string `gorm:"primary_key"`
 	RoleName    string
 	Description string
 	Portal      string
-	Owner       string
-	OwnerPath   string
 	CreateTime  time.Time
 	UpdateTime  time.Time
+	Owner       string
+	OwnerPath   string
 }
 
-func PBRoleToDB(p *pbam.Role) *DBRole {
+func PBRoleToDB(p *pbam.Role) *Role {
 	if p == nil {
-		return new(DBRole)
+		return new(Role)
 	}
-	var q = &DBRole{
+	var q = &Role{
 		RoleId:      p.RoleId,
 		RoleName:    p.RoleName,
 		Description: p.Description,
@@ -42,7 +42,7 @@ func PBRoleToDB(p *pbam.Role) *DBRole {
 	return q
 }
 
-func (p *DBRole) ToPB() *pbam.Role {
+func (p *Role) ToPB() *pbam.Role {
 	if p == nil {
 		return new(pbam.Role)
 	}
