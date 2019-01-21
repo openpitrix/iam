@@ -75,11 +75,11 @@ func (p *Database) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pb
 
 	tx := p.DB.Begin()
 	{
-		if err := tx.Model(&UserGroup{}).Where("group_id in (?)", req.GroupId).Error; err != nil {
+		if err := tx.Delete(UserGroup{}, "group_id in (?)", req.GroupId).Error; err != nil {
 			tx.Rollback()
 			return nil, err
 		}
-		if err := tx.Model(&UserGroupBinding{}).Where("group_id in (?)", req.GroupId).Error; err != nil {
+		if err := tx.Delete(UserGroupBinding{}, "group_id in (?)", req.GroupId).Error; err != nil {
 			tx.Rollback()
 			return nil, err
 		}

@@ -39,13 +39,13 @@ func (p *Database) DeleteUsers(ctx context.Context, req *pbim.UserIdList) (*pbim
 
 	tx := p.DB.Begin()
 	{
-		tx.Exec(`delete from user where user_id in (?)`, req.UserId)
+		tx.Delete(User{}, `user_id in (?)`, req.UserId)
 		if err := tx.Error; err != nil {
 			tx.Rollback()
 			return nil, err
 		}
 
-		tx.Exec(`delete from user_group_binding where user_id in (?)`, req.UserId)
+		tx.Delete(User{}, `user_id in (?)`, req.UserId)
 		if err := tx.Error; err != nil {
 			tx.Rollback()
 			return nil, err

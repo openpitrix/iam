@@ -130,10 +130,7 @@ func (p *Database) LeaveGroup(ctx context.Context, req *pbim.LeaveGroupRequest) 
 			gid := req.GroupId[i]
 			uid := req.UserId[i]
 
-			tx.Exec(
-				`delete from user_group_binding where user_id=? and group_id=?`,
-				uid, gid,
-			)
+			tx.Delete(UserGroupBinding{}, `user_id=? and group_id=?`, uid, gid)
 			if err := tx.Error; err != nil {
 				tx.Rollback()
 				return nil, err
@@ -144,10 +141,7 @@ func (p *Database) LeaveGroup(ctx context.Context, req *pbim.LeaveGroupRequest) 
 			gid := req.GroupId[i]
 			uid := req.UserId[0]
 
-			tx.Exec(
-				`delete from user_group_binding where user_id=? and group_id=?`,
-				uid, gid,
-			)
+			tx.Delete(UserGroupBinding{}, `user_id=? and group_id=?`, uid, gid)
 			if err := tx.Error; err != nil {
 				tx.Rollback()
 				return nil, err
@@ -158,10 +152,7 @@ func (p *Database) LeaveGroup(ctx context.Context, req *pbim.LeaveGroupRequest) 
 			gid := req.GroupId[0]
 			uid := req.UserId[i]
 
-			tx.Exec(
-				`delete from user_group_binding where user_id=? and group_id=?`,
-				uid, gid,
-			)
+			tx.Delete(UserGroupBinding{}, `user_id=? and group_id=?`, uid, gid)
 			if err := tx.Error; err != nil {
 				tx.Rollback()
 				return nil, err
