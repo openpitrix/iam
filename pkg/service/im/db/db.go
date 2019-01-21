@@ -24,6 +24,7 @@ type Database struct {
 }
 
 type Options struct {
+	SqlInitDB    []string
 	SqlInitTable []string
 	SqlInitData  []string
 }
@@ -48,6 +49,21 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 		if err != nil {
 			logger.Warnf(nil, "query = %s, err = %v", query, err)
 		}
+
+		// init hook
+		if opt != nil && len(opt.SqlInitDB) > 0 {
+			var lastInitErr error
+			for _, sqlList := range opt.SqlInitDB {
+				for _, sql := range strings.Split(sqlList, ";") {
+					if _, err := db.Exec(sql); err != nil {
+						lastInitErr = err
+					}
+				}
+			}
+			if lastInitErr != nil {
+				logger.Warnf(nil, "%+v", lastInitErr)
+			}
+		}
 	}
 
 	logger.Infof(nil, "DB config: begin")
@@ -71,17 +87,29 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 
 	// init hook
 	if opt != nil && len(opt.SqlInitTable) > 0 {
-		for _, sql := range opt.SqlInitTable {
-			if err := p.DB.Exec(sql).Error; err != nil {
-				logger.Warnf(nil, "%+v", err)
+		var lastInitErr error
+		for _, sqlList := range opt.SqlInitTable {
+			for _, sql := range strings.Split(sqlList, ";") {
+				if err := p.DB.Exec(sql).Error; err != nil {
+					lastInitErr = err
+				}
 			}
+		}
+		if lastInitErr != nil {
+			logger.Warnf(nil, "%+v", lastInitErr)
 		}
 	}
 	if opt != nil && len(opt.SqlInitData) > 0 {
-		for _, sql := range opt.SqlInitData {
-			if err := p.DB.Exec(sql).Error; err != nil {
-				logger.Warnf(nil, "%+v", err)
+		var lastInitErr error
+		for _, sqlList := range opt.SqlInitData {
+			for _, sql := range strings.Split(sqlList, ";") {
+				if err := p.DB.Exec(sql).Error; err != nil {
+					lastInitErr = err
+				}
 			}
+		}
+		if lastInitErr != nil {
+			logger.Warnf(nil, "%+v", lastInitErr)
 		}
 	}
 
