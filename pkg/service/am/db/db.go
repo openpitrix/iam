@@ -55,6 +55,13 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 			var lastInitErr error
 			for _, sqlList := range opt.SqlInitDB {
 				for _, sql := range strings.Split(sqlList, ";") {
+					sql := strings.TrimSpace(sql)
+					if sql == "" {
+						continue
+					}
+					if strings.HasPrefix(sql, "/*") && strings.HasSuffix(sql, "*/") {
+						continue
+					}
 					if _, err := db.Exec(sql); err != nil {
 						lastInitErr = err
 					}
@@ -89,6 +96,13 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 		var lastInitErr error
 		for _, sqlList := range opt.SqlInitTable {
 			for _, sql := range strings.Split(sqlList, ";") {
+				sql := strings.TrimSpace(sql)
+				if sql == "" {
+					continue
+				}
+				if strings.HasPrefix(sql, "/*") && strings.HasSuffix(sql, "*/") {
+					continue
+				}
 				if err := p.DB.Exec(sql).Error; err != nil {
 					lastInitErr = err
 				}
@@ -99,20 +113,53 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 		}
 	}
 	if opt != nil && len(opt.SqlInitData) > 0 {
-		var lastInitErr error
-		for _, sqlList := range opt.SqlInitData {
-			for _, sql := range strings.Split(sqlList, ";") {
-				if err := p.DB.Exec(sql).Error; err != nil {
-					lastInitErr = err
+		hasRecords := p.checkDbHasRecords()
+		if hasRecords {
+			logger.Infof(nil, "DB has records, skip opt.SqlInitData")
+		} else {
+			var lastInitErr error
+			for _, sqlList := range opt.SqlInitData {
+				for _, sql := range strings.Split(sqlList, ";") {
+					sql := strings.TrimSpace(sql)
+					if sql == "" {
+						continue
+					}
+					if strings.HasPrefix(sql, "/*") && strings.HasSuffix(sql, "*/") {
+						continue
+					}
+					if err := p.DB.Exec(sql).Error; err != nil {
+						lastInitErr = err
+					}
 				}
 			}
-		}
-		if lastInitErr != nil {
-			logger.Warnf(nil, "%+v", lastInitErr)
+			if lastInitErr != nil {
+				logger.Warnf(nil, "%+v", lastInitErr)
+			}
 		}
 	}
 
 	return p, nil
+}
+
+func (p *Database) checkDbHasRecords() bool {
+	var tbNames = []string{
+		"action2",
+		"enable_action",
+		"role",
+		"role_module_binding",
+		"user_role_binding",
+	}
+	for _, name := range tbNames {
+		var total int
+		p.DB.Raw(fmt.Sprintf("select COUNT(*) from %s limit 1", name)).Count(&total)
+		if err := p.DB.Error; err != nil {
+			logger.Warnf(nil, "%+v", err)
+		}
+		if total > 0 {
+			return true
+		}
+	}
+	return false
 }
 
 func (p *Database) Close() error {
