@@ -30,7 +30,7 @@ func (p *Database) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 	}
 	if req != nil {
 		if req.UserId == "" {
-			req.UserId = genUid()
+			req.UserId = genId("uid-", 12)
 		}
 
 		if isZeroTimestamp(req.CreateTime) {

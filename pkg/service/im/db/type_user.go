@@ -7,6 +7,7 @@ package db
 import (
 	"encoding/json"
 	"fmt"
+	"regexp"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
@@ -18,16 +19,16 @@ import (
 
 type User struct {
 	UserId      string `gorm:"primary_key"`
-	UserName    string
-	Email       string
-	PhoneNumber string
-	Description string
-	Password    string
-	Status      string
+	UserName    string `gorm:"type:varchar(50)"`
+	Email       string `gorm:"type:varchar(50)"`
+	PhoneNumber string `gorm:"type:varchar(50)"`
+	Description string `gorm:"type:varchar(1000)"`
+	Password    string `gorm:"type:varchar(128)"`
+	Status      string `gorm:"type:varchar(10)"`
 	CreateTime  time.Time
 	UpdateTime  time.Time
 	StatusTime  time.Time
-	Extra       string // JSON
+	Extra       *string `gorm:"type:JSON"`
 }
 
 func NewUserFromPB(p *pbim.User) *User {
@@ -54,7 +55,8 @@ func NewUserFromPB(p *pbim.User) *User {
 			logger.Warnf(nil, "%+v", err)
 			return q
 		}
-		q.Extra = string(data)
+
+		q.Extra = newString(string(data))
 	}
 	return q
 }
@@ -77,11 +79,11 @@ func (p *User) ToPB() *pbim.User {
 	q.UpdateTime, _ = ptypes.TimestampProto(p.UpdateTime)
 	q.StatusTime, _ = ptypes.TimestampProto(p.StatusTime)
 
-	if p.Extra != "" {
+	if p.Extra != nil && *p.Extra != "" {
 		if q.Extra == nil {
 			q.Extra = make(map[string]string)
 		}
-		err := json.Unmarshal([]byte(p.Extra), &q.Extra)
+		err := json.Unmarshal([]byte(*p.Extra), &q.Extra)
 		if err != nil {
 			logger.Warnf(nil, "%+v", err)
 			return q
@@ -92,8 +94,14 @@ func (p *User) ToPB() *pbim.User {
 
 func (p *User) BeforeCreate() (err error) {
 	if p.UserId == "" {
-		p.UserId = genUid()
+		p.UserId = genId("uid-", 12)
+	} else {
+		var re = regexp.MustCompile(`^[a-zA-Z0-9-_]+$`)
+		if !re.MatchString(p.UserId) {
+			return fmt.Errorf("invalid UserId: %s", p.UserId)
+		}
 	}
+
 	if p.Password != "" {
 		hashedPass, err := bcrypt.GenerateFromPassword(
 			[]byte(p.Password), bcrypt.DefaultCost,
@@ -114,7 +122,11 @@ func (p *User) BeforeUpdate() (err error) {
 	if p.UpdateTime == (time.Time{}) {
 		p.UpdateTime = time.Now()
 	}
+
+	// ignore readonly fields
+	p.CreateTime = time.Time{}
 	p.Password = ""
+
 	return
 }
 
@@ -126,9 +138,9 @@ func (p *User) ValidateForInsert() error {
 		return fmt.Errorf("invalid password")
 	}
 
-	if p.Extra != "" {
+	if p.Extra != nil && *p.Extra != "" {
 		var m = make(map[string]string)
-		if err := json.Unmarshal([]byte(p.Extra), &m); err != nil {
+		if err := json.Unmarshal([]byte(*p.Extra), &m); err != nil {
 			return fmt.Errorf("invalid extra")
 		}
 	}
@@ -140,9 +152,9 @@ func (p *User) ValidateForUpdate() error {
 		return fmt.Errorf("invalid uid: %q", p.UserId)
 	}
 
-	if p.Extra != "" {
+	if p.Extra != nil && *p.Extra != "" {
 		var m = make(map[string]string)
-		if err := json.Unmarshal([]byte(p.Extra), &m); err != nil {
+		if err := json.Unmarshal([]byte(*p.Extra), &m); err != nil {
 			return fmt.Errorf("invalid extra")
 		}
 	}

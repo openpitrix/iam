@@ -20,13 +20,14 @@ type Database struct {
 }
 
 type Options struct {
-	SqlInitDB    []string
 	SqlInitTable []string
 	SqlInitData  []string
 }
 
 func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 	cfg = cfg.Clone()
+
+	// create db if not exists
 
 	logger.Infof(nil, "DB config: begin")
 	logger.Infof(nil, "\tType: %s", cfg.DB.Type)
@@ -45,6 +46,45 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 	}
 
 	p.DB.SingularTable(true)
+
+	// init hook
+	if opt != nil && len(opt.SqlInitTable) > 0 {
+		for _, sql := range opt.SqlInitTable {
+			if err := p.DB.Exec(sql).Error; err != nil {
+				logger.Warnf(nil, "%+v", err)
+			}
+		}
+	}
+	if opt != nil && len(opt.SqlInitData) > 0 {
+		for _, sql := range opt.SqlInitData {
+			if err := p.DB.Exec(sql).Error; err != nil {
+				logger.Warnf(nil, "%+v", err)
+			}
+		}
+	}
+
+	// greate tables
+	{
+		const (
+			optName  = "gorm:table_options"
+			optValue = "ENGINE=InnoDB DEFAULT CHARSET=utf8"
+		)
+		if !p.DB.HasTable(&User{}) {
+			if err := p.DB.Set(optName, optName).CreateTable(&User{}).Error; err != nil {
+				logger.Warnf(nil, "%+v", err)
+			}
+		}
+		if !p.DB.HasTable(&UserGroup{}) {
+			if err := p.DB.Set(optName, optName).CreateTable(&UserGroup{}).Error; err != nil {
+				logger.Warnf(nil, "%+v", err)
+			}
+		}
+		if !p.DB.HasTable(&UserGroupBinding{}) {
+			if err := p.DB.Set(optName, optName).CreateTable(&UserGroupBinding{}).Error; err != nil {
+				logger.Warnf(nil, "%+v", err)
+			}
+		}
+	}
 
 	return p, nil
 }

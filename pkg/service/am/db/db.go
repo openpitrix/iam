@@ -20,7 +20,6 @@ type Database struct {
 }
 
 type Options struct {
-	SqlInitDB    []string
 	SqlInitTable []string
 	SqlInitData  []string
 }
@@ -45,6 +44,22 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 	}
 
 	p.DB.SingularTable(true)
+
+	// init hook
+	if opt != nil && len(opt.SqlInitTable) > 0 {
+		for _, sql := range opt.SqlInitTable {
+			if err := p.DB.Exec(sql).Error; err != nil {
+				logger.Warnf(nil, "%+v", err)
+			}
+		}
+	}
+	if opt != nil && len(opt.SqlInitData) > 0 {
+		for _, sql := range opt.SqlInitData {
+			if err := p.DB.Exec(sql).Error; err != nil {
+				logger.Warnf(nil, "%+v", err)
+			}
+		}
+	}
 
 	return p, nil
 }

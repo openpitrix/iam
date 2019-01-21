@@ -7,6 +7,8 @@ package db
 import (
 	"encoding/json"
 	"fmt"
+	"regexp"
+	"strings"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
@@ -17,17 +19,17 @@ import (
 
 type UserGroup struct {
 	GroupId     string `gorm:"primary_key"`
-	GroupPath   string
-	GroupName   string
-	Description string
-	Status      string
+	GroupPath   string `gorm:"type:varchar(255)"`
+	GroupName   string `gorm:"type:varchar(50)"`
+	Description string `gorm:"type:varchar(1000)"`
+	Status      string `gorm:"type:varchar(10)"`
 	CreateTime  time.Time
 	UpdateTime  time.Time
 	StatusTime  time.Time
-	Extra       string // JSON
+	Extra       *string `gorm:"type:JSON"`
 
 	// DB internal fields
-	ParentGroupId  string
+	ParentGroupId  string `gorm:"type:varchar(50)"`
 	GroupPathLevel int
 }
 
@@ -57,7 +59,8 @@ func NewUserGroupFromPB(p *pbim.Group) *UserGroup {
 			logger.Warnf(nil, "%+v", err)
 			return q
 		}
-		q.Extra = string(data)
+
+		q.Extra = newString(string(data))
 	}
 
 	return q
@@ -79,11 +82,11 @@ func (p *UserGroup) ToPB() *pbim.Group {
 	q.UpdateTime, _ = ptypes.TimestampProto(p.UpdateTime)
 	q.StatusTime, _ = ptypes.TimestampProto(p.StatusTime)
 
-	if p.Extra != "" {
+	if p.Extra != nil && *p.Extra != "" {
 		if q.Extra == nil {
 			q.Extra = make(map[string]string)
 		}
-		err := json.Unmarshal([]byte(p.Extra), &q.Extra)
+		err := json.Unmarshal([]byte(*p.Extra), &q.Extra)
 		if err != nil {
 			logger.Warnf(nil, "%+v", err)
 			return q
@@ -94,19 +97,49 @@ func (p *UserGroup) ToPB() *pbim.Group {
 
 func (p *UserGroup) BeforeCreate() (err error) {
 	if p.GroupId == "" {
-		p.GroupId = genGid()
+		p.GroupId = genId("gid-", 12)
+	} else {
+		var re = regexp.MustCompile(`^[a-zA-Z0-9-_]+$`)
+		if !re.MatchString(p.GroupId) {
+			return fmt.Errorf("invalid GroupId: %s", p.GroupId)
+		}
 	}
 
 	if p.CreateTime == (time.Time{}) {
 		p.CreateTime = time.Now()
 	}
 
+	// a.b.ParentGroupId.d.
+	if len(p.GroupPath) == len(p.GroupId)+1 {
+		p.ParentGroupId = ""
+	} else if len(p.GroupPath) > len(p.GroupId)+1 {
+		// prentGroupPath: a.b.ParentGroupId.
+		prentGroupPath := p.GroupPath[:len(p.GroupPath)-len(p.GroupId)-1]
+		prentGroupPath = strings.TrimSuffix(prentGroupPath, ".")
+		if idx := strings.LastIndex(prentGroupPath, "."); idx >= 0 {
+			p.ParentGroupId = prentGroupPath[idx:]
+		}
+	} else {
+		p.ParentGroupId = "" // ???
+	}
+
+	p.GroupPathLevel = strings.Count(p.GroupPath, ".")
 	return
 }
 func (p *UserGroup) BeforeUpdate() (err error) {
 	if p.UpdateTime == (time.Time{}) {
 		p.UpdateTime = time.Now()
 	}
+	if p.Status != "" {
+		p.StatusTime = time.Now()
+	}
+
+	// ignore readonly fields
+	p.GroupPath = ""
+	p.CreateTime = time.Time{}
+	p.ParentGroupId = ""
+	p.GroupPathLevel = 0
+
 	return
 }
 
@@ -115,9 +148,9 @@ func (p *UserGroup) ValidateForInsert() error {
 		return fmt.Errorf("invalid GroupId: %q", p.GroupId)
 	}
 
-	if p.Extra != "" {
+	if p.Extra != nil && *p.Extra != "" {
 		var m = make(map[string]string)
-		if err := json.Unmarshal([]byte(p.Extra), &m); err != nil {
+		if err := json.Unmarshal([]byte(*p.Extra), &m); err != nil {
 			return fmt.Errorf("invalid extra")
 		}
 	}
@@ -129,9 +162,9 @@ func (p *UserGroup) ValidateForUpdate() error {
 		return fmt.Errorf("invalid GroupId: %q", p.GroupId)
 	}
 
-	if p.Extra != "" {
+	if p.Extra != nil && *p.Extra != "" {
 		var m = make(map[string]string)
-		if err := json.Unmarshal([]byte(p.Extra), &m); err != nil {
+		if err := json.Unmarshal([]byte(*p.Extra), &m); err != nil {
 			return fmt.Errorf("invalid extra")
 		}
 	}
