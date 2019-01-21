@@ -26,6 +26,19 @@ func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 		return nil, err
 	}
 
+	// gen group_path from parent_id
+	if req.ParentGroupId != "" {
+		if parent, err := p.GetGroup(ctx, &pbim.GroupId{GroupId: req.ParentGroupId}); err == nil {
+			if dbGroup.GroupPath == "" {
+				dbGroup.GroupPath = parent.GroupPath + dbGroup.GroupId + "."
+			}
+		} else {
+			err := status.Errorf(codes.InvalidArgument, "invalid parent_id: %v", req.ParentGroupId)
+			logger.Warnf(ctx, "%+v", err)
+			return nil, err
+		}
+	}
+
 	// check group_path valid
 	switch {
 	case dbGroup.GroupPath == "":
@@ -145,13 +158,19 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 		req.Status = strings.Split(req.Status[0], ",")
 	}
 
+	logger.Infof(ctx, "1")
 	if err := p.validateListGroupsReq(req); err != nil {
+		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
+	logger.Infof(ctx, "req: %v", req)
+
 	if len(req.UserId) > 0 {
+		logger.Infof(ctx, "2")
 		return p.listGroups_with_uid(ctx, req)
 	} else {
+		logger.Infof(ctx, "3")
 		return p.listGroups_no_uid(ctx, req)
 	}
 }

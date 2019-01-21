@@ -20,12 +20,12 @@ func isValidSearchWord(name string) bool {
 	return re.MatchString(name)
 }
 func isValidSortKey(name string) bool {
-	var re = regexp.MustCompile(`^[a-zA-Z0-9_]*$`)
+	var re = regexp.MustCompile(`^[a-zA-Z0-9_-]*$`)
 	return re.MatchString(name)
 }
 
 func isValidGids(ids ...string) bool {
-	var re = regexp.MustCompile(`^[a-zA-Z0-9-_]+$`)
+	var re = regexp.MustCompile(`^[a-zA-Z0-9_-]*$`)
 	for _, id := range ids {
 		if !re.MatchString(id) {
 			return false
@@ -34,7 +34,7 @@ func isValidGids(ids ...string) bool {
 	return true
 }
 func isValidUids(ids ...string) bool {
-	var re = regexp.MustCompile(`^[a-zA-Z0-9-_]+$`)
+	var re = regexp.MustCompile(`^[a-zA-Z0-9_-]*$`)
 	for _, id := range ids {
 		if !re.MatchString(id) {
 			return false
@@ -46,7 +46,7 @@ func isValidNames(ids ...string) bool {
 	return true
 }
 func isValidStatus(ids ...string) bool {
-	var re = regexp.MustCompile(`^[a-zA-Z0-9-_]+$`)
+	var re = regexp.MustCompile(`^[a-zA-Z0-9_-]*$`)
 	for _, id := range ids {
 		if !re.MatchString(id) {
 			return false

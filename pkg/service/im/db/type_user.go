@@ -112,9 +112,10 @@ func (p *User) BeforeCreate() (err error) {
 		p.Password = string(hashedPass)
 	}
 
-	if p.CreateTime == (time.Time{}) {
-		p.CreateTime = time.Now()
-	}
+	now := time.Now()
+	p.CreateTime = now
+	p.UpdateTime = now
+	p.StatusTime = now
 
 	return
 }

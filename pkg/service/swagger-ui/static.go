@@ -1515,7 +1515,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
     "imGroup": {
       "type": "object",
       "properties": {
-        "parent_id": {
+        "parent_group_id": {
           "type": "string"
         },
         "group_id": {

@@ -9,8 +9,8 @@ import (
 )
 
 type UserGroupBinding struct {
-	Id         string     `gorm:"type:varchar(50);primary_key"`
-	GroupId    string     `gorm:"type:varchar(50);not null"`
-	UserId     string     `gorm:"type:varchar(50);not null"`
-	CreateTime *time.Time `gorm:"default CURRENT_TIMESTAMP"`
+	Id         string    `gorm:"type:varchar(50);primary_key"`
+	GroupId    string    `gorm:"type:varchar(50);not null"`
+	UserId     string    `gorm:"type:varchar(50);not null"`
+	CreateTime time.Time `gorm:"default CURRENT_TIMESTAMP"`
 }

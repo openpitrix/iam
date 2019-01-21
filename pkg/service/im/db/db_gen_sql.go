@@ -65,25 +65,39 @@ func genWhereCondition(
 			m[name] = b.String()
 		}
 	}
+	if len(m) == 0 && searchWord == "" {
+		return nil // no where condition
+	}
+
+	if len(m) == 0 {
+		var s = "1==0"
+		for _, name := range searchWordFieldNames {
+			s += fmt.Sprintf(
+				" OR %s LIKE '%%%s%%'", name, searchWord,
+			)
+
+		}
+		return []string{s}
+	}
 
 	// name LIKE '%search_word%'
+	var conditionBySearchWord = `(1!=0 `
 	if searchWord != "" {
 		for _, name := range searchWordFieldNames {
 			if _, exists := m[name]; !exists {
-				m[name] = fmt.Sprintf(
-					"%s LIKE '%%%s%%'", name, searchWord,
+				conditionBySearchWord += fmt.Sprintf(
+					"OR %s LIKE '%%%s%%'", name, searchWord,
 				)
 			}
 		}
 	}
-	if len(m) == 0 {
-		return nil // no where condition
-	}
+	conditionBySearchWord += ")"
 
 	var ss []string
 	for _, v := range m {
 		ss = append(ss, v)
 	}
 	sort.Strings(ss)
+	ss = append(ss, conditionBySearchWord)
 	return ss
 }

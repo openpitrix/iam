@@ -18,18 +18,18 @@ import (
 )
 
 type UserGroup struct {
-	GroupId     string `gorm:"primary_key"`
-	GroupPath   string `gorm:"type:varchar(255)"`
-	GroupName   string `gorm:"type:varchar(50)"`
-	Description string `gorm:"type:varchar(1000)"`
-	Status      string `gorm:"type:varchar(10)"`
-	CreateTime  time.Time
-	UpdateTime  time.Time
-	StatusTime  time.Time
-	Extra       *string `gorm:"type:JSON"`
+	ParentGroupId string `gorm:"type:varchar(50)"`
+	GroupId       string `gorm:"primary_key"`
+	GroupPath     string `gorm:"type:varchar(255)"`
+	GroupName     string `gorm:"type:varchar(50)"`
+	Description   string `gorm:"type:varchar(1000)"`
+	Status        string `gorm:"type:varchar(10)"`
+	CreateTime    time.Time
+	UpdateTime    time.Time
+	StatusTime    time.Time
+	Extra         *string `gorm:"type:JSON"`
 
-	// DB internal fields
-	ParentGroupId  string `gorm:"type:varchar(50)"`
+	// internal
 	GroupPathLevel int
 }
 
@@ -38,15 +38,14 @@ func NewUserGroupFromPB(p *pbim.Group) *UserGroup {
 		return new(UserGroup)
 	}
 	var q = &UserGroup{
-		GroupId:     p.GroupId,
-		GroupPath:   p.GroupPath,
-		GroupName:   p.GroupName,
-		Description: p.Description,
-		Status:      p.Status,
+		ParentGroupId: p.ParentGroupId,
+		GroupId:       p.GroupId,
+		GroupPath:     p.GroupPath,
+		GroupName:     p.GroupName,
+		Description:   p.Description,
+		Status:        p.Status,
 
-		// DB internal fields
-		ParentGroupId:  "<nil>",
-		GroupPathLevel: -1,
+		GroupPathLevel: 0,
 	}
 
 	q.CreateTime, _ = ptypes.Timestamp(p.CreateTime)
@@ -63,6 +62,10 @@ func NewUserGroupFromPB(p *pbim.Group) *UserGroup {
 		q.Extra = newString(string(data))
 	}
 
+	if p.GroupPath != "" {
+		q.GroupPathLevel = strings.Count(p.GroupPath, ".")
+	}
+
 	return q
 }
 
@@ -71,11 +74,12 @@ func (p *UserGroup) ToPB() *pbim.Group {
 		return new(pbim.Group)
 	}
 	var q = &pbim.Group{
-		GroupId:     p.GroupId,
-		GroupPath:   p.GroupPath,
-		GroupName:   p.GroupName,
-		Description: p.Description,
-		Status:      p.Status,
+		ParentGroupId: p.ParentGroupId,
+		GroupId:       p.GroupId,
+		GroupPath:     p.GroupPath,
+		GroupName:     p.GroupName,
+		Description:   p.Description,
+		Status:        p.Status,
 	}
 
 	q.CreateTime, _ = ptypes.TimestampProto(p.CreateTime)
@@ -105,9 +109,10 @@ func (p *UserGroup) BeforeCreate() (err error) {
 		}
 	}
 
-	if p.CreateTime == (time.Time{}) {
-		p.CreateTime = time.Now()
-	}
+	now := time.Now()
+	p.CreateTime = now
+	p.UpdateTime = now
+	p.StatusTime = now
 
 	// a.b.ParentGroupId.d.
 	if len(p.GroupPath) == len(p.GroupId)+1 {

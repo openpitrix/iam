@@ -42,6 +42,8 @@ func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*
 
 	tx := p.DB.Begin()
 
+	// todo check uid and gid valid
+
 	switch {
 	case len(req.UserId) == len(req.GroupId):
 		for i := 0; i < len(req.GroupId); i++ {

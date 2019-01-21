@@ -46,6 +46,7 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 	}
 
 	p.DB.SingularTable(true)
+	p.DB.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8")
 
 	// init hook
 	if opt != nil && len(opt.SqlInitTable) > 0 {
@@ -65,22 +66,18 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 
 	// greate tables
 	{
-		const (
-			optName  = "gorm:table_options"
-			optValue = "ENGINE=InnoDB DEFAULT CHARSET=utf8"
-		)
 		if !p.DB.HasTable(&User{}) {
-			if err := p.DB.Set(optName, optName).CreateTable(&User{}).Error; err != nil {
+			if err := p.DB.CreateTable(&User{}).Error; err != nil {
 				logger.Warnf(nil, "%+v", err)
 			}
 		}
 		if !p.DB.HasTable(&UserGroup{}) {
-			if err := p.DB.Set(optName, optName).CreateTable(&UserGroup{}).Error; err != nil {
+			if err := p.DB.CreateTable(&UserGroup{}).Error; err != nil {
 				logger.Warnf(nil, "%+v", err)
 			}
 		}
 		if !p.DB.HasTable(&UserGroupBinding{}) {
-			if err := p.DB.Set(optName, optName).CreateTable(&UserGroupBinding{}).Error; err != nil {
+			if err := p.DB.CreateTable(&UserGroupBinding{}).Error; err != nil {
 				logger.Warnf(nil, "%+v", err)
 			}
 		}

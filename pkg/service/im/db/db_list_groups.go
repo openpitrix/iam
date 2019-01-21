@@ -47,22 +47,20 @@ func (p *Database) validateListGroupsReq(req *pbim.ListGroupsRequest) error {
 
 func (p *Database) listGroups_no_uid(ctx context.Context, req *pbim.ListGroupsRequest) (*pbim.ListGroupsResponse, error) {
 	if len(req.UserId) > 0 {
-		panic("should use listGroups_with_uid")
+		panic("uid should nil")
 	}
 
 	// WHERE name IN (name1,name2) AND name LIKE '%search_word%'
 	var whereCondition = func() string {
 		ss := genWhereCondition(
 			map[string][]string{
-				"group_id": req.GroupId,
-				"user_id":  req.UserId,
-				"name":     req.GroupName,
-				"status":   req.Status,
+				"group_id":   req.GroupId,
+				"group_name": req.GroupName,
+				"status":     req.Status,
 			},
 			[]string{
-				"user_id",
-				"user_name",
-				"name",
+				"group_id",
+				"group_name",
 				"description",
 				"status",
 			},
@@ -86,6 +84,9 @@ func (p *Database) listGroups_no_uid(ctx context.Context, req *pbim.ListGroupsRe
 		"SELECT COUNT(*) FROM user_group %s",
 		whereCondition,
 	)
+
+	logger.Infof(ctx, "4")
+	logger.Infof(ctx, "4.1, query: %s", query)
 	var total int
 	p.DB.Raw(query).Count(&total)
 	if err := p.DB.Error; err != nil {
@@ -94,17 +95,20 @@ func (p *Database) listGroups_no_uid(ctx context.Context, req *pbim.ListGroupsRe
 		return nil, err
 	}
 
+	logger.Infof(ctx, "5")
 	// SELECT * FROM user_group {WHERE ...} {ORDER BY ...} {LIMIT ...}
 	query = fmt.Sprintf(
-		"SELECT * FROM user_group %s %s %s",
+		"select * FROM user_group %s %s %s",
 		whereCondition, orderBy, limitOffset,
 	)
+	logger.Infof(ctx, "5.1, query: %s", query)
 	reply, err := p.listGroupsByQuery(ctx, query)
 	if err != nil {
 		logger.Warnf(ctx, "%v", query)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
+	logger.Infof(ctx, "6")
 
 	reply.Total = int32(total)
 	return reply, nil
@@ -112,7 +116,7 @@ func (p *Database) listGroups_no_uid(ctx context.Context, req *pbim.ListGroupsRe
 
 func (p *Database) listGroups_with_uid(ctx context.Context, req *pbim.ListGroupsRequest) (*pbim.ListGroupsResponse, error) {
 	if len(req.UserId) == 0 {
-		panic("should use listGroups_no_uid")
+		panic("uid is empty")
 	}
 
 	// select user_group.* from
@@ -126,16 +130,16 @@ func (p *Database) listGroups_with_uid(ctx context.Context, req *pbim.ListGroups
 	var whereCondition = func() string {
 		ss := genWhereCondition(
 			map[string][]string{
-				"group_id": req.GroupId,
-				"user_id":  req.UserId,
-				"name":     req.GroupName,
-				"status":   req.Status,
+				"user_group.group_id":   req.GroupId,
+				"user_group.group_name": req.GroupName,
+				"user.user_id":          req.UserId,
+				"user_group.status":     req.Status,
 			},
 			[]string{
-				"user_id",
-				"user_name",
-				"description",
-				"status",
+				"user.user_id",
+				"user_group.group_name",
+				"user_group.description",
+				"user_group.status",
 			},
 			req.SearchWord,
 		)
@@ -166,6 +170,7 @@ func (p *Database) listGroups_with_uid(ctx context.Context, req *pbim.ListGroups
 		whereCondition,
 	)
 
+	logger.Infof(ctx, "%v", query)
 	var total int
 	p.DB.Raw(query).Count(&total)
 	if err := p.DB.Error; err != nil {
@@ -173,6 +178,8 @@ func (p *Database) listGroups_with_uid(ctx context.Context, req *pbim.ListGroups
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
+
+	logger.Infof(ctx, "%v", query)
 
 	// SELECT user_group.* FROM user, user_group, user_group_binding
 	// {WHERE ...} {ORDER BY ...} {LIMIT ...}
