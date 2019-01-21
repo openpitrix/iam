@@ -44,7 +44,7 @@ func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 		}
 	}
 
-	var dbGroup = db_spec.PBGroupToDB(req)
+	var dbGroup = NewUserGroupFromPB(req)
 	if err := dbGroup.ValidateForInsert(); err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -140,7 +140,7 @@ func (p *Database) ModifyGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 		return nil, err
 	}
 
-	var dbGroup = db_spec.PBGroupToDB(req)
+	var dbGroup = NewUserGroupFromPB(req)
 
 	// ignore read only field
 	{
@@ -188,7 +188,7 @@ func (p *Database) GetGroup(ctx context.Context, req *pbim.GroupId) (*pbim.Group
 		db_spec.UserGroupPrimaryKeyName,
 	)
 
-	var v = db_spec.DBGroup{}
+	var v = UserGroup{}
 	p.DB.Raw(query, req.GroupId).Scan(&v)
 	if err := p.DB.Error; err != nil {
 		logger.Warnf(ctx, "%v", query)

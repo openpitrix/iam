@@ -16,10 +16,12 @@ import (
 	"openpitrix.io/iam/pkg/internal/base58"
 )
 
-func isValidDatabaseName(name string) bool {
-	var re = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
-	return re.MatchString(name)
-}
+var (
+	reUserId    = regexp.MustCompile(`^[a-zA-Z0-9-_]{2,64}$`)
+	reGroupId   = regexp.MustCompile(`^[a-zA-Z0-9-_]{2,64}$`)
+	reGroupPath = regexp.MustCompile(`^[a-zA-Z0-9_.-]{2,255}$`)
+)
+
 func isValidDatabaseTableName(name string) bool {
 	var re = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
 	return re.MatchString(name)

@@ -13,14 +13,13 @@ import (
 
 	"openpitrix.io/iam/pkg/internal/funcutil"
 	"openpitrix.io/iam/pkg/pb/im"
-	"openpitrix.io/iam/pkg/service/im/db_spec"
 	"openpitrix.io/logger"
 )
 
 func (p *Database) ComparePassword(ctx context.Context, req *pbim.Password) (*pbim.Bool, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	var user db_spec.DBUser
+	var user User
 	p.DB.Raw("select * from user where user_id=?", req.UserId).Scan(&user)
 	if err := p.DB.Error; err != nil {
 		logger.Warnf(ctx, "uid = %s, err = %+v", req.UserId, err)

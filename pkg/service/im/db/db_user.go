@@ -53,7 +53,7 @@ func (p *Database) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 
 	// TODO: check group_path valid
 
-	var dbUser = db_spec.PBUserToDB(req)
+	var dbUser = NewUserFromPB(req)
 	if err := dbUser.ValidateForInsert(); err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -126,7 +126,7 @@ func (p *Database) ModifyUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 		return nil, err
 	}
 
-	var dbUser = db_spec.PBUserToDB(req)
+	var dbUser = NewUserFromPB(req)
 
 	// ignore read only field
 	{
@@ -174,7 +174,7 @@ func (p *Database) GetUser(ctx context.Context, req *pbim.UserId) (*pbim.User, e
 		db_spec.UserPrimaryKeyName,
 	)
 
-	var v = db_spec.DBUser{}
+	var v = User{}
 	p.DB.Raw(query, req.UserId).Scan(&v)
 	if err := p.DB.Error; err != nil {
 		logger.Warnf(ctx, "%v", query)

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a Apache license
 // that can be found in the LICENSE file.
 
-package db_spec
+package db
 
 import (
 	"encoding/json"
@@ -15,7 +15,7 @@ import (
 	"openpitrix.io/logger"
 )
 
-type DBUser struct {
+type User struct {
 	UserId      string    `db:"user_id"`
 	UserName    string    `db:"user_name"`
 	Email       string    `db:"email"`
@@ -29,11 +29,11 @@ type DBUser struct {
 	Extra       string    `db:"extra"` // JSON
 }
 
-func PBUserToDB(p *pbim.User) *DBUser {
+func NewUserFromPB(p *pbim.User) *User {
 	if p == nil {
-		return new(DBUser)
+		return new(User)
 	}
-	var q = &DBUser{
+	var q = &User{
 		UserId:      p.UserId,
 		UserName:    p.UserName,
 		Email:       p.Email,
@@ -58,7 +58,7 @@ func PBUserToDB(p *pbim.User) *DBUser {
 	return q
 }
 
-func (p *DBUser) ToPB() *pbim.User {
+func (p *User) ToPB() *pbim.User {
 	if p == nil {
 		return new(pbim.User)
 	}
@@ -89,7 +89,7 @@ func (p *DBUser) ToPB() *pbim.User {
 	return q
 }
 
-func (p *DBUser) ValidateForInsert() error {
+func (p *User) ValidateForInsert() error {
 	if !reUserId.MatchString(p.UserId) {
 		return fmt.Errorf("invalid uid: %q", p.UserId)
 	}
@@ -106,7 +106,7 @@ func (p *DBUser) ValidateForInsert() error {
 
 	return nil
 }
-func (p *DBUser) ValidateForUpdate() error {
+func (p *User) ValidateForUpdate() error {
 	if !reUserId.MatchString(p.UserId) {
 		return fmt.Errorf("invalid uid: %q", p.UserId)
 	}

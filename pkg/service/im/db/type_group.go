@@ -2,7 +2,7 @@
 // Use of this source code is governed by a Apache license
 // that can be found in the LICENSE file.
 
-package db_spec
+package db
 
 import (
 	"encoding/json"
@@ -15,7 +15,7 @@ import (
 	"openpitrix.io/logger"
 )
 
-type DBGroup struct {
+type UserGroup struct {
 	GroupId     string    `db:"group_id"`
 	GroupPath   string    `db:"group_path"`
 	GroupName   string    `db:"group_name"`
@@ -31,11 +31,11 @@ type DBGroup struct {
 	GroupPathLevel int    `db:"level"`
 }
 
-func PBGroupToDB(p *pbim.Group) *DBGroup {
+func NewUserGroupFromPB(p *pbim.Group) *UserGroup {
 	if p == nil {
-		return new(DBGroup)
+		return new(UserGroup)
 	}
-	var q = &DBGroup{
+	var q = &UserGroup{
 		GroupId:     p.GroupId,
 		GroupPath:   p.GroupPath,
 		GroupName:   p.GroupName,
@@ -63,7 +63,7 @@ func PBGroupToDB(p *pbim.Group) *DBGroup {
 	return q
 }
 
-func (p *DBGroup) ToPB() *pbim.Group {
+func (p *UserGroup) ToPB() *pbim.Group {
 	if p == nil {
 		return new(pbim.Group)
 	}
@@ -92,7 +92,7 @@ func (p *DBGroup) ToPB() *pbim.Group {
 	return q
 }
 
-func (p *DBGroup) ValidateForInsert() error {
+func (p *UserGroup) ValidateForInsert() error {
 	if !reGroupId.MatchString(p.GroupId) {
 		return fmt.Errorf("invalid GroupId: %q", p.GroupId)
 	}
@@ -106,7 +106,7 @@ func (p *DBGroup) ValidateForInsert() error {
 
 	return nil
 }
-func (p *DBGroup) ValidateForUpdate() error {
+func (p *UserGroup) ValidateForUpdate() error {
 	if !reGroupId.MatchString(p.GroupId) {
 		return fmt.Errorf("invalid GroupId: %q", p.GroupId)
 	}

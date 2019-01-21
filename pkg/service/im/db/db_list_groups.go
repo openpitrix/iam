@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"openpitrix.io/iam/pkg/pb/im"
-	"openpitrix.io/iam/pkg/service/im/db_spec"
 	"openpitrix.io/logger"
 )
 
@@ -193,7 +192,7 @@ func (p *Database) listGroups_with_uid(ctx context.Context, req *pbim.ListGroups
 }
 
 func (p *Database) listGroupsByQuery(ctx context.Context, query string) (*pbim.ListGroupsResponse, error) {
-	var rows = []db_spec.DBGroup{}
+	var rows = []UserGroup{}
 	err := p.DB.Raw(query).Scan(&rows).Error
 	if err != nil {
 		logger.Warnf(ctx, "%v", query)

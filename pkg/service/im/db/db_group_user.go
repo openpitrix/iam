@@ -13,7 +13,6 @@ import (
 
 	"openpitrix.io/iam/pkg/internal/funcutil"
 	"openpitrix.io/iam/pkg/pb/im"
-	"openpitrix.io/iam/pkg/service/im/db_spec"
 	"openpitrix.io/logger"
 )
 
@@ -165,7 +164,7 @@ func (p *Database) GetGroupsByUserId(ctx context.Context, req *pbim.UserId) (*pb
 			user_group_binding.group_id=user_group.group_id and
 			user.user_id=?
 	`
-	var rows []db_spec.DBGroup
+	var rows []UserGroup
 	p.DB.Raw(sql, sql, req.UserId).Scan(&rows)
 	if err := p.DB.Error; err != nil {
 		logger.Warnf(ctx, "%v", sql)
@@ -197,7 +196,7 @@ func (p *Database) GetUsersByGroupId(ctx context.Context, req *pbim.GroupId) (*p
 			user_group_binding.user_id=user_group.group_id and
 			user_group.group_id=?
 	`
-	var rows []db_spec.DBUser
+	var rows []User
 	p.DB.Raw(sql, sql, req.GroupId).Scan(&rows)
 	if err := p.DB.Error; err != nil {
 		logger.Warnf(ctx, "%v", sql)

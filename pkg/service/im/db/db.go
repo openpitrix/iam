@@ -5,10 +5,6 @@
 package db
 
 import (
-	"database/sql"
-	"fmt"
-	"strings"
-
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -32,30 +28,6 @@ type Options struct {
 
 func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 	cfg = cfg.Clone()
-
-	// init db
-	func() {
-		if strings.EqualFold(cfg.DB.Type, "mysql") {
-			if !isValidDatabaseName(cfg.DB.Database) {
-				logger.Warnf(nil, "invalid db name %s", cfg.DB.Database)
-			}
-
-			db, err := sql.Open("mysql", cfg.DB.GetHostUrl())
-			if err != nil {
-				logger.Warnf(nil, "%v", err)
-			}
-			defer db.Close()
-
-			query := fmt.Sprintf(
-				"CREATE DATABASE IF NOT EXISTS %s CHARACTER SET utf8 COLLATE utf8_general_ci;",
-				cfg.DB.Database,
-			)
-			_, err = db.Exec(query)
-			if err != nil {
-				logger.Warnf(nil, "query = %s, err = %v", query, err)
-			}
-		}
-	}()
 
 	logger.Infof(nil, "DB config: begin")
 	logger.Infof(nil, "\tType: %s", cfg.DB.Type)

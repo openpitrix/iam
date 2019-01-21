@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"openpitrix.io/iam/pkg/pb/im"
-	"openpitrix.io/iam/pkg/service/im/db_spec"
 	"openpitrix.io/logger"
 )
 
@@ -203,7 +202,7 @@ func (p *Database) listUsers_with_gid(ctx context.Context, req *pbim.ListUsersRe
 }
 
 func (p *Database) listUsersByQuery(ctx context.Context, query string) (*pbim.ListUsersResponse, error) {
-	var rows = []db_spec.DBUser{}
+	var rows = []User{}
 	err := p.DB.Raw(query).Scan(&rows).Error
 	if err != nil {
 		logger.Warnf(ctx, "%v", query)
