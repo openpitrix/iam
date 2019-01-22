@@ -4,47 +4,26 @@
 
 package db
 
-const sqlDescribeActionsBy_RoleId_Protal_old = `
--- argument[0]: role_id
--- argument[1]: portal
-select distinct
-	t1.role_id,
-	t1.role_name,
-	t1.portal,
+import (
+	"openpitrix.io/iam/pkg/internal/funcutil"
+	"openpitrix.io/logger"
+)
 
-	t3.module_id,
-	t3.module_name,
-	t2.data_level,
+func (p *Database) getAllActions(roleId, portal string) ([]DBAction, error) {
+	logger.Infof(nil, funcutil.CallerName(1))
 
-	t3.feature_id,
-	t3.feature_name,
+	var rows = []DBAction{}
+	err := p.DB.Raw(sqlGetAllActions_by_RoleId_Protal, roleId, portal).Scan(&rows).Error
+	if err != nil {
+		logger.Warnf(nil, "%v", sqlGetAllActions_by_RoleId_Protal)
+		logger.Warnf(nil, "%+v", err)
+		return nil, err
+	}
 
-	t3.action_id,
-	t3.action_name,
-	(case when isnull(t4.action_id)=0 then 'true' else 'false' end) as action_enabled,
+	return rows, nil
+}
 
-	t3.api_id,
-	t3.api_method,
-	t3.api_description,
-
-	t3.url_method,
-	t3.url
-from
-	role t1,
-	role_module_binding t2,
-	action2 t3 left join enable_action t4 on t4.action_id=t3.action_id
-where
-	t1.role_id=t2.role_id and
-	t2.module_id=t3.module_id and
-	t1.role_id=? and
-	t1.portal=?
-order by
-	t3.module_id,
-	t3.feature_id,
-	t3.action_id
-`
-
-const sqlDescribeActionsBy_RoleId_Protal = `
+const sqlGetAllActions_by_RoleId_Protal = `
 -- argument[0]: role_id
 -- argument[1]: portal
 select distinct

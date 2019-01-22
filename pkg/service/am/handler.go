@@ -18,10 +18,6 @@ func (p *Server) GetVersion(context.Context, *pbam.Empty) (*pbam.String, error) 
 	return reply, nil
 }
 
-func (p *Server) DescribeActions(ctx context.Context, req *pbam.DescribeActionsRequest) (*pbam.ActionList, error) {
-	return p.db.DescribeActions(ctx, req)
-}
-
 func (p *Server) CanDo(ctx context.Context, req *pbam.CanDoRequest) (*pbam.CanDoResponse, error) {
 	return p.db.CanDo(ctx, req)
 }
@@ -49,8 +45,11 @@ func (p *Server) DescribeUsersWithRole(ctx context.Context, req *pbam.DescribeUs
 	return p.db.DescribeUsersWithRole(ctx, req)
 }
 
-func (p *Server) ModifyRoleModuleBinding(ctx context.Context, req *pbam.ModifyRoleModuleBindingRequest) (*pbam.ActionList, error) {
-	return p.db.ModifyRoleModuleBinding(ctx, req)
+func (p *Server) GetRoleModule(ctx context.Context, req *pbam.RoleId) (*pbam.RoleModule, error) {
+	return p.db.GetRoleModule(ctx, req)
+}
+func (p *Server) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (*pbam.RoleModule, error) {
+	return p.db.ModifyRoleModule(ctx, req)
 }
 
 func (p *Server) BindUserRole(ctx context.Context, req *pbam.BindUserRoleRequest) (*pbam.Empty, error) {

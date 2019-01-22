@@ -49,7 +49,7 @@ func (p *Database) BindUserRole(ctx context.Context, req *pbam.BindUserRoleReque
 		for i := 0; i < len(req.RoleId); i++ {
 			tx.Exec(
 				`INSERT INTO user_role_binding (id, user_id, role_id) VALUES (?,?,?)`,
-				genXid(), req.UserId[i], req.RoleId[i],
+				genId("bind-", 12), req.UserId[i], req.RoleId[i],
 			)
 			if err := tx.Error; err != nil {
 				tx.Rollback()
@@ -61,7 +61,7 @@ func (p *Database) BindUserRole(ctx context.Context, req *pbam.BindUserRoleReque
 		for i := 0; i < len(req.RoleId); i++ {
 			tx.Exec(
 				`INSERT INTO user_role_binding (id, user_id, role_id) VALUES (?,?,?)`,
-				genXid(), req.UserId[0], req.RoleId[i],
+				genId("bind-", 12), req.UserId[0], req.RoleId[i],
 			)
 			if err := tx.Error; err != nil {
 				tx.Rollback()
@@ -72,7 +72,7 @@ func (p *Database) BindUserRole(ctx context.Context, req *pbam.BindUserRoleReque
 		for i := 0; i < len(req.UserId); i++ {
 			tx.Exec(
 				`INSERT INTO user_role_binding (id, user_id, role_id) VALUES (?,?,?)`,
-				genXid(), req.UserId[i], req.RoleId[0],
+				genId("bind-", 12), req.UserId[i], req.RoleId[0],
 			)
 			if err := tx.Error; err != nil {
 				tx.Rollback()

@@ -15,6 +15,42 @@ import (
 	"openpitrix.io/iam/pkg/internal/base58"
 )
 
+func newString(v string) *string {
+	return &v
+}
+
+func genId(prefix string, maxLen int) string {
+	if prefix == "" {
+		prefix = "xid-"
+	}
+	if maxLen <= 0 {
+		maxLen = 12
+	}
+
+	if maxLen <= len(prefix) {
+		maxLen += len(prefix)
+	}
+
+	buf := make([]byte, maxLen-len(prefix))
+	rand.Read(buf)
+	s := string(base58.EncodeBase58(buf))
+	return prefix + s[:len(buf)]
+}
+
+func isValidIds(ids ...string) bool {
+	var re = regexp.MustCompile(`^[a-zA-Z0-9_-]*$`)
+	for _, id := range ids {
+		if !re.MatchString(id) {
+			return false
+		}
+	}
+	return true
+}
+
+func isValidGroupPath(s string) bool {
+	var re = regexp.MustCompile(`^[a-zA-Z0-9_.-]{2,255}$`)
+	return re.MatchString(s)
+}
 func isValidSearchWord(name string) bool {
 	var re = regexp.MustCompile(`^[a-zA-Z0-9_-]*$`)
 	return re.MatchString(name)
@@ -23,38 +59,6 @@ func isValidSortKey(name string) bool {
 	var re = regexp.MustCompile(`^[a-zA-Z0-9_-]*$`)
 	return re.MatchString(name)
 }
-
-func isValidGids(ids ...string) bool {
-	var re = regexp.MustCompile(`^[a-zA-Z0-9_-]*$`)
-	for _, id := range ids {
-		if !re.MatchString(id) {
-			return false
-		}
-	}
-	return true
-}
-func isValidUids(ids ...string) bool {
-	var re = regexp.MustCompile(`^[a-zA-Z0-9_-]*$`)
-	for _, id := range ids {
-		if !re.MatchString(id) {
-			return false
-		}
-	}
-	return true
-}
-func isValidNames(ids ...string) bool {
-	return true
-}
-func isValidStatus(ids ...string) bool {
-	var re = regexp.MustCompile(`^[a-zA-Z0-9_-]*$`)
-	for _, id := range ids {
-		if !re.MatchString(id) {
-			return false
-		}
-	}
-	return true
-}
-
 func isValidEmails(emails ...string) bool {
 	for _, v := range emails {
 		if v == "" {
@@ -74,7 +78,6 @@ func isValidEmails(emails ...string) bool {
 	}
 	return true
 }
-
 func isValidPhoneNumbers(phoneNumbers ...string) bool {
 	var re = regexp.MustCompile(`^[0-9]+$`)
 	for _, id := range phoneNumbers {
@@ -95,45 +98,12 @@ func isZeroTimestamp(x *timestamp.Timestamp) bool {
 	return false
 }
 
-func genGid() string {
-	buf := make([]byte, 8)
-	rand.Read(buf)
-	s := string(base58.EncodeBase58(buf))
-	return "gid-" + s[:8]
-}
-
-func genUid() string {
-	buf := make([]byte, 8)
-	rand.Read(buf)
-	s := string(base58.EncodeBase58(buf))
-	return "uid-" + s[:8]
-}
-func genRoleId() string {
-	buf := make([]byte, 8)
-	rand.Read(buf)
-	s := string(base58.EncodeBase58(buf))
-	return "role-" + s[:8]
-}
-func genXid() string {
-	buf := make([]byte, 8)
-	rand.Read(buf)
-	s := string(base58.EncodeBase58(buf))
-	return "xid-" + s[:8]
-}
-func genId(prefix string, maxLen int) string {
-	if prefix == "" {
-		prefix = "xid-"
+func trimEmptyString(s []string) []string {
+	b := s[:0]
+	for _, x := range s {
+		if x := strings.TrimSpace(x); x != "" {
+			b = append(b, x)
+		}
 	}
-	if maxLen <= 0 {
-		maxLen = 12
-	}
-
-	if maxLen <= len(prefix) {
-		maxLen += len(prefix)
-	}
-
-	buf := make([]byte, maxLen-len(prefix))
-	rand.Read(buf)
-	s := string(base58.EncodeBase58(buf))
-	return prefix + s[:len(buf)]
+	return b
 }

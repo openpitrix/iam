@@ -7,6 +7,7 @@ package db
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
@@ -28,7 +29,7 @@ func (p *Database) CreateRole(ctx context.Context, req *pbam.Role) (*pbam.Role, 
 	}
 	if req != nil {
 		if req.RoleId == "" {
-			req.RoleId = genRoleId()
+			req.RoleId = genId("role-", 12)
 		}
 
 		if isZeroTimestamp(req.CreateTime) {
@@ -160,6 +161,26 @@ func (p *Database) GetRoleListByUserId(ctx context.Context, req *pbam.UserId) (*
 
 func (p *Database) DescribeRoles(ctx context.Context, req *pbam.DescribeRolesRequest) (*pbam.RoleList, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
+
+	// fix repeated fileds
+	// GET donot support repeated type in grpc-gateway
+	if len(req.RoleId) == 1 && strings.Contains(req.RoleId[0], ",") {
+		req.RoleId = strings.Split(req.RoleId[0], ",")
+	}
+	if len(req.RoleName) == 1 && strings.Contains(req.RoleName[0], ",") {
+		req.RoleName = strings.Split(req.RoleName[0], ",")
+	}
+	if len(req.Portal) == 1 && strings.Contains(req.Portal[0], ",") {
+		req.Portal = strings.Split(req.Portal[0], ",")
+	}
+	if len(req.UserId) == 1 && strings.Contains(req.UserId[0], ",") {
+		req.UserId = strings.Split(req.UserId[0], ",")
+	}
+
+	req.RoleId = trimEmptyString(req.RoleId)
+	req.RoleName = trimEmptyString(req.RoleName)
+	req.Portal = trimEmptyString(req.Portal)
+	req.UserId = trimEmptyString(req.UserId)
 
 	var (
 		args                 []interface{}
