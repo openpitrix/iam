@@ -22,12 +22,6 @@ service AccessManager {
 		};
 	}
 
-	rpc DescribeActions(DescribeActionsRequest) returns (ActionList) {
-		option (google.api.http) = {
-			get: "/v1/am/actions"
-		};
-	}
-
 	rpc CanDo(CanDoRequest) returns (CanDoResponse) {
 		option (google.api.http) = {
 			post: "/v1/am/cando"
@@ -75,7 +69,12 @@ service AccessManager {
 		};
 	}
 
-	rpc ModifyRoleModuleBinding(ModifyRoleModuleBindingRequest) returns (ActionList) {
+	rpc GetRoleModule(RoleId) returns (RoleModule) {
+		option (google.api.http) = {
+			get: "/v1/am/roles:module"
+		};
+	}
+	rpc ModifyRoleModule(RoleModule) returns (RoleModule) {
 		option (google.api.http) = {
 			patch: "/v1/am/roles:module"
 			body: "*"
@@ -110,43 +109,6 @@ message String {
 
 message UserId {
 	string user_id = 1;
-}
-
-// ----------------------------------------------------------------------------
-// Action
-// ----------------------------------------------------------------------------
-
-message Action {
-	string role_id = 1;
-	string role_name = 2;
-	string portal = 3;
-
-	string module_id = 4;
-	string module_name = 5;
-	string data_level = 6;
-
-	string feature_id = 7;
-	string feature_name = 8;
-
-	string action_id = 9;
-	string action_name = 10;
-	string action_enabled = 11;
-
-	string api_id = 12;
-	string api_method = 13;
-	string api_description = 14;
-
-	string url = 15;
-	string url_method = 16;
-}
-
-message ActionList {
-	repeated Action value = 1;
-}
-
-message DescribeActionsRequest {
-	string role_id = 1;
-	string portal = 2;
 }
 
 // ----------------------------------------------------------------------------
@@ -189,21 +151,6 @@ message RoleList {
 	repeated Role value = 1;
 }
 
-message Module {
-	repeated Feature feature = 2;
-	string data_level = 3;
-	bool check_all = 4;
-}
-message Feature {
-	repeated Action action = 1;
-}
-
-message ModifyRoleModuleBindingRequest {
-	string role_id = 1;
-	repeated string module_id = 2;
-	repeated Module module = 3;
-}
-
 message CreateRoleRequest {
 	Role role = 1;
 }
@@ -235,6 +182,53 @@ message DescribeRolesVerboseRequest {
 	repeated string role_id = 1;
 	repeated string role_name = 2;
 	repeated string portal = 3;
+}
+
+// ----------------------------------------------------------------------------
+// RoleModule
+// ----------------------------------------------------------------------------
+
+message Action {
+	string role_id = 1;
+	string role_name = 2;
+	string portal = 3;
+
+	string module_id = 4;
+	string module_name = 5;
+	string data_level = 6;
+
+	string feature_id = 7;
+	string feature_name = 8;
+
+	string action_id = 9;
+	string action_name = 10;
+	string action_enabled = 11;
+
+	string api_id = 12;
+	string api_method = 13;
+	string api_description = 14;
+
+	string url = 15;
+	string url_method = 16;
+}
+
+message Feature {
+	string feature_id = 1;
+	string feature_name = 2;
+	repeated Action action = 3;
+	repeated string checked_action_id = 4;
+}
+
+message Module {
+	string module_id = 1;
+	repeated Feature feature = 2;
+	string data_level = 3;
+	bool check_all = 4;
+}
+
+message RoleModule {
+	string role_id = 1;
+	repeated Module module = 3;
 }
 
 // ----------------------------------------------------------------------------
@@ -275,17 +269,6 @@ message DescribeUsersWithRoleResponse {
 // ----------------------------------------------------------------------------
 // Binding
 // ----------------------------------------------------------------------------
-
-message BindRoleActionsRequest {
-	string role_id = 1;
-	repeated string action_id = 2;
-	string data_level = 3;
-}
-
-message UnbindRoleActionsRequest {
-	string role_id = 1;
-	repeated string action_id = 2;
-}
 
 message BindUserRoleRequest {
 	repeated string user_id = 1;

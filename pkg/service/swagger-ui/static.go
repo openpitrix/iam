@@ -246,36 +246,6 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
     "application/json"
   ],
   "paths": {
-    "/v1/am/actions": {
-      "get": {
-        "operationId": "DescribeActions",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/amActionList"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "role_id",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "portal",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "AccessManager"
-        ]
-      }
-    },
     "/v1/am/cando": {
       "post": {
         "operationId": "CanDo",
@@ -453,13 +423,35 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
       }
     },
     "/v1/am/roles:module": {
-      "patch": {
-        "operationId": "ModifyRoleModuleBinding",
+      "get": {
+        "operationId": "GetRoleModule",
         "responses": {
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/amActionList"
+              "$ref": "#/definitions/amRoleModule"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "role_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AccessManager"
+        ]
+      },
+      "patch": {
+        "operationId": "ModifyRoleModule",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/amRoleModule"
             }
           }
         },
@@ -469,7 +461,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/amModifyRoleModuleBindingRequest"
+              "$ref": "#/definitions/amRoleModule"
             }
           }
         ],
@@ -673,17 +665,6 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         }
       }
     },
-    "amActionList": {
-      "type": "object",
-      "properties": {
-        "value": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/amAction"
-          }
-        }
-      }
-    },
     "amBindUserRoleRequest": {
       "type": "object",
       "properties": {
@@ -750,30 +731,22 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
     "amFeature": {
       "type": "object",
       "properties": {
+        "feature_id": {
+          "type": "string"
+        },
+        "feature_name": {
+          "type": "string"
+        },
         "action": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/amAction"
           }
-        }
-      }
-    },
-    "amModifyRoleModuleBindingRequest": {
-      "type": "object",
-      "properties": {
-        "role_id": {
-          "type": "string"
         },
-        "module_id": {
+        "checked_action_id": {
           "type": "array",
           "items": {
             "type": "string"
-          }
-        },
-        "module": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/amModule"
           }
         }
       }
@@ -781,6 +754,9 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
     "amModule": {
       "type": "object",
       "properties": {
+        "module_id": {
+          "type": "string"
+        },
         "feature": {
           "type": "array",
           "items": {
@@ -845,6 +821,20 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
           "type": "array",
           "items": {
             "$ref": "#/definitions/amRole"
+          }
+        }
+      }
+    },
+    "amRoleModule": {
+      "type": "object",
+      "properties": {
+        "role_id": {
+          "type": "string"
+        },
+        "module": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/amModule"
           }
         }
       }

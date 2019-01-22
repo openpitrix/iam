@@ -40,6 +40,12 @@ const EnvPrefix = "OPENPITRIX_AM"
 // OPENPITRIX_AM_PORT
 // OPENPITRIX_AM_STATIC_DIR
 //
+// OPENPITRIX_AM_IM_HOST
+// OPENPITRIX_AM_IM_PORT
+//
+// OPENPITRIX_AM_ADMIN_USER_ID
+// OPENPITRIX_AM_ADMIN_USER_PASSWORD
+//
 // OPENPITRIX_AM_TLS_ENABLED
 // OPENPITRIX_AM_TLS_CERT_FILE
 // OPENPITRIX_AM_TLS_KEY_FILE
@@ -62,6 +68,9 @@ type Config struct {
 
 	ImHost string `default:"openpitrix-im-service"`
 	ImPort int    `default:"9119"`
+
+	ImAdminUserId   string `default:"admin"`
+	ImAdminPassword string `default:"password"`
 
 	TlsEnabled  bool   `default:"false"`
 	TlsCertFile string `default:"server.cert"`
