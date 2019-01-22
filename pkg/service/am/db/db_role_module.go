@@ -6,6 +6,7 @@ package db
 
 import (
 	"context"
+	"sort"
 	"strings"
 
 	"openpitrix.io/iam/pkg/internal/funcutil"
@@ -43,6 +44,11 @@ func (p *Database) GetRoleModule(ctx context.Context, req *pbam.RoleId) (*pbam.R
 
 		featureMap[m.FeatureId] = m
 	}
+	for _, m := range featureMap {
+		sort.Slice(m.Action, func(i, j int) bool {
+			return m.Action[i].ActionId < m.Action[j].ActionId
+		})
+	}
 
 	// feature map => module map
 	for _, v := range featureMap {
@@ -61,10 +67,14 @@ func (p *Database) GetRoleModule(ctx context.Context, req *pbam.RoleId) (*pbam.R
 
 		moduleMap[m.ModuleId] = m
 	}
+	for _, m := range moduleMap {
+		sort.Slice(m.Feature, func(i, j int) bool {
+			return m.Feature[i].FeatureId < m.Feature[j].FeatureId
+		})
+	}
 
 	// module map => role module
 	roleModule := new(pbam.RoleModule)
-
 	for _, v := range moduleMap {
 		action := v.Feature[0].Action[0]
 		if action.RoleId != req.RoleId {
