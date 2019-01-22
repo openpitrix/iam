@@ -6,6 +6,7 @@ package db
 
 import (
 	"context"
+	"time"
 
 	"github.com/chai2010/template"
 	"google.golang.org/grpc/codes"
@@ -45,7 +46,79 @@ func (p *Database) GetRoleModule(ctx context.Context, req *pbam.RoleId) (*pbam.R
 func (p *Database) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (*pbam.RoleModule, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	panic("todo")
+	var moduleIdList = func() []string {
+		var ss []string
+		for _, mod := range req.Module {
+			ss = append(ss, mod.ModuleId)
+		}
+		return ss
+	}()
+
+	tx := p.DB.Begin()
+
+	tx.Raw(
+		`delete from role_module_binding where role_id=? and module_id in (?)`,
+		req.RoleId, moduleIdList,
+	)
+	if err := tx.Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	for _, mod := range req.Module {
+		tx.Raw(template.MustRender(
+			`delete from enable_action where bind_id in (
+				select bind_id from role_module_binding where
+					role_id='{{.RoleId}}' and module_id='{{.ModuleId}}'
+			);`,
+			struct{ RoleId, ModuleId string }{
+				RoleId:   req.RoleId,
+				ModuleId: mod.ModuleId,
+			},
+		))
+		if err := tx.Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+
+		bindId := genId("bind-", 12)
+		tx.NewRecord(RoleModuleBinding{
+			BindId:              bindId,
+			RoleId:              req.RoleId,
+			ModuleId:            mod.ModuleId,
+			DataLevel:           mod.DataLevel,
+			CreateTime:          time.Now(),
+			UpdateTime:          time.Now(),
+			Owner:               mod.Owner,
+			IsFeatureAllChecked: btoi(mod.IsFeatureAllChecked),
+		})
+		if err := tx.Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+
+		// for chekced actions
+		for _, feature := range mod.Feature {
+			for _, action := range feature.Action {
+				tx.NewRecord(EnableAction{
+					EnableId: genId("id-", 12),
+					BindId:   bindId,
+					ActionId: action.ActionId,
+				})
+				if err := tx.Error; err != nil {
+					tx.Rollback()
+					return nil, err
+				}
+			}
+		}
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	return req, nil
 }
 
 const sqlGetRoleModule_by_roleId = `
@@ -54,6 +127,7 @@ select distinct
 	t.module_id,
 	t.module_name,
 	t.data_level,
+	t.owner,
 	(case when isnull(t.is_feature_all_checked)=0 then 1 else 0 end) as is_feature_all_checked,
 	t.feature_id,
 	t.feature_name,

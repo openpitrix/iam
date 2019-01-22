@@ -145,13 +145,13 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 				logger.Warnf(nil, "%+v", err)
 			}
 		}
-		if !p.DB.HasTable(&EnableAction{}) {
-			if err := p.DB.CreateTable(&EnableAction{}).Error; err != nil {
+		if !p.DB.HasTable(&Role{}) {
+			if err := p.DB.CreateTable(&Role{}).Error; err != nil {
 				logger.Warnf(nil, "%+v", err)
 			}
 		}
-		if !p.DB.HasTable(&Role{}) {
-			if err := p.DB.CreateTable(&Role{}).Error; err != nil {
+		if !p.DB.HasTable(&UserRoleBinding{}) {
+			if err := p.DB.CreateTable(&UserRoleBinding{}).Error; err != nil {
 				logger.Warnf(nil, "%+v", err)
 			}
 		}
@@ -160,8 +160,8 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 				logger.Warnf(nil, "%+v", err)
 			}
 		}
-		if !p.DB.HasTable(&UserRoleBinding{}) {
-			if err := p.DB.CreateTable(&UserRoleBinding{}).Error; err != nil {
+		if !p.DB.HasTable(&EnableAction{}) {
+			if err := p.DB.CreateTable(&EnableAction{}).Error; err != nil {
 				logger.Warnf(nil, "%+v", err)
 			}
 		}

@@ -402,6 +402,9 @@
         "data_level": {
           "type": "string"
         },
+        "owner": {
+          "type": "string"
+        },
         "is_feature_all_checked": {
           "type": "string"
         },
@@ -537,6 +540,9 @@
           "items": {
             "$ref": "#/definitions/amFeature"
           }
+        },
+        "owner": {
+          "type": "string"
         },
         "data_level": {
           "type": "string"

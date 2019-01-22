@@ -17,12 +17,12 @@ import (
 )
 
 type UserGroup struct {
-	ParentGroupId string `gorm:"type:varchar(50)"`
+	ParentGroupId string `gorm:"type:varchar(50);not null"`
 	GroupId       string `gorm:"primary_key"`
-	GroupPath     string `gorm:"type:varchar(255)"`
-	GroupName     string `gorm:"type:varchar(50)"`
-	Description   string `gorm:"type:varchar(1000)"`
-	Status        string `gorm:"type:varchar(10)"`
+	GroupPath     string `gorm:"type:varchar(255);not null"`
+	GroupName     string `gorm:"type:varchar(50);not null"`
+	Description   string `gorm:"type:varchar(1000);not null"`
+	Status        string `gorm:"type:varchar(10);not null"`
 	CreateTime    time.Time
 	UpdateTime    time.Time
 	StatusTime    time.Time

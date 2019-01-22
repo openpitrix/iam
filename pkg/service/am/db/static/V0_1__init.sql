@@ -4,7 +4,7 @@
 -- https://tableplus.com/
 --
 -- Database: am2
--- Generation Time: 2019-01-21 16:49:25.4870
+-- Generation Time: 2019-01-22 23:24:56.2930
 -- -------------------------------------------------------------
 
 
@@ -20,16 +20,14 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 
-DROP TABLE IF EXISTS `user_role_binding`;
-CREATE TABLE `user_role_binding` (
+CREATE TABLE IF NOT EXISTS `user_role_binding` (
   `id` varchar(50) NOT NULL,
   `user_id` varchar(50) DEFAULT NULL,
   `role_id` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-DROP TABLE IF EXISTS `role_module_binding`;
-CREATE TABLE `role_module_binding` (
+CREATE TABLE IF NOT EXISTS `role_module_binding` (
   `bind_id` varchar(50) NOT NULL,
   `role_id` varchar(50) DEFAULT NULL,
   `module_id` varchar(50) DEFAULT NULL,
@@ -37,11 +35,11 @@ CREATE TABLE `role_module_binding` (
   `create_time` timestamp NULL DEFAULT NULL,
   `update_time` timestamp NULL DEFAULT NULL,
   `owner` varchar(50) DEFAULT NULL,
+  `is_feature_all_checked` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`bind_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-DROP TABLE IF EXISTS `role`;
-CREATE TABLE `role` (
+CREATE TABLE IF NOT EXISTS `role` (
   `role_id` varchar(50) NOT NULL,
   `role_name` varchar(200) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
@@ -53,16 +51,7 @@ CREATE TABLE `role` (
   PRIMARY KEY (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-DROP TABLE IF EXISTS `enable_action`;
-CREATE TABLE `enable_action` (
-  `enable_id` varchar(50) NOT NULL,
-  `bind_id` varchar(50) DEFAULT NULL,
-  `action_id` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`enable_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-DROP TABLE IF EXISTS `action2`;
-CREATE TABLE `action2` (
+CREATE TABLE IF NOT EXISTS `module_api` (
   `api_id` varchar(50) NOT NULL,
   `module_id` varchar(50) DEFAULT NULL,
   `module_name` varchar(50) DEFAULT NULL,
@@ -77,90 +66,40 @@ CREATE TABLE `action2` (
   PRIMARY KEY (`api_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+CREATE TABLE IF NOT EXISTS `enable_action` (
+  `enable_id` varchar(50) NOT NULL,
+  `bind_id` varchar(50) DEFAULT NULL,
+  `action_id` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`enable_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 INSERT INTO `user_role_binding` (`id`, `user_id`, `role_id`) VALUES ('urbind0001', 'uid-PYu7bdqa', 'role_0001'),
 ('xid-MP4dkvPG', 'chai', 'role_0002');
 
-INSERT INTO `role_module_binding` (`bind_id`, `role_id`, `module_id`, `data_level`, `create_time`, `update_time`, `owner`) VALUES ('bind_00001', 'role_0001', 'm_0001', 'all', NULL, NULL, 'system'),
-('bind_00002', 'role_0001', 'm_0002', 'department', NULL, NULL, 'system'),
-('bind_00003', 'role_0001', 'm_0003', 'all', NULL, NULL, 'system'),
-('bind_00004', 'role_0001', 'm_0004', 'all', NULL, NULL, 'system'),
-('bind_00005', 'role_0001', 'm_0005', 'all', NULL, NULL, 'system'),
-('bind_00006', 'role_0001', 'm_0006', 'all', NULL, NULL, 'system'),
-('bind_00007', 'role_0001', 'm_0007', 'all', NULL, NULL, 'system'),
-('bind_00008', 'role_0001', 'm_0008', 'all', NULL, NULL, 'system'),
-('bind_00009', 'role_0001', 'm_00010', 'all', NULL, NULL, 'system'),
-('bind_00010', 'role_0002', 'm_0001', 'all', NULL, NULL, 'system'),
-('bind_00011', 'role_0002', 'm_0002', 'department', NULL, NULL, 'system'),
-('bind_00012', 'role_0002', 'm_0003', 'all', NULL, NULL, 'system'),
-('bind_00013', 'role_0002', 'm_0004', 'all', NULL, NULL, 'system'),
-('bind_00014', 'role_0002', 'm_0005', 'all', NULL, NULL, 'system'),
-('bind_00015', 'role_0002', 'm_0008', 'all', NULL, NULL, 'system'),
-('bind_00016', 'role_0002', 'm_0009', 'all', NULL, NULL, 'system'),
-('bind_00017', 'role_0002', 'm_0010', 'all', NULL, NULL, 'system');
+INSERT INTO `role_module_binding` (`bind_id`, `role_id`, `module_id`, `data_level`, `create_time`, `update_time`, `owner`, `is_feature_all_checked`) VALUES ('bind_00001', 'role_0001', 'm_0001', 'all', NULL, NULL, 'system', '1'),
+('bind_00002', 'role_0001', 'm_0002', 'department', NULL, NULL, 'system', '1'),
+('bind_00003', 'role_0001', 'm_0003', 'all', NULL, NULL, 'system', '1'),
+('bind_00004', 'role_0001', 'm_0004', 'all', NULL, NULL, 'system', '1'),
+('bind_00005', 'role_0001', 'm_0005', 'all', NULL, NULL, 'system', '1'),
+('bind_00006', 'role_0001', 'm_0006', 'all', NULL, NULL, 'system', '1'),
+('bind_00007', 'role_0001', 'm_0007', 'all', NULL, NULL, 'system', '1'),
+('bind_00008', 'role_0001', 'm_0008', 'all', NULL, NULL, 'system', '1'),
+('bind_00009', 'role_0001', 'm_00010', 'all', NULL, NULL, 'system', '1'),
+('bind_00010', 'role_0002', 'm_0001', 'all', NULL, NULL, 'system', '1'),
+('bind_00011', 'role_0002', 'm_0002', 'department', NULL, NULL, 'system', '1'),
+('bind_00012', 'role_0002', 'm_0003', 'all', NULL, NULL, 'system', '1'),
+('bind_00013', 'role_0002', 'm_0004', 'all', NULL, NULL, 'system', '1'),
+('bind_00014', 'role_0002', 'm_0005', 'all', NULL, NULL, 'system', '1'),
+('bind_00015', 'role_0002', 'm_0008', 'all', NULL, NULL, 'system', '1'),
+('bind_00016', 'role_0002', 'm_0009', 'all', NULL, NULL, 'system', '1'),
+('bind_00017', 'role_0002', 'm_0010', 'all', NULL, NULL, 'system', '1');
 
 INSERT INTO `role` (`role_id`, `role_name`, `description`, `portal`, `create_time`, `update_time`, `owner`, `owner_path`) VALUES ('role_0001', '超级管理员', 'Portal是admin的超级管理员', 'admin', NULL, NULL, 'system', 'system.'),
 ('role_0002', '超级管理员', 'Portal是isv的超级管理员', 'isv', NULL, NULL, 'system', 'system.'),
 ('role_0003', '超级管理员', 'Portal是dev的超级管理员', 'dev', NULL, NULL, 'system', 'system.'),
 ('role_0004', '超级管理员', 'Portal是normal的超级管理员', 'normal', NULL, NULL, 'system', 'system.');
 
-INSERT INTO `enable_action` (`enable_id`, `bind_id`, `action_id`) VALUES ('enable_00001', 'bind_00001', 'a_0001'),
-('enable_00002', 'bind_00001', 'a_0006'),
-('enable_00003', 'bind_00001', 'a_0008'),
-('enable_00004', 'bind_00001', 'a_0009'),
-('enable_00005', 'bind_00001', 'a_0010'),
-('enable_00006', 'bind_00001', 'a_0011'),
-('enable_00007', 'bind_00001', 'a_0012'),
-('enable_00008', 'bind_00001', 'a_0013'),
-('enable_00009', 'bind_00001', 'a_0014'),
-('enable_00010', 'bind_00002', 'a_0015'),
-('enable_00011', 'bind_00002', 'a_0016'),
-('enable_00012', 'bind_00002', 'a_0017'),
-('enable_00013', 'bind_00002', 'a_0018'),
-('enable_00014', 'bind_00002', 'a_0019'),
-('enable_00015', 'bind_00003', 'a_0020'),
-('enable_00016', 'bind_00003', 'a_0021'),
-('enable_00017', 'bind_00003', 'a_0022'),
-('enable_00018', 'bind_00003', 'a_0023'),
-('enable_00019', 'bind_00003', 'a_0024'),
-('enable_00020', 'bind_00003', 'a_0025'),
-('enable_00021', 'bind_00003', 'a_0026'),
-('enable_00022', 'bind_00003', 'a_0027'),
-('enable_00023', 'bind_00003', 'a_0028'),
-('enable_00024', 'bind_00003', 'a_0029'),
-('enable_00025', 'bind_00003', 'a_0030'),
-('enable_00026', 'bind_00003', 'a_0031'),
-('enable_00027', 'bind_00004', 'a_0032'),
-('enable_00028', 'bind_00004', 'a_0033'),
-('enable_00029', 'bind_00004', 'a_0034'),
-('enable_00030', 'bind_00004', 'a_0035'),
-('enable_00031', 'bind_00004', 'a_0036'),
-('enable_00032', 'bind_00004', 'a_0037'),
-('enable_00033', 'bind_00004', 'a_0038'),
-('enable_00034', 'bind_00004', 'a_0039'),
-('enable_00035', 'bind_00004', 'a_0040'),
-('enable_00036', 'bind_00004', 'a_0041'),
-('enable_00037', 'bind_00005', 'a_0042'),
-('enable_00038', 'bind_00006', 'a_0043'),
-('enable_00039', 'bind_00006', 'a_0044'),
-('enable_00040', 'bind_00007', 'a_0045'),
-('enable_00041', 'bind_00007', 'a_0046'),
-('enable_00042', 'bind_00007', 'a_0047'),
-('enable_00043', 'bind_00007', 'a_0048'),
-('enable_00044', 'bind_00007', 'a_0049'),
-('enable_00045', 'bind_00007', 'a_0050'),
-('enable_00046', 'bind_00008', 'a_0051'),
-('enable_00047', 'bind_00008', 'a_0052'),
-('enable_00048', 'bind_00008', 'a_0053'),
-('enable_00049', 'bind_00008', 'a_0054'),
-('enable_00050', 'bind_00008', 'a_0055'),
-('enable_00051', 'bind_00008', 'a_0056'),
-('enable_00052', 'bind_00008', 'a_0057'),
-('enable_00053', 'bind_00008', 'a_0058'),
-('enable_00054', 'bind_00009', 'a_0060'),
-('enable_00055', 'bind_00009', 'a_0061'),
-('enable_00056', 'bind_00009', 'a_0062');
-
-INSERT INTO `action2` (`api_id`, `module_id`, `module_name`, `feature_id`, `feature_name`, `action_id`, `action_name`, `api_method`, `api_description`, `url_method`, `url`) VALUES ('api_0001', 'm_0001', '商店管理', 'f_0001', '应用管理', 'a_0001', '查看全部应用', 'DescribeApps', '', 'get', '/v1/apps'),
+INSERT INTO `module_api` (`api_id`, `module_id`, `module_name`, `feature_id`, `feature_name`, `action_id`, `action_name`, `api_method`, `api_description`, `url_method`, `url`) VALUES ('api_0001', 'm_0001', '商店管理', 'f_0001', '应用管理', 'a_0001', '查看全部应用', 'DescribeApps', '', 'get', '/v1/apps'),
 ('api_0002', 'm_0001', '商店管理', 'f_0001', '应用管理', 'a_0001', '查看全部应用', 'GetAppStatistics', '', 'get', '/v1/apps/statistics'),
 ('api_0003', 'm_0001', '商店管理', 'f_0001', '应用管理', 'a_0001', '查看全部应用', 'DescribeActiveApps', '', 'get', '/v1/active_apps'),
 ('api_0004', 'm_0001', '商店管理', 'f_0001', '应用管理', 'a_0001', '查看全部应用', 'DescribeAppVersions', '', 'get', '/v1/app_versions'),
@@ -245,6 +184,63 @@ INSERT INTO `action2` (`api_id`, `module_id`, `module_name`, `feature_id`, `feat
 ('api_0083', 'm_0010', '应用服务商管理', 'f_0014', '入驻申请', 'a_0061', '拒绝服务商认证', 'RejectVendorVerifyInfo', '', 'post', '/v1/app_vendors/reject'),
 ('api_0084', 'm_0010', '应用服务商管理', 'f_0014', '入驻申请', 'a_0062', '查看全部服务商认证', 'DescribeVendorVerifyInfos', '', 'get', '/v1/app_vendors'),
 ('api_0085', 'm_0010', '应用服务商管理', 'f_0014', '入驻申请', 'a_0062', '查看全部服务商认证', 'DescribeAppVendorStatistics', '', 'get', '/v1/app_vendors/app_vendor_statistics');
+
+INSERT INTO `enable_action` (`enable_id`, `bind_id`, `action_id`) VALUES ('enable_00001', 'bind_00001', 'a_0001'),
+('enable_00002', 'bind_00001', 'a_0006'),
+('enable_00003', 'bind_00001', 'a_0008'),
+('enable_00004', 'bind_00001', 'a_0009'),
+('enable_00005', 'bind_00001', 'a_0010'),
+('enable_00006', 'bind_00001', 'a_0011'),
+('enable_00007', 'bind_00001', 'a_0012'),
+('enable_00008', 'bind_00001', 'a_0013'),
+('enable_00009', 'bind_00001', 'a_0014'),
+('enable_00010', 'bind_00002', 'a_0015'),
+('enable_00011', 'bind_00002', 'a_0016'),
+('enable_00012', 'bind_00002', 'a_0017'),
+('enable_00013', 'bind_00002', 'a_0018'),
+('enable_00014', 'bind_00002', 'a_0019'),
+('enable_00015', 'bind_00003', 'a_0020'),
+('enable_00016', 'bind_00003', 'a_0021'),
+('enable_00017', 'bind_00003', 'a_0022'),
+('enable_00018', 'bind_00003', 'a_0023'),
+('enable_00019', 'bind_00003', 'a_0024'),
+('enable_00020', 'bind_00003', 'a_0025'),
+('enable_00021', 'bind_00003', 'a_0026'),
+('enable_00022', 'bind_00003', 'a_0027'),
+('enable_00023', 'bind_00003', 'a_0028'),
+('enable_00024', 'bind_00003', 'a_0029'),
+('enable_00025', 'bind_00003', 'a_0030'),
+('enable_00026', 'bind_00003', 'a_0031'),
+('enable_00027', 'bind_00004', 'a_0032'),
+('enable_00028', 'bind_00004', 'a_0033'),
+('enable_00029', 'bind_00004', 'a_0034'),
+('enable_00030', 'bind_00004', 'a_0035'),
+('enable_00031', 'bind_00004', 'a_0036'),
+('enable_00032', 'bind_00004', 'a_0037'),
+('enable_00033', 'bind_00004', 'a_0038'),
+('enable_00034', 'bind_00004', 'a_0039'),
+('enable_00035', 'bind_00004', 'a_0040'),
+('enable_00036', 'bind_00004', 'a_0041'),
+('enable_00037', 'bind_00005', 'a_0042'),
+('enable_00038', 'bind_00006', 'a_0043'),
+('enable_00039', 'bind_00006', 'a_0044'),
+('enable_00040', 'bind_00007', 'a_0045'),
+('enable_00041', 'bind_00007', 'a_0046'),
+('enable_00042', 'bind_00007', 'a_0047'),
+('enable_00043', 'bind_00007', 'a_0048'),
+('enable_00044', 'bind_00007', 'a_0049'),
+('enable_00045', 'bind_00007', 'a_0050'),
+('enable_00046', 'bind_00008', 'a_0051'),
+('enable_00047', 'bind_00008', 'a_0052'),
+('enable_00048', 'bind_00008', 'a_0053'),
+('enable_00049', 'bind_00008', 'a_0054'),
+('enable_00050', 'bind_00008', 'a_0055'),
+('enable_00051', 'bind_00008', 'a_0056'),
+('enable_00052', 'bind_00008', 'a_0057'),
+('enable_00053', 'bind_00008', 'a_0058'),
+('enable_00054', 'bind_00009', 'a_0060'),
+('enable_00055', 'bind_00009', 'a_0061'),
+('enable_00056', 'bind_00009', 'a_0062');
 
 
 

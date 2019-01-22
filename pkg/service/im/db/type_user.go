@@ -18,12 +18,12 @@ import (
 
 type User struct {
 	UserId      string `gorm:"primary_key"`
-	UserName    string `gorm:"type:varchar(50)"`
-	Email       string `gorm:"type:varchar(50)"`
-	PhoneNumber string `gorm:"type:varchar(50)"`
-	Description string `gorm:"type:varchar(1000)"`
-	Password    string `gorm:"type:varchar(128)"`
-	Status      string `gorm:"type:varchar(10)"`
+	UserName    string `gorm:"type:varchar(50);not null"`
+	Email       string `gorm:"type:varchar(50);not null"`
+	PhoneNumber string `gorm:"type:varchar(50);not null"`
+	Description string `gorm:"type:varchar(1000);not null"`
+	Password    string `gorm:"type:varchar(128);not null"`
+	Status      string `gorm:"type:varchar(10);not null"`
 	CreateTime  time.Time
 	UpdateTime  time.Time
 	StatusTime  time.Time

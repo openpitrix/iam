@@ -633,6 +633,9 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "data_level": {
           "type": "string"
         },
+        "owner": {
+          "type": "string"
+        },
         "is_feature_all_checked": {
           "type": "string"
         },
@@ -768,6 +771,9 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
           "items": {
             "$ref": "#/definitions/amFeature"
           }
+        },
+        "owner": {
+          "type": "string"
         },
         "data_level": {
           "type": "string"

@@ -14,23 +14,13 @@ import (
 
 type Role struct {
 	RoleId      string `gorm:"type:varchar(50);primary_key"`
-	RoleName    string `gorm:"type:varchar(200);"`
-	Description string `gorm:"type:varchar(1000);"`
-	Portal      string `gorm:"type:varchar(50);"`
+	RoleName    string `gorm:"type:varchar(200);not null"`
+	Description string `gorm:"type:varchar(1000);not null"`
+	Portal      string `gorm:"type:varchar(50);not null"`
 	CreateTime  time.Time
 	UpdateTime  time.Time
-	Owner       string `gorm:"type:varchar(50);"`
-	OwnerPath   string `gorm:"type:varchar(50);"`
-}
-
-type RoleModuleBinding struct {
-	BindId     string `gorm:"type:varchar(50);primary_key"`
-	RoleId     string `gorm:"type:varchar(50);"`
-	ModuleId   string `gorm:"type:varchar(50);"`
-	DataLevel  string `gorm:"type:varchar(50);"`
-	CreateTime time.Time
-	UpdateTime time.Time
-	Owner      string `gorm:"type:varchar(50);"`
+	Owner       string `gorm:"type:varchar(50);not null"`
+	OwnerPath   string `gorm:"type:varchar(50);not null"`
 }
 
 type UserRoleBinding struct {

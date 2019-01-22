@@ -25,6 +25,7 @@ type ModuleApiInfo struct {
 	ModuleId            string
 	ModuleName          string
 	DataLevel           string
+	Owner               string
 	IsFeatureAllChecked string
 
 	FeatureId   string
@@ -145,6 +146,7 @@ func (records ModuleApiInfoList) ToRoleModuleMap() map[string]*pbam.RoleModule {
 		m.ModuleName = action.ModuleName
 		m.Feature = append(m.Feature, v)
 		m.DataLevel = action.DataLevel
+		m.Owner = action.Owner
 		m.IsFeatureAllChecked = action.IsFeatureAllChecked == "1" || strings.EqualFold(action.IsFeatureAllChecked, "true")
 
 		moduleMap[m.ModuleId] = m

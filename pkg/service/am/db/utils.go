@@ -19,6 +19,14 @@ func newString(v string) *string {
 	return &v
 }
 
+func btoi(v bool) int {
+	if v {
+		return 1
+	} else {
+		return 0
+	}
+}
+
 func genId(prefix string, maxLen int) string {
 	if prefix == "" {
 		prefix = "xid-"

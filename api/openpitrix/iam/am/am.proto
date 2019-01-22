@@ -196,6 +196,7 @@ message Action {
 	string module_id = 4;
 	string module_name = 5;
 	string data_level = 6;
+	string owner = 20;
 	string is_feature_all_checked = 7;
 
 	string feature_id = 8;
@@ -224,8 +225,9 @@ message Module {
 	string module_id = 1;
 	string module_name = 2;
 	repeated Feature feature = 3;
-	string data_level = 4;
-	bool is_feature_all_checked = 5;
+	string owner = 4;
+	string data_level = 5;
+	bool is_feature_all_checked = 6;
 }
 
 message RoleModule {
