@@ -606,9 +606,6 @@
         "role_id": {
           "type": "string"
         },
-        "role_name": {
-          "type": "string"
-        },
         "module": {
           "type": "array",
           "items": {

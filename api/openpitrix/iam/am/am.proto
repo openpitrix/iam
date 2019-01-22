@@ -230,8 +230,7 @@ message Module {
 
 message RoleModule {
 	string role_id = 1;
-	string role_name = 2;
-	repeated Module module = 3;
+	repeated Module module = 2;
 }
 
 // ----------------------------------------------------------------------------

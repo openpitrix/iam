@@ -7,6 +7,10 @@ package db
 import (
 	"context"
 
+	"github.com/chai2010/template"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	"openpitrix.io/iam/pkg/internal/funcutil"
 	pbam "openpitrix.io/iam/pkg/pb/am"
 	"openpitrix.io/logger"
@@ -15,13 +19,26 @@ import (
 func (p *Database) GetRoleModule(ctx context.Context, req *pbam.RoleId) (*pbam.RoleModule, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	records, err := p.getModuleApiByRoleId(req.RoleId)
+	if !isValidIds(req.RoleId) {
+		err := status.Errorf(codes.InvalidArgument, "invalid role_id: %q", req.RoleId)
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	query, err := template.Render(sqlGetRoleModule_by_roleId, req)
 	if err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
-	roleModuleMap := records.ToRoleModuleMap()
+	var rows = []ModuleApiInfo{}
+	if err := p.DB.Raw(query).Scan(&rows).Error; err != nil {
+		logger.Warnf(nil, "%v", query)
+		logger.Warnf(nil, "%+v", err)
+		return nil, err
+	}
+
+	roleModuleMap := ModuleApiInfoList(rows).ToRoleModuleMap()
 	return roleModuleMap[req.RoleId], nil
 }
 
@@ -30,3 +47,36 @@ func (p *Database) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (
 
 	panic("todo")
 }
+
+const sqlGetRoleModule_by_roleId = `
+select distinct
+	'{{.RoleId}}' as role_id,
+	t.module_id,
+	t.module_name,
+	t.data_level,
+	(case when isnull(t.is_feature_all_checked)=0 then 1 else 0 end) as is_feature_all_checked,
+	t.feature_id,
+	t.feature_name,
+	t.action_id,
+	t.action_name ,
+	(case when isnull(tt.action_id)=0 then 1 else 0 end) as action_enabled
+FROM (
+		select distinct
+			t3.role_id,
+			t3.role_name,
+			t3.portal,
+			t1.module_id,
+			t1.module_name,
+			t2.data_level,
+			t2.is_feature_all_checked,
+			t1.feature_id,
+			t1.feature_name,
+			t1.action_id,
+			t1.action_name,
+			t2.bind_id
+		from module_api t1
+			left join role_module_binding t2 on t1.module_id=t2.module_id  and t2.role_id='{{.RoleId}}'
+		left join role t3 on t2.role_id=t3.role_id   and t3.role_id='{{.RoleId}}'
+	)t
+	left join enable_action tt on t.action_id=tt.action_id and t.bind_id=tt.bind_id
+`

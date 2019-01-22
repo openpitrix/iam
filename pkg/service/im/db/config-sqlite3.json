@@ -1,0 +1,18 @@
+{
+	"Port": 9119,
+	"TlsEnabled": false,
+	"TlsCertFile": "server.cert",
+	"TlsKeyFile": "server.key",
+	"Log": {
+		"Level": "info",
+		"GrpcDetail": false
+	},
+	"DB": {
+		"Type": "sqlite3",
+		"Host": "139.198.121.89",
+		"Port": 13306,
+		"User": "root",
+		"Password": "password",
+		"Database": "_test_sqlite3.db"
+	}
+}

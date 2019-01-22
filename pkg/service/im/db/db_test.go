@@ -5,16 +5,9 @@
 package db
 
 import (
-	"flag"
-	"os"
 	"testing"
 )
 
-var (
-	flagConfigFile = flag.String("config", "config-sqlite3.json", "set config type")
-)
-
-func TestMain(m *testing.M) {
-	flag.Parse()
-	os.Exit(m.Run())
+func TestDB(t *testing.T) {
+	//
 }

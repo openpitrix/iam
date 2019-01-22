@@ -107,3 +107,21 @@ func trimEmptyString(s []string) []string {
 	}
 	return b
 }
+
+// "\ta  b  c" => "a b c"
+func simplifyString(s string) string {
+	s = strings.Replace(s, "\t", " ", -1)
+	s = strings.Replace(s, "\n", " ", -1)
+	s = strings.Replace(s, "\r", " ", -1)
+	s = strings.TrimSpace(s)
+
+	for {
+		if sx := strings.Replace(s, "  ", " ", -1); sx == s {
+			return s
+		} else {
+			s = sx
+		}
+	}
+
+	panic("unreachable")
+}

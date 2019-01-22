@@ -53,3 +53,7 @@ func TestTrimEmptyString(t *testing.T) {
 	Assert(t, s1[1] == "c")
 	Assert(t, s1[2] == "d")
 }
+
+func TestSimplifyString(t *testing.T) {
+	Assert(t, simplifyString("\ta  b  c") == "a b c")
+}

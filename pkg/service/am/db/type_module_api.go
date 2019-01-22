@@ -166,7 +166,6 @@ func (records ModuleApiInfoList) ToRoleModuleMap() map[string]*pbam.RoleModule {
 
 		//roleModuleMap
 		m.RoleId = action.RoleId
-		m.RoleName = action.RoleName
 		m.Module = append(m.Module, v)
 
 		roleModuleMap[action.RoleId] = m

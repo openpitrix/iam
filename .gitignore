@@ -23,3 +23,5 @@ go.sum
 /iam
 /cmd/im/im
 /cmd/am/am
+
+_test_sqlite3.db
