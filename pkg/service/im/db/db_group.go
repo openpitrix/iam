@@ -8,6 +8,7 @@ import (
 	"context"
 	"strings"
 
+	"github.com/chai2010/template"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -195,70 +196,108 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 		return nil, err
 	}
 
-	var (
-		inKeys   []string
-		inValues []interface{}
+	var query = template.MustRender(
+		`{{if not .UserId}}
+			select * from user_group where 1=1
+				{{if .GroupId}}
+					and group_id in (
+						{{range $i, $v := .GroupId}}
+							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+						{{end}}
+					)
+				{{end}}
+				{{if .GroupName}}
+					and group_name in (
+						{{range $i, $v := .GroupName}}
+							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+						{{end}}
+					)
+				{{end}}
+				{{if .Status}}
+					and status in (
+						{{range $i, $v := .Status}}
+							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+						{{end}}
+					)
+				{{end}}
+				{{if .SearchWord}}
+					and (1=0
+						OR description LIKE '%{{.SearchWord}}%'
+						{{if not .GroupId}}
+							OR group_id LIKE '%{{.SearchWord}}%'
+						{{end}}
+						{{if not .GroupName}}
+							OR group_name LIKE '%{{.SearchWord}}%'
+						{{end}}
+						{{if not .Status}}
+							OR status LIKE '%{{.SearchWord}}%'
+						{{end}}
+					)
+				{{end}}
+				{{if .SortKey}}
+					order by {{.SortKey}} {{if .Reverse}} desc {{end}}
+				{{end}}
+				limit {{.Limit}} offset {{.Offset}}
+		{{else}}
+			select user_group.* from user, user_group, user_group_binding where 1=1
+				and user_group_binding.user_id=user.user_id
+				and user_group_binding.group_id=user_group.group_id
+
+				{{if .UserId}}
+					and user.user_id in (
+						{{range $i, $v := .UserId}}
+							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+						{{end}}
+					)
+				{{end}}
+				{{if .GroupId}}
+					and user_group.group_id in (
+						{{range $i, $v := .GroupId}}
+							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+						{{end}}
+					)
+				{{end}}
+				{{if .GroupName}}
+					and user_group.group_name in (
+						{{range $i, $v := .GroupName}}
+							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+						{{end}}
+					)
+				{{end}}
+				{{if .Status}}
+					and user_group.status in (
+						{{range $i, $v := .Status}}
+							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+						{{end}}
+					)
+				{{end}}
+				{{if .SearchWord}}
+					and (1=0
+						OR description LIKE '%{{.SearchWord}}%'
+						{{if not .GroupId}}
+							OR user_group.group_id LIKE '%{{.SearchWord}}%'
+						{{end}}
+						{{if not .GroupName}}
+							OR user_group.group_name LIKE '%{{.SearchWord}}%'
+						{{end}}
+						{{if not .Status}}
+							OR user_group.status LIKE '%{{.SearchWord}}%'
+						{{end}}
+					)
+				{{end}}
+				{{if .SortKey}}
+					order by user_group.{{.SortKey}} {{if .Reverse}} desc {{end}}
+				{{end}}
+				limit {{.Limit}} offset {{.Offset}}
+		{{end}}
+		`, req,
 	)
 
-	if len(req.UserId) > 0 {
-		inKeys = append(inKeys, "user.user_id in(?)")
-		inValues = append(inValues, req.UserId)
-	}
-	if len(req.GroupId) > 0 {
-		inKeys = append(inKeys, "user_group.group_id in(?)")
-		inValues = append(inValues, req.GroupId)
-	}
-	if len(req.GroupName) > 0 {
-		inKeys = append(inKeys, "user_group.group_name in(?)")
-		inValues = append(inValues, req.GroupName)
-	}
-	if len(req.Status) > 0 {
-		inKeys = append(inKeys, "user_group.status in(?)")
-		inValues = append(inValues, req.Status)
-	}
-
-	if req.SearchWord != "" {
-		var likeKey = "%" + req.SearchWord + "%"
-
-		var likeSql = `(1=0`
-		likeSql += " OR user_group.group_id LIKE ?"
-		likeSql += " OR user_group.group_name LIKE ?"
-		likeSql += " OR user_group.description LIKE ?"
-		likeSql += " OR user_group.status LIKE ?"
-		likeSql += ")"
-
-		inKeys = append(inKeys, likeSql)
-		inValues = append(inValues,
-			likeKey, // group_id
-			likeKey, // group_name
-			likeKey, // description
-			likeKey, // status
-		)
-	}
-
-	var query = ""
-	if len(inKeys) > 0 {
-		if len(req.UserId) > 0 {
-			query += "SELECT user_group.* from user, user_group, user_group_binding"
-			query += " WHERE "
-			query += " user_group_binding.user_id=user.user_id AND"
-			query += " user_group_binding.group_id=user_group.group_id AND"
-			query += strings.Join(inKeys, " AND ")
-		} else {
-			query += "SELECT user_group.* from user_group"
-			query += " WHERE "
-			query += strings.Join(inKeys, " AND ")
-		}
-	} else {
-		query = "SELECT * from user_group WHERE 1=1"
-		inValues = nil
-	}
-
+	query = simplifyString(query)
 	logger.Infof(ctx, "query: %s", query)
-	logger.Infof(ctx, "inValues: %v", inValues)
 
 	var rows []UserGroup
-	p.DB.Limit(req.Limit).Offset(req.Offset).Where(query, inValues...).Find(&rows)
+	p.DB.Raw(query).Find(&rows)
 	if err := p.DB.Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err

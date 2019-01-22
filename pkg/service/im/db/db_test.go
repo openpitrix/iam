@@ -11,6 +11,10 @@ import (
 )
 
 func TestDB(t *testing.T) {
+	if !*flagEnableDB {
+		t.Skip()
+	}
+
 	cfg, err := config.Load(*flagConfigFile)
 	Assert(t, err == nil, err)
 

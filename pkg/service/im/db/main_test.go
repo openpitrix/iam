@@ -12,6 +12,7 @@ import (
 
 var (
 	flagConfigFile = flag.String("config", "config-sqlite3.json", "set config type")
+	flagEnableDB   = flag.Bool("enable-db", false, "enable database")
 )
 
 func TestMain(m *testing.M) {
