@@ -124,13 +124,125 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 	req.PhoneNumber = trimEmptyString(req.PhoneNumber)
 	req.Status = trimEmptyString(req.Status)
 
-	if err := p.validateListUsersReq(req); err != nil {
+	if !isValidSearchWord(req.SearchWord) {
+		err := status.Errorf(codes.InvalidArgument, "invalid search_word: %v", req.SearchWord)
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+	if !isValidSortKey(req.SortKey) {
+		err := status.Errorf(codes.InvalidArgument, "invalid sort_key: %v", req.SortKey)
+		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
-	if len(req.GroupId) > 0 {
-		return p.listUsers_with_gid(ctx, req)
-	} else {
-		return p.listUsers_no_gid(ctx, req)
+	if !isValidIds(req.GroupId...) {
+		err := status.Errorf(codes.InvalidArgument, "invalid gid: %v", req.GroupId)
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
 	}
+	if !isValidIds(req.UserId...) {
+		err := status.Errorf(codes.InvalidArgument, "invalid uid: %v", req.UserId)
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+	if !isValidEmails(req.Email...) {
+		err := status.Errorf(codes.InvalidArgument, "invalid email: %v", req.Email)
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+	if !isValidPhoneNumbers(req.PhoneNumber...) {
+		err := status.Errorf(codes.InvalidArgument, "invalid phone_number: %v", req.PhoneNumber)
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	var (
+		inKeys   []string
+		inValues []interface{}
+	)
+
+	if len(req.GroupId) > 0 {
+		inKeys = append(inKeys, "user_group.group_id in(?)")
+		inValues = append(inValues, req.GroupId)
+	}
+	if len(req.UserId) > 0 {
+		inKeys = append(inKeys, "user.user_id in(?)")
+		inValues = append(inValues, req.UserId)
+	}
+	if len(req.UserName) > 0 {
+		inKeys = append(inKeys, "user.user_name in(?)")
+		inValues = append(inValues, req.UserName)
+	}
+	if len(req.Email) > 0 {
+		inKeys = append(inKeys, "user.email in(?)")
+		inValues = append(inValues, req.Email)
+	}
+	if len(req.PhoneNumber) > 0 {
+		inKeys = append(inKeys, "user.phone_number in(?)")
+		inValues = append(inValues, req.PhoneNumber)
+	}
+	if len(req.Status) > 0 {
+		inKeys = append(inKeys, "user.status in(?)")
+		inValues = append(inValues, req.Status)
+	}
+
+	if req.SearchWord != "" {
+		var likeKey = "%" + req.SearchWord + "%"
+
+		var likeSql = `(1=0`
+		likeSql += " OR user.user_name LIKE ?"
+		likeSql += " OR user.email LIKE ?"
+		likeSql += " OR user.phone_number LIKE ?"
+		likeSql += " OR user.description LIKE ?"
+		likeSql += " OR user.status LIKE ?"
+		likeSql += ")"
+
+		inKeys = append(inKeys, likeSql)
+		inValues = append(inValues,
+			likeKey, // user_name
+			likeKey, // email
+			likeKey, // phone_number
+			likeKey, // description
+			likeKey, // status
+		)
+	}
+
+	var query = ""
+	if len(inKeys) > 0 {
+		if len(req.UserId) > 0 {
+			query += "SELECT user.* from user, user_group, user_group_binding"
+			query += " WHERE "
+			query += " user_group_binding.user_id=user.user_id AND"
+			query += " user_group_binding.group_id=user_group.group_id AND"
+			query += strings.Join(inKeys, " AND ")
+		} else {
+			query += "SELECT user.* from user_group"
+			query += " WHERE "
+			query += strings.Join(inKeys, " AND ")
+		}
+	} else {
+		query = "SELECT * from user WHERE 1=1"
+		inValues = nil
+	}
+
+	logger.Infof(ctx, "query: %s", query)
+	logger.Infof(ctx, "inValues: %v", inValues)
+
+	var rows []User
+	p.DB.Limit(req.Limit).Offset(req.Offset).Where(query, inValues...).Find(&rows)
+	if err := p.DB.Error; err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	var sets []*pbim.User
+	for _, v := range rows {
+		sets = append(sets, v.ToPB())
+	}
+
+	reply := &pbim.ListUsersResponse{
+		User: sets,
+	}
+
+	return reply, nil
 }

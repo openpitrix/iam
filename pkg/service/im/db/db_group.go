@@ -250,7 +250,7 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 			query += strings.Join(inKeys, " AND ")
 		}
 	} else {
-		query = "SELECT user_group.* from user_group WHERE 1=1"
+		query = "SELECT * from user_group WHERE 1=1"
 		inValues = nil
 	}
 
