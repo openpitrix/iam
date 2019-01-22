@@ -106,7 +106,7 @@ func isZeroTimestamp(x *timestamp.Timestamp) bool {
 	return false
 }
 
-func trimEmptyString(s []string) []string {
+func simplifyStringList(s []string) []string {
 	b := s[:0]
 	for _, x := range s {
 		if x := strings.TrimSpace(x); x != "" {

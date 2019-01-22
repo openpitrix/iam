@@ -69,8 +69,8 @@ func (p *Database) DescribeUsersWithRole(ctx context.Context, req *pbam.Describe
 		req.UserId = strings.Split(req.UserId[0], ",")
 	}
 
-	req.RoleId = trimEmptyString(req.RoleId)
-	req.UserId = trimEmptyString(req.UserId)
+	req.RoleId = simplifyStringList(req.RoleId)
+	req.UserId = simplifyStringList(req.UserId)
 
 	if len(req.RoleId) == 0 && len(req.UserId) == 0 {
 		err := status.Errorf(codes.InvalidArgument, "empty user_id or role_id")

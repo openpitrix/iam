@@ -9,6 +9,7 @@ import (
 
 	"openpitrix.io/iam/pkg/service/am/config"
 	"openpitrix.io/iam/pkg/service/am/db"
+	"openpitrix.io/iam/pkg/service/am/db/static"
 )
 
 type Server struct {
@@ -20,7 +21,9 @@ func OpenServer(cfg *config.Config) (*Server, error) {
 	cfg = cfg.Clone()
 
 	dbInitOpt := &db.Options{
-		SqlInitData: []string{},
+		SqlInitData: []string{
+			static.Files["V0_1__init.sql"],
+		},
 	}
 
 	db, err := db.OpenDatabase(cfg, dbInitOpt)

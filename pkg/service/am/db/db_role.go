@@ -6,10 +6,10 @@ package db
 
 import (
 	"context"
-	"fmt"
 	"strings"
 	"time"
 
+	"github.com/chai2010/template"
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -177,65 +177,113 @@ func (p *Database) DescribeRoles(ctx context.Context, req *pbam.DescribeRolesReq
 		req.UserId = strings.Split(req.UserId[0], ",")
 	}
 
-	req.RoleId = trimEmptyString(req.RoleId)
-	req.RoleName = trimEmptyString(req.RoleName)
-	req.Portal = trimEmptyString(req.Portal)
-	req.UserId = trimEmptyString(req.UserId)
+	req.RoleId = simplifyStringList(req.RoleId)
+	req.RoleName = simplifyStringList(req.RoleName)
+	req.Portal = simplifyStringList(req.Portal)
+	req.UserId = simplifyStringList(req.UserId)
 
-	var (
-		args                 []interface{}
-		sqlRoleIdCondition   string
-		sqlRoleNameCondition string
-		sqlPortalCondition   string
-		sqlUserIdCondition   string
-	)
+	// all list
+	if len(req.RoleId)+len(req.RoleName)+len(req.Portal)+len(req.UserId) == 0 {
+		var query = `select * from role`
+		logger.Infof(ctx, "query: %s", simplifyString(query))
 
-	if len(req.RoleId) > 0 {
-		sqlRoleIdCondition = `and t1.role_id in(?)`
-		args = append(args, req.RoleId)
-	}
-	if len(req.RoleName) > 0 {
-		sqlRoleNameCondition = `and t1.role_name in (?)`
-		args = append(args, req.RoleName)
-	}
-	if len(req.Portal) > 0 {
-		sqlPortalCondition = `and t1.portal in (?)`
-		args = append(args, req.Portal)
-	}
-	if len(req.UserId) > 0 {
-		sqlUserIdCondition = `and t1.user_id in (?)`
-		args = append(args, req.UserId)
+		var rows []Role
+		p.DB.Raw(query).Find(&rows)
+
+		var sets []*pbam.Role
+		for _, v := range rows {
+			sets = append(sets, v.ToPB())
+		}
+
+		reply := &pbam.RoleList{Value: sets}
+		return reply, nil
 	}
 
-	query := fmt.Sprintf(
-		`select distinct t1.* from role t1 where 1=1
-			%s -- and t1.role_id in(?)
-			%s -- and t1.role_name in (?)
-			%s -- and t1.portal in (?) {{/Portal}}
-			and t1.role_id in
-				(select t2.role_id
-					from user_role_binding t1, role t2
-					where t1.role_id=t2.role_id
-						%s -- and t1.user_id in (?)
+	// no user_id:
+	// select * from role where 1=1 and role_id in ('a','b')
+	//
+	// user bind:
+	// select distinct t1.* from role t1 where 1=1 and t1.role_id in (
+	//	select t2.role_id from user_role_binding t1, role t2
+	//	where t1.role_id=t2.role_id and user_id in ('a', 'b')
+	// )
+
+	var query = template.MustRender(`
+			{{if not .UserId}}
+				select * from role where 1=1
+				{{if .RoleId}}
+					and role_id in (
+						{{range $i, $v := .RoleId}}
+							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+						{{end}}
+					)
+				{{end}}
+				{{if .RoleName}}
+					and role_name in (
+						{{range $i, $v := .RoleName}}
+							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+						{{end}}
+					)
+				{{end}}
+				{{if .Portal}}
+					and portal in (
+						{{range $i, $v := .Portal}}
+							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+						{{end}}
+					)
+				{{end}}
+			{{else}}
+				select distinct t1.* from role t1 where 1=1
+				{{if .RoleId}}
+					and role_id in (
+						{{range $i, $v := .RoleId}}
+							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+						{{end}}
+					)
+				{{end}}
+				{{if .RoleName}}
+					and role_name in (
+						{{range $i, $v := .RoleName}}
+							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+						{{end}}
+					)
+				{{end}}
+				{{if .Portal}}
+					and portal in (
+						{{range $i, $v := .Portal}}
+							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+						{{end}}
+					)
+				{{end}}
+
+				and t1.role_id in (
+					select t2.role_id from
+						user_role_binding t1,
+						role t2
+					where
+						t1.role_id=t2.role_id and
+						user_id in (
+							{{range $i, $v := .UserId}}
+								{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+							{{end}}
+						)
 				)
-		`,
-		sqlRoleIdCondition,
-		sqlRoleNameCondition,
-		sqlPortalCondition,
-		sqlUserIdCondition,
+			{{end}}
+		`, req,
 	)
+
+	query = simplifyString(query)
+	logger.Infof(ctx, "query: %s", query)
 
 	var rows []Role
-	p.DB.Raw(query, args...).Find(&rows)
+	p.DB.Raw(query).Find(&rows)
 
 	var sets []*pbam.Role
 	for _, v := range rows {
 		sets = append(sets, v.ToPB())
 	}
 
-	reply := &pbam.RoleList{
-		Value: sets,
-	}
-
+	reply := &pbam.RoleList{Value: sets}
 	return reply, nil
+
 }
