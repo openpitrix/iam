@@ -39,7 +39,7 @@ type UserRoleBinding struct {
 	RoleId string `gorm:"type:varchar(50);"`
 }
 
-func PBRoleToDB(p *pbam.Role) *Role {
+func NewRoleFromPB(p *pbam.Role) *Role {
 	if p == nil {
 		return new(Role)
 	}

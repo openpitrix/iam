@@ -40,7 +40,7 @@ func (p *Database) CreateRole(ctx context.Context, req *pbam.Role) (*pbam.Role, 
 		}
 	}
 
-	if !p.DB.NewRecord(PBRoleToDB(req)) {
+	if !p.DB.NewRecord(NewRoleFromPB(req)) {
 		// failed
 	}
 	if err := p.DB.Error; err != nil {
