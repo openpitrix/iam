@@ -17,12 +17,13 @@ type DBRecord struct {
 	RoleName string
 	Portal   string
 
-	ModuleId   string
-	ModuleName string
+	ModuleId          string
+	ModuleName        string
+	DataLevel         string
+	IsFeatureCheckAll string
 
 	FeatureId   string
 	FeatureName string
-	DataLevel   string
 
 	ActionId      string
 	ActionName    string

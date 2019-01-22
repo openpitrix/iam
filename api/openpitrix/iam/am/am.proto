@@ -196,20 +196,21 @@ message Action {
 	string module_id = 4;
 	string module_name = 5;
 	string data_level = 6;
+	string is_feature_check_all = 7;
 
-	string feature_id = 7;
-	string feature_name = 8;
+	string feature_id = 8;
+	string feature_name = 9;
 
-	string action_id = 9;
-	string action_name = 10;
-	string action_enabled = 11;
+	string action_id = 10;
+	string action_name = 11;
+	string action_enabled = 12;
 
-	string api_id = 12;
-	string api_method = 13;
-	string api_description = 14;
+	string api_id = 13;
+	string api_method = 14;
+	string api_description = 15;
 
-	string url = 15;
-	string url_method = 16;
+	string url = 16;
+	string url_method = 17;
 }
 
 message Feature {
@@ -221,13 +222,15 @@ message Feature {
 
 message Module {
 	string module_id = 1;
-	repeated Feature feature = 2;
-	string data_level = 3;
-	bool check_all = 4;
+	string module_name = 2;
+	repeated Feature feature = 3;
+	string data_level = 4;
+	bool check_all = 5;
 }
 
 message RoleModule {
 	string role_id = 1;
+	string role_name = 2;
 	repeated Module module = 3;
 }
 

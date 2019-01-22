@@ -402,6 +402,9 @@
         "data_level": {
           "type": "string"
         },
+        "is_feature_check_all": {
+          "type": "string"
+        },
         "feature_id": {
           "type": "string"
         },
@@ -526,6 +529,9 @@
         "module_id": {
           "type": "string"
         },
+        "module_name": {
+          "type": "string"
+        },
         "feature": {
           "type": "array",
           "items": {
@@ -598,6 +604,9 @@
       "type": "object",
       "properties": {
         "role_id": {
+          "type": "string"
+        },
+        "role_name": {
           "type": "string"
         },
         "module": {

@@ -13,9 +13,9 @@ func (p *Database) getRecordsByRoleId(roleId string) ([]DBRecord, error) {
 	logger.Infof(nil, funcutil.CallerName(1))
 
 	var rows = []DBRecord{}
-	err := p.DB.Raw(sqlGetAllActions_by_roleId, roleId).Scan(&rows).Error
+	err := p.DB.Raw(sqlGetAllRecords_by_roleId, roleId).Scan(&rows).Error
 	if err != nil {
-		logger.Warnf(nil, "%v", sqlGetAllActions_by_roleId)
+		logger.Warnf(nil, "%v", sqlGetAllRecords_by_roleId)
 		logger.Warnf(nil, "%+v", err)
 		return nil, err
 	}
@@ -23,7 +23,7 @@ func (p *Database) getRecordsByRoleId(roleId string) ([]DBRecord, error) {
 	return rows, nil
 }
 
-const sqlGetAllActions_by_roleId = `
+const sqlGetAllRecords_by_roleId = `
 -- argument[0]: role_id
 -- argument[1]: portal
 select distinct

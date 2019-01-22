@@ -5,8 +5,8 @@
 package db
 
 import (
-	"testing"
 	"reflect"
+	"testing"
 )
 
 func TestDBRecord(t *testing.T) {
@@ -15,16 +15,17 @@ func TestDBRecord(t *testing.T) {
 		RoleName: "role-name",
 		Portal:   "portal-xxx",
 
-		ModuleId:   "mod-001",
-		ModuleName: "mod-name",
+		ModuleId:          "mod-001",
+		ModuleName:        "mod-name",
+		DataLevel:         "data-level-001",
+		IsFeatureCheckAll: "1",
 
 		FeatureId:   "feature-001",
 		FeatureName: "feature-name",
-		DataLevel:   "data-level-001",
 
 		ActionId:      "action-001",
 		ActionName:    "action-name",
-		ActionEnabled: "action-enabled-true",
+		ActionEnabled: "true",
 
 		ApiId:          "api-001",
 		ApiMethod:      "api.method/001",

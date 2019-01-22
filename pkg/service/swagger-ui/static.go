@@ -633,6 +633,9 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "data_level": {
           "type": "string"
         },
+        "is_feature_check_all": {
+          "type": "string"
+        },
         "feature_id": {
           "type": "string"
         },
@@ -757,6 +760,9 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "module_id": {
           "type": "string"
         },
+        "module_name": {
+          "type": "string"
+        },
         "feature": {
           "type": "array",
           "items": {
@@ -829,6 +835,9 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
       "type": "object",
       "properties": {
         "role_id": {
+          "type": "string"
+        },
+        "role_name": {
           "type": "string"
         },
         "module": {
