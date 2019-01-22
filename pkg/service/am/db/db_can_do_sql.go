@@ -31,7 +31,6 @@ where
 	t3.url_method=?
 `
 
-// https://github.com/cbroglie/mustache
 type sqlGetAccessPath_args struct {
 	UserId    string
 	OwnerPath string
@@ -39,14 +38,14 @@ type sqlGetAccessPath_args struct {
 	UrlMethod string
 }
 
-const sqlGetAccessPath_mustache = `
+const sqlGetAccessPath_tmpl = `
 select distinct
 	(case
 		when t2.data_level='all'
-			then substring_index('{{OwnerPath}}', '.', 1)
+			then substring_index('{{.OwnerPath}}', '.', 1)
 		when t2.data_level='department'
-			then replace('{{OwnerPath}}', '{{UserId}}.', '')
-		else '{{OwnerPath}}'
+			then replace('{{.OwnerPath}}', '{{.UserId}}.', '')
+		else '{{.OwnerPath}}'
 	end) as access_path
 from
 	role t1,
@@ -59,7 +58,7 @@ where
 	(select t2.role_id from user_role_binding t1, role t2 where  t1.role_id=t2.role_id and t1.user_id='uid-PYu7bdqa')
 	and t4.action_id=t3.action_id
 	and t3.module_id=(
-		select module_id from action2 where url_method='{{UrlMethod}}' and
-		right(url,length(url)-locate( '/',url, 2))='{{Url}}'
+		select module_id from action2 where url_method='{{.UrlMethod}}' and
+		right(url,length(url)-locate( '/',url, 2))='{{.Url}}'
 	)
 `

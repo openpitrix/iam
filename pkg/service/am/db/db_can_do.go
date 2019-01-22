@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/cbroglie/mustache"
+	"github.com/chai2010/tmpl"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -79,7 +79,7 @@ func (p *Database) CanDo(ctx context.Context, req *pbam.CanDoRequest) (*pbam.Can
 }
 
 func (p *Database) getAccessPathBy(ctx context.Context, req *pbam.CanDoRequest, ownerPath string) (string, error) {
-	query, err := mustache.Render(sqlGetAccessPath_mustache, &sqlGetAccessPath_args{
+	query, err := tmpl.Render(sqlGetAccessPath_tmpl, &sqlGetAccessPath_args{
 		UserId:    req.UserId,
 		OwnerPath: ownerPath,
 		Url:       req.Url,
