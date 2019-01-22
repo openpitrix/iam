@@ -14,17 +14,17 @@ import (
 	pbam "openpitrix.io/iam/pkg/pb/am"
 )
 
-type DBRecordList []DBRecord
+type ModuleApiInfoList []ModuleApiInfo
 
 // keep same pbam.Action
-type DBRecord struct {
+type ModuleApiInfo struct {
 	RoleId   string
 	RoleName string
 	Portal   string
 
-	ModuleId          string
-	ModuleName        string
-	DataLevel         string
+	ModuleId            string
+	ModuleName          string
+	DataLevel           string
 	IsFeatureAllChecked string
 
 	FeatureId   string
@@ -42,9 +42,9 @@ type DBRecord struct {
 	UrlMethod string
 }
 
-func NewRecordFromPB(p *pbam.Action) *DBRecord {
+func NewModuleApiInfoFromPB(p *pbam.Action) *ModuleApiInfo {
 	if p == nil {
-		return new(DBRecord)
+		return new(ModuleApiInfo)
 	}
 
 	var buf bytes.Buffer
@@ -52,7 +52,7 @@ func NewRecordFromPB(p *pbam.Action) *DBRecord {
 		// return nil, err
 	}
 
-	var q = new(DBRecord)
+	var q = new(ModuleApiInfo)
 	if err := gob.NewDecoder(bytes.NewBuffer(buf.Bytes())).Decode(q); err != nil {
 		// return nil, err
 	}
@@ -60,7 +60,7 @@ func NewRecordFromPB(p *pbam.Action) *DBRecord {
 	return q
 }
 
-func (p *DBRecord) ToPB() *pbam.Action {
+func (p *ModuleApiInfo) ToPB() *pbam.Action {
 	q, err := p.ToProtoMessage()
 	if err != nil {
 		panic(err) // unreachable
@@ -68,7 +68,7 @@ func (p *DBRecord) ToPB() *pbam.Action {
 	return q
 }
 
-func (p *DBRecord) ToProtoMessage() (*pbam.Action, error) {
+func (p *ModuleApiInfo) ToProtoMessage() (*pbam.Action, error) {
 	var buf bytes.Buffer
 	if err := gob.NewEncoder(&buf).Encode(p); err != nil {
 		return nil, err
@@ -82,12 +82,12 @@ func (p *DBRecord) ToProtoMessage() (*pbam.Action, error) {
 	return q, nil
 }
 
-func NewDBRecordListFromPB(m ...*pbam.RoleModule) (records DBRecordList) {
+func NewModuleApiInfoListFromPB(m ...*pbam.RoleModule) (records ModuleApiInfoList) {
 	for _, v0 := range m {
 		for _, v1 := range v0.Module {
 			for _, v2 := range v1.Feature {
 				for _, v3 := range v2.Action {
-					records = append(records, *NewRecordFromPB(v3))
+					records = append(records, *NewModuleApiInfoFromPB(v3))
 				}
 			}
 		}
@@ -95,15 +95,15 @@ func NewDBRecordListFromPB(m ...*pbam.RoleModule) (records DBRecordList) {
 	return
 }
 
-func NewDBRecordListFromPBMap(m map[string]*pbam.RoleModule) DBRecordList {
+func NewModuleApiInfoListFromPBMap(m map[string]*pbam.RoleModule) ModuleApiInfoList {
 	var s []*pbam.RoleModule
 	for _, x := range m {
 		s = append(s, x)
 	}
-	return NewDBRecordListFromPB(s...)
+	return NewModuleApiInfoListFromPB(s...)
 }
 
-func (records DBRecordList) ToRoleModuleMap() map[string]*pbam.RoleModule {
+func (records ModuleApiInfoList) ToRoleModuleMap() map[string]*pbam.RoleModule {
 	var (
 		featureMap    = make(map[string]*pbam.Feature)
 		moduleMap     = make(map[string]*pbam.Module)
@@ -176,7 +176,7 @@ func (records DBRecordList) ToRoleModuleMap() map[string]*pbam.RoleModule {
 	return roleModuleMap
 }
 
-func (p DBRecordList) JSONString() string {
+func (p ModuleApiInfoList) JSONString() string {
 	m := p.ToRoleModuleMap()
 
 	data, _ := json.MarshalIndent(m, "", "\t")

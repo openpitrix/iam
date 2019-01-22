@@ -9,13 +9,13 @@ import (
 	"openpitrix.io/logger"
 )
 
-func (p *Database) getRecordsByRoleId(roleId string) (DBRecordList, error) {
+func (p *Database) getModuleApiByRoleId(roleId string) (ModuleApiInfoList, error) {
 	logger.Infof(nil, funcutil.CallerName(1))
 
-	var rows = []DBRecord{}
-	err := p.DB.Raw(sqlGetAllRecords_by_roleId, roleId).Scan(&rows).Error
+	var rows = []ModuleApiInfo{}
+	err := p.DB.Raw(sqlGetModuleApi_by_roleId, roleId).Scan(&rows).Error
 	if err != nil {
-		logger.Warnf(nil, "%v", sqlGetAllRecords_by_roleId)
+		logger.Warnf(nil, "%v", sqlGetModuleApi_by_roleId)
 		logger.Warnf(nil, "%+v", err)
 		return nil, err
 	}
@@ -23,7 +23,7 @@ func (p *Database) getRecordsByRoleId(roleId string) (DBRecordList, error) {
 	return rows, nil
 }
 
-const sqlGetAllRecords_by_roleId = `
+const sqlGetModuleApi_by_roleId = `
 -- argument[0]: role_id
 -- argument[1]: portal
 select distinct

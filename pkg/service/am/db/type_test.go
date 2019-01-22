@@ -9,15 +9,15 @@ import (
 	"testing"
 )
 
-func TestDBRecord(t *testing.T) {
-	u0 := &DBRecord{
+func TestModuleApiInfo(t *testing.T) {
+	u0 := &ModuleApiInfo{
 		RoleId:   "role-001",
 		RoleName: "role-name",
 		Portal:   "portal-xxx",
 
-		ModuleId:          "mod-001",
-		ModuleName:        "mod-name",
-		DataLevel:         "data-level-001",
+		ModuleId:            "mod-001",
+		ModuleName:          "mod-name",
+		DataLevel:           "data-level-001",
 		IsFeatureAllChecked: "1",
 
 		FeatureId:   "feature-001",
@@ -39,11 +39,11 @@ func TestDBRecord(t *testing.T) {
 	Assert(t, err == nil, err)
 	Assert(t, pbU0.RoleId == "role-001")
 
-	u1 := NewRecordFromPB(pbU0)
+	u1 := NewModuleApiInfoFromPB(pbU0)
 
 	pbU1, err := u1.ToProtoMessage()
 	Assert(t, err == nil, err)
-	u2 := NewRecordFromPB(pbU1)
+	u2 := NewModuleApiInfoFromPB(pbU1)
 
 	Assertf(t, reflect.DeepEqual(u1, u0),
 		"u1 = %v, u0 = %v", u1, u0,
