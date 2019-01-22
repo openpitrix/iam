@@ -14,7 +14,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	"openpitrix.io/iam/pkg/pb/im"
-	"openpitrix.io/logger"
 )
 
 type User struct {
@@ -52,8 +51,7 @@ func NewUserFromPB(p *pbim.User) *User {
 	if len(p.Extra) > 0 {
 		data, err := json.MarshalIndent(p.Extra, "", "\t")
 		if err != nil {
-			logger.Warnf(nil, "%+v", err)
-			return q
+			panic(err) // unreachable
 		}
 
 		q.Extra = newString(string(data))
@@ -62,8 +60,13 @@ func NewUserFromPB(p *pbim.User) *User {
 }
 
 func (p *User) ToPB() *pbim.User {
+	q, _ := p.ToProtoMessage()
+	return q
+}
+
+func (p *User) ToProtoMessage() (*pbim.User, error) {
 	if p == nil {
-		return new(pbim.User)
+		return new(pbim.User), nil
 	}
 	var q = &pbim.User{
 		UserId:      p.UserId,
@@ -85,11 +88,10 @@ func (p *User) ToPB() *pbim.User {
 		}
 		err := json.Unmarshal([]byte(*p.Extra), &q.Extra)
 		if err != nil {
-			logger.Warnf(nil, "%+v", err)
-			return q
+			return q, err
 		}
 	}
-	return q
+	return q, nil
 }
 
 func (p *User) BeforeCreate() (err error) {

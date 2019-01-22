@@ -14,7 +14,6 @@ import (
 	"github.com/golang/protobuf/ptypes"
 
 	"openpitrix.io/iam/pkg/pb/im"
-	"openpitrix.io/logger"
 )
 
 type UserGroup struct {
@@ -55,8 +54,7 @@ func NewUserGroupFromPB(p *pbim.Group) *UserGroup {
 	if len(p.Extra) > 0 {
 		data, err := json.MarshalIndent(p.Extra, "", "\t")
 		if err != nil {
-			logger.Warnf(nil, "%+v", err)
-			return q
+			panic(err) // unreachable
 		}
 
 		q.Extra = newString(string(data))
@@ -70,8 +68,13 @@ func NewUserGroupFromPB(p *pbim.Group) *UserGroup {
 }
 
 func (p *UserGroup) ToPB() *pbim.Group {
+	q, _ := p.ToProtoMessage()
+	return q
+}
+
+func (p *UserGroup) ToProtoMessage() (*pbim.Group, error) {
 	if p == nil {
-		return new(pbim.Group)
+		return new(pbim.Group), nil
 	}
 	var q = &pbim.Group{
 		ParentGroupId: p.ParentGroupId,
@@ -92,11 +95,10 @@ func (p *UserGroup) ToPB() *pbim.Group {
 		}
 		err := json.Unmarshal([]byte(*p.Extra), &q.Extra)
 		if err != nil {
-			logger.Warnf(nil, "%+v", err)
-			return q
+			return q, err
 		}
 	}
-	return q
+	return q, nil
 }
 
 func (p *UserGroup) BeforeCreate() (err error) {
