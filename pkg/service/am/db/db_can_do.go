@@ -127,7 +127,7 @@ func (p *Database) getOwnerPathByUserId(ctx context.Context, userId string) (str
 		return "", nil
 	}
 
-	// take firest group
+	// take first group
 	ownerPath := reply.Value[0].GroupPath
 
 	// OK

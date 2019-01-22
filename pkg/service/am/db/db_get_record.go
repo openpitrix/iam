@@ -35,6 +35,7 @@ select distinct
 	t1.feature_id,
 	t1.feature_name,
 	t2.data_level,
+	t2.is_feature_all_checked,
 	t1.action_id,
 	(case when isnull(t4.action_id)=0 then 'true' else 'false' end) as action_enabled,
 	t1.action_name,
@@ -43,7 +44,7 @@ select distinct
 	t1.url_method,
 	t1.url
 from
-	action2 t1
+	module_api t1
 	left join role_module_binding t2 on t1.module_id=t2.module_id
 	left join role t3 on t2.role_id=t3.role_id and t3.role_id=?
 	left join enable_action t4 on t4.action_id= t1.action_id

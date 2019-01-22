@@ -140,8 +140,8 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 
 	// greate tables
 	{
-		if !p.DB.HasTable(&Action2{}) {
-			if err := p.DB.CreateTable(&Action2{}).Error; err != nil {
+		if !p.DB.HasTable(&ModuleApi{}) {
+			if err := p.DB.CreateTable(&ModuleApi{}).Error; err != nil {
 				logger.Warnf(nil, "%+v", err)
 			}
 		}
@@ -172,7 +172,7 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 
 func (p *Database) checkDbHasRecords() bool {
 	var tbNames = []string{
-		"action2",
+		"module_api",
 		"enable_action",
 		"role",
 		"role_module_binding",

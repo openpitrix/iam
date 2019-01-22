@@ -20,16 +20,12 @@ func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	var dbGroup = NewUserGroupFromPB(req)
-	if err := dbGroup.ValidateForInsert(); err != nil {
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
 
 	// gen group_path from parent_id
 	if req.ParentGroupId != "" {
 		if parent, err := p.GetGroup(ctx, &pbim.GroupId{GroupId: req.ParentGroupId}); err == nil {
 			if dbGroup.GroupPath == "" {
-				dbGroup.GroupPath = parent.GroupPath + dbGroup.GroupId + "."
+				dbGroup.GroupPath = parent.GroupPath + "." + dbGroup.GroupId
 			}
 		} else {
 			err := status.Errorf(codes.InvalidArgument, "invalid parent_id: %v", req.ParentGroupId)
@@ -41,28 +37,33 @@ func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 	// check group_path valid
 	switch {
 	case dbGroup.GroupPath == "":
-		dbGroup.GroupPath = dbGroup.GroupId + "."
+		dbGroup.GroupPath = dbGroup.GroupId
 
-	case dbGroup.GroupPath == dbGroup.GroupId+".":
+	case dbGroup.GroupPath == dbGroup.GroupId:
 		// skip root
 
-	case strings.HasSuffix(dbGroup.GroupPath, "."+dbGroup.GroupId+"."):
-		prefixPath := dbGroup.GroupPath[:len(dbGroup.GroupPath)-len("."+dbGroup.GroupId+".")]
-		ids := strings.Split(prefixPath, ".")
-
-		var count int
-		p.DB.Model(&UserGroup{}).Where("group_id in (?)", ids).Count(&count)
-		if err := p.DB.Error; err != nil {
-			logger.Warnf(ctx, "%+v", err)
-			return nil, err
-		}
-		if count != len(ids) {
-			err := status.Errorf(codes.InvalidArgument, "invalid parent group path: %s", dbGroup.GroupPath)
-			logger.Warnf(ctx, "%+v", err)
-			return nil, err
+	case strings.HasSuffix(dbGroup.GroupPath, "."+dbGroup.GroupId):
+		// check parent path
+		ids := strings.Split(dbGroup.GroupPath, ".")
+		if len(ids) > 1 {
+			ids = ids[:len(ids)-1]
 		}
 
-	default: // check parent path
+		if len(ids) > 0 {
+			var count int
+			p.DB.Model(&UserGroup{}).Where("group_id in (?)", ids).Count(&count)
+			if err := p.DB.Error; err != nil {
+				logger.Warnf(ctx, "%+v", err)
+				return nil, err
+			}
+			if count != len(ids) {
+				err := status.Errorf(codes.InvalidArgument, "invalid parent group path: %s", dbGroup.GroupPath)
+				logger.Warnf(ctx, "%+v", err)
+				return nil, err
+			}
+		}
+
+	default:
 		err := status.Errorf(codes.InvalidArgument, "invalid parent group path: %s", dbGroup.GroupPath)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -173,10 +174,27 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 		req.Offset = 0
 	}
 
-	if err := p.validateListGroupsReq(req); err != nil {
+	if !isValidIds(req.GroupId...) {
+		err := status.Errorf(codes.InvalidArgument, "invalid gid: %v", req.GroupId)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
+	if !isValidIds(req.UserId...) {
+		err := status.Errorf(codes.InvalidArgument, "invalid uid: %v", req.UserId)
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+	if !isValidSearchWord(req.SearchWord) {
+		err := status.Errorf(codes.InvalidArgument, "invalid search_word: %v", req.SearchWord)
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+	if !isValidSortKey(req.SortKey) {
+		err := status.Errorf(codes.InvalidArgument, "invalid sort_key: %v", req.SortKey)
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
 	var (
 		inKeys   []string
 		inValues []interface{}

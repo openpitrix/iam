@@ -4,7 +4,7 @@
 
 package db
 
-type Action2 struct {
+type ModuleApi struct {
 	ApiId string `gorm:"type:varchar(50);primary_key"`
 
 	ModuleId   string `gorm:"type:varchar(50);"`

@@ -61,7 +61,7 @@ func NewUserGroupFromPB(p *pbim.Group) *UserGroup {
 	}
 
 	if p.GroupPath != "" {
-		q.GroupPathLevel = strings.Count(p.GroupPath, ".")
+		q.GroupPathLevel = strings.Count(p.GroupPath, ".") + 1
 	}
 
 	return q
@@ -116,21 +116,22 @@ func (p *UserGroup) BeforeCreate() (err error) {
 	p.UpdateTime = now
 	p.StatusTime = now
 
-	// a.b.ParentGroupId.d.
-	if len(p.GroupPath) == len(p.GroupId)+1 {
+	// a.b.ParentGroupId.d
+	if p.GroupPath == p.GroupId {
 		p.ParentGroupId = ""
-	} else if len(p.GroupPath) > len(p.GroupId)+1 {
-		// prentGroupPath: a.b.ParentGroupId.
-		prentGroupPath := p.GroupPath[:len(p.GroupPath)-len(p.GroupId)-1]
-		prentGroupPath = strings.TrimSuffix(prentGroupPath, ".")
-		if idx := strings.LastIndex(prentGroupPath, "."); idx >= 0 {
-			p.ParentGroupId = prentGroupPath[idx:]
+	} else if strings.HasSuffix(p.GroupPath, "."+p.GroupId) {
+		// parentGroupPath: a.b.ParentGroupId
+		parentGroupPath := p.GroupPath[:len(p.GroupPath)-len(p.GroupId)-1]
+		if idx := strings.LastIndex(parentGroupPath, "."); idx >= 0 {
+			p.ParentGroupId = parentGroupPath[idx:]
+		} else {
+			p.ParentGroupId = parentGroupPath
 		}
 	} else {
 		p.ParentGroupId = "" // ???
 	}
 
-	p.GroupPathLevel = strings.Count(p.GroupPath, ".")
+	p.GroupPathLevel = strings.Count(p.GroupPath, ".") + 1
 	return
 }
 func (p *UserGroup) BeforeUpdate() (err error) {
@@ -150,7 +151,7 @@ func (p *UserGroup) BeforeUpdate() (err error) {
 	return
 }
 
-func (p *UserGroup) ValidateForInsert() error {
+func (p *UserGroup) _ValidateForInsert() error {
 	if !isValidIds(p.GroupId) {
 		return fmt.Errorf("invalid GroupId: %q", p.GroupId)
 	}
