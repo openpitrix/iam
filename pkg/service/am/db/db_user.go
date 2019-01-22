@@ -7,6 +7,7 @@ package db
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -59,7 +60,19 @@ func (p *Database) GetUserWithRole(ctx context.Context, req *pbam.UserId) (*pbam
 func (p *Database) DescribeUsersWithRole(ctx context.Context, req *pbam.DescribeUsersWithRoleRequest) (*pbam.DescribeUsersWithRoleResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if len(req.RoleId) > 1 && len(req.UserId) > 1 {
+	// fix repeated fileds
+	// GET donot support repeated type in grpc-gateway
+	if len(req.RoleId) == 1 && strings.Contains(req.RoleId[0], ",") {
+		req.RoleId = strings.Split(req.RoleId[0], ",")
+	}
+	if len(req.UserId) == 1 && strings.Contains(req.UserId[0], ",") {
+		req.UserId = strings.Split(req.UserId[0], ",")
+	}
+
+	req.RoleId = trimEmptyString(req.RoleId)
+	req.UserId = trimEmptyString(req.UserId)
+
+	if len(req.RoleId) == 0 && len(req.UserId) == 0 {
 		err := status.Errorf(codes.InvalidArgument, "empty user_id or role_id")
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err

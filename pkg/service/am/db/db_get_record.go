@@ -5,17 +5,21 @@
 package db
 
 import (
+	"bytes"
+	"encoding/gob"
+
 	"openpitrix.io/iam/pkg/internal/funcutil"
+	pbam "openpitrix.io/iam/pkg/pb/am"
 	"openpitrix.io/logger"
 )
 
-func (p *Database) getAllActions(roleId, portal string) ([]DBAction, error) {
+func (p *Database) getRecordsByRoleId(roleId string) ([]DBRecord, error) {
 	logger.Infof(nil, funcutil.CallerName(1))
 
-	var rows = []DBAction{}
-	err := p.DB.Raw(sqlGetAllActions_by_RoleId_Protal, roleId, portal).Scan(&rows).Error
+	var rows = []DBRecord{}
+	err := p.DB.Raw(sqlGetAllActions_by_roleId, roleId).Scan(&rows).Error
 	if err != nil {
-		logger.Warnf(nil, "%v", sqlGetAllActions_by_RoleId_Protal)
+		logger.Warnf(nil, "%v", sqlGetAllActions_by_roleId)
 		logger.Warnf(nil, "%+v", err)
 		return nil, err
 	}
@@ -23,7 +27,45 @@ func (p *Database) getAllActions(roleId, portal string) ([]DBAction, error) {
 	return rows, nil
 }
 
-const sqlGetAllActions_by_RoleId_Protal = `
+type DBRecord struct {
+	ApiId          string
+	ApiMethod      string
+	ApiDescription string
+
+	ModuleId   string
+	ModuleName string
+
+	FeatureId   string
+	FeatureName string
+
+	ActionId   string
+	ActionName string
+
+	Url       string
+	UrlMethod string
+
+	// in other tables
+
+	RoleId   string
+	RoleName string
+	Portal   string
+
+	DataLevel string
+
+	ActionEnabled string
+}
+
+func (p *DBRecord) ToPB() *pbam.Action {
+	var buf bytes.Buffer
+	gob.NewEncoder(&buf).Encode(p)
+
+	var q = new(pbam.Action)
+	gob.NewDecoder(bytes.NewBuffer(buf.Bytes())).Decode(q)
+
+	return q
+}
+
+const sqlGetAllActions_by_roleId = `
 -- argument[0]: role_id
 -- argument[1]: portal
 select distinct
@@ -47,6 +89,4 @@ from
 	left join role_module_binding t2 on t1.module_id=t2.module_id
 	left join role t3 on t2.role_id=t3.role_id and t3.role_id=?
 	left join enable_action t4 on t4.action_id= t1.action_id
-where
-	t3.portal=?
 `

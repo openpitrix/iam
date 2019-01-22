@@ -15,8 +15,17 @@ import (
 func (p *Database) GetRoleModule(ctx context.Context, req *pbam.RoleId) (*pbam.RoleModule, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
+	records, err := p.getRecordsByRoleId(req.RoleId)
+	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	_ = records
+
 	panic("todo")
 }
+
 func (p *Database) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (*pbam.RoleModule, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
