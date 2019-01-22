@@ -117,12 +117,12 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 		req.Status = strings.Split(req.Status[0], ",")
 	}
 
-	req.GroupId = trimEmptyString(req.GroupId)
-	req.UserId = trimEmptyString(req.UserId)
-	req.UserName = trimEmptyString(req.UserName)
-	req.Email = trimEmptyString(req.Email)
-	req.PhoneNumber = trimEmptyString(req.PhoneNumber)
-	req.Status = trimEmptyString(req.Status)
+	req.GroupId = simplifyStringList(req.GroupId)
+	req.UserId = simplifyStringList(req.UserId)
+	req.UserName = simplifyStringList(req.UserName)
+	req.Email = simplifyStringList(req.Email)
+	req.PhoneNumber = simplifyStringList(req.PhoneNumber)
+	req.Status = simplifyStringList(req.Status)
 
 	if !isValidSearchWord(req.SearchWord) {
 		err := status.Errorf(codes.InvalidArgument, "invalid search_word: %v", req.SearchWord)

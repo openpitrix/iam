@@ -44,9 +44,9 @@ func TestIsValidPhoneNumbers(t *testing.T) {
 	))
 }
 
-func TestTrimEmptyString(t *testing.T) {
+func TestSimplifyStringList(t *testing.T) {
 	s0 := []string{"a", "", "c", "  ", " d "}
-	s1 := trimEmptyString(s0)
+	s1 := simplifyStringList(s0)
 
 	Assert(t, len(s1) == 3)
 	Assert(t, s1[0] == "a")

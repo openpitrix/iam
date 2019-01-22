@@ -154,10 +154,10 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 		req.Status = strings.Split(req.Status[0], ",")
 	}
 
-	req.UserId = trimEmptyString(req.UserId)
-	req.GroupId = trimEmptyString(req.GroupId)
-	req.GroupName = trimEmptyString(req.GroupName)
-	req.Status = trimEmptyString(req.Status)
+	req.UserId = simplifyStringList(req.UserId)
+	req.GroupId = simplifyStringList(req.GroupId)
+	req.GroupName = simplifyStringList(req.GroupName)
+	req.Status = simplifyStringList(req.Status)
 
 	// limit & offset
 	if req.Limit == 0 && req.Offset == 0 {
