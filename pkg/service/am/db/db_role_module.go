@@ -23,6 +23,16 @@ func (p *Database) GetRoleModule(ctx context.Context, req *pbam.RoleId) (*pbam.R
 		return nil, err
 	}
 
+	roleModule := p.buildRoleModuleFromRecords(records, req.RoleId)
+	return roleModule, nil
+}
+
+func (p *Database) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (*pbam.RoleModule, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
+	panic("todo")
+}
+func (p *Database) buildRoleModuleFromRecords(records []DBRecord, roleId string) *pbam.RoleModule {
 	var (
 		featureMap = make(map[string]*pbam.Feature)
 		moduleMap  = make(map[string]*pbam.Module)
@@ -77,7 +87,7 @@ func (p *Database) GetRoleModule(ctx context.Context, req *pbam.RoleId) (*pbam.R
 	roleModule := new(pbam.RoleModule)
 	for _, v := range moduleMap {
 		action := v.Feature[0].Action[0]
-		if action.RoleId != req.RoleId {
+		if action.RoleId != roleId {
 			continue
 		}
 
@@ -87,11 +97,5 @@ func (p *Database) GetRoleModule(ctx context.Context, req *pbam.RoleId) (*pbam.R
 	}
 
 	// OK
-	return roleModule, nil
-}
-
-func (p *Database) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (*pbam.RoleModule, error) {
-	logger.Infof(ctx, funcutil.CallerName(1))
-
-	panic("todo")
+	return roleModule
 }
