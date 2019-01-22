@@ -6,8 +6,17 @@ package db
 
 import (
 	"testing"
+
+	"openpitrix.io/iam/pkg/service/im/config"
 )
 
 func TestDB(t *testing.T) {
-	//
+	cfg, err := config.Load(*flagConfigFile)
+	Assert(t, err == nil, err)
+
+	db, err := OpenDatabase(cfg, nil)
+	Assert(t, err == nil, err)
+	defer db.Close()
+
+	_ = db
 }
