@@ -9,7 +9,7 @@ import (
 	"openpitrix.io/logger"
 )
 
-func (p *Database) getRecordsByRoleId(roleId string) ([]DBRecord, error) {
+func (p *Database) getRecordsByRoleId(roleId string) (DBRecordList, error) {
 	logger.Infof(nil, funcutil.CallerName(1))
 
 	var rows = []DBRecord{}
