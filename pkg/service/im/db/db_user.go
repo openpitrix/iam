@@ -31,7 +31,7 @@ func (p *Database) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 func (p *Database) DeleteUsers(ctx context.Context, req *pbim.UserIdList) (*pbim.Empty, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if req == nil || len(req.UserId) == 0 || !isValidUids(req.UserId...) {
+	if req == nil || len(req.UserId) == 0 || !isValidIds(req.UserId...) {
 		err := status.Errorf(codes.InvalidArgument, "empty field")
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -116,6 +116,13 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 	if len(req.Status) == 1 && strings.Contains(req.Status[0], ",") {
 		req.Status = strings.Split(req.Status[0], ",")
 	}
+
+	req.GroupId = trimEmptyString(req.GroupId)
+	req.UserId = trimEmptyString(req.UserId)
+	req.UserName = trimEmptyString(req.UserName)
+	req.Email = trimEmptyString(req.Email)
+	req.PhoneNumber = trimEmptyString(req.PhoneNumber)
+	req.Status = trimEmptyString(req.Status)
 
 	if err := p.validateListUsersReq(req); err != nil {
 		return nil, err

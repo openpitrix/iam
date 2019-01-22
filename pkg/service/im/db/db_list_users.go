@@ -28,23 +28,17 @@ func (p *Database) validateListUsersReq(req *pbim.ListUsersRequest) error {
 		return fmt.Errorf("invalid limit: %v", req.Limit)
 	}
 
-	if !isValidGids(req.GroupId...) {
+	if !isValidIds(req.GroupId...) {
 		return fmt.Errorf("invalid gid: %v", req.GroupId)
 	}
-	if !isValidUids(req.UserId...) {
+	if !isValidIds(req.UserId...) {
 		return fmt.Errorf("invalid uid: %v", req.UserId)
-	}
-	if !isValidNames(req.UserName...) {
-		return fmt.Errorf("invalid name: %v", req.UserName)
 	}
 	if !isValidEmails(req.Email...) {
 		return fmt.Errorf("invalid email: %v", req.Email)
 	}
 	if !isValidPhoneNumbers(req.PhoneNumber...) {
 		return fmt.Errorf("invalid phone_number: %v", req.PhoneNumber)
-	}
-	if !isValidStatus(req.Status...) {
-		return fmt.Errorf("invalid status: %v", req.Status)
 	}
 
 	return nil

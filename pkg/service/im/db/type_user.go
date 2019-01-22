@@ -132,7 +132,7 @@ func (p *User) BeforeUpdate() (err error) {
 }
 
 func (p *User) ValidateForInsert() error {
-	if !reUserId.MatchString(p.UserId) {
+	if !isValidIds(p.UserId) {
 		return fmt.Errorf("invalid uid: %q", p.UserId)
 	}
 	if p.Password == "" {
@@ -149,7 +149,7 @@ func (p *User) ValidateForInsert() error {
 	return nil
 }
 func (p *User) ValidateForUpdate() error {
-	if !reUserId.MatchString(p.UserId) {
+	if !isValidIds(p.UserId) {
 		return fmt.Errorf("invalid uid: %q", p.UserId)
 	}
 

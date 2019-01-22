@@ -29,17 +29,11 @@ func (p *Database) validateListGroupsReq(req *pbim.ListGroupsRequest) error {
 	}
 
 	// check repeaded fields
-	if !isValidGids(req.GroupId...) {
+	if !isValidIds(req.GroupId...) {
 		return fmt.Errorf("invalid gid: %v", req.GroupId)
 	}
-	if !isValidUids(req.UserId...) {
+	if !isValidIds(req.UserId...) {
 		return fmt.Errorf("invalid uid: %v", req.UserId)
-	}
-	if !isValidNames(req.GroupName...) {
-		return fmt.Errorf("invalid name: %v", req.GroupName)
-	}
-	if !isValidStatus(req.Status...) {
-		return fmt.Errorf("invalid status: %v", req.Status)
 	}
 
 	return nil

@@ -149,7 +149,7 @@ func (p *UserGroup) BeforeUpdate() (err error) {
 }
 
 func (p *UserGroup) ValidateForInsert() error {
-	if !reGroupId.MatchString(p.GroupId) {
+	if !isValidIds(p.GroupId) {
 		return fmt.Errorf("invalid GroupId: %q", p.GroupId)
 	}
 
@@ -163,7 +163,7 @@ func (p *UserGroup) ValidateForInsert() error {
 	return nil
 }
 func (p *UserGroup) ValidateForUpdate() error {
-	if !reGroupId.MatchString(p.GroupId) {
+	if !isValidIds(p.GroupId) {
 		return fmt.Errorf("invalid GroupId: %q", p.GroupId)
 	}
 

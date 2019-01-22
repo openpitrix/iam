@@ -15,12 +15,6 @@ import (
 	"openpitrix.io/iam/pkg/internal/base58"
 )
 
-var (
-	reUserId    = regexp.MustCompile(`^[a-zA-Z0-9-_]{2,64}$`)
-	reGroupId   = regexp.MustCompile(`^[a-zA-Z0-9-_]{2,64}$`)
-	reGroupPath = regexp.MustCompile(`^[a-zA-Z0-9_.-]{2,255}$`)
-)
-
 func newString(v string) *string {
 	return &v
 }
@@ -43,6 +37,20 @@ func genId(prefix string, maxLen int) string {
 	return prefix + s[:len(buf)]
 }
 
+func isValidIds(ids ...string) bool {
+	var re = regexp.MustCompile(`^[a-zA-Z0-9_-]*$`)
+	for _, id := range ids {
+		if !re.MatchString(id) {
+			return false
+		}
+	}
+	return true
+}
+
+func isValidGroupPath(s string) bool {
+	var re = regexp.MustCompile(`^[a-zA-Z0-9_.-]{2,255}$`)
+	return re.MatchString(s)
+}
 func isValidSearchWord(name string) bool {
 	var re = regexp.MustCompile(`^[a-zA-Z0-9_-]*$`)
 	return re.MatchString(name)
@@ -51,38 +59,6 @@ func isValidSortKey(name string) bool {
 	var re = regexp.MustCompile(`^[a-zA-Z0-9_-]*$`)
 	return re.MatchString(name)
 }
-
-func isValidGids(ids ...string) bool {
-	var re = regexp.MustCompile(`^[a-zA-Z0-9_-]*$`)
-	for _, id := range ids {
-		if !re.MatchString(id) {
-			return false
-		}
-	}
-	return true
-}
-func isValidUids(ids ...string) bool {
-	var re = regexp.MustCompile(`^[a-zA-Z0-9_-]*$`)
-	for _, id := range ids {
-		if !re.MatchString(id) {
-			return false
-		}
-	}
-	return true
-}
-func isValidNames(ids ...string) bool {
-	return true
-}
-func isValidStatus(ids ...string) bool {
-	var re = regexp.MustCompile(`^[a-zA-Z0-9_-]*$`)
-	for _, id := range ids {
-		if !re.MatchString(id) {
-			return false
-		}
-	}
-	return true
-}
-
 func isValidEmails(emails ...string) bool {
 	for _, v := range emails {
 		if v == "" {
@@ -102,7 +78,6 @@ func isValidEmails(emails ...string) bool {
 	}
 	return true
 }
-
 func isValidPhoneNumbers(phoneNumbers ...string) bool {
 	var re = regexp.MustCompile(`^[0-9]+$`)
 	for _, id := range phoneNumbers {
@@ -123,8 +98,12 @@ func isZeroTimestamp(x *timestamp.Timestamp) bool {
 	return false
 }
 
-var reSearchWord = regexp.MustCompile(`^[a-zA-Z0-9_-]+$`)
-
-func pkgSearchWordValid(s string) bool {
-	return reSearchWord.MatchString(s)
+func trimEmptyString(s []string) []string {
+	b := s[:0]
+	for _, x := range s {
+		if x := strings.TrimSpace(x); x != "" {
+			b = append(b, x)
+		}
+	}
+	return b
 }
