@@ -132,35 +132,3 @@ func (p *User) BeforeUpdate() (err error) {
 
 	return
 }
-
-func (p *User) ValidateForInsert() error {
-	if !isValidIds(p.UserId) {
-		return fmt.Errorf("invalid uid: %q", p.UserId)
-	}
-	if p.Password == "" {
-		return fmt.Errorf("invalid password")
-	}
-
-	if p.Extra != nil && *p.Extra != "" {
-		var m = make(map[string]string)
-		if err := json.Unmarshal([]byte(*p.Extra), &m); err != nil {
-			return fmt.Errorf("invalid extra")
-		}
-	}
-
-	return nil
-}
-func (p *User) ValidateForUpdate() error {
-	if !isValidIds(p.UserId) {
-		return fmt.Errorf("invalid uid: %q", p.UserId)
-	}
-
-	if p.Extra != nil && *p.Extra != "" {
-		var m = make(map[string]string)
-		if err := json.Unmarshal([]byte(*p.Extra), &m); err != nil {
-			return fmt.Errorf("invalid extra")
-		}
-	}
-
-	return nil
-}
