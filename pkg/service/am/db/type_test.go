@@ -18,7 +18,7 @@ func TestDBRecord(t *testing.T) {
 		ModuleId:          "mod-001",
 		ModuleName:        "mod-name",
 		DataLevel:         "data-level-001",
-		IsFeatureCheckAll: "1",
+		IsFeatureAllChecked: "1",
 
 		FeatureId:   "feature-001",
 		FeatureName: "feature-name",

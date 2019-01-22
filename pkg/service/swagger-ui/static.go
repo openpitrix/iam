@@ -633,7 +633,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "data_level": {
           "type": "string"
         },
-        "is_feature_check_all": {
+        "is_feature_all_checked": {
           "type": "string"
         },
         "feature_id": {

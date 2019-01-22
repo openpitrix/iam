@@ -196,7 +196,7 @@ message Action {
 	string module_id = 4;
 	string module_name = 5;
 	string data_level = 6;
-	string is_feature_check_all = 7;
+	string is_feature_all_checked = 7;
 
 	string feature_id = 8;
 	string feature_name = 9;

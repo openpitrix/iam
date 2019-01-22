@@ -25,7 +25,7 @@ type DBRecord struct {
 	ModuleId          string
 	ModuleName        string
 	DataLevel         string
-	IsFeatureCheckAll string
+	IsFeatureAllChecked string
 
 	FeatureId   string
 	FeatureName string
@@ -145,7 +145,7 @@ func (records DBRecordList) ToRoleModuleMap() map[string]*pbam.RoleModule {
 		m.ModuleName = action.ModuleName
 		m.Feature = append(m.Feature, v)
 		m.DataLevel = action.DataLevel
-		m.CheckAll = action.IsFeatureCheckAll == "1" || strings.EqualFold(action.IsFeatureCheckAll, "true")
+		m.CheckAll = action.IsFeatureAllChecked == "1" || strings.EqualFold(action.IsFeatureAllChecked, "true")
 
 		moduleMap[m.ModuleId] = m
 	}

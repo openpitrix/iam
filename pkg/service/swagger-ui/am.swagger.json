@@ -402,7 +402,7 @@
         "data_level": {
           "type": "string"
         },
-        "is_feature_check_all": {
+        "is_feature_all_checked": {
           "type": "string"
         },
         "feature_id": {
