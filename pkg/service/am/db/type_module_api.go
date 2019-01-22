@@ -145,7 +145,7 @@ func (records ModuleApiInfoList) ToRoleModuleMap() map[string]*pbam.RoleModule {
 		m.ModuleName = action.ModuleName
 		m.Feature = append(m.Feature, v)
 		m.DataLevel = action.DataLevel
-		m.CheckAll = action.IsFeatureAllChecked == "1" || strings.EqualFold(action.IsFeatureAllChecked, "true")
+		m.IsFeatureAllChecked = action.IsFeatureAllChecked == "1" || strings.EqualFold(action.IsFeatureAllChecked, "true")
 
 		moduleMap[m.ModuleId] = m
 	}

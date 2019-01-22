@@ -225,7 +225,7 @@ message Module {
 	string module_name = 2;
 	repeated Feature feature = 3;
 	string data_level = 4;
-	bool check_all = 5;
+	bool is_feature_all_checked = 5;
 }
 
 message RoleModule {

@@ -15,10 +15,10 @@ func TestModuleApiInfo(t *testing.T) {
 		RoleName: "role-name",
 		Portal:   "portal-xxx",
 
-		ModuleId:            "mod-001",
-		ModuleName:          "mod-name",
-		DataLevel:           "data-level-001",
-		IsFeatureAllChecked: "1",
+		ModuleId:   "mod-001",
+		ModuleName: "mod-name",
+		DataLevel:  "data-level-001",
+		//IsFeatureAllChecked: "1",
 
 		FeatureId:   "feature-001",
 		FeatureName: "feature-name",

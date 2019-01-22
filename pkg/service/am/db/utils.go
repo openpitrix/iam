@@ -122,6 +122,4 @@ func simplifyString(s string) string {
 			s = sx
 		}
 	}
-
-	panic("unreachable")
 }

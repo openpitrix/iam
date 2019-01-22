@@ -541,7 +541,7 @@
         "data_level": {
           "type": "string"
         },
-        "check_all": {
+        "is_feature_all_checked": {
           "type": "boolean",
           "format": "boolean"
         }

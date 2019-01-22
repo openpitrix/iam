@@ -79,4 +79,5 @@ FROM (
 		left join role t3 on t2.role_id=t3.role_id   and t3.role_id='{{.RoleId}}'
 	)t
 	left join enable_action tt on t.action_id=tt.action_id and t.bind_id=tt.bind_id
+order by t.action_id;
 `
