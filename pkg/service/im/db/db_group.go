@@ -196,9 +196,9 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 		return nil, err
 	}
 
-	var query, err = template.Render(
-		`{{if not .UserId}}
-			select * from user_group where 1=1
+	const sqlTmpl = `
+		{{if not .UserId}}
+			select {{if IsCountMode}}COUNT(*){{else}}*{{end}} from user_group where 1=1
 				{{if .GroupId}}
 					and group_id in (
 						{{range $i, $v := .GroupId}}
@@ -237,9 +237,13 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 				{{if .SortKey}}
 					order by {{.SortKey}} {{if .Reverse}} desc {{end}}
 				{{end}}
-				limit {{.Limit}} offset {{.Offset}}
+				{{if not IsCountMode}}
+					limit {{.Limit}} offset {{.Offset}}
+				{{end}}
 		{{else}}
-			select user_group.* from user, user_group, user_group_binding where 1=1
+			select {{if IsCountMode}}COUNT(user_group.*){{else}}user_group.*{{end}} from
+				user, user_group, user_group_binding
+			where 1=1
 				and user_group_binding.user_id=user.user_id
 				and user_group_binding.group_id=user_group.group_id
 
@@ -288,9 +292,38 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 				{{if .SortKey}}
 					order by user_group.{{.SortKey}} {{if .Reverse}} desc {{end}}
 				{{end}}
-				limit {{.Limit}} offset {{.Offset}}
+				{{if not IsCountMode}}
+					limit {{.Limit}} offset {{.Offset}}
+				{{end}}
 		{{end}}
-		`, req,
+	`
+
+	// count mode
+	var query, err = template.Render(sqlTmpl, req,
+		template.FuncMap{
+			"IsCountMode": func() bool { return true },
+		},
+	)
+	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	query = simplifyString(query)
+	logger.Infof(ctx, "count: %s", query)
+
+	var total int
+	p.DB.Raw(query).Count(&total)
+	if err := p.DB.Error; err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	// query mode
+	query, err = template.Render(sqlTmpl, req,
+		template.FuncMap{
+			"IsCountMode": func() bool { return false },
+		},
 	)
 	if err != nil {
 		logger.Warnf(ctx, "%+v", err)
@@ -314,7 +347,7 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 
 	reply := &pbim.ListGroupsResponse{
 		Group: sets,
-		Total: int32(len(sets)),
+		Total: int32(total),
 	}
 
 	return reply, nil

@@ -192,9 +192,9 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 		return nil, err
 	}
 
-	var query, err = template.Render(
-		`{{if not .GroupId}}
-			select * from user where 1=1
+	const sqlTmpl = `
+		{{if not .GroupId}}
+			select {{if IsCountMode}}COUNT(*){{else}}*{{end}} from user where 1=1
 				{{if .UserId}}
 					and user_id in (
 						{{range $i, $v := .UserId}}
@@ -253,9 +253,13 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 				{{if .SortKey}}
 					order by {{.SortKey}} {{if .Reverse}} desc {{end}}
 				{{end}}
-				limit {{.Limit}} offset {{.Offset}}
+				{{if not IsCountMode}}
+					limit {{.Limit}} offset {{.Offset}}
+				{{end}}
 		{{else}}
-			select user.* from user, user_group, user_group_binding where 1=1
+			select {{if IsCountMode}}COUNT(user.*){{else}}user.*{{end}} from
+				user, user_group, user_group_binding
+			where 1=1
 				and user_group_binding.user_id=user.user_id
 				and user_group_binding.group_id=user_group.group_id
 
@@ -325,9 +329,38 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 				{{if .SortKey}}
 					order by user.{{.SortKey}} {{if .Reverse}} desc {{end}}
 				{{end}}
-				limit {{.Limit}} offset {{.Offset}}
+				{{if not IsCountMode}}
+					limit {{.Limit}} offset {{.Offset}}
+				{{end}}
 		{{end}}
-		`, req,
+	`
+
+	// count mode
+	var query, err = template.Render(sqlTmpl, req,
+		template.FuncMap{
+			"IsCountMode": func() bool { return true },
+		},
+	)
+	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	query = simplifyString(query)
+	logger.Infof(ctx, "count: %s", query)
+
+	var total int
+	p.DB.Raw(query).Count(&total)
+	if err := p.DB.Error; err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	// query mode
+	query, err = template.Render(sqlTmpl, req,
+		template.FuncMap{
+			"IsCountMode": func() bool { return false },
+		},
 	)
 	if err != nil {
 		logger.Warnf(ctx, "%+v", err)
@@ -351,8 +384,8 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 	}
 
 	reply := &pbim.ListUsersResponse{
-		User: sets,
-		Total: int32(len(sets)),
+		User:  sets,
+		Total: int32(total),
 	}
 
 	return reply, nil
