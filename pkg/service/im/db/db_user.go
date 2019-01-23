@@ -346,6 +346,7 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 
 	var sets []*pbim.User
 	for _, v := range rows {
+		v.Password = "" // ignore Password
 		sets = append(sets, v.ToPB())
 	}
 

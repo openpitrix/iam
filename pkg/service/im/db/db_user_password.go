@@ -6,6 +6,7 @@ package db
 
 import (
 	"context"
+	"crypto/md5"
 
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
@@ -29,6 +30,7 @@ func (p *Database) ComparePassword(ctx context.Context, req *pbim.Password) (*pb
 		[]byte(user.Password), []byte(req.GetPassword()),
 	)
 	if err != nil {
+		logger.Warnf(ctx, "password failed, md5(password): %x", md5.Sum([]byte(req.Password)))
 		return &pbim.Bool{Value: false}, nil
 	}
 
