@@ -19,7 +19,7 @@ type User struct {
 	UserId      string `gorm:"primary_key"`
 	UserName    string `gorm:"type:varchar(50);not null;unique;"`
 	Email       string `gorm:"type:varchar(50);not null;unique"`
-	PhoneNumber string `gorm:"type:varchar(50);not null;unique"`
+	PhoneNumber string `gorm:"type:varchar(50);not null"`
 	Description string `gorm:"type:varchar(1000);not null"`
 	Password    string `gorm:"type:varchar(128);not null"`
 	Status      string `gorm:"type:varchar(10);not null"`

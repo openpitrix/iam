@@ -314,6 +314,7 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 
 	reply := &pbim.ListGroupsResponse{
 		Group: sets,
+		Total: int32(len(sets)),
 	}
 
 	return reply, nil

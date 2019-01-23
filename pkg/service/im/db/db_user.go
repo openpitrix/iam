@@ -352,6 +352,7 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 
 	reply := &pbim.ListUsersResponse{
 		User: sets,
+		Total: int32(len(sets)),
 	}
 
 	return reply, nil
