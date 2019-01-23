@@ -196,7 +196,7 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 		return nil, err
 	}
 
-	var query = template.MustRender(
+	var query, err = template.Render(
 		`{{if not .UserId}}
 			select * from user_group where 1=1
 				{{if .GroupId}}
@@ -273,7 +273,7 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 				{{end}}
 				{{if .SearchWord}}
 					and (1=0
-						OR description LIKE '%{{.SearchWord}}%'
+						OR user_group.description LIKE '%{{.SearchWord}}%'
 						{{if not .GroupId}}
 							OR user_group.group_id LIKE '%{{.SearchWord}}%'
 						{{end}}
@@ -292,6 +292,10 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 		{{end}}
 		`, req,
 	)
+	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
 
 	query = simplifyString(query)
 	logger.Infof(ctx, "query: %s", query)

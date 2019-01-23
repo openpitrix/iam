@@ -8,6 +8,7 @@ import (
 	"context"
 	"strings"
 
+	"github.com/chai2010/template"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -124,6 +125,21 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 	req.PhoneNumber = simplifyStringList(req.PhoneNumber)
 	req.Status = simplifyStringList(req.Status)
 
+	// limit & offset
+	if req.Limit == 0 && req.Offset == 0 {
+		req.Limit = 20
+		req.Offset = 0
+	}
+	if req.Limit < 0 {
+		req.Limit = 0
+	}
+	if req.Limit > 200 {
+		req.Limit = 200
+	}
+	if req.Offset < 0 {
+		req.Offset = 0
+	}
+
 	if !isValidSearchWord(req.SearchWord) {
 		err := status.Errorf(codes.InvalidArgument, "invalid search_word: %v", req.SearchWord)
 		logger.Warnf(ctx, "%+v", err)
@@ -156,80 +172,153 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 		return nil, err
 	}
 
-	var (
-		inKeys   []string
-		inValues []interface{}
+	var query, err = template.Render(
+		`{{if not .GroupId}}
+			select * from user where 1=1
+				{{if .UserId}}
+					and user_id in (
+						{{range $i, $v := .UserId}}
+							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+						{{end}}
+					)
+				{{end}}
+				{{if .UserName}}
+					and user_name in (
+						{{range $i, $v := .UserName}}
+							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+						{{end}}
+					)
+				{{end}}
+				{{if .Email}}
+					and email in (
+						{{range $i, $v := .Email}}
+							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+						{{end}}
+					)
+				{{end}}
+				{{if .PhoneNumber}}
+					and phone_number in (
+						{{range $i, $v := .PhoneNumber}}
+							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+						{{end}}
+					)
+				{{end}}
+				{{if .Status}}
+					and status in (
+						{{range $i, $v := .Status}}
+							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+						{{end}}
+					)
+				{{end}}
+				{{if .SearchWord}}
+					and (1=0
+						OR description LIKE '%{{.SearchWord}}%'
+						{{if not .UserId}}
+							OR user_id LIKE '%{{.SearchWord}}%'
+						{{end}}
+						{{if not .UserName}}
+							OR user_name LIKE '%{{.SearchWord}}%'
+						{{end}}
+						{{if not .Email}}
+							OR email LIKE '%{{.SearchWord}}%'
+						{{end}}
+						{{if not .PhoneNumber}}
+							OR phone_number LIKE '%{{.SearchWord}}%'
+						{{end}}
+						{{if not .Status}}
+							OR status LIKE '%{{.SearchWord}}%'
+						{{end}}
+					)
+				{{end}}
+				{{if .SortKey}}
+					order by {{.SortKey}} {{if .Reverse}} desc {{end}}
+				{{end}}
+				limit {{.Limit}} offset {{.Offset}}
+		{{else}}
+			select user.* from user, user_group, user_group_binding where 1=1
+				and user_group_binding.user_id=user.user_id
+				and user_group_binding.group_id=user_group.group_id
+
+				{{if .GroupId}}
+					and user_group.group_id in (
+						{{range $i, $v := .GroupId}}
+							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+						{{end}}
+					)
+				{{end}}
+				{{if .UserId}}
+					and user.user_id in (
+						{{range $i, $v := .UserId}}
+							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+						{{end}}
+					)
+				{{end}}
+				{{if .UserName}}
+					and user.user_name in (
+						{{range $i, $v := .UserName}}
+							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+						{{end}}
+					)
+				{{end}}
+				{{if .Email}}
+					and user.email in (
+						{{range $i, $v := .Email}}
+							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+						{{end}}
+					)
+				{{end}}
+				{{if .PhoneNumber}}
+					and user.phone_number in (
+						{{range $i, $v := .PhoneNumber}}
+							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+						{{end}}
+					)
+				{{end}}
+				{{if .Status}}
+					and user.status in (
+						{{range $i, $v := .Status}}
+							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+						{{end}}
+					)
+				{{end}}
+
+				{{if .SearchWord}}
+					and (1=0
+						OR user.description LIKE '%{{.SearchWord}}%'
+						{{if not .UserId}}
+							OR user.user_id LIKE '%{{.SearchWord}}%'
+						{{end}}
+						{{if not .UserName}}
+							OR user.user_name LIKE '%{{.SearchWord}}%'
+						{{end}}
+						{{if not .Email}}
+							OR user.email LIKE '%{{.SearchWord}}%'
+						{{end}}
+						{{if not .PhoneNumber}}
+							OR user.phone_number LIKE '%{{.SearchWord}}%'
+						{{end}}
+						{{if not .Status}}
+							OR user.status LIKE '%{{.SearchWord}}%'
+						{{end}}
+					)
+				{{end}}
+				{{if .SortKey}}
+					order by user.{{.SortKey}} {{if .Reverse}} desc {{end}}
+				{{end}}
+				limit {{.Limit}} offset {{.Offset}}
+		{{end}}
+		`, req,
 	)
-
-	if len(req.GroupId) > 0 {
-		inKeys = append(inKeys, "user_group.group_id in(?)")
-		inValues = append(inValues, req.GroupId)
-	}
-	if len(req.UserId) > 0 {
-		inKeys = append(inKeys, "user.user_id in(?)")
-		inValues = append(inValues, req.UserId)
-	}
-	if len(req.UserName) > 0 {
-		inKeys = append(inKeys, "user.user_name in(?)")
-		inValues = append(inValues, req.UserName)
-	}
-	if len(req.Email) > 0 {
-		inKeys = append(inKeys, "user.email in(?)")
-		inValues = append(inValues, req.Email)
-	}
-	if len(req.PhoneNumber) > 0 {
-		inKeys = append(inKeys, "user.phone_number in(?)")
-		inValues = append(inValues, req.PhoneNumber)
-	}
-	if len(req.Status) > 0 {
-		inKeys = append(inKeys, "user.status in(?)")
-		inValues = append(inValues, req.Status)
+	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
 	}
 
-	if req.SearchWord != "" {
-		var likeKey = "%" + req.SearchWord + "%"
-
-		var likeSql = `(1=0`
-		likeSql += " OR user.user_name LIKE ?"
-		likeSql += " OR user.email LIKE ?"
-		likeSql += " OR user.phone_number LIKE ?"
-		likeSql += " OR user.description LIKE ?"
-		likeSql += " OR user.status LIKE ?"
-		likeSql += ")"
-
-		inKeys = append(inKeys, likeSql)
-		inValues = append(inValues,
-			likeKey, // user_name
-			likeKey, // email
-			likeKey, // phone_number
-			likeKey, // description
-			likeKey, // status
-		)
-	}
-
-	var query = ""
-	if len(inKeys) > 0 {
-		if len(req.UserId) > 0 {
-			query += "SELECT user.* from user, user_group, user_group_binding"
-			query += " WHERE "
-			query += " user_group_binding.user_id=user.user_id AND"
-			query += " user_group_binding.group_id=user_group.group_id AND"
-			query += strings.Join(inKeys, " AND ")
-		} else {
-			query += "SELECT user.* from user_group"
-			query += " WHERE "
-			query += strings.Join(inKeys, " AND ")
-		}
-	} else {
-		query = "SELECT * from user WHERE 1=1"
-		inValues = nil
-	}
-
+	query = simplifyString(query)
 	logger.Infof(ctx, "query: %s", query)
-	logger.Infof(ctx, "inValues: %v", inValues)
 
 	var rows []User
-	p.DB.Limit(req.Limit).Offset(req.Offset).Where(query, inValues...).Find(&rows)
+	p.DB.Raw(query).Find(&rows)
 	if err := p.DB.Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
