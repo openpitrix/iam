@@ -11,16 +11,15 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
-	"golang.org/x/crypto/bcrypt"
 
 	"openpitrix.io/iam/pkg/pb/im"
 )
 
 type User struct {
 	UserId      string `gorm:"primary_key"`
-	UserName    string `gorm:"type:varchar(50);not null"`
-	Email       string `gorm:"type:varchar(50);not null"`
-	PhoneNumber string `gorm:"type:varchar(50);not null"`
+	UserName    string `gorm:"type:varchar(50);not null;unique;"`
+	Email       string `gorm:"type:varchar(50);not null;unique"`
+	PhoneNumber string `gorm:"type:varchar(50);not null;unique"`
 	Description string `gorm:"type:varchar(1000);not null"`
 	Password    string `gorm:"type:varchar(128);not null"`
 	Status      string `gorm:"type:varchar(10);not null"`
@@ -104,16 +103,6 @@ func (p *User) BeforeCreate() (err error) {
 		}
 	}
 
-	if p.Password != "" {
-		hashedPass, err := bcrypt.GenerateFromPassword(
-			[]byte(p.Password), bcrypt.DefaultCost,
-		)
-		if err != nil {
-			return err
-		}
-		p.Password = string(hashedPass)
-	}
-
 	now := time.Now()
 	p.CreateTime = now
 	p.UpdateTime = now
@@ -125,10 +114,12 @@ func (p *User) BeforeUpdate() (err error) {
 	if p.UpdateTime == (time.Time{}) {
 		p.UpdateTime = time.Now()
 	}
+	if p.Status != "" {
+		p.StatusTime = time.Now()
+	}
 
 	// ignore readonly fields
 	p.CreateTime = time.Time{}
-	p.Password = ""
 
 	return
 }

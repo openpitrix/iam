@@ -19,8 +19,8 @@ import (
 type UserGroup struct {
 	ParentGroupId string `gorm:"type:varchar(50);not null"`
 	GroupId       string `gorm:"primary_key"`
-	GroupPath     string `gorm:"type:varchar(255);not null"`
-	GroupName     string `gorm:"type:varchar(50);not null"`
+	GroupPath     string `gorm:"type:varchar(255);not null;unique"`
+	GroupName     string `gorm:"type:varchar(50);not null;unique"`
 	Description   string `gorm:"type:varchar(1000);not null"`
 	Status        string `gorm:"type:varchar(10);not null"`
 	CreateTime    time.Time

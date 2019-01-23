@@ -8,6 +8,8 @@ import (
 	"context"
 
 	"golang.org/x/crypto/bcrypt"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"openpitrix.io/iam/pkg/internal/funcutil"
 	"openpitrix.io/iam/pkg/pb/im"
@@ -41,6 +43,23 @@ func (p *Database) ModifyPassword(ctx context.Context, req *pbim.Password) (*pbi
 		UserId:   req.UserId,
 		Password: req.Password,
 	}
+
+	if dbUser.Password == "" {
+		err := status.Errorf(codes.InvalidArgument, "empty password")
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+	if dbUser.Password != "" {
+		hashedPass, err := bcrypt.GenerateFromPassword(
+			[]byte(dbUser.Password), bcrypt.DefaultCost,
+		)
+		if err != nil {
+			logger.Warnf(ctx, "%+v", err)
+			return nil, err
+		}
+		dbUser.Password = string(hashedPass)
+	}
+
 	if err := p.DB.Model(dbUser).Updates(dbUser).Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err

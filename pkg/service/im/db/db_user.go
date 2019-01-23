@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/chai2010/template"
+	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -21,6 +22,23 @@ func (p *Database) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	var dbUser = NewUserFromPB(req)
+	if dbUser.Password == "" {
+		err := status.Errorf(codes.InvalidArgument, "empty password")
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	if dbUser.Password != "" {
+		hashedPass, err := bcrypt.GenerateFromPassword(
+			[]byte(dbUser.Password), bcrypt.DefaultCost,
+		)
+		if err != nil {
+			logger.Warnf(ctx, "%+v", err)
+			return nil, err
+		}
+		dbUser.Password = string(hashedPass)
+	}
+
 	if err := p.DB.Create(dbUser).Error; err != nil {
 		logger.Warnf(ctx, "%+v, %v", err, dbUser)
 		return nil, err
@@ -70,6 +88,8 @@ func (p *Database) ModifyUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
+
+	req.Password = ""
 
 	var dbUser = NewUserFromPB(req)
 	if err := p.DB.Model(dbUser).Updates(dbUser).Error; err != nil {
