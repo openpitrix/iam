@@ -6,7 +6,7 @@ module openpitrix.io/iam
 
 require (
 	github.com/BurntSushi/toml v0.3.1
-	github.com/chai2010/template v1.0.1-alpha
+	github.com/chai2010/template v1.1.0
 	github.com/denisenkom/go-mssqldb v0.0.0-20190111225525-2fea367d496d // indirect
 	github.com/erikstmartin/go-testdb v0.0.0-20160219214506-8d10e4a1bae5 // indirect
 	github.com/fatih/camelcase v1.0.0 // indirect
