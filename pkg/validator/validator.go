@@ -40,7 +40,7 @@ func IsValidEmail(emails ...string) bool {
 	return true
 }
 
-func IsValidPhoneNumbers(phoneNumbers ...string) bool {
+func IsValidPhoneNumber(phoneNumbers ...string) bool {
 	var re = regexp.MustCompile(`^[0-9]+$`)
 	for _, id := range phoneNumbers {
 		if !re.MatchString(id) {

@@ -14,13 +14,14 @@ import (
 
 	"openpitrix.io/iam/pkg/internal/funcutil"
 	"openpitrix.io/iam/pkg/pb/im"
+	"openpitrix.io/iam/pkg/service/im/db_spec"
 	"openpitrix.io/logger"
 )
 
 func (p *Database) ComparePassword(ctx context.Context, req *pbim.Password) (*pbim.Bool, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	var user User
+	var user db_spec.User
 	if err := p.DB.First(&user).Error; err != nil {
 		logger.Warnf(ctx, "uid = %s, err = %+v", req.UserId, err)
 		return nil, err
@@ -41,7 +42,7 @@ func (p *Database) ComparePassword(ctx context.Context, req *pbim.Password) (*pb
 func (p *Database) ModifyPassword(ctx context.Context, req *pbim.Password) (*pbim.Empty, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	var dbUser = &User{
+	var dbUser = &db_spec.User{
 		UserId:   req.UserId,
 		Password: req.Password,
 	}

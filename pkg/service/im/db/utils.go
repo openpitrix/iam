@@ -4,6 +4,8 @@
 
 package db
 
+/*
+
 import (
 	"crypto/rand"
 	"regexp"
@@ -123,3 +125,5 @@ func simplifyString(s string) string {
 		}
 	}
 }
+
+*/

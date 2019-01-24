@@ -13,8 +13,12 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	idpkg "openpitrix.io/iam/pkg/id"
 	"openpitrix.io/iam/pkg/internal/funcutil"
+	"openpitrix.io/iam/pkg/internal/strutil"
 	"openpitrix.io/iam/pkg/pb/im"
+	"openpitrix.io/iam/pkg/service/im/db_spec"
+	"openpitrix.io/iam/pkg/validator"
 	"openpitrix.io/logger"
 )
 
@@ -22,10 +26,10 @@ func (p *Database) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	if req.UserId == "" {
-		req.UserId = genId("uid-", 12)
+		req.UserId = idpkg.GenId("uid-", 12)
 	}
 
-	var dbUser = NewUserFromPB(req)
+	var dbUser = db_spec.NewUserFromPB(req)
 	if dbUser.Password == "" {
 		err := status.Errorf(codes.InvalidArgument, "empty password")
 		logger.Warnf(ctx, "%+v", err)
@@ -54,7 +58,7 @@ func (p *Database) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 func (p *Database) DeleteUsers(ctx context.Context, req *pbim.UserIdList) (*pbim.Empty, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if req == nil || len(req.UserId) == 0 || !isValidIds(req.UserId...) {
+	if req == nil || len(req.UserId) == 0 || !validator.IsValidId(req.UserId...) {
 		err := status.Errorf(codes.InvalidArgument, "empty field")
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -62,13 +66,13 @@ func (p *Database) DeleteUsers(ctx context.Context, req *pbim.UserIdList) (*pbim
 
 	tx := p.DB.Begin()
 	{
-		tx.Delete(User{}, `user_id in (?)`, req.UserId)
+		tx.Delete(db_spec.User{}, `user_id in (?)`, req.UserId)
 		if err := tx.Error; err != nil {
 			tx.Rollback()
 			return nil, err
 		}
 
-		tx.Delete(User{}, `user_id in (?)`, req.UserId)
+		tx.Delete(db_spec.User{}, `user_id in (?)`, req.UserId)
 		if err := tx.Error; err != nil {
 			tx.Rollback()
 			return nil, err
@@ -95,7 +99,7 @@ func (p *Database) ModifyUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 
 	req.Password = ""
 
-	var dbUser = NewUserFromPB(req)
+	var dbUser = db_spec.NewUserFromPB(req)
 	if err := p.DB.Model(dbUser).Updates(dbUser).Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -107,8 +111,8 @@ func (p *Database) ModifyUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 func (p *Database) GetUser(ctx context.Context, req *pbim.UserId) (*pbim.User, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	var v = User{UserId: req.UserId}
-	if err := p.DB.Model(User{}).Take(&v).Error; err != nil {
+	var v = db_spec.User{UserId: req.UserId}
+	if err := p.DB.Model(db_spec.User{}).Take(&v).Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
@@ -142,12 +146,12 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 		req.Status = strings.Split(req.Status[0], ",")
 	}
 
-	req.GroupId = simplifyStringList(req.GroupId)
-	req.UserId = simplifyStringList(req.UserId)
-	req.UserName = simplifyStringList(req.UserName)
-	req.Email = simplifyStringList(req.Email)
-	req.PhoneNumber = simplifyStringList(req.PhoneNumber)
-	req.Status = simplifyStringList(req.Status)
+	req.GroupId = strutil.SimplifyStringList(req.GroupId)
+	req.UserId = strutil.SimplifyStringList(req.UserId)
+	req.UserName = strutil.SimplifyStringList(req.UserName)
+	req.Email = strutil.SimplifyStringList(req.Email)
+	req.PhoneNumber = strutil.SimplifyStringList(req.PhoneNumber)
+	req.Status = strutil.SimplifyStringList(req.Status)
 
 	// limit & offset
 	if req.Limit == 0 && req.Offset == 0 {
@@ -164,33 +168,33 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 		req.Offset = 0
 	}
 
-	if !isValidSearchWord(req.SearchWord) {
+	if !validator.IsValidSearchWord(req.SearchWord) {
 		err := status.Errorf(codes.InvalidArgument, "invalid search_word: %v", req.SearchWord)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
-	if !isValidSortKey(req.SortKey) {
+	if !validator.IsValidSortKey(req.SortKey) {
 		err := status.Errorf(codes.InvalidArgument, "invalid sort_key: %v", req.SortKey)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
-	if !isValidIds(req.GroupId...) {
+	if !validator.IsValidId(req.GroupId...) {
 		err := status.Errorf(codes.InvalidArgument, "invalid gid: %v", req.GroupId)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
-	if !isValidIds(req.UserId...) {
+	if !validator.IsValidId(req.UserId...) {
 		err := status.Errorf(codes.InvalidArgument, "invalid uid: %v", req.UserId)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
-	if !isValidEmails(req.Email...) {
+	if !validator.IsValidEmail(req.Email...) {
 		err := status.Errorf(codes.InvalidArgument, "invalid email: %v", req.Email)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
-	if !isValidPhoneNumbers(req.PhoneNumber...) {
+	if !validator.IsValidPhoneNumber(req.PhoneNumber...) {
 		err := status.Errorf(codes.InvalidArgument, "invalid phone_number: %v", req.PhoneNumber)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -350,7 +354,7 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 		return nil, err
 	}
 
-	query = simplifyString(query)
+	query = strutil.SimplifyString(query)
 	logger.Infof(ctx, "count: %s", query)
 
 	var total int
@@ -371,10 +375,10 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 		return nil, err
 	}
 
-	query = simplifyString(query)
+	query = strutil.SimplifyString(query)
 	logger.Infof(ctx, "query: %s", query)
 
-	var rows []User
+	var rows []db_spec.User
 	p.DB.Raw(query).Find(&rows)
 	if err := p.DB.Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)

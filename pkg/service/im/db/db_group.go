@@ -12,8 +12,12 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	idpkg "openpitrix.io/iam/pkg/id"
 	"openpitrix.io/iam/pkg/internal/funcutil"
+	"openpitrix.io/iam/pkg/internal/strutil"
 	"openpitrix.io/iam/pkg/pb/im"
+	"openpitrix.io/iam/pkg/service/im/db_spec"
+	"openpitrix.io/iam/pkg/validator"
 	"openpitrix.io/logger"
 )
 
@@ -21,14 +25,24 @@ func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	if req.GroupId == "" {
-		req.GroupId = genId("gid-", 12)
+		req.GroupId = idpkg.GenId("gid-", 12)
 	}
 
-	var dbGroup = NewUserGroupFromPB(req)
+	var dbGroup = db_spec.NewUserGroupFromPB(req)
 
 	// gen group_path from parent_id
 	if req.ParentGroupId != "" {
 		if parent, err := p.GetGroup(ctx, &pbim.GroupId{GroupId: req.ParentGroupId}); err == nil {
+			if parent.GroupPath == "" {
+				if parent.ParentGroupId == "" {
+					parent.GroupPath = parent.GroupId
+				} else {
+					err := status.Errorf(codes.InvalidArgument, "parent: invalid group_path: %v", req.ParentGroupId)
+					logger.Warnf(ctx, "%+v", err)
+					return nil, err
+				}
+			}
+
 			if dbGroup.GroupPath == "" {
 				dbGroup.GroupPath = parent.GroupPath + "." + dbGroup.GroupId
 			}
@@ -56,7 +70,7 @@ func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 
 		if len(ids) > 0 {
 			var count int
-			p.DB.Model(&UserGroup{}).Where("group_id in (?)", ids).Count(&count)
+			p.DB.Model(&db_spec.UserGroup{}).Where("group_id in (?)", ids).Count(&count)
 			if err := p.DB.Error; err != nil {
 				logger.Warnf(ctx, "%+v", err)
 				return nil, err
@@ -85,7 +99,7 @@ func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 func (p *Database) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pbim.Empty, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if req == nil || len(req.GroupId) == 0 || !isValidIds(req.GroupId...) {
+	if req == nil || len(req.GroupId) == 0 || !validator.IsValidId(req.GroupId...) {
 		err := status.Errorf(codes.InvalidArgument, "empty field")
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -93,11 +107,11 @@ func (p *Database) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pb
 
 	tx := p.DB.Begin()
 	{
-		if err := tx.Delete(UserGroup{}, "group_id in (?)", req.GroupId).Error; err != nil {
+		if err := tx.Delete(db_spec.UserGroup{}, "group_id in (?)", req.GroupId).Error; err != nil {
 			tx.Rollback()
 			return nil, err
 		}
-		if err := tx.Delete(UserGroupBinding{}, "group_id in (?)", req.GroupId).Error; err != nil {
+		if err := tx.Delete(db_spec.UserGroupBinding{}, "group_id in (?)", req.GroupId).Error; err != nil {
 			tx.Rollback()
 			return nil, err
 		}
@@ -121,7 +135,7 @@ func (p *Database) ModifyGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 		return nil, err
 	}
 
-	var dbGroup = NewUserGroupFromPB(req)
+	var dbGroup = db_spec.NewUserGroupFromPB(req)
 	if err := p.DB.Model(dbGroup).Updates(dbGroup).Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -133,8 +147,8 @@ func (p *Database) ModifyGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 func (p *Database) GetGroup(ctx context.Context, req *pbim.GroupId) (*pbim.Group, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	var v = UserGroup{GroupId: req.GroupId}
-	if err := p.DB.Model(User{}).Take(&v).Error; err != nil {
+	var v = db_spec.UserGroup{GroupId: req.GroupId}
+	if err := p.DB.Model(db_spec.User{}).Take(&v).Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
@@ -159,10 +173,10 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 		req.Status = strings.Split(req.Status[0], ",")
 	}
 
-	req.UserId = simplifyStringList(req.UserId)
-	req.GroupId = simplifyStringList(req.GroupId)
-	req.GroupName = simplifyStringList(req.GroupName)
-	req.Status = simplifyStringList(req.Status)
+	req.UserId = strutil.SimplifyStringList(req.UserId)
+	req.GroupId = strutil.SimplifyStringList(req.GroupId)
+	req.GroupName = strutil.SimplifyStringList(req.GroupName)
+	req.Status = strutil.SimplifyStringList(req.Status)
 
 	// limit & offset
 	if req.Limit == 0 && req.Offset == 0 {
@@ -179,22 +193,22 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 		req.Offset = 0
 	}
 
-	if !isValidIds(req.GroupId...) {
+	if !validator.IsValidId(req.GroupId...) {
 		err := status.Errorf(codes.InvalidArgument, "invalid gid: %v", req.GroupId)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
-	if !isValidIds(req.UserId...) {
+	if !validator.IsValidId(req.UserId...) {
 		err := status.Errorf(codes.InvalidArgument, "invalid uid: %v", req.UserId)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
-	if !isValidSearchWord(req.SearchWord) {
+	if !validator.IsValidSearchWord(req.SearchWord) {
 		err := status.Errorf(codes.InvalidArgument, "invalid search_word: %v", req.SearchWord)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
-	if !isValidSortKey(req.SortKey) {
+	if !validator.IsValidSortKey(req.SortKey) {
 		err := status.Errorf(codes.InvalidArgument, "invalid sort_key: %v", req.SortKey)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -313,7 +327,7 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 		return nil, err
 	}
 
-	query = simplifyString(query)
+	query = strutil.SimplifyString(query)
 	logger.Infof(ctx, "count: %s", query)
 
 	var total int
@@ -334,10 +348,10 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 		return nil, err
 	}
 
-	query = simplifyString(query)
+	query = strutil.SimplifyString(query)
 	logger.Infof(ctx, "query: %s", query)
 
-	var rows []UserGroup
+	var rows []db_spec.UserGroup
 	p.DB.Raw(query).Find(&rows)
 	if err := p.DB.Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)

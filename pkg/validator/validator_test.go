@@ -8,8 +8,8 @@ import (
 	"testing"
 
 	idpkg "openpitrix.io/iam/pkg/id"
+	. "openpitrix.io/iam/pkg/internal/assert"
 	"openpitrix.io/iam/pkg/validator"
-	."openpitrix.io/iam/pkg/internal/assert"
 )
 
 func TestIsValidId(t *testing.T) {
@@ -39,13 +39,13 @@ func TestIsValidEmail(t *testing.T) {
 	))
 }
 
-func TestIsValidPhoneNumbers(t *testing.T) {
-	Assert(t, validator.IsValidPhoneNumbers(
+func TestIsValidPhoneNumber(t *testing.T) {
+	Assert(t, validator.IsValidPhoneNumber(
 		"123",
 		"110",
 		"123456",
 	))
-	Assert(t, !validator.IsValidPhoneNumbers(
+	Assert(t, !validator.IsValidPhoneNumber(
 		"admin@openpitrix.io",
 		"dev@openpitrix.io",
 		"user@openpitrix.io",

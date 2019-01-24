@@ -15,6 +15,7 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 
 	"openpitrix.io/iam/pkg/service/im/config"
+	"openpitrix.io/iam/pkg/service/im/db_spec"
 	"openpitrix.io/logger"
 )
 
@@ -141,18 +142,18 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 
 	// greate tables
 	{
-		if !p.DB.HasTable(&User{}) {
-			if err := p.DB.CreateTable(&User{}).Error; err != nil {
+		if !p.DB.HasTable(&db_spec.User{}) {
+			if err := p.DB.CreateTable(&db_spec.User{}).Error; err != nil {
 				logger.Warnf(nil, "%+v", err)
 			}
 		}
-		if !p.DB.HasTable(&UserGroup{}) {
-			if err := p.DB.CreateTable(&UserGroup{}).Error; err != nil {
+		if !p.DB.HasTable(&db_spec.UserGroup{}) {
+			if err := p.DB.CreateTable(&db_spec.UserGroup{}).Error; err != nil {
 				logger.Warnf(nil, "%+v", err)
 			}
 		}
-		if !p.DB.HasTable(&UserGroupBinding{}) {
-			if err := p.DB.CreateTable(&UserGroupBinding{}).Error; err != nil {
+		if !p.DB.HasTable(&db_spec.UserGroupBinding{}) {
+			if err := p.DB.CreateTable(&db_spec.UserGroupBinding{}).Error; err != nil {
 				logger.Warnf(nil, "%+v", err)
 			}
 		}
