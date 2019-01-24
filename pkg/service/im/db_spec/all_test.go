@@ -16,7 +16,7 @@ import (
 
 func TestUser(t *testing.T) {
 	u0 := &User{
-		UserId:      idpkg.GenId("fuckid-", 16),
+		UserId:      idpkg.GenId("fuckid-"),
 		UserName:    "fuck-name",
 		Email:       "120@qq.com",
 		PhoneNumber: "119",

@@ -5,6 +5,7 @@
 package strutil
 
 import (
+	"regexp"
 	"strings"
 )
 
@@ -15,25 +16,16 @@ func NewString(v string) *string {
 func SimplifyStringList(s []string) []string {
 	b := s[:0]
 	for _, x := range s {
-		if x := strings.TrimSpace(x); x != "" {
+		if x := SimplifyString(x); x != "" {
 			b = append(b, x)
 		}
 	}
 	return b
 }
 
+var reMoreSpace = regexp.MustCompile(`\s+`)
+
 // "\ta  b  c" => "a b c"
 func SimplifyString(s string) string {
-	s = strings.Replace(s, "\t", " ", -1)
-	s = strings.Replace(s, "\n", " ", -1)
-	s = strings.Replace(s, "\r", " ", -1)
-	s = strings.TrimSpace(s)
-
-	for {
-		if sx := strings.Replace(s, "  ", " ", -1); sx == s {
-			return s
-		} else {
-			s = sx
-		}
-	}
+	return reMoreSpace.ReplaceAllString(strings.TrimSpace(s), " ")
 }

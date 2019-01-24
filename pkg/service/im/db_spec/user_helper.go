@@ -4,7 +4,30 @@
 
 package db_spec
 
+import (
+	"time"
+
+	idpkg "openpitrix.io/iam/pkg/id"
+	"openpitrix.io/iam/pkg/internal/strutil"
+)
+
 func (p *User) AdjustForCreate() *User {
+	p.UserId = strutil.SimplifyString(p.UserId)
+	p.UserName = strutil.SimplifyString(p.UserName)
+	p.Email = strutil.SimplifyString(p.Email)
+	p.PhoneNumber = strutil.SimplifyString(p.PhoneNumber)
+	p.Description = strutil.SimplifyString(p.Description)
+	p.Status = strutil.SimplifyString(p.Status)
+
+	if p.UserId == "" {
+		p.UserId = idpkg.GenId("uid-")
+	}
+
+	now := time.Now()
+	p.CreateTime = now
+	p.UpdateTime = now
+	p.StatusTime = now
+
 	return p
 }
 

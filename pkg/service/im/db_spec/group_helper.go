@@ -20,7 +20,7 @@ func (p *UserGroup) AdjustForCreate() *UserGroup {
 	p.GroupPath = strutil.SimplifyString(p.GroupPath)
 
 	if p.GroupId == "" {
-		p.GroupId = idpkg.GenId("gid-", 12)
+		p.GroupId = idpkg.GenId("gid-")
 	}
 
 	// fix parent id

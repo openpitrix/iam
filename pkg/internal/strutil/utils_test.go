@@ -21,5 +21,13 @@ func TestSimplifyStringList(t *testing.T) {
 }
 
 func TestSimplifyString(t *testing.T) {
-	Assert(t, SimplifyString("\ta  b  c") == "a b c")
+	var tests = []struct{ s, expect string }{
+		{s: "\ta  b  c", expect: "a b c"},
+		{s: "a b c", expect: "a b c"},
+		{s: "abc", expect: "abc"},
+	}
+	for _, v := range tests {
+		got := SimplifyString(v.s)
+		Assertf(t, got == v.expect, "expect = %q, got = %q", v.expect, got)
+	}
 }

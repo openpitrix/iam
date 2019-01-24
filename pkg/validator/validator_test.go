@@ -14,9 +14,9 @@ import (
 
 func TestIsValidId(t *testing.T) {
 	Assert(t, validator.IsValidId(
-		idpkg.GenId("uid-", 12),
-		idpkg.GenId("gid-", 12),
-		idpkg.GenId("xid-", 12),
+		idpkg.GenId("uid-"),
+		idpkg.GenId("gid-"),
+		idpkg.GenId("xid-"),
 	))
 }
 

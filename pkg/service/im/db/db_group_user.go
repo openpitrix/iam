@@ -49,7 +49,7 @@ func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*
 	switch {
 	case len(req.UserId) == len(req.GroupId):
 		for i := 0; i < len(req.GroupId); i++ {
-			xid := idpkg.GenId("xid-", 12)
+			xid := idpkg.GenId("xid-")
 			uid := req.UserId[i]
 			gid := req.GroupId[i]
 
@@ -64,7 +64,7 @@ func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*
 		}
 	case len(req.UserId) == 1:
 		for i := 0; i < len(req.GroupId); i++ {
-			xid := idpkg.GenId("xid-", 12)
+			xid := idpkg.GenId("xid-")
 			gid := req.GroupId[i]
 			uid := req.UserId[0]
 
@@ -79,7 +79,7 @@ func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*
 		}
 	case len(req.GroupId) == 1:
 		for i := 0; i < len(req.UserId); i++ {
-			xid := idpkg.GenId("xid-", 12)
+			xid := idpkg.GenId("xid-")
 			gid := req.GroupId[0]
 			uid := req.UserId[i]
 

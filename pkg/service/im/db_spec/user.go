@@ -97,7 +97,7 @@ func (p *User) ToProtoMessage() (*pbim.User, error) {
 
 func (p *User) BeforeCreate() (err error) {
 	if p.UserId == "" {
-		p.UserId = idpkg.GenId("uid-", 12)
+		p.UserId = idpkg.GenId("uid-")
 	} else {
 		var re = regexp.MustCompile(`^[a-zA-Z0-9-_]+$`)
 		if !re.MatchString(p.UserId) {

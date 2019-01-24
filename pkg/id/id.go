@@ -11,12 +11,18 @@ import (
 	"openpitrix.io/iam/pkg/internal/base58"
 )
 
-func GenId(prefix string, maxLen int) string {
+const DefaultMaxLength = 16
+
+func GenId(prefix string) string {
+	return GenIdWithMaxLen(prefix, DefaultMaxLength)
+}
+
+func GenIdWithMaxLen(prefix string, maxLen int) string {
 	if prefix == "" {
 		prefix = "xid-"
 	}
 	if maxLen <= 0 {
-		maxLen = 12
+		maxLen = DefaultMaxLength
 	}
 
 	if maxLen <= len(prefix) {

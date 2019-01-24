@@ -26,7 +26,7 @@ func (p *Database) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	if req.UserId == "" {
-		req.UserId = idpkg.GenId("uid-", 12)
+		req.UserId = idpkg.GenId("uid-")
 	}
 
 	var dbUser = db_spec.NewUserFromPB(req)
