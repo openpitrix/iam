@@ -22,11 +22,18 @@ func TestIsValidId(t *testing.T) {
 
 func TestIsValidEmail(t *testing.T) {
 	Assert(t, validator.IsValidEmail(
+		"admin@kubesphere.io",
+		"admin@op.com",
+		"dev@op.com",
+		"user@op.com",
+		"kubernetes-admin@kubernetes",
+		"admin@kubernetes",
 		"admin@openpitrix.io",
 		"dev@openpitrix.io",
 		"user@openpitrix.io",
 		"1@qq.com",
 	))
+
 	Assert(t, !validator.IsValidEmail(
 		"123", "aaa",
 	))

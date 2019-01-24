@@ -6,6 +6,7 @@ package id
 
 import (
 	"crypto/rand"
+	"strings"
 
 	"openpitrix.io/iam/pkg/internal/base58"
 )
@@ -24,6 +25,6 @@ func GenId(prefix string, maxLen int) string {
 
 	buf := make([]byte, maxLen-len(prefix))
 	rand.Read(buf)
-	s := string(base58.EncodeBase58(buf))
+	s := strings.ToLower(string(base58.EncodeBase58(buf)))
 	return prefix + s[:len(buf)]
 }
