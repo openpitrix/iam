@@ -200,6 +200,19 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 		return nil, err
 	}
 
+	// 1. get group and sub group id list
+	if len(req.GroupId) > 0 {
+		allGroupId, err := p.getAllSubGroupIds(ctx, &pbim.GroupIdList{
+			GroupId: req.GroupId,
+		})
+		if err != nil {
+			logger.Warnf(ctx, "%+v", err)
+			return nil, err
+		}
+
+		req.GroupId = allGroupId
+	}
+
 	const sqlTmpl = `
 		{{if not .GroupId}}
 			select {{if IsCountMode}}COUNT(*){{else}}*{{end}} from user where 1=1

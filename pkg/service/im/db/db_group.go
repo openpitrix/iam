@@ -88,41 +88,22 @@ func (p *Database) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pb
 		return nil, err
 	}
 
-	// 1. get group and sub group list
-	const sqlTmpl = `
-		SELECT * FROM user_group WHERE 1=0
-			{{range $i, $v := .GroupId}}
-				OR group_path LINK '%{{$v}}%'
-				OR group_id='{{$v}}'
-			{{end}}
-	`
-	var query, err = template.Render(sqlTmpl, req)
+	// 1. get group and sub group id list
+	allGroupId, err := p.getAllSubGroupIds(ctx, req)
 	if err != nil {
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-
-	query = strutil.SimplifyString(query)
-	logger.Infof(ctx, "query: %s", query)
-
-	var rows []db_spec.UserGroup
-	p.DB.Raw(query).Find(&rows)
-	if err := p.DB.Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
 	// 2. delete user_group & user_group_binding
 	tx := p.DB.Begin()
-	for _, v := range rows {
-		if err := tx.Delete(db_spec.UserGroup{}, "group_id=?", v.GroupId).Error; err != nil {
-			tx.Rollback()
-			return nil, err
-		}
-		if err := tx.Delete(db_spec.UserGroupBinding{}, "group_id=?", v.GroupId).Error; err != nil {
-			tx.Rollback()
-			return nil, err
-		}
+	if err := tx.Delete(db_spec.UserGroup{}, "group_id IN(?)", allGroupId).Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	if err := tx.Delete(db_spec.UserGroupBinding{}, "group_id IN(?)", allGroupId).Error; err != nil {
+		tx.Rollback()
+		return nil, err
 	}
 
 	if err := tx.Commit().Error; err != nil {
@@ -220,6 +201,19 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 		err := status.Errorf(codes.InvalidArgument, "invalid sort_key: %v", req.SortKey)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
+	}
+
+	// 1. get group and sub group id list
+	if len(req.GroupId) > 0 {
+		allGroupId, err := p.getAllSubGroupIds(ctx, &pbim.GroupIdList{
+			GroupId: req.GroupId,
+		})
+		if err != nil {
+			logger.Warnf(ctx, "%+v", err)
+			return nil, err
+		}
+
+		req.GroupId = allGroupId
 	}
 
 	const sqlTmpl = `
