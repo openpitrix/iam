@@ -14,7 +14,11 @@ import (
 	"openpitrix.io/iam/pkg/validator"
 )
 
-func (p *UserGroup) AdjustForCreate() {
+func (p *UserGroup) AdjustForCreate() *UserGroup {
+	p.GroupId = strutil.SimplifyString(p.GroupId)
+	p.ParentGroupId = strutil.SimplifyString(p.ParentGroupId)
+	p.GroupPath = strutil.SimplifyString(p.GroupPath)
+
 	if p.GroupId == "" {
 		p.GroupId = idpkg.GenId("gid-", 12)
 	}
@@ -53,6 +57,9 @@ func (p *UserGroup) AdjustForCreate() {
 
 	// fix group_path_level
 	p.GroupPathLevel = strings.Count(p.GroupPath, ".") + 1
+
+	// return self
+	return p
 }
 
 func (p *UserGroup) IsValidForCreate() error {
@@ -114,24 +121,31 @@ func (p *UserGroup) IsValidForCreate() error {
 	return nil
 }
 
-func (p *UserGroup) AdjustForUpdate() error {
-	return nil
+func (p *UserGroup) AdjustForUpdate() *UserGroup {
+	p.GroupId = strutil.SimplifyString(p.GroupId)
+
+	// skip readonly fields
+	p.ParentGroupId = ""
+	p.GroupPath = ""
+	p.CreateTime = time.Time{}
+	p.UpdateTime = time.Now()
+	p.GroupPathLevel = 0
+
+	// adjust data
+	p.GroupName = strutil.SimplifyString(p.GroupName)
+	p.Description = strutil.SimplifyString(p.Description)
+	p.Status = strutil.SimplifyString(p.Status)
+
+	if p.Status != "" {
+		p.StatusTime = time.Now()
+	}
+
+	return p
 }
 
 func (p *UserGroup) IsValidForUpdate() error {
 	if !validator.IsValidId(p.GroupId) {
 		return fmt.Errorf("UserGroup.IsValidForUpdate: invalid GroupId %q", p.GroupId)
-	}
-
-	// check readable
-	if p.ParentGroupId != "" {
-		return fmt.Errorf("UserGroup.IsValidForUpdate: ParentGroupId is readonly!")
-	}
-	if p.GroupPath != "" {
-		return fmt.Errorf("UserGroup.IsValidForUpdate: GroupPath is readonly!")
-	}
-	if p.CreateTime != (time.Time{}) {
-		return fmt.Errorf("UserGroup.IsValidForUpdate: CreateTime is readonly!")
 	}
 
 	// check updated fields

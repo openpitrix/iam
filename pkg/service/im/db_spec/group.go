@@ -6,17 +6,13 @@ package db_spec
 
 import (
 	"encoding/json"
-	"fmt"
-	"regexp"
 	"strings"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
 
-	idpkg "openpitrix.io/iam/pkg/id"
 	"openpitrix.io/iam/pkg/internal/strutil"
 	"openpitrix.io/iam/pkg/pb/im"
-	"openpitrix.io/iam/pkg/validator"
 )
 
 type UserGroup struct {
@@ -102,74 +98,4 @@ func (p *UserGroup) ToProtoMessage() (*pbim.Group, error) {
 		}
 	}
 	return q, nil
-}
-
-func (p *UserGroup) BeforeCreate() (err error) {
-	if p.GroupId == "" {
-		p.GroupId = idpkg.GenId("gid-", 12)
-	} else {
-		var re = regexp.MustCompile(`^[a-zA-Z0-9-_]+$`)
-		if !re.MatchString(p.GroupId) {
-			return fmt.Errorf("invalid GroupId: %s", p.GroupId)
-		}
-	}
-
-	// fix root group_path
-	if p.ParentGroupId == "" && p.GroupPath == "" {
-		p.GroupPath = p.GroupId
-	}
-
-	now := time.Now()
-	p.CreateTime = now
-	p.UpdateTime = now
-	p.StatusTime = now
-
-	// a.b.ParentGroupId.d
-	if p.GroupPath == p.GroupId {
-		p.ParentGroupId = ""
-	} else if strings.HasSuffix(p.GroupPath, "."+p.GroupId) {
-		// parentGroupPath: a.b.ParentGroupId
-		parentGroupPath := p.GroupPath[:len(p.GroupPath)-len(p.GroupId)-1]
-		if idx := strings.LastIndex(parentGroupPath, "."); idx >= 0 {
-			p.ParentGroupId = parentGroupPath[idx:]
-		} else {
-			p.ParentGroupId = parentGroupPath
-		}
-	} else {
-		p.ParentGroupId = "" // ???
-	}
-
-	p.GroupPathLevel = strings.Count(p.GroupPath, ".") + 1
-	return
-}
-func (p *UserGroup) BeforeUpdate() (err error) {
-	if p.UpdateTime == (time.Time{}) {
-		p.UpdateTime = time.Now()
-	}
-	if p.Status != "" {
-		p.StatusTime = time.Now()
-	}
-
-	// ignore readonly fields
-	p.GroupPath = ""
-	p.CreateTime = time.Time{}
-	p.ParentGroupId = ""
-	p.GroupPathLevel = 0
-
-	return
-}
-
-func (p *UserGroup) ValidateForUpdate() error {
-	if !validator.IsValidId(p.GroupId) {
-		return fmt.Errorf("invalid GroupId: %q", p.GroupId)
-	}
-
-	if p.Extra != nil && *p.Extra != "" {
-		var m = make(map[string]string)
-		if err := json.Unmarshal([]byte(*p.Extra), &m); err != nil {
-			return fmt.Errorf("invalid extra")
-		}
-	}
-
-	return nil
 }

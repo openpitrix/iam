@@ -70,8 +70,7 @@ func IsValidPhoneNumber(phoneNumbers ...string) bool {
 }
 
 func IsValidGroupPath(s string) bool {
-	var re = regexp.MustCompile(`^[a-zA-Z0-9_.-]{2,255}$`)
-	return re.MatchString(s)
+	return IsValidId(strings.Split(s, ".")...)
 }
 
 func IsValidSearchWord(name string) bool {

@@ -12,7 +12,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	idpkg "openpitrix.io/iam/pkg/id"
 	"openpitrix.io/iam/pkg/internal/funcutil"
 	"openpitrix.io/iam/pkg/internal/strutil"
 	"openpitrix.io/iam/pkg/pb/im"
@@ -24,76 +23,60 @@ import (
 func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Group, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if req.GroupId == "" {
-		req.GroupId = idpkg.GenId("gid-", 12)
-	}
-
-	var dbGroup = db_spec.NewUserGroupFromPB(req)
-
-	// gen group_path from parent_id
-	if req.ParentGroupId != "" {
-		if parent, err := p.GetGroup(ctx, &pbim.GroupId{GroupId: req.ParentGroupId}); err == nil {
-			if parent.GroupPath == "" {
-				if parent.ParentGroupId == "" {
-					parent.GroupPath = parent.GroupId
-				} else {
-					err := status.Errorf(codes.InvalidArgument, "parent: invalid group_path: %v", req.ParentGroupId)
-					logger.Warnf(ctx, "%+v", err)
-					return nil, err
-				}
-			}
-
-			if dbGroup.GroupPath == "" {
-				dbGroup.GroupPath = parent.GroupPath + "." + dbGroup.GroupId
-			}
-		} else {
-			err := status.Errorf(codes.InvalidArgument, "invalid parent_id: %v", req.ParentGroupId)
-			logger.Warnf(ctx, "%+v", err)
-			return nil, err
-		}
-	}
-
-	// check group_path valid
-	switch {
-	case dbGroup.GroupPath == "":
-		dbGroup.GroupPath = dbGroup.GroupId
-
-	case dbGroup.GroupPath == dbGroup.GroupId:
-		// skip root
-
-	case strings.HasSuffix(dbGroup.GroupPath, "."+dbGroup.GroupId):
-		// check parent path
-		ids := strings.Split(dbGroup.GroupPath, ".")
-		if len(ids) > 1 {
-			ids = ids[:len(ids)-1]
-		}
-
-		if len(ids) > 0 {
-			var count int
-			p.DB.Model(&db_spec.UserGroup{}).Where("group_id in (?)", ids).Count(&count)
-			if err := p.DB.Error; err != nil {
-				logger.Warnf(ctx, "%+v", err)
-				return nil, err
-			}
-			if count != len(ids) {
-				err := status.Errorf(codes.InvalidArgument, "invalid parent group path: %s", dbGroup.GroupPath)
-				logger.Warnf(ctx, "%+v", err)
-				return nil, err
-			}
-		}
-
-	default:
-		err := status.Errorf(codes.InvalidArgument, "invalid parent group path: %s", dbGroup.GroupPath)
+	var dbGroup = db_spec.NewUserGroupFromPB(req).AdjustForCreate()
+	if err := dbGroup.IsValidForCreate(); err != nil {
+		err = status.Errorf(codes.InvalidArgument, "%v", err)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
+	var all_group_id []string
+	// ParentGroupId must be in GroupPath, skip it
+	for _, id := range strings.Split(dbGroup.GroupPath, ".") {
+		all_group_id = append(all_group_id, id)
+	}
+	if len(all_group_id) == 0 {
+		err := status.Errorf(codes.Internal, "unreachable code")
+		logger.Errorf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	// check all group_id exists
+	var query, err = template.Render(`
+		SELECT COUNT(*) FROM user_group WHERE 1=0
+			{{range $i, $v := .}}
+				OR group_id='$v'
+			{{end}}
+		`, all_group_id,
+	)
+	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	var total int
+	p.DB.Raw(query).Count(&total)
+	if err := p.DB.Error; err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+	if total != len(all_group_id) {
+		err := status.Errorf(codes.InvalidArgument,
+			"some group_id in group_path(%q) donot exists",
+			dbGroup.GroupPath,
+		)
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	// create new record
 	if err := p.DB.Create(dbGroup).Error; err != nil {
 		logger.Warnf(ctx, "%+v, %v", err, dbGroup)
 		return nil, err
 	}
 
-	return req, nil
+	// get again
+	return p.GetGroup(ctx, &pbim.GroupId{GroupId: req.GroupId})
 }
 
 func (p *Database) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pbim.Empty, error) {

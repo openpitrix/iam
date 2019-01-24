@@ -4,16 +4,16 @@
 
 package db_spec
 
-func (p *User) AdjustForCreate() error {
-	return nil
+func (p *User) AdjustForCreate() *User {
+	return p
 }
 
 func (p *User) IsValidForCreate() error {
 	return nil
 }
 
-func (p *User) AdjustForUpdate() error {
-	return nil
+func (p *User) AdjustForUpdate() *User {
+	return p
 }
 
 func (p *User) IsValidForUpdate() error {

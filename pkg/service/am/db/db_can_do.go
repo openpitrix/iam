@@ -8,8 +8,8 @@ import (
 	"context"
 	"fmt"
 	"regexp"
-	"strings"
 	"sort"
+	"strings"
 
 	"github.com/chai2010/template"
 	"google.golang.org/grpc"
