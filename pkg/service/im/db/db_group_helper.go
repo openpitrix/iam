@@ -18,7 +18,7 @@ import (
 	"openpitrix.io/logger"
 )
 
-func (p *Database) getUserGroupBindList(userId, groupId []string) (
+func (p *Database) getUserGroupBindList(ctx context.Context, userId, groupId []string) (
 	s []db_spec.UserGroupBinding,
 ) {
 	if len(userId) == 0 || len(groupId) == 0 {
@@ -56,6 +56,7 @@ func (p *Database) getUserGroupBindList(userId, groupId []string) (
 		return
 	}
 
+	logger.Errorf(ctx, "unreachable, should be panic")
 	return
 }
 

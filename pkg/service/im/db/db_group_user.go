@@ -45,7 +45,7 @@ func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*
 	}
 
 	// get id list
-	idPairList := p.getUserGroupBindList(req.UserId, req.GroupId)
+	idPairList := p.getUserGroupBindList(ctx, req.UserId, req.GroupId)
 	if len(idPairList) == 0 {
 		err := status.Errorf(codes.InvalidArgument, "empty uid or gid")
 		logger.Warnf(ctx, "%+v", err)
@@ -135,7 +135,7 @@ func (p *Database) LeaveGroup(ctx context.Context, req *pbim.LeaveGroupRequest) 
 	}
 
 	// get id list
-	idPairList := p.getUserGroupBindList(req.UserId, req.GroupId)
+	idPairList := p.getUserGroupBindList(ctx, req.UserId, req.GroupId)
 	if len(idPairList) == 0 {
 		err := status.Errorf(codes.InvalidArgument, "empty uid or gid")
 		logger.Warnf(ctx, "%+v", err)
