@@ -7,6 +7,7 @@ package db
 import (
 	"testing"
 
+	. "openpitrix.io/iam/pkg/internal/assert"
 	"openpitrix.io/iam/pkg/service/im/config"
 )
 

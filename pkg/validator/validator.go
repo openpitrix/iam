@@ -20,6 +20,16 @@ func IsValidId(ids ...string) bool {
 	return true
 }
 
+func IsValidStatus(status ...string) bool {
+	var re = regexp.MustCompile(`^[a-zA-Z0-9_-]*$`)
+	for _, v := range status {
+		if !re.MatchString(v) {
+			return false
+		}
+	}
+	return true
+}
+
 func IsValidEmail(emails ...string) bool {
 	for _, v := range emails {
 		if v == "" {
