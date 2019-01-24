@@ -1207,6 +1207,93 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         ]
       }
     },
+    "/api/iam/im/groups:with_user": {
+      "get": {
+        "operationId": "ListGroupsWithUser",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/imListGroupsWithUserResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "search_word",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sort_key",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "reverse",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "format": "boolean"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "group_id",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "group_name",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "AccountManager"
+        ]
+      }
+    },
     "/api/iam/im/password:compare": {
       "post": {
         "operationId": "ComparePassword",
@@ -1552,6 +1639,12 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "status_time": {
           "type": "string",
           "format": "date-time"
+        },
+        "user_id": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1615,6 +1708,21 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
       "type": "object",
       "properties": {
         "group": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/imGroup"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "imListGroupsWithUserResponse": {
+      "type": "object",
+      "properties": {
+        "GroupWithUser": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/imGroup"
@@ -1701,6 +1809,12 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "status_time": {
           "type": "string",
           "format": "date-time"
+        },
+        "group_id": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

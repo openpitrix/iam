@@ -377,3 +377,9 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 
 	return reply, nil
 }
+
+func (p *Database) ListGroupsWithUser(ctx context.Context, req *pbim.ListGroupsWithUserRequest) (*pbim.ListGroupsWithUserResponse, error) {
+	err := status.Errorf(codes.Unimplemented, "TODO")
+	logger.Warnf(ctx, "%+v", err)
+	return nil, err
+}

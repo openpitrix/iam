@@ -44,6 +44,10 @@ func (p *Server) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*pb
 func (p *Server) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) (*pbim.ListGroupsResponse, error) {
 	return p.db.ListGroups(ctx, req)
 }
+func (p *Server) ListGroupsWithUser(ctx context.Context, req *pbim.ListGroupsWithUserRequest) (*pbim.ListGroupsWithUserResponse, error) {
+	return p.db.ListGroupsWithUser(ctx, req)
+}
+
 func (p *Server) GetUser(ctx context.Context, req *pbim.UserId) (*pbim.User, error) {
 	return p.db.GetUser(ctx, req)
 }

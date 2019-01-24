@@ -28,6 +28,8 @@ message User {
 	google.protobuf.Timestamp create_time = 9;  // read only
 	google.protobuf.Timestamp update_time = 10; // read only
 	google.protobuf.Timestamp status_time = 11; // read only
+
+	repeated string group_id = 12;
 }
 message UserList {
 	repeated User value = 1;
@@ -45,9 +47,16 @@ message Group {
 	google.protobuf.Timestamp create_time = 8;  // read only
 	google.protobuf.Timestamp update_time = 9;  // read only
 	google.protobuf.Timestamp status_time = 10; // read only
+
+	repeated string user_id = 11;
 }
 message GroupList {
 	repeated Group value = 1;
+}
+
+message GroupWithUser {
+	Group group = 1;
+	repeated User user = 2;
 }
 
 // ----------------------------------------------------------------------------
@@ -87,6 +96,11 @@ service AccountManager {
 	rpc ListGroups(ListGroupsRequest) returns (ListGroupsResponse) {
 		option (google.api.http) = {
 			get: "/api/iam/im/groups"
+		};
+	}
+	rpc ListGroupsWithUser(ListGroupsWithUserRequest) returns (ListGroupsWithUserResponse) {
+		option (google.api.http) = {
+			get: "/api/iam/im/groups:with_user"
 		};
 	}
 
@@ -222,6 +236,23 @@ message ListGroupsRequest {
 }
 message ListGroupsResponse {
 	repeated Group group = 1;
+	int32 total = 2;
+}
+
+message ListGroupsWithUserRequest {
+	string search_word = 1;
+	string sort_key = 2;
+	bool reverse = 3;
+	int32 offset = 4;
+	int32 limit = 5;
+
+	repeated string group_id = 6;
+	repeated string group_name = 7;
+	repeated string user_id = 8;
+	repeated string status = 9;
+}
+message ListGroupsWithUserResponse {
+	repeated Group GroupWithUser = 1;
 	int32 total = 2;
 }
 
