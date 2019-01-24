@@ -88,13 +88,38 @@ func (p *Database) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pb
 		return nil, err
 	}
 
+	// 1. get group and sub group list
+	const sqlTmpl = `
+		SELECT * FROM user_group WHERE 1=0
+			{{range $i, $v := .GroupId}}
+				OR group_path LINK '%{{$v}}%'
+				OR group_id='{{$v}}'
+			{{end}}
+	`
+	var query, err = template.Render(sqlTmpl, req)
+	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	query = strutil.SimplifyString(query)
+	logger.Infof(ctx, "query: %s", query)
+
+	var rows []db_spec.UserGroup
+	p.DB.Raw(query).Find(&rows)
+	if err := p.DB.Error; err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	// 2. delete user_group & user_group_binding
 	tx := p.DB.Begin()
-	{
-		if err := tx.Delete(db_spec.UserGroup{}, "group_id in (?)", req.GroupId).Error; err != nil {
+	for _, v := range rows {
+		if err := tx.Delete(db_spec.UserGroup{}, "group_id=?", v.GroupId).Error; err != nil {
 			tx.Rollback()
 			return nil, err
 		}
-		if err := tx.Delete(db_spec.UserGroupBinding{}, "group_id in (?)", req.GroupId).Error; err != nil {
+		if err := tx.Delete(db_spec.UserGroupBinding{}, "group_id=?", v.GroupId).Error; err != nil {
 			tx.Rollback()
 			return nil, err
 		}
