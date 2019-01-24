@@ -20,6 +20,15 @@ func IsValidId(ids ...string) bool {
 	return true
 }
 
+func IsValidName(name ...string) bool {
+	for _, v := range name {
+		if s := strings.TrimSpace(v); s == "" || s != v {
+			return false
+		}
+	}
+	return true
+}
+
 func IsValidStatus(status ...string) bool {
 	var re = regexp.MustCompile(`^[a-zA-Z0-9_-]*$`)
 	for _, v := range status {

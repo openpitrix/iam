@@ -20,6 +20,15 @@ func TestIsValidId(t *testing.T) {
 	))
 }
 
+func TestIsValidName(t *testing.T) {
+	Assert(t, validator.IsValidName(
+		"a", "a b",
+	))
+	Assert(t, !validator.IsValidName(
+		" a ", " ", "",
+	))
+}
+
 func TestIsValidEmail(t *testing.T) {
 	Assert(t, validator.IsValidEmail(
 		"admin@kubesphere.io",
