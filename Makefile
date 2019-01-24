@@ -2,6 +2,8 @@
 # Use of this source code is governed by a Apache license
 # that can be found in the LICENSE file.
 
+PWD:=$(shell pwd)
+
 DEFAULT_HOST:=localhost:9115
 
 SERVER_HOST := $(if ${OPENPITRIX_IAM_HOST},${OPENPITRIX_IAM_HOST},${DEFAULT_HOST})
@@ -30,6 +32,15 @@ mysql-down:
 docker-build:
 	docker build -t openpitrix/iam:latest -f ./Dockerfile .
 	docker images openpitrix/iam:latest
+
+docker-build-dev:
+	GOOS=linux GOARCH=amd64 go build -o _am_linux_amd64.out ./cmd/am
+	GOOS=linux GOARCH=amd64 go build -o _im_linux_amd64.out ./cmd/im
+	docker build -t openpitrix/iam:local-dev -f ./Dockerfile.dev .
+	docker images openpitrix/iam:local-dev
+
+docker-run-dev:
+	docker run --rm -it openpitrix/iam:dev sh
 
 docker-run-macos:
 	OPENPITRIX_IAM_DB_HOST=docker.for.mac.localhost \

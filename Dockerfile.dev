@@ -1,0 +1,10 @@
+# Copyright 2018 The OpenPitrix Authors. All rights reserved.
+# Use of this source code is governed by a Apache license
+# that can be found in the LICENSE file.
+
+FROM alpine:3.7
+
+ADD _am_linux_amd64.out /usr/local/bin/am
+ADD _im_linux_amd64.out /usr/local/bin/im
+
+CMD ["sh"]
