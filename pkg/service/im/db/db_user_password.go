@@ -42,25 +42,19 @@ func (p *Database) ComparePassword(ctx context.Context, req *pbim.Password) (*pb
 func (p *Database) ModifyPassword(ctx context.Context, req *pbim.Password) (*pbim.Empty, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	var dbUser = &db_spec.User{
-		UserId:   req.UserId,
-		Password: req.Password,
-	}
-
-	if dbUser.Password == "" {
+	if req.Password == "" {
 		err := status.Errorf(codes.InvalidArgument, "empty password")
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
-	if dbUser.Password != "" {
-		hashedPass, err := bcrypt.GenerateFromPassword(
-			[]byte(dbUser.Password), bcrypt.DefaultCost,
-		)
-		if err != nil {
-			logger.Warnf(ctx, "%+v", err)
-			return nil, err
-		}
-		dbUser.Password = string(hashedPass)
+
+	var dbUser = &db_spec.User{UserId: req.UserId, Password: req.Password}
+	dbUser = dbUser.AdjustForUpdate()
+
+	if err := dbUser.IsValidForUpdate(); err != nil {
+		err = status.Errorf(codes.InvalidArgument, "%v", err)
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
 	}
 
 	if err := p.DB.Model(dbUser).Updates(dbUser).Error; err != nil {

@@ -9,11 +9,9 @@ import (
 	"strings"
 
 	"github.com/chai2010/template"
-	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	idpkg "openpitrix.io/iam/pkg/id"
 	"openpitrix.io/iam/pkg/internal/funcutil"
 	"openpitrix.io/iam/pkg/internal/strutil"
 	"openpitrix.io/iam/pkg/pb/im"
@@ -25,28 +23,14 @@ import (
 func (p *Database) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if req.UserId == "" {
-		req.UserId = idpkg.GenId("uid-")
-	}
-
-	var dbUser = db_spec.NewUserFromPB(req)
-	if dbUser.Password == "" {
-		err := status.Errorf(codes.InvalidArgument, "empty password")
+	var dbUser = db_spec.NewUserFromPB(req).AdjustForCreate()
+	if err := dbUser.IsValidForCreate(); err != nil {
+		err = status.Errorf(codes.InvalidArgument, "%v", err)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
-	if dbUser.Password != "" {
-		hashedPass, err := bcrypt.GenerateFromPassword(
-			[]byte(dbUser.Password), bcrypt.DefaultCost,
-		)
-		if err != nil {
-			logger.Warnf(ctx, "%+v", err)
-			return nil, err
-		}
-		dbUser.Password = string(hashedPass)
-	}
-
+	// create new record
 	if err := p.DB.Create(dbUser).Error; err != nil {
 		logger.Warnf(ctx, "%+v, %v", err, dbUser)
 		return nil, err
@@ -91,15 +75,16 @@ func (p *Database) DeleteUsers(ctx context.Context, req *pbim.UserIdList) (*pbim
 func (p *Database) ModifyUser(ctx context.Context, req *pbim.User) (*pbim.User, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if req.UserId == "" {
-		err := status.Errorf(codes.InvalidArgument, "empty field")
+	// ignore password
+	req.Password = ""
+
+	var dbUser = db_spec.NewUserFromPB(req).AdjustForUpdate()
+	if err := dbUser.IsValidForUpdate(); err != nil {
+		err = status.Errorf(codes.InvalidArgument, "%v", err)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
-	req.Password = ""
-
-	var dbUser = db_spec.NewUserFromPB(req)
 	if err := p.DB.Model(dbUser).Updates(dbUser).Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err

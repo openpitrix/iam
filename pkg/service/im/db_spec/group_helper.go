@@ -148,10 +148,32 @@ func (p *UserGroup) IsValidForUpdate() error {
 		return fmt.Errorf("UserGroup.IsValidForUpdate: invalid GroupId %q", p.GroupId)
 	}
 
+	// readonly fields
+	if p.ParentGroupId != "" {
+		return fmt.Errorf("UserGroup.IsValidForUpdate: ParentGroupId is readonly")
+	}
+	if p.GroupPath != "" {
+		return fmt.Errorf("UserGroup.IsValidForUpdate: GroupPath is readonly")
+	}
+	if p.CreateTime != (time.Time{}) {
+		return fmt.Errorf("UserGroup.IsValidForUpdate: CreateTime is readonly")
+	}
+	if p.GroupPathLevel != 0 {
+		return fmt.Errorf("UserGroup.IsValidForUpdate: GroupPathLevel is readonly")
+	}
+
 	// check updated fields
+	if p.GroupName != "" {
+		if !validator.IsValidStatus(p.GroupName) {
+			return fmt.Errorf("UserGroup.IsValidForUpdate: invalid Status %q", p.GroupName)
+		}
+	}
 	if p.Status != "" {
 		if !validator.IsValidStatus(p.Status) {
 			return fmt.Errorf("UserGroup.IsValidForUpdate: invalid Status %q", p.Status)
+		}
+		if p.StatusTime == (time.Time{}) {
+			return fmt.Errorf("UserGroup.IsValidForUpdate: invalid StatusTime %q", p.StatusTime)
 		}
 	}
 
