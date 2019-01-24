@@ -112,13 +112,13 @@ func (p *Database) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pb
 func (p *Database) ModifyGroup(ctx context.Context, req *pbim.Group) (*pbim.Group, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if req.GroupId == "" {
-		err := status.Errorf(codes.InvalidArgument, "empty field")
+	var dbGroup = db_spec.NewUserGroupFromPB(req).AdjustForUpdate()
+	if err := dbGroup.IsValidForUpdate(); err != nil {
+		err = status.Errorf(codes.InvalidArgument, "%v", err)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
-	var dbGroup = db_spec.NewUserGroupFromPB(req)
 	if err := p.DB.Model(dbGroup).Updates(dbGroup).Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
