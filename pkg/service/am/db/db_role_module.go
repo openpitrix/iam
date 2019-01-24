@@ -83,14 +83,14 @@ func (p *Database) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (
 
 		bindId := genId("bind-", 12)
 		tx.NewRecord(RoleModuleBinding{
-			BindId:              bindId,
-			RoleId:              req.RoleId,
-			ModuleId:            mod.ModuleId,
-			DataLevel:           mod.DataLevel,
-			CreateTime:          time.Now(),
-			UpdateTime:          time.Now(),
-			Owner:               mod.Owner,
-			IsFeatureAllChecked: btoi(mod.IsFeatureAllChecked),
+			BindId:     bindId,
+			RoleId:     req.RoleId,
+			ModuleId:   mod.ModuleId,
+			DataLevel:  mod.DataLevel,
+			CreateTime: time.Now(),
+			UpdateTime: time.Now(),
+			Owner:      mod.Owner,
+			IsCheckAll: btoi(mod.IsCheckAll),
 		})
 		if err := tx.Error; err != nil {
 			tx.Rollback()

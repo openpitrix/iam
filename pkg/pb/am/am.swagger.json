@@ -405,7 +405,7 @@
         "owner": {
           "type": "string"
         },
-        "is_feature_all_checked": {
+        "is_check_all": {
           "type": "string"
         },
         "feature_id": {
@@ -547,7 +547,7 @@
         "data_level": {
           "type": "string"
         },
-        "is_feature_all_checked": {
+        "is_check_all": {
           "type": "boolean",
           "format": "boolean"
         }
@@ -574,11 +574,18 @@
         "owner_path": {
           "type": "string"
         },
+        "Status": {
+          "type": "string"
+        },
         "create_time": {
           "type": "string",
           "format": "date-time"
         },
         "update_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status_time": {
           "type": "string",
           "format": "date-time"
         }

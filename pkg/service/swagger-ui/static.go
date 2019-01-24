@@ -636,7 +636,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "owner": {
           "type": "string"
         },
-        "is_feature_all_checked": {
+        "is_check_all": {
           "type": "string"
         },
         "feature_id": {
@@ -778,7 +778,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "data_level": {
           "type": "string"
         },
-        "is_feature_all_checked": {
+        "is_check_all": {
           "type": "boolean",
           "format": "boolean"
         }
@@ -805,11 +805,18 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "owner_path": {
           "type": "string"
         },
+        "Status": {
+          "type": "string"
+        },
         "create_time": {
           "type": "string",
           "format": "date-time"
         },
         "update_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status_time": {
           "type": "string",
           "format": "date-time"
         }

@@ -15,12 +15,14 @@ import (
 type Role struct {
 	RoleId      string `gorm:"type:varchar(50);primary_key"`
 	RoleName    string `gorm:"type:varchar(200);not null"`
-	Description string `gorm:"type:varchar(1000);not null"`
+	Description string `gorm:"type:varchar(200)"`
 	Portal      string `gorm:"type:varchar(50);not null"`
 	CreateTime  time.Time
 	UpdateTime  time.Time
-	Owner       string `gorm:"type:varchar(50);not null"`
-	OwnerPath   string `gorm:"type:varchar(50);not null"`
+	StatusTime  time.Time
+	Owner       string `gorm:"type:varchar(50)"`
+	OwnerPath   string `gorm:"type:varchar(50)"`
+	Status      string `gorm:"type:varchar(10)"`
 }
 
 type UserRoleBinding struct {
@@ -40,10 +42,12 @@ func NewRoleFromPB(p *pbam.Role) *Role {
 		Portal:      p.Portal,
 		Owner:       p.Owner,
 		OwnerPath:   p.OwnerPath,
+		Status:      p.Status,
 	}
 
 	q.CreateTime, _ = ptypes.Timestamp(p.CreateTime)
 	q.UpdateTime, _ = ptypes.Timestamp(p.UpdateTime)
+	q.StatusTime, _ = ptypes.Timestamp(p.StatusTime)
 
 	return q
 }
@@ -59,10 +63,12 @@ func (p *Role) ToPB() *pbam.Role {
 		Portal:      p.Portal,
 		Owner:       p.Owner,
 		OwnerPath:   p.OwnerPath,
+		Status:      p.Status,
 	}
 
 	q.CreateTime, _ = ptypes.TimestampProto(p.CreateTime)
 	q.UpdateTime, _ = ptypes.TimestampProto(p.UpdateTime)
+	q.StatusTime, _ = ptypes.TimestampProto(p.StatusTime)
 
 	return q
 }

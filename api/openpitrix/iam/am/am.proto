@@ -143,9 +143,11 @@ message Role {
 	string portal = 4;      // enable modify
 	string owner = 5;
 	string owner_path = 6;
+	string Status = 7;
 
-	google.protobuf.Timestamp create_time = 7;
-	google.protobuf.Timestamp update_time = 8;
+	google.protobuf.Timestamp create_time = 8;
+	google.protobuf.Timestamp update_time = 9;
+	google.protobuf.Timestamp status_time = 10;
 }
 message RoleList {
 	repeated Role value = 1;
@@ -197,7 +199,7 @@ message Action {
 	string module_name = 5;
 	string data_level = 6;
 	string owner = 20;
-	string is_feature_all_checked = 7;
+	string is_check_all = 7;
 
 	string feature_id = 8;
 	string feature_name = 9;
@@ -227,7 +229,7 @@ message Module {
 	repeated Feature feature = 3;
 	string owner = 4;
 	string data_level = 5;
-	bool is_feature_all_checked = 6;
+	bool is_check_all = 6;
 }
 
 message RoleModule {
