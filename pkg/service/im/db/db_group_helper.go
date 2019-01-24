@@ -18,6 +18,49 @@ import (
 	"openpitrix.io/logger"
 )
 
+func (p *Database) getUserGroupBindList(userId, groupId []string) (
+	s []db_spec.UserGroupBinding,
+) {
+	if len(userId) == 0 || len(groupId) == 0 {
+		return nil
+	}
+	if !(len(userId) == 1 || len(groupId) == 1 || len(userId) == len(groupId)) {
+		return nil
+	}
+
+	if len(userId) == len(groupId) {
+		for i := 0; i < len(userId); i++ {
+			s = append(s, db_spec.UserGroupBinding{
+				UserId:  userId[i],
+				GroupId: groupId[i],
+			})
+		}
+		return
+	}
+	if len(userId) == 1 {
+		for i := 0; i < len(groupId); i++ {
+			s = append(s, db_spec.UserGroupBinding{
+				UserId:  userId[0],
+				GroupId: groupId[i],
+			})
+		}
+		return
+	}
+	if len(groupId) == 1 {
+		for i := 0; i < len(userId); i++ {
+			s = append(s, db_spec.UserGroupBinding{
+				UserId:  userId[i],
+				GroupId: groupId[0],
+			})
+		}
+		return
+	}
+
+	return
+}
+
+// UserGroupBinding
+
 func (p *Database) getAllSubGroupIds(ctx context.Context, req *pbim.GroupIdList) ([]string, error) {
 	const sqlTmpl = `
 		SELECT * FROM user_group WHERE 1=0

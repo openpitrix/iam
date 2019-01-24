@@ -8,11 +8,13 @@ import (
 	"context"
 	"strings"
 
+	"github.com/chai2010/template"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	idpkg "openpitrix.io/iam/pkg/id"
 	"openpitrix.io/iam/pkg/internal/funcutil"
+	"openpitrix.io/iam/pkg/internal/strutil"
 	"openpitrix.io/iam/pkg/pb/im"
 	"openpitrix.io/iam/pkg/service/im/db_spec"
 	"openpitrix.io/logger"
@@ -42,50 +44,57 @@ func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*
 		return nil, err
 	}
 
+	// get id list
+	idPairList := p.getUserGroupBindList(req.UserId, req.GroupId)
+	if len(idPairList) == 0 {
+		err := status.Errorf(codes.InvalidArgument, "empty uid or gid")
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	// get exists bind_id
+	var query, err = template.Render(`
+		SELECT * FROM user_group WHERE 1=0
+			{{range $i, $v := .}}
+				OR (group_id='{{$v.GroupId}}' AND user_id='{{$v.UserId}}')
+			{{end}}
+		`, idPairList,
+	)
+	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	query = strutil.SimplifyString(query)
+	logger.Infof(ctx, "query: %s", query)
+
+	var rows []db_spec.UserGroupBinding
+	p.DB.Raw(query).Find(&rows)
+	if err := p.DB.Error; err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	// read bind_id
+	for _, vi := range rows {
+		for j, vj := range idPairList {
+			if vi.UserId == vj.UserId && vi.GroupId == vj.GroupId {
+				idPairList[j].Id = vi.Id
+			}
+		}
+	}
+
+	// 2. insert new bind
 	tx := p.DB.Begin()
-
-	// todo check uid and gid valid
-
-	switch {
-	case len(req.UserId) == len(req.GroupId):
-		for i := 0; i < len(req.GroupId); i++ {
-			xid := idpkg.GenId("xid-")
-			uid := req.UserId[i]
-			gid := req.GroupId[i]
-
-			tx.Exec(
-				`INSERT INTO user_group_binding (id, user_id, group_id) VALUES (?,?,?)`,
-				xid, uid, gid,
-			)
-			if err := tx.Error; err != nil {
-				tx.Rollback()
-				return nil, err
+	{
+		for _, v := range idPairList {
+			if v.Id != "" {
+				continue // skip
 			}
-		}
-	case len(req.UserId) == 1:
-		for i := 0; i < len(req.GroupId); i++ {
-			xid := idpkg.GenId("xid-")
-			gid := req.GroupId[i]
-			uid := req.UserId[0]
 
 			tx.Exec(
 				`INSERT INTO user_group_binding (id, user_id, group_id) VALUES (?,?,?)`,
-				xid, uid, gid,
-			)
-			if err := tx.Error; err != nil {
-				tx.Rollback()
-				return nil, err
-			}
-		}
-	case len(req.GroupId) == 1:
-		for i := 0; i < len(req.UserId); i++ {
-			xid := idpkg.GenId("xid-")
-			gid := req.GroupId[0]
-			uid := req.UserId[i]
-
-			tx.Exec(
-				`INSERT INTO user_group_binding (id, user_id, group_id) VALUES (?,?,?)`,
-				xid, uid, gid,
+				idpkg.GenId("xid-"), v.UserId, v.GroupId,
 			)
 			if err := tx.Error; err != nil {
 				tx.Rollback()
@@ -93,7 +102,6 @@ func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*
 			}
 		}
 	}
-
 	if err := tx.Commit().Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -126,37 +134,22 @@ func (p *Database) LeaveGroup(ctx context.Context, req *pbim.LeaveGroupRequest) 
 		return nil, err
 	}
 
+	// get id list
+	idPairList := p.getUserGroupBindList(req.UserId, req.GroupId)
+	if len(idPairList) == 0 {
+		err := status.Errorf(codes.InvalidArgument, "empty uid or gid")
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
 	tx := p.DB.Begin()
+	{
+		for _, v := range idPairList {
 
-	switch {
-	case len(req.UserId) == len(req.GroupId):
-		for i := 0; i < len(req.GroupId); i++ {
-			gid := req.GroupId[i]
-			uid := req.UserId[i]
-
-			tx.Delete(db_spec.UserGroupBinding{}, `user_id=? and group_id=?`, uid, gid)
-			if err := tx.Error; err != nil {
-				tx.Rollback()
-				return nil, err
-			}
-		}
-	case len(req.UserId) == 1:
-		for i := 0; i < len(req.GroupId); i++ {
-			gid := req.GroupId[i]
-			uid := req.UserId[0]
-
-			tx.Delete(db_spec.UserGroupBinding{}, `user_id=? and group_id=?`, uid, gid)
-			if err := tx.Error; err != nil {
-				tx.Rollback()
-				return nil, err
-			}
-		}
-	case len(req.GroupId) == 1:
-		for i := 0; i < len(req.UserId); i++ {
-			gid := req.GroupId[0]
-			uid := req.UserId[i]
-
-			tx.Delete(db_spec.UserGroupBinding{}, `user_id=? and group_id=?`, uid, gid)
+			tx.Delete(db_spec.UserGroupBinding{},
+				`user_id=? and group_id=?`,
+				v.UserId, v.GroupId,
+			)
 			if err := tx.Error; err != nil {
 				tx.Rollback()
 				return nil, err

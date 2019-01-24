@@ -45,7 +45,7 @@ func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 	var query, err = template.Render(`
 		SELECT COUNT(*) FROM user_group WHERE 1=0
 			{{range $i, $v := .}}
-				OR group_id='$v'
+				OR group_id='{{$v}}'
 			{{end}}
 		`, all_group_id,
 	)
@@ -53,6 +53,9 @@ func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
+
+	query = strutil.SimplifyString(query)
+	logger.Infof(ctx, "query: %s", query)
 
 	var total int
 	p.DB.Raw(query).Count(&total)
