@@ -343,6 +343,9 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
+	if total == 0 {
+		return &pbim.ListGroupsResponse{}, nil
+	}
 
 	// query mode
 	query, err = template.Render(sqlTmpl, req,
@@ -364,10 +367,46 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
+	if len(rows) == 0 {
+		return &pbim.ListGroupsResponse{}, nil
+	}
 
+	// query user_id
+	query, err = template.Render(`
+		SELECT * FROM user_group_binding WHERE 1=0
+			{{range $i, $v := .}}
+				OR group_id='{{$v.GroupId}}'
+			{{end}}
+		`, rows,
+	)
+	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	query = strutil.SimplifyString(query)
+	logger.Infof(ctx, "query: %s", query)
+
+	var bindRows []db_spec.UserGroupBinding
+	p.DB.Raw(query).Find(&bindRows)
+	if err := p.DB.Error; err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		// ignore err
+	}
+
+	// convert to pb type
 	var sets []*pbim.Group
 	for _, v := range rows {
 		sets = append(sets, v.ToPB())
+	}
+
+	// save user_id
+	for _, v := range bindRows {
+		for j, vj := range sets {
+			if v.GroupId == vj.GroupId {
+				sets[j].UserId = append(sets[j].UserId, v.UserId)
+			}
+		}
 	}
 
 	reply := &pbim.ListGroupsResponse{

@@ -54,7 +54,7 @@ func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*
 
 	// get exists bind_id
 	var query, err = template.Render(`
-		SELECT * FROM user_group WHERE 1=0
+		SELECT * FROM user_group_binding WHERE 1=0
 			{{range $i, $v := .}}
 				OR (group_id='{{$v.GroupId}}' AND user_id='{{$v.UserId}}')
 			{{end}}
