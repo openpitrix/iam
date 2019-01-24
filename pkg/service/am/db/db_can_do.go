@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"sort"
 
 	"github.com/chai2010/template"
 	"google.golang.org/grpc"
@@ -126,6 +127,18 @@ func (p *Database) getOwnerPathByUserId(ctx context.Context, userId string) (str
 	if len(reply.Value) == 0 {
 		return "", nil
 	}
+
+	// sort group
+	sort.Slice(reply.Value, func(i, j int) bool {
+		iGroupPathLevel := strings.Count(reply.Value[i].GroupPath, ".") + 1
+		jGroupPathLevel := strings.Count(reply.Value[j].GroupPath, ".") + 1
+
+		if iGroupPathLevel != jGroupPathLevel {
+			return iGroupPathLevel < jGroupPathLevel
+		}
+
+		return reply.Value[i].GroupPath < reply.Value[j].GroupPath
+	})
 
 	// take first group
 	ownerPath := reply.Value[0].GroupPath
