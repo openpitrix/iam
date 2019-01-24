@@ -20,6 +20,10 @@ import (
 func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Group, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
+	if req.GroupId == "" {
+		req.GroupId = genId("gid-", 12)
+	}
+
 	var dbGroup = NewUserGroupFromPB(req)
 
 	// gen group_path from parent_id

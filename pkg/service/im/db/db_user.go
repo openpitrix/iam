@@ -21,6 +21,10 @@ import (
 func (p *Database) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
+	if req.UserId == "" {
+		req.UserId = genId("uid-", 12)
+	}
+
 	var dbUser = NewUserFromPB(req)
 	if dbUser.Password == "" {
 		err := status.Errorf(codes.InvalidArgument, "empty password")
