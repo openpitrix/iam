@@ -111,6 +111,11 @@ func (p *UserGroup) BeforeCreate() (err error) {
 		}
 	}
 
+	// fix root group_path
+	if p.ParentGroupId == "" && p.GroupPath == "" {
+		p.GroupPath = p.GroupId
+	}
+
 	now := time.Now()
 	p.CreateTime = now
 	p.UpdateTime = now

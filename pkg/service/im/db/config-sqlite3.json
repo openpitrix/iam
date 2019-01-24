@@ -9,8 +9,8 @@
 	},
 	"DB": {
 		"Type": "sqlite3",
-		"Host": "139.198.121.89",
-		"Port": 13306,
+		"Host": "127.0.0.1",
+		"Port": 3306,
 		"User": "root",
 		"Password": "password",
 		"Database": "_test_sqlite3.db"
