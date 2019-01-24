@@ -2,7 +2,7 @@
 // Use of this source code is governed by a Apache license
 // that can be found in the LICENSE file.
 
-package db
+package db_spec
 
 import (
 	"encoding/json"
@@ -13,7 +13,10 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 
+	idpkg "openpitrix.io/iam/pkg/id"
+	"openpitrix.io/iam/pkg/internal/strutil"
 	"openpitrix.io/iam/pkg/pb/im"
+	"openpitrix.io/iam/pkg/validator"
 )
 
 type UserGroup struct {
@@ -57,7 +60,7 @@ func NewUserGroupFromPB(p *pbim.Group) *UserGroup {
 			panic(err) // unreachable
 		}
 
-		q.Extra = newString(string(data))
+		q.Extra = strutil.NewString(string(data))
 	}
 
 	if p.GroupPath != "" {
@@ -103,9 +106,9 @@ func (p *UserGroup) ToProtoMessage() (*pbim.Group, error) {
 
 func (p *UserGroup) BeforeCreate() (err error) {
 	if p.GroupId == "" {
-		p.GroupId = genId("gid-", 12)
+		p.GroupId = idpkg.GenId("gid-", 12)
 	} else {
-		var re = regexp.MustCompile(`^[a-zA-Z0-9_-]+$`)
+		var re = regexp.MustCompile(`^[a-zA-Z0-9-_]+$`)
 		if !re.MatchString(p.GroupId) {
 			return fmt.Errorf("invalid GroupId: %s", p.GroupId)
 		}
@@ -156,22 +159,8 @@ func (p *UserGroup) BeforeUpdate() (err error) {
 	return
 }
 
-func (p *UserGroup) _ValidateForInsert() error {
-	if !isValidIds(p.GroupId) {
-		return fmt.Errorf("invalid GroupId: %q", p.GroupId)
-	}
-
-	if p.Extra != nil && *p.Extra != "" {
-		var m = make(map[string]string)
-		if err := json.Unmarshal([]byte(*p.Extra), &m); err != nil {
-			return fmt.Errorf("invalid extra")
-		}
-	}
-
-	return nil
-}
 func (p *UserGroup) ValidateForUpdate() error {
-	if !isValidIds(p.GroupId) {
+	if !validator.IsValidId(p.GroupId) {
 		return fmt.Errorf("invalid GroupId: %q", p.GroupId)
 	}
 
