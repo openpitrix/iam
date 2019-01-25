@@ -2,9 +2,7 @@
 // Use of this source code is governed by a Apache license
 // that can be found in the LICENSE file.
 
-package db_spec
-
-
+package db
 
 import (
 	"reflect"
@@ -56,4 +54,3 @@ func TestModuleApiInfo(t *testing.T) {
 		"u1 = %v, u2 = %v", u1, u2,
 	)
 }
-

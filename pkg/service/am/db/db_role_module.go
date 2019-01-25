@@ -43,14 +43,14 @@ func (p *Database) GetRoleModule(ctx context.Context, req *pbam.RoleId) (*pbam.R
 		return nil, err
 	}
 
-	var rows = []db_spec.ModuleApiInfo{}
+	var rows = []ModuleApiInfo{}
 	if err := p.DB.Raw(query).Scan(&rows).Error; err != nil {
 		logger.Warnf(nil, "%v", query)
 		logger.Warnf(nil, "%+v", err)
 		return nil, err
 	}
 
-	roleModuleMap := db_spec.ModuleApiInfoList(rows).ToRoleModuleMap()
+	roleModuleMap := ModuleApiInfoList(rows).ToRoleModuleMap()
 	return roleModuleMap[req.RoleId], nil
 }
 

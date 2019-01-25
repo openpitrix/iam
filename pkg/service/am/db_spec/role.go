@@ -25,12 +25,6 @@ type Role struct {
 	Status      string `gorm:"type:varchar(10)"`
 }
 
-type UserRoleBinding struct {
-	Id     string `gorm:"type:varchar(50);primary_key"`
-	UserId string `gorm:"type:varchar(50);"`
-	RoleId string `gorm:"type:varchar(50);"`
-}
-
 func NewRoleFromPB(p *pbam.Role) *Role {
 	if p == nil {
 		return new(Role)

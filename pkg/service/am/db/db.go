@@ -172,14 +172,7 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 }
 
 func (p *Database) checkDbHasRecords() bool {
-	var tbNames = []string{
-		"module_api",
-		"enable_action",
-		"role",
-		"role_module_binding",
-		"user_role_binding",
-	}
-	for _, name := range tbNames {
+	for _, name := range db_spec.TableNameList {
 		var total int
 		p.DB.Raw(fmt.Sprintf("select COUNT(*) from %s limit 1", name)).Count(&total)
 		if err := p.DB.Error; err != nil {

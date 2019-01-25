@@ -4,10 +4,6 @@
 
 package db_spec
 
-import (
-	"time"
-)
-
 type ModuleApi struct {
 	ApiId string `gorm:"type:varchar(50);primary_key"`
 
@@ -25,21 +21,4 @@ type ModuleApi struct {
 
 	UrlMethod string `gorm:"type:varchar(100);not null"`
 	Url       string `gorm:"type:varchar(255);not null"`
-}
-
-type RoleModuleBinding struct {
-	BindId     string `gorm:"type:varchar(50);primary_key"`
-	RoleId     string `gorm:"type:varchar(50);not null"`
-	ModuleId   string `gorm:"type:varchar(50);not null"`
-	DataLevel  string `gorm:"type:varchar(50);not null"`
-	CreateTime time.Time
-	UpdateTime time.Time
-	Owner      string `gorm:"type:varchar(50);not null"`
-	IsCheckAll int    `gorm:"type:tinyint;not null"`
-}
-
-type EnableAction struct {
-	EnableId string `gorm:"type:varchar(50);primary_key"`
-	BindId   string `gorm:"type:varchar(50);not null"`
-	ActionId string `gorm:"type:varchar(50);not null"`
 }
