@@ -10,11 +10,12 @@ import (
 	"time"
 
 	"github.com/chai2010/template"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	idpkg "openpitrix.io/iam/pkg/id"
 	"openpitrix.io/iam/pkg/internal/funcutil"
+	"openpitrix.io/iam/pkg/internal/strutil"
 	pbam "openpitrix.io/iam/pkg/pb/am"
 	"openpitrix.io/logger"
 )
@@ -29,15 +30,15 @@ func (p *Database) CreateRole(ctx context.Context, req *pbam.Role) (*pbam.Role, 
 	}
 	if req != nil {
 		if req.RoleId == "" {
-			req.RoleId = genId("role-", 12)
+			req.RoleId = idpkg.GenId("role-")
 		}
 
-		if isZeroTimestamp(req.CreateTime) {
-			req.CreateTime = ptypes.TimestampNow()
-		}
-		if isZeroTimestamp(req.UpdateTime) {
-			req.UpdateTime = ptypes.TimestampNow()
-		}
+		//if isZeroTimestamp(req.CreateTime) {
+		//	req.CreateTime = ptypes.TimestampNow()
+		//}
+		//if isZeroTimestamp(req.UpdateTime) {
+		//	req.UpdateTime = ptypes.TimestampNow()
+		//}
 	}
 
 	if !p.DB.NewRecord(NewRoleFromPB(req)) {
@@ -177,15 +178,15 @@ func (p *Database) DescribeRoles(ctx context.Context, req *pbam.DescribeRolesReq
 		req.UserId = strings.Split(req.UserId[0], ",")
 	}
 
-	req.RoleId = simplifyStringList(req.RoleId)
-	req.RoleName = simplifyStringList(req.RoleName)
-	req.Portal = simplifyStringList(req.Portal)
-	req.UserId = simplifyStringList(req.UserId)
+	req.RoleId = strutil.SimplifyStringList(req.RoleId)
+	req.RoleName = strutil.SimplifyStringList(req.RoleName)
+	req.Portal = strutil.SimplifyStringList(req.Portal)
+	req.UserId = strutil.SimplifyStringList(req.UserId)
 
 	// all list
 	if len(req.RoleId)+len(req.RoleName)+len(req.Portal)+len(req.UserId) == 0 {
 		var query = `select * from role`
-		logger.Infof(ctx, "query: %s", simplifyString(query))
+		logger.Infof(ctx, "query: %s", strutil.SimplifyString(query))
 
 		var rows []Role
 		p.DB.Raw(query).Find(&rows)
@@ -272,7 +273,7 @@ func (p *Database) DescribeRoles(ctx context.Context, req *pbam.DescribeRolesReq
 		`, req,
 	)
 
-	query = simplifyString(query)
+	query = strutil.SimplifyString(query)
 	logger.Infof(ctx, "query: %s", query)
 
 	var rows []Role

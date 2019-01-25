@@ -14,6 +14,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	"openpitrix.io/iam/pkg/internal/funcutil"
+	"openpitrix.io/iam/pkg/internal/strutil"
 	pbam "openpitrix.io/iam/pkg/pb/am"
 	pbim "openpitrix.io/iam/pkg/pb/im"
 	"openpitrix.io/logger"
@@ -69,8 +70,8 @@ func (p *Database) DescribeUsersWithRole(ctx context.Context, req *pbam.Describe
 		req.UserId = strings.Split(req.UserId[0], ",")
 	}
 
-	req.RoleId = simplifyStringList(req.RoleId)
-	req.UserId = simplifyStringList(req.UserId)
+	req.RoleId = strutil.SimplifyStringList(req.RoleId)
+	req.UserId = strutil.SimplifyStringList(req.UserId)
 
 	if len(req.RoleId) == 0 && len(req.UserId) == 0 {
 		err := status.Errorf(codes.InvalidArgument, "empty user_id or role_id")

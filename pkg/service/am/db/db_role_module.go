@@ -12,15 +12,25 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	idpkg "openpitrix.io/iam/pkg/id"
 	"openpitrix.io/iam/pkg/internal/funcutil"
 	pbam "openpitrix.io/iam/pkg/pb/am"
+	"openpitrix.io/iam/pkg/validator"
 	"openpitrix.io/logger"
 )
+
+func (p *Database) btoi(v bool) int {
+	if v {
+		return 1
+	} else {
+		return 0
+	}
+}
 
 func (p *Database) GetRoleModule(ctx context.Context, req *pbam.RoleId) (*pbam.RoleModule, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if !isValidIds(req.RoleId) {
+	if !validator.IsValidId(req.RoleId) {
 		err := status.Errorf(codes.InvalidArgument, "invalid role_id: %q", req.RoleId)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -81,7 +91,7 @@ func (p *Database) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (
 			return nil, err
 		}
 
-		bindId := genId("bind-", 12)
+		bindId := idpkg.GenId("bind-")
 		tx.NewRecord(RoleModuleBinding{
 			BindId:     bindId,
 			RoleId:     req.RoleId,
@@ -90,7 +100,7 @@ func (p *Database) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (
 			CreateTime: time.Now(),
 			UpdateTime: time.Now(),
 			Owner:      mod.Owner,
-			IsCheckAll: btoi(mod.IsCheckAll),
+			IsCheckAll: p.btoi(mod.IsCheckAll),
 		})
 		if err := tx.Error; err != nil {
 			tx.Rollback()
@@ -101,7 +111,7 @@ func (p *Database) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (
 		for _, feature := range mod.Feature {
 			for _, action := range feature.Action {
 				tx.NewRecord(EnableAction{
-					EnableId: genId("id-", 12),
+					EnableId: idpkg.GenId("id-"),
 					BindId:   bindId,
 					ActionId: action.ActionId,
 				})

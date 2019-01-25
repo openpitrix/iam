@@ -11,6 +11,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	idpkg "openpitrix.io/iam/pkg/id"
 	"openpitrix.io/iam/pkg/internal/funcutil"
 	pbam "openpitrix.io/iam/pkg/pb/am"
 	"openpitrix.io/logger"
@@ -49,7 +50,7 @@ func (p *Database) BindUserRole(ctx context.Context, req *pbam.BindUserRoleReque
 		for i := 0; i < len(req.RoleId); i++ {
 			tx.Exec(
 				`INSERT INTO user_role_binding (id, user_id, role_id) VALUES (?,?,?)`,
-				genId("bind-", 12), req.UserId[i], req.RoleId[i],
+				idpkg.GenId("bind-"), req.UserId[i], req.RoleId[i],
 			)
 			if err := tx.Error; err != nil {
 				tx.Rollback()
@@ -61,7 +62,7 @@ func (p *Database) BindUserRole(ctx context.Context, req *pbam.BindUserRoleReque
 		for i := 0; i < len(req.RoleId); i++ {
 			tx.Exec(
 				`INSERT INTO user_role_binding (id, user_id, role_id) VALUES (?,?,?)`,
-				genId("bind-", 12), req.UserId[0], req.RoleId[i],
+				idpkg.GenId("bind-"), req.UserId[0], req.RoleId[i],
 			)
 			if err := tx.Error; err != nil {
 				tx.Rollback()
@@ -72,7 +73,7 @@ func (p *Database) BindUserRole(ctx context.Context, req *pbam.BindUserRoleReque
 		for i := 0; i < len(req.UserId); i++ {
 			tx.Exec(
 				`INSERT INTO user_role_binding (id, user_id, role_id) VALUES (?,?,?)`,
-				genId("bind-", 12), req.UserId[i], req.RoleId[0],
+				idpkg.GenId("bind-"), req.UserId[i], req.RoleId[0],
 			)
 			if err := tx.Error; err != nil {
 				tx.Rollback()

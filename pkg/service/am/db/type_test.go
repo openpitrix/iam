@@ -7,6 +7,8 @@ package db
 import (
 	"reflect"
 	"testing"
+
+	. "openpitrix.io/iam/pkg/internal/assert"
 )
 
 func TestModuleApiInfo(t *testing.T) {
