@@ -21,7 +21,9 @@ import (
 func (p *Database) ComparePassword(ctx context.Context, req *pbim.Password) (*pbim.Bool, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	var user db_spec.User
+	var user = db_spec.User{
+		UserId: req.UserId,
+	}
 	if err := p.DB.First(&user).Error; err != nil {
 		logger.Warnf(ctx, "uid = %s, err = %+v", req.UserId, err)
 		return nil, err
@@ -32,6 +34,7 @@ func (p *Database) ComparePassword(ctx context.Context, req *pbim.Password) (*pb
 	)
 	if err != nil {
 		logger.Warnf(ctx, "password failed, md5(password): %x", md5.Sum([]byte(req.Password)))
+		logger.Warnf(ctx, "user: %v, req: %v", user, req)
 		return &pbim.Bool{Value: false}, nil
 	}
 
