@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	idpkg "openpitrix.io/iam/pkg/id"
 	"openpitrix.io/iam/pkg/internal/funcutil"
 	"openpitrix.io/iam/pkg/internal/strutil"
 	"openpitrix.io/iam/pkg/pb/im"
@@ -23,6 +24,29 @@ import (
 func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Group, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
+	// must generate new id
+	req.GroupId = idpkg.GenId("gid-")
+
+	if req.GroupPath == "" {
+		if req.ParentGroupId == "" {
+			req.GroupPath = req.GroupId
+		} else {
+			req.ParentGroupId = strutil.SimplifyString(req.ParentGroupId)
+
+			// get parent group_path
+			parentGroup, err := p.GetGroup(ctx, &pbim.GroupId{
+				GroupId: req.ParentGroupId,
+			})
+			if err != nil {
+				err = status.Errorf(codes.InvalidArgument, "get parent info failed: %v", err)
+				logger.Warnf(ctx, "%+v", err)
+				return nil, err
+			}
+
+			req.GroupPath = parentGroup.GroupPath + "." + req.GroupId
+		}
+	}
+
 	var dbGroup = db_spec.NewUserGroupFromPB(req).AdjustForCreate()
 	if err := dbGroup.IsValidForCreate(); err != nil {
 		err = status.Errorf(codes.InvalidArgument, "%v", err)
@@ -30,46 +54,45 @@ func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 		return nil, err
 	}
 
-	var all_group_id []string
+	var all_parent_group_id []string
 	// ParentGroupId must be in GroupPath, skip it
 	for _, id := range strings.Split(dbGroup.GroupPath, ".") {
-		all_group_id = append(all_group_id, id)
-	}
-	if len(all_group_id) == 0 {
-		err := status.Errorf(codes.Internal, "unreachable code")
-		logger.Errorf(ctx, "%+v", err)
-		return nil, err
+		if id != dbGroup.GroupId {
+			all_parent_group_id = append(all_parent_group_id, id)
+		}
 	}
 
-	// check all group_id exists
-	var query, err = template.Render(`
+	// check all parent group_id exists
+	if len(all_parent_group_id) > 0 {
+		var query, err = template.Render(`
 		SELECT COUNT(*) FROM user_group WHERE 1=0
 			{{range $i, $v := .}}
 				OR group_id='{{$v}}'
 			{{end}}
-		`, all_group_id,
-	)
-	if err != nil {
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-
-	query = strutil.SimplifyString(query)
-	logger.Infof(ctx, "query: %s", query)
-
-	var total int
-	p.DB.Raw(query).Count(&total)
-	if err := p.DB.Error; err != nil {
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-	if total != len(all_group_id) {
-		err := status.Errorf(codes.InvalidArgument,
-			"some group_id in group_path(%q) donot exists",
-			dbGroup.GroupPath,
+		`, all_parent_group_id,
 		)
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
+		if err != nil {
+			logger.Warnf(ctx, "%+v", err)
+			return nil, err
+		}
+
+		query = strutil.SimplifyString(query)
+		logger.Infof(ctx, "query: %s", query)
+
+		var total int
+		p.DB.Raw(query).Count(&total)
+		if err := p.DB.Error; err != nil {
+			logger.Warnf(ctx, "%+v", err)
+			return nil, err
+		}
+		if total != len(all_parent_group_id) {
+			err := status.Errorf(codes.InvalidArgument,
+				"some group_id in all_parent_group_id(%q) donot exists",
+				dbGroup.GroupPath,
+			)
+			logger.Warnf(ctx, "%+v", err)
+			return nil, err
+		}
 	}
 
 	// create new record
@@ -223,7 +246,7 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 
 	const sqlTmpl = `
 		{{if not .UserId}}
-			select {{if IsCountMode}}COUNT(*){{else}}*{{end}} from user_group where 1=1
+			select distinct {{if IsCountMode}}COUNT(*){{else}}*{{end}} from user_group where 1=1
 				{{if .GroupId}}
 					and group_id in (
 						{{range $i, $v := .GroupId}}
@@ -259,14 +282,14 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 						{{end}}
 					)
 				{{end}}
-				{{if .SortKey}}
-					order by {{.SortKey}} {{if .Reverse}} desc {{end}}
-				{{end}}
 				{{if not IsCountMode}}
+					{{if .SortKey}}
+						order by {{.SortKey}} {{if .Reverse}} desc {{end}}
+					{{end}}
 					limit {{.Limit}} offset {{.Offset}}
 				{{end}}
 		{{else}}
-			select {{if IsCountMode}}COUNT(user_group.*){{else}}user_group.*{{end}} from
+			select distinct {{if IsCountMode}}COUNT(*){{else}}user_group.*{{end}} from
 				user, user_group, user_group_binding
 			where 1=1
 				and user_group_binding.user_id=user.user_id
@@ -314,10 +337,10 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 						{{end}}
 					)
 				{{end}}
-				{{if .SortKey}}
-					order by user_group.{{.SortKey}} {{if .Reverse}} desc {{end}}
-				{{end}}
 				{{if not IsCountMode}}
+					{{if .SortKey}}
+						order by user_group.{{.SortKey}} {{if .Reverse}} desc {{end}}
+					{{end}}
 					limit {{.Limit}} offset {{.Offset}}
 				{{end}}
 		{{end}}

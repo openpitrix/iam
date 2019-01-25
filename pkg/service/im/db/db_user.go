@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	idpkg "openpitrix.io/iam/pkg/id"
 	"openpitrix.io/iam/pkg/internal/funcutil"
 	"openpitrix.io/iam/pkg/internal/strutil"
 	"openpitrix.io/iam/pkg/pb/im"
@@ -22,6 +23,9 @@ import (
 
 func (p *Database) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
+
+	// must generate new id
+	req.UserId = idpkg.GenId("uid-")
 
 	var dbUser = db_spec.NewUserFromPB(req).AdjustForCreate()
 	if err := dbUser.IsValidForCreate(); err != nil {
@@ -200,7 +204,7 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 
 	const sqlTmpl = `
 		{{if not .GroupId}}
-			select {{if IsCountMode}}COUNT(*){{else}}*{{end}} from user where 1=1
+			select distinct {{if IsCountMode}}COUNT(*){{else}}*{{end}} from user where 1=1
 				{{if .UserId}}
 					and user_id in (
 						{{range $i, $v := .UserId}}
@@ -256,14 +260,14 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 						{{end}}
 					)
 				{{end}}
-				{{if .SortKey}}
-					order by {{.SortKey}} {{if .Reverse}} desc {{end}}
-				{{end}}
 				{{if not IsCountMode}}
-					limit {{.Limit}} offset {{.Offset}}
+					{{if .SortKey}}
+						order by {{.SortKey}} {{if .Reverse}} desc {{end}}
+					{{end}}
+						limit {{.Limit}} offset {{.Offset}}
 				{{end}}
 		{{else}}
-			select {{if IsCountMode}}COUNT(user.*){{else}}user.*{{end}} from
+			select distinct {{if IsCountMode}}COUNT(*){{else}}user.*{{end}} from
 				user, user_group, user_group_binding
 			where 1=1
 				and user_group_binding.user_id=user.user_id
@@ -332,11 +336,11 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 						{{end}}
 					)
 				{{end}}
-				{{if .SortKey}}
-					order by user.{{.SortKey}} {{if .Reverse}} desc {{end}}
-				{{end}}
 				{{if not IsCountMode}}
-					limit {{.Limit}} offset {{.Offset}}
+					{{if .SortKey}}
+						order by user.{{.SortKey}} {{if .Reverse}} desc {{end}}
+					{{end}}
+						limit {{.Limit}} offset {{.Offset}}
 				{{end}}
 		{{end}}
 	`
@@ -377,7 +381,7 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 	}
 
 	query = strutil.SimplifyString(query)
-	logger.Infof(ctx, "query: %s", query)
+	logger.Infof(ctx, "query: %s; req: %v", query, req)
 
 	var rows []db_spec.User
 	p.DB.Raw(query).Find(&rows)

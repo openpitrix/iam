@@ -66,7 +66,7 @@ func (p *Database) getAllSubGroupIds(ctx context.Context, req *pbim.GroupIdList)
 	const sqlTmpl = `
 		SELECT * FROM user_group WHERE 1=0
 			{{range $i, $v := .GroupId}}
-				OR group_path LINK '%{{$v}}%'
+				OR group_path LIKE '%{{$v}}%'
 				OR group_id='{{$v}}'
 			{{end}}
 	`
