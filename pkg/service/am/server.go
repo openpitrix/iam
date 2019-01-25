@@ -39,17 +39,5 @@ func OpenServer(cfg *config.Config) (*Server, error) {
 }
 
 func (p *Server) Close() error {
-	var lastErr error
-
-	if p.db != nil {
-		if err := p.db.Close(); err != nil {
-			lastErr = err
-			p.db = nil
-		}
-	}
-
-	if lastErr != nil {
-		return lastErr
-	}
-	return nil
+	return p.db.Close()
 }

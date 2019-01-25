@@ -6,20 +6,64 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	idpkg "openpitrix.io/iam/pkg/id"
 	"openpitrix.io/iam/pkg/internal/funcutil"
+	"openpitrix.io/iam/pkg/internal/strutil"
 	pbam "openpitrix.io/iam/pkg/pb/am"
+	pbim "openpitrix.io/iam/pkg/pb/im"
+	"openpitrix.io/iam/pkg/service/am/db_spec"
 	"openpitrix.io/logger"
 )
 
-func (p *Database) BindUserRole(ctx context.Context, req *pbam.BindUserRoleRequest) (*pbam.Empty, error) {
+func (p *Database) GetUserWithRole(ctx context.Context, req *pbam.UserId) (*pbam.UserWithRole, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
+	conn, err := grpc.Dial(fmt.Sprintf("%s:%d", p.cfg.ImHost, p.cfg.ImPort), grpc.WithInsecure())
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+
+	client := pbim.NewAccountManagerClient(conn)
+	imUser, err := client.GetUser(ctx, &pbim.UserId{UserId: req.UserId})
+	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	user := &pbam.UserWithRole{
+		UserId:      imUser.UserId,
+		UserName:    imUser.UserName,
+		Email:       imUser.Email,
+		PhoneNumber: imUser.PhoneNumber,
+		Description: imUser.Description,
+		Status:      imUser.Status,
+		Extra:       imUser.Extra,
+		CreateTime:  imUser.CreateTime,
+		UpdateTime:  imUser.UpdateTime,
+		StatusTime:  imUser.StatusTime,
+	}
+
+	roleList, err := p.GetRoleListByUserId(ctx, &pbam.UserId{UserId: req.UserId})
+	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	user.Role = roleList.Value
+	return user, nil
+}
+func (p *Database) DescribeUsersWithRole(ctx context.Context, req *pbam.DescribeUsersWithRoleRequest) (*pbam.DescribeUsersWithRoleResponse, error) {
+	logger.Infof(ctx, funcutil.CallerName(1))
+
+	// fix repeated fileds
+	// GET donot support repeated type in grpc-gateway
 	if len(req.RoleId) == 1 && strings.Contains(req.RoleId[0], ",") {
 		req.RoleId = strings.Split(req.RoleId[0], ",")
 	}
@@ -27,141 +71,112 @@ func (p *Database) BindUserRole(ctx context.Context, req *pbam.BindUserRoleReque
 		req.UserId = strings.Split(req.UserId[0], ",")
 	}
 
-	if len(req.UserId) == 0 || len(req.RoleId) == 0 {
+	req.RoleId = strutil.SimplifyStringList(req.RoleId)
+	req.UserId = strutil.SimplifyStringList(req.UserId)
+
+	if len(req.RoleId) == 0 && len(req.UserId) == 0 {
 		err := status.Errorf(codes.InvalidArgument, "empty user_id or role_id")
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
-	if !(len(req.UserId) == 1 || len(req.RoleId) == 1 || len(req.UserId) == len(req.RoleId)) {
-		err := status.Errorf(codes.InvalidArgument,
-			"user_id and role_id donot math: user_id = %v, role_id = %v",
-			req.UserId, req.RoleId,
-		)
+
+	limit := 20
+	offset := 0
+	if req.Limit > 0 || req.Offset > 0 {
+		limit = int(req.Limit)
+		offset = int(req.Offset)
+	}
+
+	type Result struct {
+		UserId string
+		RoleId string
+	}
+
+	var rows []Result
+	err := p.DB.Raw(
+		"select * from user_role_binding where user_id in (?) AND role_id in (?)",
+		req.UserId, req.RoleId,
+	).Limit(limit).Offset(offset).Find(&rows).Error
+	if err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
-	logger.Infof(ctx, funcutil.CallerName(1)+":11")
-	logger.Infof(ctx, "req: %v", req)
 
-	tx := p.DB.Begin()
-
-	switch {
-	case len(req.UserId) == len(req.RoleId):
-		for i := 0; i < len(req.RoleId); i++ {
-			tx.Exec(
-				`INSERT INTO user_role_binding (id, user_id, role_id) VALUES (?,?,?)`,
-				idpkg.GenId("bind-"), req.UserId[i], req.RoleId[i],
-			)
-			if err := tx.Error; err != nil {
-				tx.Rollback()
-				return nil, err
-			}
-		}
-	case len(req.UserId) == 1:
-		logger.Infof(ctx, "debug: req: %v", req)
-		for i := 0; i < len(req.RoleId); i++ {
-			tx.Exec(
-				`INSERT INTO user_role_binding (id, user_id, role_id) VALUES (?,?,?)`,
-				idpkg.GenId("bind-"), req.UserId[0], req.RoleId[i],
-			)
-			if err := tx.Error; err != nil {
-				tx.Rollback()
-				return nil, err
-			}
-		}
-	case len(req.RoleId) == 1:
-		for i := 0; i < len(req.UserId); i++ {
-			tx.Exec(
-				`INSERT INTO user_role_binding (id, user_id, role_id) VALUES (?,?,?)`,
-				idpkg.GenId("bind-"), req.UserId[i], req.RoleId[0],
-			)
-			if err := tx.Error; err != nil {
-				tx.Rollback()
-				return nil, err
-			}
-		}
+	var userIdList, roleIdList []string
+	for _, v := range rows {
+		userIdList = append(userIdList, v.UserId)
+		roleIdList = append(roleIdList, v.RoleId)
 	}
-
-	if err := tx.Commit().Error; err != nil {
+	rawUsers, err := p.getUserList(ctx, userIdList...)
+	if err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
-	logger.Infof(ctx, funcutil.CallerName(1)+":22")
 
-	return &pbam.Empty{}, nil
+	type RoleEx struct {
+		UserId string
+		db_spec.Role
+	}
+
+	var roles []RoleEx
+	err = p.DB.Raw(
+		`select t2.user_id, t1.*
+			from role t1, user_role_binding t2
+			where t1.role_id=t2.role_id and t2.user_id in (?)
+		`,
+		userIdList,
+	).Find(&roles).Error
+	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	var users = make([]*pbam.UserWithRole, len(rawUsers))
+	for i := 0; i < len(rawUsers); i++ {
+		var pRole *db_spec.Role
+		for j := 0; j < len(roles); j++ {
+			if rawUsers[i].UserId == roles[j].UserId {
+				pRole = &roles[j].Role
+			}
+		}
+
+		users[i] = &pbam.UserWithRole{
+			UserId:      rawUsers[i].UserId,
+			UserName:    rawUsers[i].UserName,
+			Email:       rawUsers[i].Email,
+			PhoneNumber: rawUsers[i].PhoneNumber,
+			Description: rawUsers[i].Description,
+			Status:      rawUsers[i].Status,
+			Extra:       rawUsers[i].Extra,
+		}
+		if pRole != nil {
+			users[i].Role = []*pbam.Role{pRole.ToPB()}
+		}
+	}
+
+	reply := &pbam.DescribeUsersWithRoleResponse{
+		User:  users,
+		Total: int32(len(rows)),
+	}
+
+	return reply, nil
 }
 
-func (p *Database) UnbindUserRole(ctx context.Context, req *pbam.UnbindUserRoleRequest) (*pbam.Empty, error) {
+func (p *Database) getUserList(ctx context.Context, uid ...string) ([]*pbim.User, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if len(req.RoleId) == 1 && strings.Contains(req.RoleId[0], ",") {
-		req.RoleId = strings.Split(req.RoleId[0], ",")
-	}
-	if len(req.UserId) == 1 && strings.Contains(req.UserId[0], ",") {
-		req.UserId = strings.Split(req.UserId[0], ",")
-	}
-
-	if len(req.UserId) == 0 || len(req.RoleId) == 0 {
-		err := status.Errorf(codes.InvalidArgument, "empty user_id or role_id")
-		logger.Warnf(ctx, "%+v", err)
+	conn, err := grpc.Dial(fmt.Sprintf("%s:%d", p.cfg.ImHost, p.cfg.ImPort), grpc.WithInsecure())
+	if err != nil {
 		return nil, err
 	}
-	if !(len(req.UserId) == 1 || len(req.RoleId) == 1 || len(req.UserId) == len(req.RoleId)) {
-		err := status.Errorf(codes.InvalidArgument,
-			"user_id and role_id donot math: user_id = %v, role_id = %v",
-			req.UserId, req.RoleId,
-		)
+	defer conn.Close()
+
+	client := pbim.NewAccountManagerClient(conn)
+	reply, err := client.ListUsers(ctx, &pbim.ListUsersRequest{UserId: uid})
+	if err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
-	tx := p.DB.Begin()
-
-	switch {
-	case len(req.UserId) == len(req.RoleId):
-		for i := 0; i < len(req.RoleId); i++ {
-			logger.Infof(ctx, "req: %v", req)
-
-			tx.Exec(
-				`delete from user_role_binding where user_id=? and role_id=?`,
-				req.UserId[i],
-				req.RoleId[i],
-			)
-			if err := tx.Error; err != nil {
-				tx.Rollback()
-				return nil, err
-			}
-		}
-	case len(req.UserId) == 1:
-		for i := 0; i < len(req.RoleId); i++ {
-			tx.Exec(
-				`delete from user_role_binding where user_id=? and role_id=?`,
-				req.UserId[0],
-				req.RoleId[i],
-			)
-			if err := tx.Error; err != nil {
-				tx.Rollback()
-				return nil, err
-			}
-		}
-	case len(req.RoleId) == 1:
-		for i := 0; i < len(req.UserId); i++ {
-			tx.Exec(
-				`delete from user_role_binding where user_id=? and role_id=?`,
-				req.UserId[i],
-				req.RoleId[0],
-			)
-			if err := tx.Error; err != nil {
-				tx.Rollback()
-				return nil, err
-			}
-		}
-	}
-
-	if err := tx.Commit().Error; err != nil {
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-
-	return &pbam.Empty{}, nil
+	return reply.User, nil
 }

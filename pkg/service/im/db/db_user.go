@@ -40,7 +40,7 @@ func (p *Database) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 		return nil, err
 	}
 
-	return req, nil
+	return p.GetUser(ctx, &pbim.UserId{UserId: req.UserId})
 }
 
 func (p *Database) DeleteUsers(ctx context.Context, req *pbim.UserIdList) (*pbim.Empty, error) {

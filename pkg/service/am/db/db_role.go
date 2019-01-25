@@ -7,7 +7,6 @@ package db
 import (
 	"context"
 	"strings"
-	"time"
 
 	"github.com/chai2010/template"
 	"google.golang.org/grpc/codes"
@@ -24,29 +23,19 @@ import (
 func (p *Database) CreateRole(ctx context.Context, req *pbam.Role) (*pbam.Role, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if req == nil {
-		err := status.Errorf(codes.InvalidArgument, "empty field")
+	// must generate new id
+	req.RoleId = idpkg.GenId("role-")
+
+	var dbRole = db_spec.NewRoleFromPB(req).AdjustForCreate()
+	if err := dbRole.IsValidForCreate(); err != nil {
+		err = status.Errorf(codes.InvalidArgument, "%v", err)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
-	if req != nil {
-		if req.RoleId == "" {
-			req.RoleId = idpkg.GenId("role-")
-		}
 
-		//if isZeroTimestamp(req.CreateTime) {
-		//	req.CreateTime = ptypes.TimestampNow()
-		//}
-		//if isZeroTimestamp(req.UpdateTime) {
-		//	req.UpdateTime = ptypes.TimestampNow()
-		//}
-	}
-
-	if !p.DB.NewRecord(db_spec.NewRoleFromPB(req)) {
-		// failed
-	}
-	if err := p.DB.Error; err != nil {
-		logger.Warnf(ctx, "%+v", err)
+	// create new record
+	if err := p.DB.Create(dbRole).Error; err != nil {
+		logger.Warnf(ctx, "%+v, %v", err, dbRole)
 		return nil, err
 	}
 
@@ -86,31 +75,14 @@ func (p *Database) DeleteRoles(ctx context.Context, req *pbam.RoleIdList) (*pbam
 func (p *Database) ModifyRole(ctx context.Context, req *pbam.Role) (*pbam.Role, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if req == nil || req.RoleId == "" {
-		err := status.Errorf(codes.InvalidArgument, "empty field")
+	var dbRole = db_spec.NewRoleFromPB(req).AdjustForUpdate()
+	if err := dbRole.IsValidForUpdate(); err != nil {
+		err = status.Errorf(codes.InvalidArgument, "%v", err)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
-	var m = map[string]interface{}{}
-	if req.RoleName != "" {
-		m["role_name"] = req.RoleName
-	}
-	if req.Description != "" {
-		m["description"] = req.Description
-	}
-	if req.Portal != "" {
-		m["portal"] = req.Portal
-	}
-
-	if len(m) == 0 {
-		err := status.Errorf(codes.InvalidArgument, "empty field")
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-
-	m["update_time"] = time.Now()
-	if err := p.DB.Table("role").Update(m).Error; err != nil {
+	if err := p.DB.Model(dbRole).Updates(dbRole).Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}

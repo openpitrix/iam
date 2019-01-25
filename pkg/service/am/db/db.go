@@ -69,7 +69,7 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 				}
 			}
 			if lastInitErr != nil {
-				logger.Warnf(nil, "%+v", lastInitErr)
+				logger.Warnf(nil, "SqlInitDB.LastErr: %+v", lastInitErr)
 			}
 		}
 	}
@@ -91,6 +91,7 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 	}
 
 	p.DB.SingularTable(true)
+	p.DB.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8")
 
 	// init hook
 	if opt != nil && len(opt.SqlInitTable) > 0 {
@@ -110,7 +111,7 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 			}
 		}
 		if lastInitErr != nil {
-			logger.Warnf(nil, "%+v", lastInitErr)
+			logger.Warnf(nil, "SqlInitTable.LastErr: %+v", lastInitErr)
 		}
 	}
 	if opt != nil && len(opt.SqlInitData) > 0 {
@@ -134,7 +135,7 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 				}
 			}
 			if lastInitErr != nil {
-				logger.Warnf(nil, "%+v", lastInitErr)
+				logger.Warnf(nil, "SqlInitData.LastErr: %+v", lastInitErr)
 			}
 		}
 	}
@@ -143,17 +144,17 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 	{
 		if !p.DB.HasTable(&db_spec.ModuleApi{}) {
 			if err := p.DB.CreateTable(&db_spec.ModuleApi{}).Error; err != nil {
-				logger.Warnf(nil, "%+v", err)
+				logger.Warnf(nil, "CreateTable: %+v", err)
 			}
 		}
 		if !p.DB.HasTable(&db_spec.Role{}) {
 			if err := p.DB.CreateTable(&db_spec.Role{}).Error; err != nil {
-				logger.Warnf(nil, "%+v", err)
+				logger.Warnf(nil, "CreateTable: %+v", err)
 			}
 		}
 		if !p.DB.HasTable(&db_spec.UserRoleBinding{}) {
 			if err := p.DB.CreateTable(&db_spec.UserRoleBinding{}).Error; err != nil {
-				logger.Warnf(nil, "%+v", err)
+				logger.Warnf(nil, "CreateTable: %+v", err)
 			}
 		}
 		if !p.DB.HasTable(&db_spec.RoleModuleBinding{}) {
@@ -163,7 +164,7 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 		}
 		if !p.DB.HasTable(&db_spec.EnableAction{}) {
 			if err := p.DB.CreateTable(&db_spec.EnableAction{}).Error; err != nil {
-				logger.Warnf(nil, "%+v", err)
+				logger.Warnf(nil, "CreateTable: %+v", err)
 			}
 		}
 	}
