@@ -15,6 +15,7 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 
 	"openpitrix.io/iam/pkg/service/am/config"
+	"openpitrix.io/iam/pkg/service/am/db_spec"
 	"openpitrix.io/logger"
 )
 
@@ -140,28 +141,28 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 
 	// greate tables
 	{
-		if !p.DB.HasTable(&ModuleApi{}) {
-			if err := p.DB.CreateTable(&ModuleApi{}).Error; err != nil {
+		if !p.DB.HasTable(&db_spec.ModuleApi{}) {
+			if err := p.DB.CreateTable(&db_spec.ModuleApi{}).Error; err != nil {
 				logger.Warnf(nil, "%+v", err)
 			}
 		}
-		if !p.DB.HasTable(&Role{}) {
-			if err := p.DB.CreateTable(&Role{}).Error; err != nil {
+		if !p.DB.HasTable(&db_spec.Role{}) {
+			if err := p.DB.CreateTable(&db_spec.Role{}).Error; err != nil {
 				logger.Warnf(nil, "%+v", err)
 			}
 		}
-		if !p.DB.HasTable(&UserRoleBinding{}) {
-			if err := p.DB.CreateTable(&UserRoleBinding{}).Error; err != nil {
+		if !p.DB.HasTable(&db_spec.UserRoleBinding{}) {
+			if err := p.DB.CreateTable(&db_spec.UserRoleBinding{}).Error; err != nil {
 				logger.Warnf(nil, "%+v", err)
 			}
 		}
-		if !p.DB.HasTable(&RoleModuleBinding{}) {
-			if err := p.DB.CreateTable(&RoleModuleBinding{}).Error; err != nil {
+		if !p.DB.HasTable(&db_spec.RoleModuleBinding{}) {
+			if err := p.DB.CreateTable(&db_spec.RoleModuleBinding{}).Error; err != nil {
 				logger.Warnf(nil, "%+v", err)
 			}
 		}
-		if !p.DB.HasTable(&EnableAction{}) {
-			if err := p.DB.CreateTable(&EnableAction{}).Error; err != nil {
+		if !p.DB.HasTable(&db_spec.EnableAction{}) {
+			if err := p.DB.CreateTable(&db_spec.EnableAction{}).Error; err != nil {
 				logger.Warnf(nil, "%+v", err)
 			}
 		}

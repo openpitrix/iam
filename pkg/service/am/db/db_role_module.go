@@ -15,6 +15,7 @@ import (
 	idpkg "openpitrix.io/iam/pkg/id"
 	"openpitrix.io/iam/pkg/internal/funcutil"
 	pbam "openpitrix.io/iam/pkg/pb/am"
+	"openpitrix.io/iam/pkg/service/am/db_spec"
 	"openpitrix.io/iam/pkg/validator"
 	"openpitrix.io/logger"
 )
@@ -42,14 +43,14 @@ func (p *Database) GetRoleModule(ctx context.Context, req *pbam.RoleId) (*pbam.R
 		return nil, err
 	}
 
-	var rows = []ModuleApiInfo{}
+	var rows = []db_spec.ModuleApiInfo{}
 	if err := p.DB.Raw(query).Scan(&rows).Error; err != nil {
 		logger.Warnf(nil, "%v", query)
 		logger.Warnf(nil, "%+v", err)
 		return nil, err
 	}
 
-	roleModuleMap := ModuleApiInfoList(rows).ToRoleModuleMap()
+	roleModuleMap := db_spec.ModuleApiInfoList(rows).ToRoleModuleMap()
 	return roleModuleMap[req.RoleId], nil
 }
 
@@ -92,7 +93,7 @@ func (p *Database) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (
 		}
 
 		bindId := idpkg.GenId("bind-")
-		tx.NewRecord(RoleModuleBinding{
+		tx.NewRecord(db_spec.RoleModuleBinding{
 			BindId:     bindId,
 			RoleId:     req.RoleId,
 			ModuleId:   mod.ModuleId,
@@ -110,7 +111,7 @@ func (p *Database) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (
 		// for chekced actions
 		for _, feature := range mod.Feature {
 			for _, action := range feature.Action {
-				tx.NewRecord(EnableAction{
+				tx.NewRecord(db_spec.EnableAction{
 					EnableId: idpkg.GenId("id-"),
 					BindId:   bindId,
 					ActionId: action.ActionId,

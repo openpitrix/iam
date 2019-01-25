@@ -17,6 +17,7 @@ import (
 	"openpitrix.io/iam/pkg/internal/funcutil"
 	"openpitrix.io/iam/pkg/internal/strutil"
 	pbam "openpitrix.io/iam/pkg/pb/am"
+	"openpitrix.io/iam/pkg/service/am/db_spec"
 	"openpitrix.io/logger"
 )
 
@@ -41,7 +42,7 @@ func (p *Database) CreateRole(ctx context.Context, req *pbam.Role) (*pbam.Role, 
 		//}
 	}
 
-	if !p.DB.NewRecord(NewRoleFromPB(req)) {
+	if !p.DB.NewRecord(db_spec.NewRoleFromPB(req)) {
 		// failed
 	}
 	if err := p.DB.Error; err != nil {
@@ -120,7 +121,7 @@ func (p *Database) ModifyRole(ctx context.Context, req *pbam.Role) (*pbam.Role, 
 func (p *Database) GetRole(ctx context.Context, req *pbam.RoleId) (*pbam.Role, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	var role = Role{
+	var role = db_spec.Role{
 		RoleId: req.RoleId,
 	}
 
@@ -143,7 +144,7 @@ func (p *Database) GetRoleListByUserId(ctx context.Context, req *pbam.UserId) (*
 			user_role_binding.user_id=?
 	`
 
-	var rows []Role
+	var rows []db_spec.Role
 	if err := p.DB.Raw(query, req.UserId).Find(&rows).Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -188,7 +189,7 @@ func (p *Database) DescribeRoles(ctx context.Context, req *pbam.DescribeRolesReq
 		var query = `select * from role`
 		logger.Infof(ctx, "query: %s", strutil.SimplifyString(query))
 
-		var rows []Role
+		var rows []db_spec.Role
 		p.DB.Raw(query).Find(&rows)
 
 		var sets []*pbam.Role
@@ -276,7 +277,7 @@ func (p *Database) DescribeRoles(ctx context.Context, req *pbam.DescribeRolesReq
 	query = strutil.SimplifyString(query)
 	logger.Infof(ctx, "query: %s", query)
 
-	var rows []Role
+	var rows []db_spec.Role
 	p.DB.Raw(query).Find(&rows)
 
 	var sets []*pbam.Role

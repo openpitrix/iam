@@ -17,6 +17,7 @@ import (
 	"openpitrix.io/iam/pkg/internal/strutil"
 	pbam "openpitrix.io/iam/pkg/pb/am"
 	pbim "openpitrix.io/iam/pkg/pb/im"
+	"openpitrix.io/iam/pkg/service/am/db_spec"
 	"openpitrix.io/logger"
 )
 
@@ -114,7 +115,7 @@ func (p *Database) DescribeUsersWithRole(ctx context.Context, req *pbam.Describe
 
 	type RoleEx struct {
 		UserId string
-		Role
+		db_spec.Role
 	}
 
 	var roles []RoleEx
@@ -132,7 +133,7 @@ func (p *Database) DescribeUsersWithRole(ctx context.Context, req *pbam.Describe
 
 	var users = make([]*pbam.UserWithRole, len(rawUsers))
 	for i := 0; i < len(rawUsers); i++ {
-		var pRole *Role
+		var pRole *db_spec.Role
 		for j := 0; j < len(roles); j++ {
 			if rawUsers[i].UserId == roles[j].UserId {
 				pRole = &roles[j].Role
