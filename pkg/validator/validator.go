@@ -29,6 +29,15 @@ func IsValidName(name ...string) bool {
 	return true
 }
 
+func IsValidPortal(portal ...string) bool {
+	for _, v := range portal {
+		if s := strings.TrimSpace(v); s == "" || s != v {
+			return false
+		}
+	}
+	return true
+}
+
 func IsValidStatus(status ...string) bool {
 	var re = regexp.MustCompile(`^[a-zA-Z0-9_-]*$`)
 	for _, v := range status {

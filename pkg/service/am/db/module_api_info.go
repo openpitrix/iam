@@ -16,7 +16,7 @@ import (
 
 type ModuleApiInfoList []ModuleApiInfo
 
-// keep same pbam.Action
+// keep same as pbam.Action
 type ModuleApiInfo struct {
 	RoleId   string
 	RoleName string

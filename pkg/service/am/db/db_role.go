@@ -137,35 +137,38 @@ func (p *Database) DescribeRoles(ctx context.Context, req *pbam.DescribeRolesReq
 	req.Portal = strutil.SimplifyStringList(req.Portal)
 	req.UserId = strutil.SimplifyStringList(req.UserId)
 
-	// all list
-	if len(req.RoleId)+len(req.RoleName)+len(req.Portal)+len(req.UserId) == 0 {
-		var query = `select * from role`
-		logger.Infof(ctx, "query: %s", strutil.SimplifyString(query))
-
-		var rows []db_spec.Role
-		p.DB.Raw(query).Find(&rows)
-
-		var sets []*pbam.Role
-		for _, v := range rows {
-			sets = append(sets, v.ToPB())
+	if len(req.RoleId) > 0 {
+		if !validator.IsValidId(req.RoleId...) {
+			err := status.Errorf(codes.InvalidArgument, "invalid RoleId: %v", req.RoleId)
+			logger.Warnf(ctx, "%+v", err)
+			return nil, err
 		}
-
-		reply := &pbam.RoleList{Value: sets}
-		return reply, nil
+	}
+	if len(req.RoleName) > 0 {
+		if !validator.IsValidName(req.RoleName...) {
+			err := status.Errorf(codes.InvalidArgument, "invalid RoleName: %v", req.RoleId)
+			logger.Warnf(ctx, "%+v", err)
+			return nil, err
+		}
+	}
+	if len(req.Portal) > 0 {
+		if !validator.IsValidPortal(req.Portal...) {
+			err := status.Errorf(codes.InvalidArgument, "invalid Portal: %v", req.Portal)
+			logger.Warnf(ctx, "%+v", err)
+			return nil, err
+		}
+	}
+	if len(req.UserId) > 0 {
+		if !validator.IsValidId(req.UserId...) {
+			err := status.Errorf(codes.InvalidArgument, "invalid UserId: %v", req.UserId)
+			logger.Warnf(ctx, "%+v", err)
+			return nil, err
+		}
 	}
 
-	// no user_id:
-	// select * from role where 1=1 and role_id in ('a','b')
-	//
-	// user bind:
-	// select distinct t1.* from role t1 where 1=1 and t1.role_id in (
-	//	select t2.role_id from user_role_binding t1, role t2
-	//	where t1.role_id=t2.role_id and user_id in ('a', 'b')
-	// )
-
-	var query = template.MustRender(`
-			{{if not .UserId}}
-				select * from role where 1=1
+	const sqlTmpl = `
+		{{if not .UserId}}
+			select distinct * from role where 1=1
 				{{if .RoleId}}
 					and role_id in (
 						{{range $i, $v := .RoleId}}
@@ -187,58 +190,100 @@ func (p *Database) DescribeRoles(ctx context.Context, req *pbam.DescribeRolesReq
 						{{end}}
 					)
 				{{end}}
-			{{else}}
-				select distinct t1.* from role t1 where 1=1
-				{{if .RoleId}}
-					and role_id in (
-						{{range $i, $v := .RoleId}}
-							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
-						{{end}}
-					)
-				{{end}}
-				{{if .RoleName}}
-					and role_name in (
-						{{range $i, $v := .RoleName}}
-							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
-						{{end}}
-					)
-				{{end}}
-				{{if .Portal}}
-					and portal in (
-						{{range $i, $v := .Portal}}
-							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
-						{{end}}
-					)
-				{{end}}
-
-				and t1.role_id in (
-					select t2.role_id from
-						user_role_binding t1,
-						role t2
-					where
-						t1.role_id=t2.role_id and
-						user_id in (
-							{{range $i, $v := .UserId}}
-								{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
-							{{end}}
-						)
+		{{else}}
+			select distinct role.* from
+				role, user_role_binding
+			where 1=1
+				and user_role_binding.role_id=role.role_id
+				and user_role_binding.user_id in (
+					{{range $i, $v := .UserId}}
+						{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+					{{end}}
 				)
-			{{end}}
-		`, req,
-	)
+				{{if .RoleId}}
+					and role.role_id in (
+						{{range $i, $v := .RoleId}}
+							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+						{{end}}
+					)
+				{{end}}
+				{{if .RoleName}}
+					and role.role_name in (
+						{{range $i, $v := .RoleName}}
+							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+						{{end}}
+					)
+				{{end}}
+				{{if .Portal}}
+					and role.portal in (
+						{{range $i, $v := .Portal}}
+							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
+						{{end}}
+					)
+				{{end}}
+		{{end}}
+	`
+
+	var query, err = template.Render(sqlTmpl, req)
+	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
 
 	query = strutil.SimplifyString(query)
 	logger.Infof(ctx, "query: %s", query)
 
 	var rows []db_spec.Role
 	p.DB.Raw(query).Find(&rows)
+	if err := p.DB.Error; err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+	if len(rows) == 0 {
+		return &pbam.RoleList{}, nil
+	}
 
+	// TODO: query user_id
+	query, err = template.Render(`
+		SELECT * FROM user_role_binding WHERE 1=0
+			{{range $i, $v := .}}
+				OR role_id='{{$v.RoleId}}'
+			{{end}}
+		`, rows,
+	)
+	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	query = strutil.SimplifyString(query)
+	logger.Infof(ctx, "query: %s", query)
+
+	var bindRows []db_spec.UserRoleBinding
+	p.DB.Raw(query).Find(&bindRows)
+	if err := p.DB.Error; err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		// ignore err
+	}
+
+	// convert to pb type
 	var sets []*pbam.Role
 	for _, v := range rows {
 		sets = append(sets, v.ToPB())
 	}
 
-	reply := &pbam.RoleList{Value: sets}
-	return reply, nil
+	// save user_id
+	for _, v := range bindRows {
+		for j, vj := range sets {
+			if v.RoleId == vj.RoleId {
+				sets[j].UserId = append(sets[j].UserId, v.UserId)
+			}
+		}
+	}
 
+	reply := &pbam.RoleList{
+		Value: sets,
+	}
+
+	return reply, nil
 }

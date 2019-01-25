@@ -215,25 +215,33 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 		req.Offset = 0
 	}
 
-	if !validator.IsValidId(req.GroupId...) {
-		err := status.Errorf(codes.InvalidArgument, "invalid gid: %v", req.GroupId)
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
+	if len(req.GroupId) > 0 {
+		if !validator.IsValidId(req.GroupId...) {
+			err := status.Errorf(codes.InvalidArgument, "invalid gid: %v", req.GroupId)
+			logger.Warnf(ctx, "%+v", err)
+			return nil, err
+		}
 	}
-	if !validator.IsValidId(req.UserId...) {
-		err := status.Errorf(codes.InvalidArgument, "invalid uid: %v", req.UserId)
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
+	if len(req.UserId) > 0 {
+		if !validator.IsValidId(req.UserId...) {
+			err := status.Errorf(codes.InvalidArgument, "invalid uid: %v", req.UserId)
+			logger.Warnf(ctx, "%+v", err)
+			return nil, err
+		}
 	}
-	if !validator.IsValidSearchWord(req.SearchWord) {
-		err := status.Errorf(codes.InvalidArgument, "invalid search_word: %v", req.SearchWord)
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
+	if req.SearchWord != "" {
+		if !validator.IsValidSearchWord(req.SearchWord) {
+			err := status.Errorf(codes.InvalidArgument, "invalid search_word: %v", req.SearchWord)
+			logger.Warnf(ctx, "%+v", err)
+			return nil, err
+		}
 	}
-	if !validator.IsValidSortKey(req.SortKey) {
-		err := status.Errorf(codes.InvalidArgument, "invalid sort_key: %v", req.SortKey)
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
+	if req.SortKey != "" {
+		if !validator.IsValidSortKey(req.SortKey) {
+			err := status.Errorf(codes.InvalidArgument, "invalid sort_key: %v", req.SortKey)
+			logger.Warnf(ctx, "%+v", err)
+			return nil, err
+		}
 	}
 
 	// 1. get group and sub group id list
