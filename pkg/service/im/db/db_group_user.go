@@ -30,6 +30,9 @@ func (p *Database) JoinGroup(ctx context.Context, req *pbim.JoinGroupRequest) (*
 		req.UserId = strings.Split(req.UserId[0], ",")
 	}
 
+	req.GroupId = strutil.SimplifyStringList(req.GroupId)
+	req.UserId = strutil.SimplifyStringList(req.UserId)
+
 	if len(req.UserId) == 0 || len(req.GroupId) == 0 {
 		err := status.Errorf(codes.InvalidArgument, "empty uid or gid")
 		logger.Warnf(ctx, "%+v", err)
@@ -119,6 +122,9 @@ func (p *Database) LeaveGroup(ctx context.Context, req *pbim.LeaveGroupRequest) 
 	if len(req.UserId) == 1 && strings.Contains(req.UserId[0], ",") {
 		req.UserId = strings.Split(req.UserId[0], ",")
 	}
+
+	req.GroupId = strutil.SimplifyStringList(req.GroupId)
+	req.UserId = strutil.SimplifyStringList(req.UserId)
 
 	if len(req.UserId) == 0 || len(req.GroupId) == 0 {
 		err := status.Errorf(codes.InvalidArgument, "empty uid or gid")

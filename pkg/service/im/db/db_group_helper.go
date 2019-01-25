@@ -60,8 +60,6 @@ func (p *Database) getUserGroupBindList(ctx context.Context, userId, groupId []s
 	return
 }
 
-// UserGroupBinding
-
 func (p *Database) getAllSubGroupIds(ctx context.Context, req *pbim.GroupIdList) ([]string, error) {
 	const sqlTmpl = `
 		SELECT * FROM user_group WHERE 1=0
