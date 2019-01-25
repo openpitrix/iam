@@ -108,8 +108,13 @@ func (p *Database) CreateGroup(ctx context.Context, req *pbim.Group) (*pbim.Grou
 func (p *Database) DeleteGroups(ctx context.Context, req *pbim.GroupIdList) (*pbim.Empty, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if req == nil || len(req.GroupId) == 0 || !validator.IsValidId(req.GroupId...) {
-		err := status.Errorf(codes.InvalidArgument, "empty field")
+	if len(req.GroupId) == 0 {
+		err := status.Errorf(codes.InvalidArgument, "empty GroupId")
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+	if !validator.IsValidId(req.GroupId...) {
+		err := status.Errorf(codes.InvalidArgument, "invalid GroupId: %v", req.GroupId)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
@@ -165,7 +170,7 @@ func (p *Database) GetGroup(ctx context.Context, req *pbim.GroupId) (*pbim.Group
 	logger.Infof(ctx, funcutil.CallerName(1))
 
 	var v = db_spec.UserGroup{GroupId: req.GroupId}
-	if err := p.DB.Model(db_spec.User{}).Take(&v).Error; err != nil {
+	if err := p.DB.Model(db_spec.UserGroup{}).Take(&v).Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}

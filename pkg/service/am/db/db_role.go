@@ -17,6 +17,7 @@ import (
 	"openpitrix.io/iam/pkg/internal/strutil"
 	pbam "openpitrix.io/iam/pkg/pb/am"
 	"openpitrix.io/iam/pkg/service/am/db_spec"
+	"openpitrix.io/iam/pkg/validator"
 	"openpitrix.io/logger"
 )
 
@@ -43,6 +44,17 @@ func (p *Database) CreateRole(ctx context.Context, req *pbam.Role) (*pbam.Role, 
 }
 func (p *Database) DeleteRoles(ctx context.Context, req *pbam.RoleIdList) (*pbam.Empty, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
+
+	if len(req.RoleId) == 0 {
+		err := status.Errorf(codes.InvalidArgument, "empty RoleId")
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+	if !validator.IsValidId(req.RoleId...) {
+		err := status.Errorf(codes.InvalidArgument, "invalid RoleId: %v", req.RoleId)
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
 
 	tx := p.DB.Begin()
 	{
@@ -93,14 +105,13 @@ func (p *Database) ModifyRole(ctx context.Context, req *pbam.Role) (*pbam.Role, 
 func (p *Database) GetRole(ctx context.Context, req *pbam.RoleId) (*pbam.Role, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	var role = db_spec.Role{
-		RoleId: req.RoleId,
-	}
-
-	if err := p.DB.First(&role).Error; err != nil {
+	var v = db_spec.Role{RoleId: req.RoleId}
+	if err := p.DB.Model(db_spec.Role{}).Take(&v).Error; err != nil {
+		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
-	return role.ToPB(), nil
+
+	return v.ToPB(), nil
 }
 func (p *Database) GetRoleListByUserId(ctx context.Context, req *pbam.UserId) (*pbam.RoleList, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))

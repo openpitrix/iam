@@ -46,8 +46,13 @@ func (p *Database) CreateUser(ctx context.Context, req *pbim.User) (*pbim.User, 
 func (p *Database) DeleteUsers(ctx context.Context, req *pbim.UserIdList) (*pbim.Empty, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	if req == nil || len(req.UserId) == 0 || !validator.IsValidId(req.UserId...) {
-		err := status.Errorf(codes.InvalidArgument, "empty field")
+	if len(req.UserId) == 0 {
+		err := status.Errorf(codes.InvalidArgument, "empty UserId")
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+	if !validator.IsValidId(req.UserId...) {
+		err := status.Errorf(codes.InvalidArgument, "invalid UserId: %v", req.UserId)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
