@@ -50,13 +50,29 @@ func (p *Database) GetUserWithRole(ctx context.Context, req *pbam.UserId) (*pbam
 		StatusTime:  imUser.StatusTime,
 	}
 
-	roleList, err := p.GetRoleListByUserId(ctx, &pbam.UserId{UserId: req.UserId})
-	if err != nil {
+	var query = `
+		select
+			role.*
+		from
+			role,
+			user_role_binding
+		where
+			role.role_id=user_role_binding.role_id and
+			user_role_binding.user_id=?
+	`
+
+	var rows []db_spec.Role
+	if err := p.DB.Raw(query, req.UserId).Find(&rows).Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
-	user.Role = roleList.Value
+	var sets []*pbam.Role
+	for _, v := range rows {
+		sets = append(sets, v.ToPB())
+	}
+
+	user.Role = sets
 	return user, nil
 }
 func (p *Database) DescribeUsersWithRole(ctx context.Context, req *pbam.DescribeUsersWithRoleRequest) (*pbam.DescribeUsersWithRoleResponse, error) {

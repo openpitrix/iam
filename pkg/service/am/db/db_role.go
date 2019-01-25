@@ -113,36 +113,6 @@ func (p *Database) GetRole(ctx context.Context, req *pbam.RoleId) (*pbam.Role, e
 
 	return v.ToPB(), nil
 }
-func (p *Database) GetRoleListByUserId(ctx context.Context, req *pbam.UserId) (*pbam.RoleList, error) {
-	logger.Infof(ctx, funcutil.CallerName(1))
-
-	var query = `
-		select
-			role.*
-		from
-			role,
-			user_role_binding
-		where
-			role.role_id=user_role_binding.role_id and
-			user_role_binding.user_id=?
-	`
-
-	var rows []db_spec.Role
-	if err := p.DB.Raw(query, req.UserId).Find(&rows).Error; err != nil {
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-
-	var sets []*pbam.Role
-	for _, v := range rows {
-		sets = append(sets, v.ToPB())
-	}
-
-	reply := &pbam.RoleList{
-		Value: sets,
-	}
-	return reply, nil
-}
 
 func (p *Database) DescribeRoles(ctx context.Context, req *pbam.DescribeRolesRequest) (*pbam.RoleList, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
