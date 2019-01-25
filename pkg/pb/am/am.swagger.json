@@ -588,6 +588,12 @@
         "status_time": {
           "type": "string",
           "format": "date-time"
+        },
+        "user_id": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

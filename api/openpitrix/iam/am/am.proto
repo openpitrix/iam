@@ -148,6 +148,8 @@ message Role {
 	google.protobuf.Timestamp create_time = 8;
 	google.protobuf.Timestamp update_time = 9;
 	google.protobuf.Timestamp status_time = 10;
+
+	repeated string user_id = 11;
 }
 message RoleList {
 	repeated Role value = 1;

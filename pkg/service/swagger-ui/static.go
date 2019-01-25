@@ -819,6 +819,12 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "status_time": {
           "type": "string",
           "format": "date-time"
+        },
+        "user_id": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
