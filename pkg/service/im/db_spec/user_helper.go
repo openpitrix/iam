@@ -136,7 +136,7 @@ func (p *User) IsValidForUpdate() error {
 			return fmt.Errorf("User.IsValidForUpdate: invalid Status %q", p.Status)
 		}
 		if p.StatusTime == (time.Time{}) {
-			return fmt.Errorf("UserGroup.IsValidForUpdate: invalid StatusTime %q", p.StatusTime)
+			return fmt.Errorf("User.IsValidForUpdate: invalid StatusTime %q", p.StatusTime)
 		}
 	}
 

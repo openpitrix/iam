@@ -6,13 +6,10 @@ package db_spec
 
 import (
 	"encoding/json"
-	"fmt"
-	"regexp"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
 
-	idpkg "openpitrix.io/iam/pkg/id"
 	"openpitrix.io/iam/pkg/internal/strutil"
 	"openpitrix.io/iam/pkg/pb/im"
 )
@@ -93,35 +90,4 @@ func (p *User) ToProtoMessage() (*pbim.User, error) {
 		}
 	}
 	return q, nil
-}
-
-func (p *User) BeforeCreate() (err error) {
-	if p.UserId == "" {
-		p.UserId = idpkg.GenId("uid-")
-	} else {
-		var re = regexp.MustCompile(`^[a-zA-Z0-9-_]+$`)
-		if !re.MatchString(p.UserId) {
-			return fmt.Errorf("invalid UserId: %s", p.UserId)
-		}
-	}
-
-	now := time.Now()
-	p.CreateTime = now
-	p.UpdateTime = now
-	p.StatusTime = now
-
-	return
-}
-func (p *User) BeforeUpdate() (err error) {
-	if p.UpdateTime == (time.Time{}) {
-		p.UpdateTime = time.Now()
-	}
-	if p.Status != "" {
-		p.StatusTime = time.Now()
-	}
-
-	// ignore readonly fields
-	p.CreateTime = time.Time{}
-
-	return
 }
