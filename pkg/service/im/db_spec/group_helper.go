@@ -164,8 +164,8 @@ func (p *UserGroup) IsValidForUpdate() error {
 
 	// check updated fields
 	if p.GroupName != "" {
-		if !validator.IsValidStatus(p.GroupName) {
-			return fmt.Errorf("UserGroup.IsValidForUpdate: invalid Status %q", p.GroupName)
+		if !validator.IsValidName(p.GroupName) {
+			return fmt.Errorf("UserGroup.IsValidForUpdate: invalid GroupName %q", p.GroupName)
 		}
 	}
 	if p.Status != "" {
