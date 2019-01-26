@@ -17,13 +17,45 @@ import (
 	"google.golang.org/grpc/status"
 
 	"openpitrix.io/iam/pkg/internal/funcutil"
+	"openpitrix.io/iam/pkg/internal/strutil"
 	pbam "openpitrix.io/iam/pkg/pb/am"
 	pbim "openpitrix.io/iam/pkg/pb/im"
+	"openpitrix.io/iam/pkg/validator"
 	"openpitrix.io/logger"
 )
 
 func (p *Database) CanDo(ctx context.Context, req *pbam.CanDoRequest) (*pbam.CanDoResponse, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
+
+	req.UserId = strutil.SimplifyString(req.UserId)
+	req.Url = strutil.SimplifyString(req.Url)
+	req.UrlMethod = strutil.SimplifyString(req.UrlMethod)
+
+	if !validator.IsValidId(req.UserId) {
+		err := status.Errorf(codes.InvalidArgument, "invalid UserId: %v", req.UserId)
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+	if req.Url == "" {
+		err := status.Errorf(codes.InvalidArgument, "empty Url")
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+	if req.UrlMethod == "" {
+		err := status.Errorf(codes.InvalidArgument, "empty UrlMethod")
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	// 1. query RoleList
+	// 1. query RoleModuleList
+	// 2. query ModuleApiList
+
+	if true {
+		err := status.Errorf(codes.Unimplemented, "TODO")
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
 
 	if matched, _ := regexp.MatchString(`^/v\d+`, req.Url); matched {
 		if idx := strings.Index(req.Url[2:], "/"); idx >= 0 {
