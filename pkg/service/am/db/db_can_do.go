@@ -7,7 +7,6 @@ package db
 import (
 	"context"
 	"fmt"
-	"regexp"
 	"sort"
 	"strings"
 
@@ -20,6 +19,7 @@ import (
 	"openpitrix.io/iam/pkg/internal/strutil"
 	pbam "openpitrix.io/iam/pkg/pb/am"
 	pbim "openpitrix.io/iam/pkg/pb/im"
+	"openpitrix.io/iam/pkg/service/am/db_spec"
 	"openpitrix.io/iam/pkg/validator"
 	"openpitrix.io/logger"
 )
@@ -48,39 +48,104 @@ func (p *Database) CanDo(ctx context.Context, req *pbam.CanDoRequest) (*pbam.Can
 	}
 
 	// 1. query RoleList
-	// 1. query RoleModuleList
-	// 2. query ModuleApiList
-
-	if true {
-		err := status.Errorf(codes.Unimplemented, "TODO")
+	query, err := template.Render(`
+		select distinct role.* from
+			role, user_role_binding
+		where 1=1
+			and user_role_binding.role_id=role.role_id
+			and user_role_binding.user_id='{{.UserId}}'
+		`, req,
+	)
+	if err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
-	if matched, _ := regexp.MatchString(`^/v\d+`, req.Url); matched {
-		if idx := strings.Index(req.Url[2:], "/"); idx >= 0 {
-			req.Url = req.Url[2:][idx+1:]
+	query = strutil.SimplifyString(query)
+	logger.Infof(ctx, "query: %s", query)
+
+	var roleList []db_spec.Role
+	p.DB.Raw(query).Find(&roleList)
+	if err := p.DB.Error; err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+	if len(roleList) == 0 {
+		err := status.Errorf(codes.PermissionDenied, "no role")
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	// 2. query RoleModuleList
+	query, err = template.Render(`
+		select distinct * from role_module_binding where 1=1
+			and role_id in (
+				{{range $i, $v := .}}
+					{{if eq $i 0}} '{{$v.RoleId}}' {{else}} ,'{{$v.RoleId}}' {{end}}
+				{{end}}
+			)
+		`, roleList,
+	)
+	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	query = strutil.SimplifyString(query)
+	logger.Infof(ctx, "query: %s", query)
+
+	var roleModuleList []db_spec.RoleModuleBinding
+	p.DB.Raw(query).Find(&roleModuleList)
+	if err := p.DB.Error; err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+	if len(roleModuleList) == 0 {
+		err := status.Errorf(codes.PermissionDenied, "no nodule")
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	// 3. query ModuleApiList
+	query, err = template.Render(`
+		select distinct * from module_api where 1=1
+			and module_id in (
+				{{range $i, $v := .}}
+					{{if eq $i 0}} '{{$v.ModuleId}}' {{else}} ,'{{$v.ModuleId}}' {{end}}
+				{{end}}
+			)
+		`, roleModuleList,
+	)
+	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	query = strutil.SimplifyString(query)
+	logger.Infof(ctx, "query: %s", query)
+
+	var moduleApiList []db_spec.ModuleApi
+	p.DB.Raw(query).Find(&moduleApiList)
+	if err := p.DB.Error; err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+	if len(moduleApiList) == 0 {
+		err := status.Errorf(codes.PermissionDenied, "no nodule api")
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	// can do
+	var canDoReuest = false
+	for _, v := range moduleApiList {
+		if v.Url == req.Url && v.UrlMethod == req.UrlMethod {
+			canDoReuest = true
+			break
 		}
 	}
-
-	logger.Infof(nil, "req.Url: %v", req.Url)
-
-	type DBCanDo struct {
-		Url       string
-		UrlMethod string
-	}
-
-	var query = sqlCanDo
-	var rows = []DBCanDo{}
-
-	err := p.DB.Raw(query, req.UserId, req.Url, req.UrlMethod).Scan(&rows).Error
-	if err != nil {
-		logger.Warnf(ctx, "%v", query)
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-	if len(rows) == 0 {
-		err := status.Errorf(codes.PermissionDenied, "disable")
+	if !canDoReuest {
+		err := status.Errorf(codes.PermissionDenied, "disabled")
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
@@ -92,12 +157,13 @@ func (p *Database) CanDo(ctx context.Context, req *pbam.CanDoRequest) (*pbam.Can
 		return nil, err
 	}
 	if ownerPath == "" {
-		//
+		logger.Warnf(ctx, "no ownerPath, req: %+v", req)
+		// ignore err
 	}
 
 	// get access path
 	accessPath, err := p.getAccessPathBy(ctx, req, ownerPath)
-	if len(rows) == 0 {
+	if err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
@@ -119,6 +185,7 @@ func (p *Database) getAccessPathBy(ctx context.Context, req *pbam.CanDoRequest, 
 		UrlMethod: req.UrlMethod,
 	})
 	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
 		return "", err
 	}
 
@@ -143,6 +210,7 @@ func (p *Database) getAccessPathBy(ctx context.Context, req *pbam.CanDoRequest, 
 func (p *Database) getOwnerPathByUserId(ctx context.Context, userId string) (string, error) {
 	conn, err := grpc.Dial(fmt.Sprintf("%s:%d", p.cfg.ImHost, p.cfg.ImPort), grpc.WithInsecure())
 	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
 		return "", err
 	}
 	defer conn.Close()
@@ -150,13 +218,13 @@ func (p *Database) getOwnerPathByUserId(ctx context.Context, userId string) (str
 	client := pbim.NewAccountManagerClient(conn)
 	reply, err := client.GetGroupsByUserId(ctx, &pbim.UserId{UserId: userId})
 	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
 		return "", err
 	}
 
-	logger.Infof(ctx, "getOwnerPathByUserId: %v", reply.GetValue())
-
 	// no group
 	if len(reply.Value) == 0 {
+		logger.Warnf(ctx, "no group")
 		return "", nil
 	}
 
