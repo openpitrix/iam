@@ -303,22 +303,3 @@ func (p *Database) DescribeUsersWithRole(ctx context.Context, req *pbam.Describe
 
 	return reply, nil
 }
-
-func (p *Database) getUserList(ctx context.Context, uid ...string) ([]*pbim.User, error) {
-	logger.Infof(ctx, funcutil.CallerName(1))
-
-	conn, err := grpc.Dial(fmt.Sprintf("%s:%d", p.cfg.ImHost, p.cfg.ImPort), grpc.WithInsecure())
-	if err != nil {
-		return nil, err
-	}
-	defer conn.Close()
-
-	client := pbim.NewAccountManagerClient(conn)
-	reply, err := client.ListUsers(ctx, &pbim.ListUsersRequest{UserId: uid})
-	if err != nil {
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-
-	return reply.User, nil
-}
