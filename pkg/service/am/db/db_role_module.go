@@ -100,7 +100,6 @@ func (p *Database) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (
 			DataLevel:  mod.DataLevel,
 			CreateTime: time.Now(),
 			UpdateTime: time.Now(),
-			Owner:      mod.Owner,
 			IsCheckAll: p.btoi(mod.IsCheckAll),
 		})
 		if err := tx.Error; err != nil {

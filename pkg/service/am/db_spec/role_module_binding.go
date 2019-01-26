@@ -13,8 +13,8 @@ type RoleModuleBinding struct {
 	RoleId     string `gorm:"type:varchar(50);not null"`
 	ModuleId   string `gorm:"type:varchar(50);not null"`
 	DataLevel  string `gorm:"type:varchar(50);not null"`
+	IsCheckAll int    `gorm:"type:tinyint;not null"`
+
 	CreateTime time.Time
 	UpdateTime time.Time
-	Owner      string `gorm:"type:varchar(50);not null"`
-	IsCheckAll int    `gorm:"type:tinyint;not null"`
 }

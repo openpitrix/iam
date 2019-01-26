@@ -17,12 +17,13 @@ type Role struct {
 	RoleName    string `gorm:"type:varchar(200);not null"`
 	Description string `gorm:"type:varchar(200)"`
 	Portal      string `gorm:"type:varchar(50);not null"`
-	CreateTime  time.Time
-	UpdateTime  time.Time
-	StatusTime  time.Time
 	Owner       string `gorm:"type:varchar(50)"`
 	OwnerPath   string `gorm:"type:varchar(50)"`
 	Status      string `gorm:"type:varchar(10)"`
+
+	CreateTime time.Time
+	UpdateTime time.Time
+	StatusTime time.Time
 }
 
 func NewRoleFromPB(p *pbam.Role) *Role {
