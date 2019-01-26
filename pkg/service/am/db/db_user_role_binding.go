@@ -214,6 +214,6 @@ func (p *Database) getUserRoleBindList(ctx context.Context, userId, roleId []str
 		return
 	}
 
-	logger.Errorf(ctx, "unreachable, should be panic")
+	logger.Errorf(ctx, "unreachable, should panic")
 	return
 }

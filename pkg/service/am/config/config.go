@@ -69,9 +69,6 @@ type Config struct {
 	ImHost string `default:"openpitrix-im-service"`
 	ImPort int    `default:"9119"`
 
-	ImAdminUserId   string `default:"admin"`
-	ImAdminPassword string `default:"password"`
-
 	TlsEnabled  bool   `default:"false"`
 	TlsCertFile string `default:"server.cert"`
 	TlsKeyFile  string `default:"server.key"`

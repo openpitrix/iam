@@ -56,7 +56,7 @@ func (p *Database) getUserGroupBindList(ctx context.Context, userId, groupId []s
 		return
 	}
 
-	logger.Errorf(ctx, "unreachable, should be panic")
+	logger.Errorf(ctx, "unreachable, should panic")
 	return
 }
 

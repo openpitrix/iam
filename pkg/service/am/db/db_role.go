@@ -243,9 +243,9 @@ func (p *Database) DescribeRoles(ctx context.Context, req *pbam.DescribeRolesReq
 		return &pbam.RoleList{}, nil
 	}
 
-	// TODO: query user_id
+	// query user_id
 	query, err = template.Render(`
-		SELECT * FROM user_role_binding WHERE 1=0
+		SELECT DISTINCT * FROM user_role_binding WHERE 1=0
 			{{range $i, $v := .}}
 				OR role_id='{{$v.RoleId}}'
 			{{end}}

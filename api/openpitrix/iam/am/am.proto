@@ -262,11 +262,17 @@ message UserWithRole {
 }
 
 message DescribeUsersWithRoleRequest {
-	repeated string user_id = 1;
-	repeated string role_id = 2;
+	repeated string role_id = 1;
 
-	int32 limit = 3;
-	int32 offset = 4;
+	repeated string group_id = 2;
+	repeated string user_id = 3;
+	repeated string user_name = 4;
+	repeated string email = 5;
+	repeated string phone_number = 6;
+	repeated string status = 7;
+
+	int32 limit = 8;
+	int32 offset = 9;
 }
 
 message DescribeUsersWithRoleResponse {
