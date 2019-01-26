@@ -76,7 +76,7 @@ func (p *Database) CanDo(ctx context.Context, req *pbam.CanDoRequest) (*pbam.Can
 		return nil, err
 	}
 
-	// 2. query RoleModuleList
+	// 2. query RoleModuleBindingList
 	query, err = template.Render(`
 		select distinct * from role_module_binding where 1=1
 			and role_id in (
@@ -94,14 +94,14 @@ func (p *Database) CanDo(ctx context.Context, req *pbam.CanDoRequest) (*pbam.Can
 	query = strutil.SimplifyString(query)
 	logger.Infof(ctx, "query: %s", query)
 
-	var roleModuleList []db_spec.RoleModuleBinding
-	p.DB.Raw(query).Find(&roleModuleList)
+	var roleModuleBindList []db_spec.RoleModuleBinding
+	p.DB.Raw(query).Find(&roleModuleBindList)
 	if err := p.DB.Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
-	if len(roleModuleList) == 0 {
-		err := status.Errorf(codes.PermissionDenied, "no nodule")
+	if len(roleModuleBindList) == 0 {
+		err := status.Errorf(codes.PermissionDenied, "no module")
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
@@ -114,7 +114,12 @@ func (p *Database) CanDo(ctx context.Context, req *pbam.CanDoRequest) (*pbam.Can
 					{{if eq $i 0}} '{{$v.ModuleId}}' {{else}} ,'{{$v.ModuleId}}' {{end}}
 				{{end}}
 			)
-		`, roleModuleList,
+			and url_method='{{get_url_method}}'
+			and url='{{get_url}}'
+		`, roleModuleBindList, template.FuncMap{
+		"get_url_method": func() string { return req.Url },
+		"get_url":        func() string { return req.Url },
+	},
 	)
 	if err != nil {
 		logger.Warnf(ctx, "%+v", err)
@@ -136,23 +141,61 @@ func (p *Database) CanDo(ctx context.Context, req *pbam.CanDoRequest) (*pbam.Can
 		return nil, err
 	}
 
-	// can do
-	var canDoReuest = false
-	for _, v := range roleModuleList {
-		if v.IsCheckAll != 0 {
-			canDoReuest = true
+	// check all?
+	var isCheckAll = false
+	for _, v := range roleModuleBindList {
+		for _, moduleApi := range moduleApiList {
+			if moduleApi.ModuleId == v.ModuleId {
+				if v.IsCheckAll != 0 {
+					isCheckAll = true
+					break
+				}
+			}
+		}
+		if isCheckAll {
 			break
 		}
 	}
-	if !canDoReuest {
-		for _, v := range moduleApiList {
-			if v.Url == req.Url && v.UrlMethod == req.UrlMethod {
-				canDoReuest = true
-				break
-			}
+
+	// can do?
+	var canDoReuest = false
+	if isCheckAll {
+		canDoReuest = true
+	} else {
+		// query enable_action
+		query, err = template.Render(`
+			select distinct COUNT(*) from
+				enable_action, module_api
+			where 1=1
+				and enable_action.action_id=module_api.action_id
+				and enable_action.action_id in (
+					{{range $i, $v := .}}
+						{{if eq $i 0}} '{{$v.ActionId}}' {{else}} ,'{{$v.ActionId}}' {{end}}
+					{{end}}
+				)
+				LIMIT 1
+			`, moduleApiList,
+		)
+		if err != nil {
+			logger.Warnf(ctx, "%+v", err)
+			return nil, err
+		}
+
+		query = strutil.SimplifyString(query)
+		logger.Infof(ctx, "query: %s", query)
+
+		var total int
+		p.DB.Raw(query).Find(&total)
+		if err := p.DB.Error; err != nil {
+			logger.Warnf(ctx, "%+v", err)
+			return nil, err
+		}
+		if total > 0 {
+			canDoReuest = true
 		}
 	}
 
+	// disabled
 	if !canDoReuest {
 		err := status.Errorf(codes.PermissionDenied, "disabled")
 		logger.Warnf(ctx, "%+v", err)
@@ -160,7 +203,7 @@ func (p *Database) CanDo(ctx context.Context, req *pbam.CanDoRequest) (*pbam.Can
 	}
 
 	// get groupPath from IM server
-	groupPath, err := p.getGrouprPathByUserId(ctx, req.UserId)
+	groupPath, err := p.getShortestGroupPathByUserId(ctx, req.UserId)
 	if err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -170,53 +213,63 @@ func (p *Database) CanDo(ctx context.Context, req *pbam.CanDoRequest) (*pbam.Can
 		// ignore err
 	}
 
-	// get access path
-	accessPath, err := p.getAccessPathBy(ctx, req, groupPath)
-	if err != nil {
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
+	// get data_level
+	var (
+		dataLevel    string
+		allDataLevel []string
+	)
+	for _, api := range moduleApiList {
+		for _, moduleBind := range roleModuleBindList {
+			if api.ModuleId == moduleBind.ModuleId {
+				allDataLevel = append(allDataLevel, moduleBind.DataLevel)
+			}
+		}
+	}
+	if dataLevel == "" {
+		for _, s := range allDataLevel {
+			if s == db_spec.DataLevel_All {
+				dataLevel = db_spec.DataLevel_All
+				break
+			}
+		}
+	}
+	if dataLevel == "" {
+		for _, s := range allDataLevel {
+			if s == db_spec.DataLevel_Group {
+				dataLevel = db_spec.DataLevel_Group
+				break
+			}
+		}
+	}
+	if dataLevel == "" {
+		dataLevel = db_spec.DataLevel_Self
 	}
 
+	// get access path
+	var accessPath string
+	switch dataLevel {
+	case db_spec.DataLevel_All:
+		accessPath = "" // all path
+	case db_spec.DataLevel_Group:
+		accessPath = groupPath
+	case db_spec.DataLevel_Self:
+		accessPath = groupPath + ":" + req.UserId
+	default:
+		logger.Warnf(ctx, "unreachable, should panic")
+		accessPath = "???"
+	}
+
+	// Done
 	reply := &pbam.CanDoResponse{
 		UserId:     req.UserId,
-		OwnerPath:  groupPath + ":" + req.UserId, // todo: portal: group or +uid
+		OwnerPath:  groupPath + ":" + req.UserId,
 		AccessPath: accessPath,
 	}
 
 	return reply, nil
 }
 
-func (p *Database) getAccessPathBy(ctx context.Context, req *pbam.CanDoRequest, ownerPath string) (string, error) {
-	query, err := template.Render(sqlGetAccessPath_tmpl, &sqlGetAccessPath_args{
-		UserId:    req.UserId,
-		OwnerPath: ownerPath,
-		Url:       req.Url,
-		UrlMethod: req.UrlMethod,
-	})
-	if err != nil {
-		logger.Warnf(ctx, "%+v", err)
-		return "", err
-	}
-
-	type Result struct {
-		AccessPath string
-	}
-	var rows []Result
-
-	err = p.DB.Raw(query).Scan(&rows).Error
-	if err != nil {
-		logger.Warnf(ctx, "%v", query)
-		logger.Warnf(ctx, "%+v", err)
-		return "", err
-	}
-	if len(rows) == 0 {
-		return "", nil
-	}
-
-	return rows[0].AccessPath, nil
-}
-
-func (p *Database) getGrouprPathByUserId(ctx context.Context, userId string) (string, error) {
+func (p *Database) getShortestGroupPathByUserId(ctx context.Context, userId string) (string, error) {
 	conn, err := grpc.Dial(fmt.Sprintf("%s:%d", p.cfg.ImHost, p.cfg.ImPort), grpc.WithInsecure())
 	if err != nil {
 		logger.Warnf(ctx, "%+v", err)
