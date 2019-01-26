@@ -138,31 +138,40 @@ func (p *Database) CanDo(ctx context.Context, req *pbam.CanDoRequest) (*pbam.Can
 
 	// can do
 	var canDoReuest = false
-	for _, v := range moduleApiList {
-		if v.Url == req.Url && v.UrlMethod == req.UrlMethod {
+	for _, v := range roleModuleList {
+		if v.IsCheckAll != 0 {
 			canDoReuest = true
 			break
 		}
 	}
+	if !canDoReuest {
+		for _, v := range moduleApiList {
+			if v.Url == req.Url && v.UrlMethod == req.UrlMethod {
+				canDoReuest = true
+				break
+			}
+		}
+	}
+
 	if !canDoReuest {
 		err := status.Errorf(codes.PermissionDenied, "disabled")
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
-	// get owner path from IM server
-	ownerPath, err := p.getOwnerPathByUserId(ctx, req.UserId)
+	// get groupPath from IM server
+	groupPath, err := p.getGrouprPathByUserId(ctx, req.UserId)
 	if err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
-	if ownerPath == "" {
-		logger.Warnf(ctx, "no ownerPath, req: %+v", req)
+	if groupPath == "" {
+		logger.Warnf(ctx, "no group, req: %+v", req)
 		// ignore err
 	}
 
 	// get access path
-	accessPath, err := p.getAccessPathBy(ctx, req, ownerPath)
+	accessPath, err := p.getAccessPathBy(ctx, req, groupPath)
 	if err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
@@ -170,7 +179,7 @@ func (p *Database) CanDo(ctx context.Context, req *pbam.CanDoRequest) (*pbam.Can
 
 	reply := &pbam.CanDoResponse{
 		UserId:     req.UserId,
-		OwnerPath:  ownerPath,
+		OwnerPath:  groupPath + ":" + req.UserId, // todo: portal: group or +uid
 		AccessPath: accessPath,
 	}
 
@@ -207,7 +216,7 @@ func (p *Database) getAccessPathBy(ctx context.Context, req *pbam.CanDoRequest, 
 	return rows[0].AccessPath, nil
 }
 
-func (p *Database) getOwnerPathByUserId(ctx context.Context, userId string) (string, error) {
+func (p *Database) getGrouprPathByUserId(ctx context.Context, userId string) (string, error) {
 	conn, err := grpc.Dial(fmt.Sprintf("%s:%d", p.cfg.ImHost, p.cfg.ImPort), grpc.WithInsecure())
 	if err != nil {
 		logger.Warnf(ctx, "%+v", err)
