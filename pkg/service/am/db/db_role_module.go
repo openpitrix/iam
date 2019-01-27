@@ -20,14 +20,6 @@ import (
 	"openpitrix.io/logger"
 )
 
-func (p *Database) btoi(v bool) int {
-	if v {
-		return 1
-	} else {
-		return 0
-	}
-}
-
 func (p *Database) GetRoleModule(ctx context.Context, req *pbam.RoleId) (*pbam.RoleModule, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
@@ -100,7 +92,13 @@ func (p *Database) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (
 			DataLevel:  mod.DataLevel,
 			CreateTime: time.Now(),
 			UpdateTime: time.Now(),
-			IsCheckAll: p.btoi(mod.IsCheckAll),
+			IsCheckAll: func() int {
+				if mod.IsCheckAll {
+					return 1
+				} else {
+					return 0
+				}
+			}(),
 		})
 		if err := tx.Error; err != nil {
 			tx.Rollback()
