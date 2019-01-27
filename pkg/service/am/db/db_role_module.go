@@ -92,15 +92,15 @@ func (p *Database) GetRoleModule(ctx context.Context, req *pbam.RoleId) (*pbam.R
 
 	// 3. query enableActionList
 	query, err = template.Render(`
-			select distinct enable_action.* from
-				enable_action, role_module_binding, module_api
-			where 1=1
-				and enable_action.bind_id=role_module_binding.bind_id
-				and enable_action.action_id=module_api.action_id
-				and module_api.module_id=role_module_binding.module_id
+		select distinct enable_action.* from
+			enable_action, role_module_binding, module_api
+		where 1=1
+			and enable_action.bind_id=role_module_binding.bind_id
+			and enable_action.action_id=module_api.action_id
+			and module_api.module_id=role_module_binding.module_id
 
-				and role_module_binding.role_id='{{.RoleId}}'
-			`,
+			and role_module_binding.role_id='{{.RoleId}}'
+		`,
 		req,
 	)
 	if err != nil {
