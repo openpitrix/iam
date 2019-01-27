@@ -77,6 +77,11 @@ func (p *Database) buildRoleModuleTree(
 		sort.Slice(m.Feature, func(i, j int) bool {
 			return m.Feature[i].FeatureId < m.Feature[j].FeatureId
 		})
+		for _, bind := range roleModuleBindList {
+			if m.ModuleId == bind.ModuleId && bind.RoleId == role.RoleId {
+				m.IsCheckAll = bind.IsCheckAll != 0
+			}
+		}
 	}
 
 	// module map => role module

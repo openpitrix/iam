@@ -183,7 +183,7 @@ func (p *Database) GetGroupsByUserId(ctx context.Context, req *pbim.UserId) (*pb
 			user.user_id=?
 	`
 	var rows []db_spec.UserGroup
-	p.DB.Raw(sql, sql, req.UserId).Scan(&rows)
+	p.DB.Raw(sql, req.UserId).Scan(&rows)
 	if err := p.DB.Error; err != nil {
 		logger.Warnf(ctx, "%v", sql)
 		logger.Warnf(ctx, "%+v", err)
@@ -215,7 +215,7 @@ func (p *Database) GetUsersByGroupId(ctx context.Context, req *pbim.GroupId) (*p
 			user_group.group_id=?
 	`
 	var rows []db_spec.User
-	p.DB.Raw(sql, sql, req.GroupId).Scan(&rows)
+	p.DB.Raw(sql, req.GroupId).Scan(&rows)
 	if err := p.DB.Error; err != nil {
 		logger.Warnf(ctx, "%v", sql)
 		logger.Warnf(ctx, "%+v", err)
