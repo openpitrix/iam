@@ -136,74 +136,110 @@ func (p *Database) GetRoleModule(ctx context.Context, req *pbam.RoleId) (*pbam.R
 func (p *Database) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (*pbam.RoleModule, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	var moduleIdList = func() []string {
-		var ss []string
-		for _, mod := range req.Module {
-			ss = append(ss, mod.ModuleId)
-		}
-		return ss
-	}()
-
-	tx := p.DB.Begin()
-
-	tx.Raw(
-		`delete from role_module_binding where role_id=? and module_id in (?)`,
-		req.RoleId, moduleIdList,
-	)
-	if err := tx.Error; err != nil {
-		tx.Rollback()
+	// check role_id
+	if !validator.IsValidId(req.RoleId) {
+		err := status.Errorf(codes.InvalidArgument, "invalid RoleId: %v", req.RoleId)
+		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
+	if len(req.Module) == 0 {
+		return req, nil
+	}
 
-	for _, mod := range req.Module {
-		tx.Raw(template.MustRender(
-			`delete from enable_action where bind_id in (
-				select bind_id from role_module_binding where
-					role_id='{{.RoleId}}' and module_id='{{.ModuleId}}'
-			);`,
-			struct{ RoleId, ModuleId string }{
-				RoleId:   req.RoleId,
-				ModuleId: mod.ModuleId,
+	// get RoleModuleBindingList
+	var roleModuleBindingList []db_spec.RoleModuleBinding
+	for _, v := range req.Module {
+		var isCheckAll = 0
+		if v.IsCheckAll {
+			isCheckAll = 1
+		}
+		roleModuleBindingList = append(
+			roleModuleBindingList,
+			db_spec.RoleModuleBinding{
+				BindId:     idpkg.GenId("xid-"),
+				RoleId:     req.RoleId,
+				ModuleId:   v.ModuleId,
+				DataLevel:  v.DataLevel,
+				IsCheckAll: isCheckAll,
+				CreateTime: time.Now(), // todo: query from DB
+				UpdateTime: time.Now(),
 			},
-		))
-		if err := tx.Error; err != nil {
-			tx.Rollback()
-			return nil, err
-		}
+		)
+	}
 
-		bindId := idpkg.GenId("bind-")
-		tx.NewRecord(db_spec.RoleModuleBinding{
-			BindId:     bindId,
-			RoleId:     req.RoleId,
-			ModuleId:   mod.ModuleId,
-			DataLevel:  mod.DataLevel,
-			CreateTime: time.Now(),
-			UpdateTime: time.Now(),
-			IsCheckAll: func() int {
-				if mod.IsCheckAll {
-					return 1
-				} else {
-					return 0
-				}
-			}(),
-		})
-		if err := tx.Error; err != nil {
-			tx.Rollback()
-			return nil, err
-		}
-
-		// for chekced actions
-		for _, feature := range mod.Feature {
+	// get EnableActionList
+	var (
+		enableActionList       []db_spec.EnableAction
+		enableActionBindIdList []string
+	)
+	for i, module := range req.Module {
+		for _, feature := range module.Feature {
 			for _, action := range feature.Action {
-				tx.NewRecord(db_spec.EnableAction{
-					EnableId: idpkg.GenId("id-"),
-					BindId:   bindId,
-					ActionId: action.ActionId,
-				})
-				if err := tx.Error; err != nil {
-					tx.Rollback()
-					return nil, err
+				if action.ActionEnabled {
+					enableActionList = append(
+						enableActionList,
+						db_spec.EnableAction{
+							EnableId: idpkg.GenId("xid-"),
+							BindId:   roleModuleBindingList[i].BindId,
+							ActionId: action.ActionId,
+						},
+					)
+					enableActionBindIdList = append(
+						enableActionBindIdList,
+						roleModuleBindingList[i].BindId,
+					)
 				}
+			}
+		}
+	}
+
+	// TODO: check all ModuleId exists
+	// TODO: check all ActionId exists
+
+	tx := p.DB.Begin()
+	{
+		// delete old RoleModuleBindingList
+		for _, v := range roleModuleBindingList {
+			tx.Raw(
+				`DELETE from role_module_binding where role_id=? and module_id=?`,
+				req.RoleId, v.ModuleId,
+			)
+			if err := tx.Error; err != nil {
+				tx.Rollback()
+				logger.Warnf(ctx, "%+v", err)
+				return nil, err
+			}
+		}
+
+		// delete old EnableActionList
+		for i, v := range enableActionList {
+			tx.Raw(
+				`DELETE from enable_action where bind_id=? and action_id=?`,
+				enableActionBindIdList[i], v.ActionId,
+			)
+			if err := tx.Error; err != nil {
+				tx.Rollback()
+				logger.Warnf(ctx, "%+v", err)
+				return nil, err
+			}
+		}
+
+		// insert new RoleModuleBindingList
+		for _, v := range roleModuleBindingList {
+			tx.NewRecord(v)
+			if err := tx.Error; err != nil {
+				tx.Rollback()
+				logger.Warnf(ctx, "%+v", err)
+				return nil, err
+			}
+		}
+		// insert new EnableActionList
+		for _, v := range enableActionList {
+			tx.NewRecord(v)
+			if err := tx.Error; err != nil {
+				tx.Rollback()
+				logger.Warnf(ctx, "%+v", err)
+				return nil, err
 			}
 		}
 	}
