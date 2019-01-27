@@ -450,9 +450,6 @@
         "owner": {
           "type": "string"
         },
-        "is_check_all": {
-          "type": "string"
-        },
         "feature_id": {
           "type": "string"
         },
@@ -466,7 +463,8 @@
           "type": "string"
         },
         "action_enabled": {
-          "type": "string"
+          "type": "boolean",
+          "format": "boolean"
         },
         "api_id": {
           "type": "string"

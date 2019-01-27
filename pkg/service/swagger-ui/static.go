@@ -681,9 +681,6 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "owner": {
           "type": "string"
         },
-        "is_check_all": {
-          "type": "string"
-        },
         "feature_id": {
           "type": "string"
         },
@@ -697,7 +694,8 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
           "type": "string"
         },
         "action_enabled": {
-          "type": "string"
+          "type": "boolean",
+          "format": "boolean"
         },
         "api_id": {
           "type": "string"

@@ -200,15 +200,14 @@ message Action {
 	string module_id = 4;
 	string module_name = 5;
 	string data_level = 6;
-	string owner = 20;
-	string is_check_all = 7;
+	string owner = 7;
 
 	string feature_id = 8;
 	string feature_name = 9;
 
 	string action_id = 10;
 	string action_name = 11;
-	string action_enabled = 12;
+	bool action_enabled = 12;
 
 	string api_id = 13;
 	string api_method = 14;

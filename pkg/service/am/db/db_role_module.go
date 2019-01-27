@@ -32,6 +32,13 @@ func (p *Database) GetRoleModule(ctx context.Context, req *pbam.RoleId) (*pbam.R
 		return nil, err
 	}
 
+	// 0. get role
+	var role = &db_spec.Role{RoleId: req.RoleId}
+	if err := p.DB.Model(db_spec.Role{}).Take(role).Error; err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
 	// 1. query roleModuleBindList
 	query, err := template.Render(`
 		select distinct * from role_module_binding where 1=1
@@ -119,22 +126,11 @@ func (p *Database) GetRoleModule(ctx context.Context, req *pbam.RoleId) (*pbam.R
 	}
 
 	// 4. build module tree
-	return p.buildRoleModuleTree(ctx, req,
+	return p.buildRoleModuleTree(ctx, role,
 		roleModuleBindList,
 		moduleApiList,
 		enableActionList,
 	)
-}
-
-func (p *Database) buildRoleModuleTree(
-	ctx context.Context, req *pbam.RoleId,
-	roleModuleBindList []db_spec.RoleModuleBinding,
-	moduleApiList []db_spec.ModuleApi,
-	enableActionList []db_spec.EnableAction,
-) (*pbam.RoleModule, error) {
-	err := status.Errorf(codes.Unimplemented, "TODO")
-	logger.Warnf(ctx, "%+v", err)
-	return nil, err
 }
 
 func (p *Database) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (*pbam.RoleModule, error) {
