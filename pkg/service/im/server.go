@@ -19,7 +19,13 @@ type Server struct {
 func OpenServer(cfg *config.Config) (*Server, error) {
 	cfg = cfg.Clone()
 
-	db, err := db.OpenDatabase(cfg, nil)
+	dbInitOpt := &db.Options{}
+
+	dbInitOpt.SqlInitDB = append(dbInitOpt.SqlInitDB, cfg.DB.InitDB.SqlInitDB...)
+	dbInitOpt.SqlInitTable = append(dbInitOpt.SqlInitTable, cfg.DB.InitDB.SqlInitTable...)
+	dbInitOpt.SqlInitData = append(dbInitOpt.SqlInitData, cfg.DB.InitDB.SqlInitData...)
+
+	db, err := db.OpenDatabase(cfg, dbInitOpt)
 	if err != nil {
 		logger.Criticalf(nil, "%v", err)
 	}

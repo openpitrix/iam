@@ -75,6 +75,14 @@ type DBConfig struct {
 	User     string `default:"root"`
 	Password string `default:"password"`
 	Database string `default:"im"`
+
+	InitDB DBInitSQL
+}
+
+type DBInitSQL struct {
+	SqlInitDB    []string
+	SqlInitTable []string
+	SqlInitData  []string
 }
 
 func (m *Config) Clone() *Config {

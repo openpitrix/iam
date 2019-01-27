@@ -20,11 +20,12 @@ type Server struct {
 func OpenServer(cfg *config.Config) (*Server, error) {
 	cfg = cfg.Clone()
 
-	dbInitOpt := &db.Options{
-		SqlInitData: []string{
-			static.Files["V0_1__init.sql"],
-		},
-	}
+	dbInitOpt := &db.Options{}
+	dbInitOpt.SqlInitDB = append(dbInitOpt.SqlInitDB, static.Files["V0_1__init.sql"])
+
+	dbInitOpt.SqlInitDB = append(dbInitOpt.SqlInitDB, cfg.DB.InitDB.SqlInitDB...)
+	dbInitOpt.SqlInitTable = append(dbInitOpt.SqlInitTable, cfg.DB.InitDB.SqlInitTable...)
+	dbInitOpt.SqlInitData = append(dbInitOpt.SqlInitData, cfg.DB.InitDB.SqlInitData...)
 
 	db, err := db.OpenDatabase(cfg, dbInitOpt)
 	if err != nil {
