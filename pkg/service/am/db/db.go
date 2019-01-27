@@ -48,7 +48,7 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 
 		_, err = db.Exec(query)
 		if err != nil {
-			logger.Warnf(nil, "query = %s, err = %v", query, err)
+			logger.Warnf(nil, "query = %q, err = %v", query, err)
 		}
 
 		// init hook
@@ -64,6 +64,7 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 						continue
 					}
 					if _, err := db.Exec(sql); err != nil {
+						logger.Warnf(nil, "query = %q, err = %v", query, err)
 						lastInitErr = err
 					}
 				}
@@ -87,11 +88,20 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 
 	p.DB, err = gorm.Open(cfg.DB.Type, cfg.DB.GetUrl())
 	if err != nil {
+		logger.Warnf(nil, "%+v", err)
 		return nil, err
 	}
+	logger.Infof(nil, "DB: open %q ok", cfg.DB.GetUrl())
 
+	logger.Infof(nil, "DB: SingularTable true")
 	p.DB.SingularTable(true)
+
+	logger.Infof(nil, "DB: Set gorm:table_options: ENGINE=InnoDB DEFAULT CHARSET=utf8")
 	p.DB.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8")
+	if err != nil {
+		logger.Warnf(nil, "%+v", err)
+		return nil, err
+	}
 
 	// init hook
 	if opt != nil && len(opt.SqlInitTable) > 0 {
@@ -106,6 +116,7 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 					continue
 				}
 				if err := p.DB.Exec(sql).Error; err != nil {
+					logger.Warnf(nil, "query = %q, err = %v", sql, err)
 					lastInitErr = err
 				}
 			}
@@ -130,6 +141,7 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 						continue
 					}
 					if err := p.DB.Exec(sql).Error; err != nil {
+						logger.Warnf(nil, "query = %q, err = %v", sql, err)
 						lastInitErr = err
 					}
 				}
@@ -174,6 +186,10 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 
 func (p *Database) checkDbHasRecords() bool {
 	for _, name := range db_spec.TableNameList {
+		if !p.DB.HasTable(name) {
+			continue
+		}
+
 		var total int
 		p.DB.Raw(fmt.Sprintf("select COUNT(*) from %s limit 1", name)).Count(&total)
 		if err := p.DB.Error; err != nil {

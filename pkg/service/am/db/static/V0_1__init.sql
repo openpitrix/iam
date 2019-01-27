@@ -115,7 +115,7 @@ create table if not exists `user_role_binding`
 	PRIMARY KEY(id)
 );
 
-INSERT INTO am.module_api (api_id,module_id,module_name,feature_id,feature_name,action_id,action_name,api_method,api_description,url_method,url) VALUES
+INSERT INTO module_api (api_id,module_id,module_name,feature_id,feature_name,action_id,action_name,api_method,api_description,url_method,url) VALUES
 ('api_0001','m_0001','商店管理','f_0001','应用管理','a_0001','查看全部应用','DescribeApps','','get','/v1/apps')
 ,('api_0002','m_0001','商店管理','f_0001','应用管理','a_0001','查看全部应用','GetAppStatistics','','get','/v1/apps/statistics')
 ,('api_0003','m_0001','商店管理','f_0001','应用管理','a_0001','查看全部应用','DescribeActiveApps','','get','/v1/active_apps')
@@ -128,7 +128,7 @@ INSERT INTO am.module_api (api_id,module_id,module_name,feature_id,feature_name,
 ,('api_0010','m_0001','商店管理','f_0001','应用管理','a_0002','创建应用','CreateAppVersion','','post','/v1/app_versions')
 ;
 
-INSERT INTO am.module_api (api_id,module_id,module_name,feature_id,feature_name,action_id,action_name,api_method,api_description,url_method,url) VALUES
+INSERT INTO module_api (api_id,module_id,module_name,feature_id,feature_name,action_id,action_name,api_method,api_description,url_method,url) VALUES
 ('api_0011','m_0001','商店管理','f_0001','应用管理','a_0003','修改应用','ModifyApp','','patch','/v1/apps')
 ,('api_0012','m_0001','商店管理','f_0001','应用管理','a_0003','修改应用','UploadAppAttachment','','patch','/v1/app/attachment')
 ,('api_0013','m_0001','商店管理','f_0001','应用管理','a_0003','修改应用','ModifyAppVersion','','patch','/v1/app_versions')
@@ -141,7 +141,7 @@ INSERT INTO am.module_api (api_id,module_id,module_name,feature_id,feature_name,
 ,('api_0020','m_0001','商店管理','f_0002','应用审核','a_0009','审核通过','PassAppVersion','','post','/v1/app_version/action/{role}/pass')
 ;
 
-INSERT INTO am.module_api (api_id,module_id,module_name,feature_id,feature_name,action_id,action_name,api_method,api_description,url_method,url) VALUES
+INSERT INTO module_api (api_id,module_id,module_name,feature_id,feature_name,action_id,action_name,api_method,api_description,url_method,url) VALUES
 ('api_0021','m_0001','商店管理','f_0002','应用审核','a_0010','审核拒绝','RejectAppVersion','','post','/v1/app_version/action/{role}/reject')
 ,('api_0022','m_0001','商店管理','f_0003','应用分类','a_0011','查看全部分类','DescribeCategories','','get','/v1/categories')
 ,('api_0023','m_0001','商店管理','f_0003','应用分类','a_0012','创建分类','CreateCategory','','post','/v1/categories')
@@ -154,7 +154,7 @@ INSERT INTO am.module_api (api_id,module_id,module_name,feature_id,feature_name,
 ,('api_0030','m_0002','个人中心','f_0004','ssh key 管理','a_0019','解绑ssh key','DetachKeyPairs','','post','/v1/clusters/key_pair/detach')
 ;
 
-INSERT INTO am.module_api (api_id,module_id,module_name,feature_id,feature_name,action_id,action_name,api_method,api_description,url_method,url) VALUES
+INSERT INTO module_api (api_id,module_id,module_name,feature_id,feature_name,action_id,action_name,api_method,api_description,url_method,url) VALUES
 ('api_0031','m_0003','我的实例','f_0005','应用实例管理','a_0020','创建应用实例','CreateCluster','','post','/v1/clusters/create')
 ,('api_0032','m_0003','我的实例','f_0005','应用实例管理','a_0021','创建应用实例','DescribeSubnets','','get','/v1/clusters/subnets')
 ,('api_0033','m_0003','我的实例','f_0005','应用实例管理','a_0022','修改应用实例','ModifyClusterAttributes','','post','/v1/clusters/modify')
@@ -167,7 +167,7 @@ INSERT INTO am.module_api (api_id,module_id,module_name,feature_id,feature_name,
 ,('api_0040','m_0003','我的实例','f_0005','应用实例管理','a_0027','横向伸缩应用实例','DeleteClusterNodes','','post','/v1/clusters/delete_nodes')
 ;
 
-INSERT INTO am.module_api (api_id,module_id,module_name,feature_id,feature_name,action_id,action_name,api_method,api_description,url_method,url) VALUES
+INSERT INTO module_api (api_id,module_id,module_name,feature_id,feature_name,action_id,action_name,api_method,api_description,url_method,url) VALUES
 ('api_0041','m_0003','我的实例','f_0005','应用实例管理','a_0028','更新环境变量','UpdateClusterEnv','','patch','/v1/clusters/update_env')
 ,('api_0042','m_0003','我的实例','f_0005','应用实例管理','a_0029','查看全部应用实例','DescribeClusters','','get','/v1/clusters')
 ,('api_0043','m_0003','我的实例','f_0005','应用实例管理','a_0029','查看全部应用实例','DescribeClusterNodes','','get','/v1/clusters/nodes')
@@ -180,7 +180,7 @@ INSERT INTO am.module_api (api_id,module_id,module_name,feature_id,feature_name,
 ,('api_0050','m_0004','账户与权限','f_0006','用户管理','a_0034','修改用户','ChangePassword','','post','/v1/users/password:change')
 ;
 
-INSERT INTO am.module_api (api_id,module_id,module_name,feature_id,feature_name,action_id,action_name,api_method,api_description,url_method,url) VALUES
+INSERT INTO module_api (api_id,module_id,module_name,feature_id,feature_name,action_id,action_name,api_method,api_description,url_method,url) VALUES
 ('api_0051','m_0004','账户与权限','f_0006','用户管理','a_0034','修改用户','CreatePasswordReset','','post','/v1/users/password:reset')
 ,('api_0052','m_0004','账户与权限','f_0006','用户管理','a_0034','修改用户','GetPasswordReset','','get','/v1/users/password/reset/{reset_id}')
 ,('api_0053','m_0004','账户与权限','f_0006','用户管理','a_0035','删除用户','DeleteUsers','','delete','/v1/users')
@@ -193,7 +193,7 @@ INSERT INTO am.module_api (api_id,module_id,module_name,feature_id,feature_name,
 ,('api_0060','m_0005','其它','f_0008','Job 管理','a_0042','查看全部Job','DescribeJobs','','get','/v1/jobs')
 ;
 
-INSERT INTO am.module_api (api_id,module_id,module_name,feature_id,feature_name,action_id,action_name,api_method,api_description,url_method,url) VALUES
+INSERT INTO module_api (api_id,module_id,module_name,feature_id,feature_name,action_id,action_name,api_method,api_description,url_method,url) VALUES
 ('api_0061','m_0006','其它','f_0009','Task 管理','a_0043','查看全部Task','DescribeTasks','','get','/v1/tasks')
 ,('api_0062','m_0006','其它','f_0009','Task 管理','a_0044','重试 Task','RetryTasks','','post','/v1/tasks/retry')
 ,('api_0063','m_0007','平台设置','f_0010','仓库管理','a_0045','创建仓库','CreateRepo','','post','/v1/repos')
@@ -206,7 +206,7 @@ INSERT INTO am.module_api (api_id,module_id,module_name,feature_id,feature_name,
 ,('api_0070','m_0008','我的环境/个人中心-测试环境','f_0011','环境管理','a_0051','创建环境','CreateRuntime','','post','/v1/runtimes')
 ;
 
-INSERT INTO am.module_api (api_id,module_id,module_name,feature_id,feature_name,action_id,action_name,api_method,api_description,url_method,url) VALUES
+INSERT INTO module_api (api_id,module_id,module_name,feature_id,feature_name,action_id,action_name,api_method,api_description,url_method,url) VALUES
 ('api_0071','m_0008','我的环境/个人中心-测试环境','f_0011','环境管理','a_0051','创建环境','DescribeRuntimeProviderZones','','get','/v1/runtimes/zones')
 ,('api_0072','m_0008','我的环境/个人中心-测试环境','f_0011','环境管理','a_0051','创建环境','GetRuntimeStatistics','','get','/v1/runtimes/statistics')
 ,('api_0073','m_0008','我的环境/个人中心-测试环境','f_0011','环境管理','a_0052','查看全部环境','DescribeRuntimes','','get','/v1/runtimes')
@@ -218,7 +218,7 @@ INSERT INTO am.module_api (api_id,module_id,module_name,feature_id,feature_name,
 ,('api_0079','m_0008','我的环境/个人中心-测试环境','f_0012','授权信息管理','a_0058','删除授权信息','DeleteRuntimeCredentials','','delete','/v1/runtimes/credentials')
 ,('api_0080','m_0009','申请成为服务商','f_0013','申请成为服务商','a_0059','提交服务商认证','SubmitVendorVerifyInfo','','post','/v1/app_vendors')
 ;
-INSERT INTO am.module_api (api_id,module_id,module_name,feature_id,feature_name,action_id,action_name,api_method,api_description,url_method,url) VALUES
+INSERT INTO module_api (api_id,module_id,module_name,feature_id,feature_name,action_id,action_name,api_method,api_description,url_method,url) VALUES
 ('api_0081','m_0009','申请成为服务商','f_0013','申请成为服务商','a_0059','提交服务商认证','UploadVendorVerifyAttachment','','patch','/v1/app_vendors/attachment')
 ,('api_0082','m_0010','应用服务商管理','f_0014','入驻申请','a_0060','通过服务商认证','PassVendorVerifyInfo','','post','/v1/app_vendors/pass')
 ,('api_0083','m_0010','应用服务商管理','f_0014','入驻申请','a_0061','拒绝服务商认证','RejectVendorVerifyInfo','','post','/v1/app_vendors/reject')
