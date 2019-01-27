@@ -14,6 +14,7 @@ import (
 
 	idpkg "openpitrix.io/iam/pkg/id"
 	"openpitrix.io/iam/pkg/internal/funcutil"
+	"openpitrix.io/iam/pkg/internal/strutil"
 	pbam "openpitrix.io/iam/pkg/pb/am"
 	"openpitrix.io/iam/pkg/service/am/db_spec"
 	"openpitrix.io/iam/pkg/validator"
@@ -23,27 +24,117 @@ import (
 func (p *Database) GetRoleModule(ctx context.Context, req *pbam.RoleId) (*pbam.RoleModule, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
+	req.RoleId = strutil.SimplifyString(req.RoleId)
+
 	if !validator.IsValidId(req.RoleId) {
 		err := status.Errorf(codes.InvalidArgument, "invalid role_id: %q", req.RoleId)
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
-	query, err := template.Render(sqlGetRoleModule_by_roleId, req)
+	// 1. query roleModuleBindList
+	query, err := template.Render(`
+		select distinct * from role_module_binding where 1=1
+			and role_id='{{.RoleId}}'
+		`,
+		req,
+	)
 	if err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
-	var rows = []ModuleApiInfo{}
-	if err := p.DB.Raw(query).Scan(&rows).Error; err != nil {
-		logger.Warnf(nil, "%v", query)
-		logger.Warnf(nil, "%+v", err)
+	query = strutil.SimplifyString(query)
+	logger.Infof(ctx, "query: %s", query)
+
+	var roleModuleBindList []db_spec.RoleModuleBinding
+	p.DB.Raw(query).Find(&roleModuleBindList)
+	if err := p.DB.Error; err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+	if len(roleModuleBindList) == 0 {
+		reply := &pbam.RoleModule{RoleId: req.RoleId}
+		return reply, nil
+	}
+
+	// 2. query moduleApiList
+	query, err = template.Render(`
+		select distinct
+			module_api.*
+		from
+			role_module_binding, module_api
+		where 1=1
+			and role_module_binding.module_id=module_api.module_id
+			and role_module_binding.role_id='{{.RoleId}}'
+		`,
+		req,
+	)
+	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
-	roleModuleMap := ModuleApiInfoList(rows).ToRoleModuleMap()
-	return roleModuleMap[req.RoleId], nil
+	query = strutil.SimplifyString(query)
+	logger.Infof(ctx, "query: %s", query)
+
+	var moduleApiList []db_spec.ModuleApi
+	p.DB.Raw(query).Find(&moduleApiList)
+	if err := p.DB.Error; err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+	if len(moduleApiList) == 0 {
+		logger.Warnf(ctx, "no module_api, req: %v", req)
+		reply := &pbam.RoleModule{RoleId: req.RoleId}
+		return reply, nil
+	}
+
+	// 3. query enableActionList
+	query, err = template.Render(`
+			select distinct enable_action.* from
+				enable_action, role_module_binding, module_api
+			where 1=1
+				and enable_action.bind_id=role_module_binding.bind_id
+				and enable_action.action_id=module_api.action_id
+				and module_api.module_id=role_module_binding.module_id
+
+				and role_module_binding.role_id='{{.RoleId}}'
+			`,
+		req,
+	)
+	if err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	query = strutil.SimplifyString(query)
+	logger.Infof(ctx, "query: %s", query)
+
+	var enableActionList []db_spec.EnableAction
+	p.DB.Raw(query).Find(&enableActionList)
+	if err := p.DB.Error; err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		return nil, err
+	}
+
+	// 4. build module tree
+	return p.buildRoleModuleTree(ctx, req,
+		roleModuleBindList,
+		moduleApiList,
+		enableActionList,
+	)
+}
+
+func (p *Database) buildRoleModuleTree(
+	ctx context.Context, req *pbam.RoleId,
+	roleModuleBindList []db_spec.RoleModuleBinding,
+	moduleApiList []db_spec.ModuleApi,
+	enableActionList []db_spec.EnableAction,
+) (*pbam.RoleModule, error) {
+	err := status.Errorf(codes.Unimplemented, "TODO")
+	logger.Warnf(ctx, "%+v", err)
+	return nil, err
 }
 
 func (p *Database) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (*pbam.RoleModule, error) {
@@ -128,38 +219,3 @@ func (p *Database) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (
 
 	return req, nil
 }
-
-const sqlGetRoleModule_by_roleId = `
-select distinct
-	'{{.RoleId}}' as role_id,
-	t.module_id,
-	t.module_name,
-	t.data_level,
-	t.owner,
-	(case when isnull(t.is_check_all)=0 then 1 else 0 end) as is_check_all,
-	t.feature_id,
-	t.feature_name,
-	t.action_id,
-	t.action_name ,
-	(case when isnull(tt.action_id)=0 then 1 else 0 end) as action_enabled
-FROM (
-		select distinct
-			t3.role_id,
-			t3.role_name,
-			t3.portal,
-			t1.module_id,
-			t1.module_name,
-			t2.data_level,
-			t2.is_check_all,
-			t1.feature_id,
-			t1.feature_name,
-			t1.action_id,
-			t1.action_name,
-			t2.bind_id
-		from module_api t1
-			left join role_module_binding t2 on t1.module_id=t2.module_id  and t2.role_id='{{.RoleId}}'
-		left join role t3 on t2.role_id=t3.role_id   and t3.role_id='{{.RoleId}}'
-	)t
-	left join enable_action tt on t.action_id=tt.action_id and t.bind_id=tt.bind_id
-order by t.action_id;
-`
