@@ -42,7 +42,7 @@ func (p *Database) GetUserWithRole(ctx context.Context, req *pbam.UserId) (*pbam
 	query, err := template.Render(`
 		SELECT DISTINCT role.* FROM role, user_role_binding WHERE 1=1
 			AND user_role_binding.role_id=role.role_id
-			AND user_role_binding.user_id={{.UserId}}
+			AND user_role_binding.user_id='{{.UserId}}'
 		`, imUser,
 	)
 	if err != nil {
@@ -248,7 +248,7 @@ func (p *Database) DescribeUsersWithRole(ctx context.Context, req *pbam.Describe
 			SELECT DISTINCT user_role_binding.user_id, role.* FROM role, user_role_binding WHERE 1=1
 				AND user_role_binding.role_id=role.role_id
 				AND user_role_binding.user_id in (
-					{{range $i, $v := range}}
+					{{range $i, $v := .}}
 						{{if eq $i 0}} '{{$v.UserId}}' {{else}} ,'{{$v.UserId}}' {{end}}
 					{{end}}
 				)

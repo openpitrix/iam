@@ -21,7 +21,7 @@ func OpenServer(cfg *config.Config) (*Server, error) {
 	cfg = cfg.Clone()
 
 	dbInitOpt := &db.Options{}
-	dbInitOpt.SqlInitDB = append(dbInitOpt.SqlInitDB, static.Files["V0_1__init.sql"])
+	dbInitOpt.SqlInitData = append(dbInitOpt.SqlInitData, static.Files["V0_1__init.sql"])
 
 	dbInitOpt.SqlInitDB = append(dbInitOpt.SqlInitDB, cfg.DB.InitDB.SqlInitDB...)
 	dbInitOpt.SqlInitTable = append(dbInitOpt.SqlInitTable, cfg.DB.InitDB.SqlInitTable...)
