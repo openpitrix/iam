@@ -78,13 +78,25 @@ func (p *Database) CanDo(ctx context.Context, req *pbam.CanDoRequest) (*pbam.Can
 
 	// 2. query RoleModuleBindingList
 	query, err = template.Render(`
-		select distinct * from role_module_binding where 1=1
+		select distinct
+			role_module_binding.*
+		from
+			role_module_binding, module_api
+		where 1=1
+			and role_module_binding.module_id=module_api.module_id
+			and module_api.url_method='{{get_url_method}}'
+			and module_api.url='{{get_url}}'
+
 			and role_id in (
 				{{range $i, $v := .}}
 					{{if eq $i 0}} '{{$v.RoleId}}' {{else}} ,'{{$v.RoleId}}' {{end}}
 				{{end}}
 			)
-		`, roleList,
+		`,
+		roleList, template.FuncMap{
+			"get_url_method": func() string { return req.UrlMethod },
+			"get_url":        func() string { return req.Url },
+		},
 	)
 	if err != nil {
 		logger.Warnf(ctx, "%+v", err)
@@ -106,75 +118,43 @@ func (p *Database) CanDo(ctx context.Context, req *pbam.CanDoRequest) (*pbam.Can
 		return nil, err
 	}
 
-	// 3. query ModuleApiList
-	query, err = template.Render(`
-		select distinct * from module_api where 1=1
-			and module_id in (
-				{{range $i, $v := .}}
-					{{if eq $i 0}} '{{$v.ModuleId}}' {{else}} ,'{{$v.ModuleId}}' {{end}}
-				{{end}}
-			)
-			and url_method='{{get_url_method}}'
-			and url='{{get_url}}'
-		`, roleModuleBindList, template.FuncMap{
-		"get_url_method": func() string { return req.Url },
-		"get_url":        func() string { return req.Url },
-	},
-	)
-	if err != nil {
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-
-	query = strutil.SimplifyString(query)
-	logger.Infof(ctx, "query: %s", query)
-
-	var moduleApiList []db_spec.ModuleApi
-	p.DB.Raw(query).Find(&moduleApiList)
-	if err := p.DB.Error; err != nil {
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-	if len(moduleApiList) == 0 {
-		err := status.Errorf(codes.PermissionDenied, "no nodule api")
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
-
 	// check all?
 	var isCheckAll = false
 	for _, v := range roleModuleBindList {
-		for _, moduleApi := range moduleApiList {
-			if moduleApi.ModuleId == v.ModuleId {
-				if v.IsCheckAll != 0 {
-					isCheckAll = true
-					break
-				}
-			}
-		}
-		if isCheckAll {
+		if v.IsCheckAll != 0 {
+			isCheckAll = true
 			break
 		}
 	}
 
 	// can do?
+	// 3. isCheckAll or query enable_action
 	var canDoReuest = false
 	if isCheckAll {
 		canDoReuest = true
 	} else {
-		// query enable_action
 		query, err = template.Render(`
-			select distinct COUNT(*) from
-				enable_action, module_api
+			select distinct enable_action.* from
+				enable_action, role_module_binding, module_api
 			where 1=1
+				and enable_action.bind_id=role_module_binding.bind_id
 				and enable_action.action_id=module_api.action_id
-				and enable_action.action_id in (
+				and module_api.module_id=role_module_binding.module_id
+
+				and role_module_binding.role_id in (
 					{{range $i, $v := .}}
-						{{if eq $i 0}} '{{$v.ActionId}}' {{else}} ,'{{$v.ActionId}}' {{end}}
+						{{if eq $i 0}} '{{$v.RoleId}}' {{else}} ,'{{$v.RoleId}}' {{end}}
 					{{end}}
 				)
+				and module_api.url_method='{{get_url_method}}'
+				and module_api.url='{{get_url}}'
+
 				LIMIT 1
-			`, moduleApiList,
+			`,
+			roleList, template.FuncMap{
+				"get_url_method": func() string { return req.UrlMethod },
+				"get_url":        func() string { return req.Url },
+			},
 		)
 		if err != nil {
 			logger.Warnf(ctx, "%+v", err)
@@ -184,13 +164,13 @@ func (p *Database) CanDo(ctx context.Context, req *pbam.CanDoRequest) (*pbam.Can
 		query = strutil.SimplifyString(query)
 		logger.Infof(ctx, "query: %s", query)
 
-		var total int
-		p.DB.Raw(query).Find(&total)
+		var enableActionList []db_spec.EnableAction
+		p.DB.Raw(query).Find(&enableActionList)
 		if err := p.DB.Error; err != nil {
 			logger.Warnf(ctx, "%+v", err)
 			return nil, err
 		}
-		if total > 0 {
+		if len(enableActionList) > 0 {
 			canDoReuest = true
 		}
 	}
@@ -214,28 +194,18 @@ func (p *Database) CanDo(ctx context.Context, req *pbam.CanDoRequest) (*pbam.Can
 	}
 
 	// get data_level
-	var (
-		dataLevel    string
-		allDataLevel []string
-	)
-	for _, api := range moduleApiList {
-		for _, moduleBind := range roleModuleBindList {
-			if api.ModuleId == moduleBind.ModuleId {
-				allDataLevel = append(allDataLevel, moduleBind.DataLevel)
-			}
-		}
-	}
+	var dataLevel string
 	if dataLevel == "" {
-		for _, s := range allDataLevel {
-			if s == db_spec.DataLevel_All {
+		for _, v := range roleModuleBindList {
+			if v.DataLevel == db_spec.DataLevel_All {
 				dataLevel = db_spec.DataLevel_All
 				break
 			}
 		}
 	}
 	if dataLevel == "" {
-		for _, s := range allDataLevel {
-			if s == db_spec.DataLevel_Group {
+		for _, v := range roleModuleBindList {
+			if v.DataLevel == db_spec.DataLevel_Group {
 				dataLevel = db_spec.DataLevel_Group
 				break
 			}
