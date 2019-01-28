@@ -62,7 +62,7 @@ func (p *Database) GetUserWithRole(ctx context.Context, req *pbam.UserId) (*pbam
 
 	user := &pbam.UserWithRole{
 		UserId:      imUser.UserId,
-		UserName:    imUser.UserName,
+		Username:    imUser.Username,
 		Email:       imUser.Email,
 		PhoneNumber: imUser.PhoneNumber,
 		Description: imUser.Description,
@@ -93,8 +93,8 @@ func (p *Database) DescribeUsersWithRole(ctx context.Context, req *pbam.Describe
 	if len(req.UserId) == 1 && strings.Contains(req.UserId[0], ",") {
 		req.UserId = strings.Split(req.UserId[0], ",")
 	}
-	if len(req.UserName) == 1 && strings.Contains(req.UserName[0], ",") {
-		req.UserName = strings.Split(req.UserName[0], ",")
+	if len(req.Username) == 1 && strings.Contains(req.Username[0], ",") {
+		req.Username = strings.Split(req.Username[0], ",")
 	}
 	if len(req.Email) == 1 && strings.Contains(req.Email[0], ",") {
 		req.Email = strings.Split(req.Email[0], ",")
@@ -109,7 +109,7 @@ func (p *Database) DescribeUsersWithRole(ctx context.Context, req *pbam.Describe
 	req.RoleId = strutil.SimplifyStringList(req.RoleId)
 	req.GroupId = strutil.SimplifyStringList(req.GroupId)
 	req.UserId = strutil.SimplifyStringList(req.UserId)
-	req.UserName = strutil.SimplifyStringList(req.UserName)
+	req.Username = strutil.SimplifyStringList(req.Username)
 	req.Email = strutil.SimplifyStringList(req.Email)
 	req.PhoneNumber = strutil.SimplifyStringList(req.PhoneNumber)
 	req.Status = strutil.SimplifyStringList(req.Status)
@@ -135,9 +135,9 @@ func (p *Database) DescribeUsersWithRole(ctx context.Context, req *pbam.Describe
 			return nil, err
 		}
 	}
-	if len(req.UserName) > 0 {
-		if !validator.IsValidName(req.UserName...) {
-			err := status.Errorf(codes.InvalidArgument, "invalid UserName: %v", req.UserName)
+	if len(req.Username) > 0 {
+		if !validator.IsValidName(req.Username...) {
+			err := status.Errorf(codes.InvalidArgument, "invalid UserName: %v", req.Username)
 			logger.Warnf(ctx, "%+v", err)
 			return nil, err
 		}
@@ -226,7 +226,7 @@ func (p *Database) DescribeUsersWithRole(ctx context.Context, req *pbam.Describe
 	imReply, err := client.ListUsers(ctx, &pbim.ListUsersRequest{
 		GroupId:     req.GroupId,
 		UserId:      req.UserId,
-		UserName:    req.UserName,
+		Username:    req.Username,
 		Email:       req.Email,
 		PhoneNumber: req.PhoneNumber,
 		Status:      req.Status,
@@ -276,7 +276,7 @@ func (p *Database) DescribeUsersWithRole(ctx context.Context, req *pbam.Describe
 	for _, imUser := range imUserList {
 		user := &pbam.UserWithRole{
 			UserId:      imUser.UserId,
-			UserName:    imUser.UserName,
+			Username:    imUser.Username,
 			Email:       imUser.Email,
 			PhoneNumber: imUser.PhoneNumber,
 			Description: imUser.Description,

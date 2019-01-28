@@ -329,7 +329,7 @@
             }
           },
           {
-            "name": "user_name",
+            "name": "username",
             "in": "query",
             "required": false,
             "type": "array",
@@ -707,7 +707,7 @@
         "user_id": {
           "type": "string"
         },
-        "user_name": {
+        "username": {
           "type": "string"
         },
         "email": {

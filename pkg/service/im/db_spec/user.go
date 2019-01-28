@@ -34,7 +34,7 @@ func NewUserFromPB(p *pbim.User) *User {
 	}
 	var q = &User{
 		UserId:      p.UserId,
-		UserName:    p.UserName,
+		UserName:    p.Username,
 		Email:       p.Email,
 		PhoneNumber: p.PhoneNumber,
 		Description: p.Description,
@@ -68,7 +68,7 @@ func (p *User) ToProtoMessage() (*pbim.User, error) {
 	}
 	var q = &pbim.User{
 		UserId:      p.UserId,
-		UserName:    p.UserName,
+		Username:    p.UserName,
 		Email:       p.Email,
 		PhoneNumber: p.PhoneNumber,
 		Description: p.Description,

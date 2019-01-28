@@ -17,7 +17,7 @@ import "google/protobuf/timestamp.proto";
 
 message User {
 	string user_id = 1; // regexp: ^[a-z0-9_-]{2,32}$, primary key
-	string user_name = 2;
+	string username = 2;
 	string email = 3;
 	string phone_number = 4;
 	string description = 5;
@@ -212,7 +212,7 @@ message ListUsersRequest {
 
 	repeated string group_id = 6;
 	repeated string user_id = 7;
-	repeated string user_name = 8;
+	repeated string username = 8;
 	repeated string email = 9;
 	repeated string phone_number = 10;
 	repeated string status = 11;

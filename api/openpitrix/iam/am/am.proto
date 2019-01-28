@@ -169,23 +169,11 @@ message DeleteRolesResponse {
 	repeated string role_id = 1;
 }
 
-message ModifyRoleRequest {
-	repeated Role role = 1;
-}
-message ModifyRoleResponse {
-	repeated Role role = 1;
-}
-
 message DescribeRolesRequest {
 	repeated string role_id = 1;
 	repeated string role_name = 2;
 	repeated string portal = 3;
 	repeated string user_id = 4;
-}
-message DescribeRolesVerboseRequest {
-	repeated string role_id = 1;
-	repeated string role_name = 2;
-	repeated string portal = 3;
 }
 
 // ----------------------------------------------------------------------------
@@ -245,7 +233,7 @@ message RoleModule {
 // keep same as openpitrix.iam.im.User
 message UserWithRole {
 	string user_id = 1; // regexp: ^[a-z0-9_-]{2,32}$, primary key
-	string user_name = 2;
+	string username = 2;
 	string email = 3;
 	string phone_number = 4;
 	string description = 5;
@@ -265,7 +253,7 @@ message DescribeUsersWithRoleRequest {
 
 	repeated string group_id = 2;
 	repeated string user_id = 3;
-	repeated string user_name = 4;
+	repeated string username = 4;
 	repeated string email = 5;
 	repeated string phone_number = 6;
 	repeated string status = 7;

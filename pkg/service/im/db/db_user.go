@@ -127,8 +127,8 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 	if len(req.UserId) == 1 && strings.Contains(req.UserId[0], ",") {
 		req.UserId = strings.Split(req.UserId[0], ",")
 	}
-	if len(req.UserName) == 1 && strings.Contains(req.UserName[0], ",") {
-		req.UserName = strings.Split(req.UserName[0], ",")
+	if len(req.Username) == 1 && strings.Contains(req.Username[0], ",") {
+		req.Username = strings.Split(req.Username[0], ",")
 	}
 	if len(req.Email) == 1 && strings.Contains(req.Email[0], ",") {
 		req.Email = strings.Split(req.Email[0], ",")
@@ -142,7 +142,7 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 
 	req.GroupId = strutil.SimplifyStringList(req.GroupId)
 	req.UserId = strutil.SimplifyStringList(req.UserId)
-	req.UserName = strutil.SimplifyStringList(req.UserName)
+	req.Username = strutil.SimplifyStringList(req.Username)
 	req.Email = strutil.SimplifyStringList(req.Email)
 	req.PhoneNumber = strutil.SimplifyStringList(req.PhoneNumber)
 	req.Status = strutil.SimplifyStringList(req.Status)
