@@ -229,9 +229,9 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 						{{end}}
 					)
 				{{end}}
-				{{if .UserName}}
+				{{if .Username}}
 					and user_name in (
-						{{range $i, $v := .UserName}}
+						{{range $i, $v := .Username}}
 							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
 						{{end}}
 					)
@@ -263,7 +263,7 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 						{{if not .UserId}}
 							OR user_id LIKE '%{{.SearchWord}}%'
 						{{end}}
-						{{if not .UserName}}
+						{{if not .Username}}
 							OR user_name LIKE '%{{.SearchWord}}%'
 						{{end}}
 						{{if not .Email}}
@@ -304,9 +304,9 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 						{{end}}
 					)
 				{{end}}
-				{{if .UserName}}
+				{{if .Username}}
 					and user.user_name in (
-						{{range $i, $v := .UserName}}
+						{{range $i, $v := .Username}}
 							{{if eq $i 0}} '{{$v}}' {{else}} ,'{{$v}}' {{end}}
 						{{end}}
 					)
@@ -339,7 +339,7 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 						{{if not .UserId}}
 							OR user.user_id LIKE '%{{.SearchWord}}%'
 						{{end}}
-						{{if not .UserName}}
+						{{if not .Username}}
 							OR user.user_name LIKE '%{{.SearchWord}}%'
 						{{end}}
 						{{if not .Email}}
