@@ -7,6 +7,7 @@ package db
 import (
 	"context"
 	"strings"
+	"time"
 
 	"github.com/chai2010/template"
 	"google.golang.org/grpc/codes"
@@ -34,9 +35,46 @@ func (p *Database) CreateRole(ctx context.Context, req *pbam.Role) (*pbam.Role, 
 		return nil, err
 	}
 
-	// create new record
-	if err := p.DB.Create(dbRole).Error; err != nil {
-		logger.Warnf(ctx, "%+v, %v", err, dbRole)
+	tx := p.DB.Begin()
+	{
+		// select modules by portal
+		var moduleApiList []db_spec.ModuleApi
+		if err := tx.Find(&moduleApiList).Error; err != nil {
+			logger.Warnf(ctx, "%+v, %v", err, dbRole)
+			return nil, err
+		}
+		var moduleIdMap = make(map[string]string)
+		for _, v := range moduleApiList {
+			moduleIdMap[v.ModuleId] = v.ModuleId
+		}
+
+		// create new record
+		if err := p.DB.Create(dbRole).Error; err != nil {
+			tx.Rollback()
+			logger.Warnf(ctx, "%+v, %v", err, dbRole)
+			return nil, err
+		}
+
+		// bind modules with no check
+		var now = time.Now()
+		for moduleId, _ := range moduleIdMap {
+			var dbRoleModuleBinding = &db_spec.RoleModuleBinding{
+				BindId:     idpkg.GenId("bind-"),
+				RoleId:     dbRole.RoleId,
+				ModuleId:   moduleId,
+				DataLevel:  "self",
+				CreateTime: now,
+				UpdateTime: now,
+			}
+			if err := p.DB.Create(dbRoleModuleBinding).Error; err != nil {
+				tx.Rollback()
+				logger.Warnf(ctx, "%+v, %v", err, dbRole)
+				return nil, err
+			}
+		}
+	}
+	if err := tx.Commit().Error; err != nil {
+		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
@@ -61,18 +99,21 @@ func (p *Database) DeleteRoles(ctx context.Context, req *pbam.RoleIdList) (*pbam
 		tx.Raw("delete from role where role_id in (?)", req.RoleId)
 		if err := tx.Error; err != nil {
 			tx.Rollback()
+			logger.Warnf(ctx, "%+v", err)
 			return nil, err
 		}
 
 		tx.Raw("delete from user_role_binding where role_id in (?)", req.RoleId)
 		if err := tx.Error; err != nil {
 			tx.Rollback()
+			logger.Warnf(ctx, "%+v", err)
 			return nil, err
 		}
 
 		tx.Raw("delete from role_module_binding where role_id in (?)", req.RoleId)
 		if err := tx.Error; err != nil {
 			tx.Rollback()
+			logger.Warnf(ctx, "%+v", err)
 			return nil, err
 		}
 	}
