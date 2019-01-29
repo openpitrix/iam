@@ -180,7 +180,7 @@ message DescribeRolesRequest {
 // RoleModule
 // ----------------------------------------------------------------------------
 
-message Action {
+message ModuleFeatureActionBundle {
 	string role_id = 1;
 	string role_name = 2;
 	string portal = 3;
@@ -205,17 +205,17 @@ message Action {
 	string url_method = 17;
 }
 
-message Feature {
+message ModuleFeature {
 	string feature_id = 1;
 	string feature_name = 2;
-	repeated Action action = 3;
+	repeated ModuleFeatureActionBundle action = 3;
 	repeated string checked_action_id = 4;
 }
 
-message Module {
+message RoleModuleElem {
 	string module_id = 1;
 	string module_name = 2;
-	repeated Feature feature = 3;
+	repeated ModuleFeature feature = 3;
 	string owner = 4;
 	string data_level = 5;
 	bool is_check_all = 6;
@@ -223,7 +223,7 @@ message Module {
 
 message RoleModule {
 	string role_id = 1;
-	repeated Module module = 2;
+	repeated RoleModuleElem module = 2;
 }
 
 // ----------------------------------------------------------------------------

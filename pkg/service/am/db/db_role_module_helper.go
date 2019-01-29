@@ -19,13 +19,13 @@ func (p *Database) buildRoleModuleTree(
 	enableActionList []db_spec.EnableAction,
 ) (*pbam.RoleModule, error) {
 	var (
-		featureMap = make(map[string]*pbam.Feature)
-		moduleMap  = make(map[string]*pbam.Module)
+		featureMap = make(map[string]*pbam.ModuleFeature)
+		moduleMap  = make(map[string]*pbam.RoleModuleElem)
 		roleModule = &pbam.RoleModule{RoleId: role.RoleId}
 	)
 
 	// 1. moduleApiList => actionList
-	var actionList []*pbam.Action
+	var actionList []*pbam.ModuleFeatureActionBundle
 	for _, v := range moduleApiList {
 		actionList = append(actionList,
 			p.buildActionFromModuleApi(
@@ -38,7 +38,7 @@ func (p *Database) buildRoleModuleTree(
 	for _, v := range actionList {
 		m := featureMap[v.FeatureId]
 		if m == nil {
-			m = new(pbam.Feature)
+			m = new(pbam.ModuleFeature)
 		}
 
 		m.FeatureId = v.FeatureId
@@ -62,7 +62,7 @@ func (p *Database) buildRoleModuleTree(
 
 		m := moduleMap[action.ModuleId]
 		if m == nil {
-			m = new(pbam.Module)
+			m = new(pbam.RoleModuleElem)
 		}
 
 		m.ModuleId = action.ModuleId
@@ -98,7 +98,7 @@ func (p *Database) buildActionFromModuleApi(
 	roleModuleBindList []db_spec.RoleModuleBinding,
 	enableActionList []db_spec.EnableAction,
 	role *db_spec.Role,
-) *pbam.Action {
+) *pbam.ModuleFeatureActionBundle {
 	var (
 		roleBind     db_spec.RoleModuleBinding
 		enableAction db_spec.EnableAction
@@ -116,7 +116,7 @@ func (p *Database) buildActionFromModuleApi(
 		}
 	}
 
-	q := &pbam.Action{
+	q := &pbam.ModuleFeatureActionBundle{
 		RoleId:         role.RoleId,
 		RoleName:       role.RoleName,
 		Portal:         role.Portal,

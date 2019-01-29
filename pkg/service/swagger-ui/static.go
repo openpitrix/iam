@@ -657,63 +657,6 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
     }
   },
   "definitions": {
-    "amAction": {
-      "type": "object",
-      "properties": {
-        "role_id": {
-          "type": "string"
-        },
-        "role_name": {
-          "type": "string"
-        },
-        "portal": {
-          "type": "string"
-        },
-        "module_id": {
-          "type": "string"
-        },
-        "module_name": {
-          "type": "string"
-        },
-        "data_level": {
-          "type": "string"
-        },
-        "owner": {
-          "type": "string"
-        },
-        "feature_id": {
-          "type": "string"
-        },
-        "feature_name": {
-          "type": "string"
-        },
-        "action_id": {
-          "type": "string"
-        },
-        "action_name": {
-          "type": "string"
-        },
-        "action_enabled": {
-          "type": "boolean",
-          "format": "boolean"
-        },
-        "api_id": {
-          "type": "string"
-        },
-        "api_method": {
-          "type": "string"
-        },
-        "api_description": {
-          "type": "string"
-        },
-        "url": {
-          "type": "string"
-        },
-        "url_method": {
-          "type": "string"
-        }
-      }
-    },
     "amBindUserRoleRequest": {
       "type": "object",
       "properties": {
@@ -777,7 +720,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
     "amEmpty": {
       "type": "object"
     },
-    "amFeature": {
+    "amModuleFeature": {
       "type": "object",
       "properties": {
         "feature_id": {
@@ -789,7 +732,7 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "action": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/amAction"
+            "$ref": "#/definitions/amModuleFeatureActionBundle"
           }
         },
         "checked_action_id": {
@@ -800,30 +743,60 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         }
       }
     },
-    "amModule": {
+    "amModuleFeatureActionBundle": {
       "type": "object",
       "properties": {
+        "role_id": {
+          "type": "string"
+        },
+        "role_name": {
+          "type": "string"
+        },
+        "portal": {
+          "type": "string"
+        },
         "module_id": {
           "type": "string"
         },
         "module_name": {
           "type": "string"
         },
-        "feature": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/amFeature"
-          }
+        "data_level": {
+          "type": "string"
         },
         "owner": {
           "type": "string"
         },
-        "data_level": {
+        "feature_id": {
           "type": "string"
         },
-        "is_check_all": {
+        "feature_name": {
+          "type": "string"
+        },
+        "action_id": {
+          "type": "string"
+        },
+        "action_name": {
+          "type": "string"
+        },
+        "action_enabled": {
           "type": "boolean",
           "format": "boolean"
+        },
+        "api_id": {
+          "type": "string"
+        },
+        "api_method": {
+          "type": "string"
+        },
+        "api_description": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "url_method": {
+          "type": "string"
         }
       }
     },
@@ -902,8 +875,35 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "module": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/amModule"
+            "$ref": "#/definitions/amRoleModuleElem"
           }
+        }
+      }
+    },
+    "amRoleModuleElem": {
+      "type": "object",
+      "properties": {
+        "module_id": {
+          "type": "string"
+        },
+        "module_name": {
+          "type": "string"
+        },
+        "feature": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/amModuleFeature"
+          }
+        },
+        "owner": {
+          "type": "string"
+        },
+        "data_level": {
+          "type": "string"
+        },
+        "is_check_all": {
+          "type": "boolean",
+          "format": "boolean"
         }
       }
     },
