@@ -168,10 +168,7 @@ func (p *Database) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (
 	}
 
 	// get EnableActionList
-	var (
-		enableActionList       []db_spec.EnableAction
-		enableActionBindIdList []string
-	)
+	var enableActionList []db_spec.EnableAction
 	for i, module := range req.Module {
 		for _, feature := range module.Feature {
 			for _, action := range feature.Action {
@@ -183,10 +180,6 @@ func (p *Database) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (
 							BindId:   roleModuleBindingList[i].BindId,
 							ActionId: action.ActionId,
 						},
-					)
-					enableActionBindIdList = append(
-						enableActionBindIdList,
-						roleModuleBindingList[i].BindId,
 					)
 				}
 			}
@@ -212,10 +205,10 @@ func (p *Database) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (
 		}
 
 		// delete old EnableActionList
-		for i, v := range enableActionList {
+		for _, v := range enableActionList {
 			tx.Raw(
 				`DELETE from enable_action where bind_id=? and action_id=?`,
-				enableActionBindIdList[i], v.ActionId,
+				v.BindId, v.ActionId,
 			)
 			if err := tx.Error; err != nil {
 				tx.Rollback()
