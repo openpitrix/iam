@@ -146,13 +146,27 @@ func (p *Database) ModifyRole(ctx context.Context, req *pbam.Role) (*pbam.Role, 
 func (p *Database) GetRole(ctx context.Context, req *pbam.RoleId) (*pbam.Role, error) {
 	logger.Infof(ctx, funcutil.CallerName(1))
 
-	var v = db_spec.Role{RoleId: req.RoleId}
-	if err := p.DB.Model(db_spec.Role{}).Take(&v).Error; err != nil {
+	var role = db_spec.Role{RoleId: req.RoleId}
+	if err := p.DB.Model(db_spec.Role{}).Take(&role).Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
 
-	return v.ToPB(), nil
+	// find users
+	var userRoleBindList []db_spec.UserRoleBinding
+	p.DB.Where(&db_spec.UserRoleBinding{RoleId: req.RoleId}).Find(&userRoleBindList)
+	if err := p.DB.Error; err != nil {
+		logger.Warnf(ctx, "%+v", err)
+		// ignore err
+	}
+
+	pbRole := role.ToPB()
+	for _, v := range userRoleBindList {
+		pbRole.UserId = append(pbRole.UserId, v.UserId)
+	}
+
+	// OK
+	return pbRole, nil
 }
 
 func (p *Database) DescribeRoles(ctx context.Context, req *pbam.DescribeRolesRequest) (*pbam.RoleList, error) {
