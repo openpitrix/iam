@@ -762,6 +762,12 @@
           "type": "string",
           "format": "date-time"
         },
+        "group_id": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "role": {
           "type": "array",
           "items": {

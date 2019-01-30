@@ -107,7 +107,7 @@ func (p *Database) GetUser(ctx context.Context, req *pbim.UserId) (*pbim.User, e
 
 	var v = db_spec.User{UserId: req.UserId}
 	if err := p.DB.Model(db_spec.User{}).Take(&v).Error; err != nil {
-		logger.Warnf(ctx, "%+v", err)
+		logger.Warnf(ctx, "%+v, req: %v", err, req)
 		return nil, err
 	}
 

@@ -71,6 +71,7 @@ func (p *Database) GetUserWithRole(ctx context.Context, req *pbam.UserId) (*pbam
 		CreateTime:  imUser.CreateTime,
 		UpdateTime:  imUser.UpdateTime,
 		StatusTime:  imUser.StatusTime,
+		GroupId:     imUser.GroupId,
 	}
 
 	for _, v := range rows {
@@ -289,6 +290,7 @@ func (p *Database) DescribeUsersWithRole(ctx context.Context, req *pbam.Describe
 			CreateTime:  imUser.CreateTime,
 			UpdateTime:  imUser.UpdateTime,
 			StatusTime:  imUser.StatusTime,
+			GroupId:     imUser.GroupId,
 		}
 
 		for _, roleEx := range roleExList {

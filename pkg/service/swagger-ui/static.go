@@ -993,6 +993,12 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
           "type": "string",
           "format": "date-time"
         },
+        "group_id": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "role": {
           "type": "array",
           "items": {
