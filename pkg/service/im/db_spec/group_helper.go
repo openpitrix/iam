@@ -14,6 +14,26 @@ import (
 	"openpitrix.io/iam/pkg/validator"
 )
 
+func (p *UserGroup) IsValidSortKey(key string) bool {
+	var validKeys = []string{
+		"parent_group_id",
+		"group_id",
+		"group_path",
+		"group_name",
+		"description",
+		"status",
+		"create_time",
+		"update_time",
+		"status_time",
+	}
+	for _, k := range validKeys {
+		if strings.EqualFold(k, key) {
+			return true
+		}
+	}
+	return false
+}
+
 func (p *UserGroup) AdjustForCreate() *UserGroup {
 	p.GroupId = strutil.SimplifyString(p.GroupId)
 	p.ParentGroupId = strutil.SimplifyString(p.ParentGroupId)

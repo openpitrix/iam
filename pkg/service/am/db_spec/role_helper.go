@@ -6,6 +6,7 @@ package db_spec
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	idpkg "openpitrix.io/iam/pkg/id"
@@ -48,6 +49,27 @@ func (p *Role) IsValidForCreate() error {
 	}
 
 	return nil
+}
+
+func (p *Role) IsValidSortKey(key string) bool {
+	var validKeys = []string{
+		"role_id",
+		"role_name",
+		"description",
+		"portal",
+		"owner",
+		"owner_path",
+		"status",
+		"create_time",
+		"update_time",
+		"status_time",
+	}
+	for _, k := range validKeys {
+		if strings.EqualFold(k, key) {
+			return true
+		}
+	}
+	return false
 }
 
 func (p *Role) AdjustForUpdate() *Role {

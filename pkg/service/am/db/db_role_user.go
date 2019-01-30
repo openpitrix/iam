@@ -233,6 +233,10 @@ func (p *Database) DescribeUsersWithRole(ctx context.Context, req *pbam.Describe
 
 		Limit:  req.Limit,
 		Offset: req.Offset,
+
+		SearchWord: req.SearchWord,
+		SortKey:    req.SortKey,
+		Reverse:    req.Reverse,
 	})
 	if err != nil {
 		logger.Warnf(ctx, "%+v", err)

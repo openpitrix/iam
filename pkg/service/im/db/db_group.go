@@ -242,6 +242,11 @@ func (p *Database) ListGroups(ctx context.Context, req *pbim.ListGroupsRequest) 
 			logger.Warnf(ctx, "%+v", err)
 			return nil, err
 		}
+		if !((*db_spec.UserGroup)(nil)).IsValidSortKey(req.SortKey) {
+			err := status.Errorf(codes.InvalidArgument, "invalid sort_key: %v", req.SortKey)
+			logger.Warnf(ctx, "%+v", err)
+			return nil, err
+		}
 	}
 
 	// 1. get group and sub group id list

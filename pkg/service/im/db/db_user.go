@@ -170,7 +170,16 @@ func (p *Database) ListUsers(ctx context.Context, req *pbim.ListUsersRequest) (*
 		}
 	}
 	if req.SortKey != "" {
+		// DB use user_name
+		if strings.EqualFold(req.SortKey, "Username") {
+			req.SortKey = "user_name"
+		}
 		if !validator.IsValidSortKey(req.SortKey) {
+			err := status.Errorf(codes.InvalidArgument, "invalid sort_key: %v", req.SortKey)
+			logger.Warnf(ctx, "%+v", err)
+			return nil, err
+		}
+		if !((*db_spec.User)(nil)).IsValidSortKey(req.SortKey) {
 			err := status.Errorf(codes.InvalidArgument, "invalid sort_key: %v", req.SortKey)
 			logger.Warnf(ctx, "%+v", err)
 			return nil, err

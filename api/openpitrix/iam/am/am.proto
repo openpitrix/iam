@@ -260,6 +260,9 @@ message DescribeUsersWithRoleRequest {
 
 	int32 limit = 8;
 	int32 offset = 9;
+	string search_word = 10;
+	string sort_key = 11;
+	bool reverse = 12;
 }
 
 message DescribeUsersWithRoleResponse {

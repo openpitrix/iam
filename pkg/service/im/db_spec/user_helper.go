@@ -6,6 +6,7 @@ package db_spec
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -14,6 +15,26 @@ import (
 	"openpitrix.io/iam/pkg/internal/strutil"
 	"openpitrix.io/iam/pkg/validator"
 )
+
+func (p *User) IsValidSortKey(key string) bool {
+	var validKeys = []string{
+		"user_id",
+		"user_name",
+		"email",
+		"phone_number",
+		"description",
+		"status",
+		"create_time",
+		"update_time",
+		"status_time",
+	}
+	for _, k := range validKeys {
+		if strings.EqualFold(k, key) {
+			return true
+		}
+	}
+	return false
+}
 
 func (p *User) AdjustForCreate() *User {
 	p.UserId = strutil.SimplifyString(p.UserId)
