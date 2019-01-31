@@ -8,6 +8,7 @@ import (
 	"context"
 	"sort"
 
+	"openpitrix.io/iam/pkg/internal/strutil"
 	pbam "openpitrix.io/iam/pkg/pb/am"
 	"openpitrix.io/iam/pkg/service/am/db_spec"
 )
@@ -44,7 +45,7 @@ func (p *Database) buildRoleModuleTree(
 		m.FeatureId = v.FeatureId
 		m.FeatureName = v.FeatureName
 		m.Action = append(m.Action, v)
-		if v.ActionEnabled {
+		if v.ActionEnabled && !strutil.Contains(m.CheckedActionId, v.ActionId) {
 			m.CheckedActionId = append(m.CheckedActionId, v.ActionId)
 		}
 
@@ -68,8 +69,8 @@ func (p *Database) buildRoleModuleTree(
 		m.ModuleId = action.ModuleId
 		m.ModuleName = action.ModuleName
 		m.Feature = append(m.Feature, v)
-		m.DataLevel = action.DataLevel
 		m.Owner = action.Owner
+		m.DataLevel = action.DataLevel
 
 		moduleMap[m.ModuleId] = m
 	}
@@ -104,13 +105,13 @@ func (p *Database) buildActionFromModuleApi(
 		enableAction db_spec.EnableAction
 	)
 	for _, v := range roleModuleBindList {
-		if v.ModuleId == actionApi.ModuleId {
+		if v.ModuleId == actionApi.ModuleId && v.RoleId == role.RoleId {
 			roleBind = v
 			break
 		}
 	}
 	for _, v := range enableActionList {
-		if v.ActionId == actionApi.ActionId {
+		if v.ActionId == actionApi.ActionId && v.BindId == roleBind.BindId {
 			enableAction = v
 			break
 		}

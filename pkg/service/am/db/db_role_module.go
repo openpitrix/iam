@@ -172,7 +172,7 @@ func (p *Database) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (
 	for i, module := range req.Module {
 		for _, feature := range module.Feature {
 			for _, action := range feature.Action {
-				if action.ActionEnabled {
+				if action.ActionEnabled || strutil.Contains(feature.CheckedActionId, action.ActionId) {
 					enableActionList = append(
 						enableActionList,
 						db_spec.EnableAction{

@@ -36,8 +36,8 @@ docker-build:
 docker-build-dev:
 	GOOS=linux GOARCH=amd64 go build -o _am_linux_amd64.out ./cmd/am
 	GOOS=linux GOARCH=amd64 go build -o _im_linux_amd64.out ./cmd/im
-	docker build -t openpitrix/iam:local-dev -f ./Dockerfile.dev .
-	docker images openpitrix/iam:local-dev
+	docker build -t openpitrix/iam:latest -f ./Dockerfile.dev .
+	docker images openpitrix/iam:latest
 
 docker-run-dev:
 	docker run --rm -it openpitrix/iam:dev sh

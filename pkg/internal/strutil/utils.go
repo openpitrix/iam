@@ -29,3 +29,12 @@ var reMoreSpace = regexp.MustCompile(`\s+`)
 func SimplifyString(s string) string {
 	return reMoreSpace.ReplaceAllString(strings.TrimSpace(s), " ")
 }
+
+func Contains(ss []string, s string) bool {
+	for _, v := range ss {
+		if v == s {
+			return true
+		}
+	}
+	return false
+}
