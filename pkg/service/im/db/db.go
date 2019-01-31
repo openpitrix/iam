@@ -9,11 +9,14 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/fatih/structs"
+	"github.com/jimsmart/schema"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 
+	"openpitrix.io/iam/pkg/internal/snakecase"
 	"openpitrix.io/iam/pkg/service/im/config"
 	"openpitrix.io/iam/pkg/service/im/db_spec"
 	"openpitrix.io/logger"
@@ -159,8 +162,102 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 		}
 	}
 
+	// check table have same fileds
+	{
+		p.checkTablesStruct(
+			&db_spec.User{},
+			&db_spec.UserGroup{},
+			&db_spec.UserGroupBinding{},
+		)
+	}
+
 	return p, nil
 }
+
+func (p *Database) checkTablesStruct(tableModuleList ...interface{}) {
+	if !strings.EqualFold(p.cfg.DB.Type, "mysql") {
+		logger.Infof(nil, "no mysql, skip checkTablesStruct")
+		return
+	}
+
+	type Result struct {
+		Field   string
+		Type    string
+		Null    string
+		Key     string
+		Default string
+		Extra   string
+	}
+
+	db, err := sql.Open(p.cfg.DB.Type, p.cfg.DB.GetUrl())
+	if err != nil {
+		logger.Warnf(nil, "%v", err)
+		return
+	}
+	defer db.Close()
+
+	res, err := db.Query("SHOW TABLES FROM " + p.cfg.DB.Database + ";")
+	if err != nil {
+		logger.Warnf(nil, "%v", err)
+		return
+	}
+
+	var tableNameList []string
+	for res.Next() {
+		var tableName string
+		if err := res.Scan(&tableName); err != nil {
+
+			logger.Warnf(nil, "%v", err)
+			return
+		}
+
+		tableNameList = append(tableNameList, tableName)
+	}
+
+	logger.Infof(nil, "tables: %v", tableNameList)
+
+	var tableNameMap = make(map[string]string)
+	for _, name := range tableNameList {
+		tableNameMap[name] = name
+	}
+
+	for _, table := range tableModuleList {
+		tableName := snakecase.SnakeCase(structs.Name(table))
+		if tableNameMap[tableName] != tableName {
+			err := fmt.Errorf("DB table(%q) missing!", tableName)
+			logger.Warnf(nil, "%+v", err)
+			return
+		}
+
+		tcols, err := schema.Table(db, tableName)
+		if err != nil {
+			logger.Warnf(nil, "%v", err)
+			return
+		}
+
+		for _, f := range structs.Fields(table) {
+			fieldName := snakecase.SnakeCase(f.Name())
+
+			var fieldExists bool
+			for _, v := range tcols {
+				if v.Name() == fieldName {
+					fieldExists = true
+					break
+				}
+			}
+			if !fieldExists {
+				err := fmt.Errorf("DB table(%q) field(%q) missing!", tableName, fieldName)
+				logger.Warnf(nil, "%+v", err)
+				logger.Warnf(nil, "table field info: %v", tcols)
+				return
+			}
+		}
+	}
+
+	logger.Infof(nil, "checkTablesStruct ok")
+	return
+}
+
 func (p *Database) checkDbHasRecords() bool {
 	var tbNames = []string{
 		"user",
