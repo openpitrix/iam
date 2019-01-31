@@ -31,6 +31,8 @@ func (p *Database) CanDo(ctx context.Context, req *pbam.CanDoRequest) (*pbam.Can
 	req.Url = strutil.SimplifyString(req.Url)
 	req.UrlMethod = strutil.SimplifyString(req.UrlMethod)
 
+	req.UrlMethod = strings.ToLower(req.UrlMethod)
+
 	if !validator.IsValidId(req.UserId) {
 		err := status.Errorf(codes.InvalidArgument, "invalid UserId: %v", req.UserId)
 		logger.Warnf(ctx, "%+v", err)
@@ -87,7 +89,7 @@ func (p *Database) CanDo(ctx context.Context, req *pbam.CanDoRequest) (*pbam.Can
 			and module_api.url_method='{{get_url_method}}'
 			and module_api.url='{{get_url}}'
 
-			and role_id in (
+			and role_module_binding.role_id in (
 				{{range $i, $v := .}}
 					{{if eq $i 0}} '{{$v.RoleId}}' {{else}} ,'{{$v.RoleId}}' {{end}}
 				{{end}}
