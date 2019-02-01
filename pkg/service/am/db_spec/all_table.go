@@ -5,7 +5,7 @@
 package db_spec
 
 const (
-	EnableActionTableName      = "enable_action"
+	EnableActionTableName      = "enable_action_bundle"
 	ModuleApiTableName         = "module_api"
 	RoleTableName              = "role"
 	RoleModuleBindingTableName = "role_module_binding"

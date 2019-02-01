@@ -13,12 +13,16 @@ type ModuleApi struct {
 	FeatureId   string `gorm:"type:varchar(50);not null"`
 	FeatureName string `gorm:"type:varchar(50);not null"`
 
-	ActionId   string `gorm:"type:varchar(50);not null"`
-	ActionName string `gorm:"type:varchar(50);not null"`
+	ActionBundleId   string `gorm:"type:varchar(50);not null"`
+	ActionBundleName string `gorm:"type:varchar(50);not null"`
 
 	ApiMethod      string `gorm:"type:varchar(50);not null"`
 	ApiDescription string `gorm:"type:varchar(100);not null"`
 
 	UrlMethod string `gorm:"type:varchar(100);not null"`
 	Url       string `gorm:"type:varchar(255);not null"`
+
+	GlobalAdminActionBundleVisibility bool
+	IsvActionBundleVisibility         bool
+	UserActionBundleVisibility        bool
 }

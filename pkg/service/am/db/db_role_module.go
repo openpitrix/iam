@@ -99,11 +99,11 @@ func (p *Database) GetRoleModule(ctx context.Context, req *pbam.RoleId) (*pbam.R
 
 	// 3. query enableActionList
 	query, err = template.Render(`
-		select distinct enable_action.* from
-			enable_action, role_module_binding, module_api
+		select distinct enable_action_bundle.* from
+			enable_action_bundle, role_module_binding, module_api
 		where 1=1
-			and enable_action.bind_id=role_module_binding.bind_id
-			and enable_action.action_id=module_api.action_id
+			and enable_action_bundle.bind_id=role_module_binding.bind_id
+			and enable_action_bundle.action_bundle_id=module_api.action_bundle_id
 			and module_api.module_id=role_module_binding.module_id
 
 			and role_module_binding.role_id='{{.RoleId}}'
@@ -118,7 +118,7 @@ func (p *Database) GetRoleModule(ctx context.Context, req *pbam.RoleId) (*pbam.R
 	query = strutil.SimplifyString(query)
 	logger.Infof(ctx, "query: %s", query)
 
-	var enableActionList []db_spec.EnableAction
+	var enableActionList []db_spec.EnableActionBundle
 	p.DB.Raw(query).Find(&enableActionList)
 	if err := p.DB.Error; err != nil {
 		logger.Warnf(ctx, "%+v", err)
@@ -168,17 +168,17 @@ func (p *Database) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (
 	}
 
 	// get EnableActionList
-	var enableActionList []db_spec.EnableAction
+	var enableActionList []db_spec.EnableActionBundle
 	for i, module := range req.Module {
 		for _, feature := range module.Feature {
-			for _, action := range feature.Action {
-				if action.ActionEnabled || strutil.Contains(feature.CheckedActionId, action.ActionId) {
+			for _, action := range feature.ActionBundle {
+				if action.ActionBundleEnabled || strutil.Contains(feature.CheckedActionBundleId, action.ActionBundleId) {
 					enableActionList = append(
 						enableActionList,
-						db_spec.EnableAction{
-							EnableId: idpkg.GenId("xid-"),
-							BindId:   roleModuleBindingList[i].BindId,
-							ActionId: action.ActionId,
+						db_spec.EnableActionBundle{
+							EnableId:       idpkg.GenId("xid-"),
+							BindId:         roleModuleBindingList[i].BindId,
+							ActionBundleId: action.ActionBundleId,
 						},
 					)
 				}
@@ -207,8 +207,8 @@ func (p *Database) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (
 		// delete old EnableActionList
 		for _, v := range enableActionList {
 			tx.Raw(
-				`DELETE from enable_action where bind_id=? and action_id=?`,
-				v.BindId, v.ActionId,
+				`DELETE from enable_action_bundle where bind_id=? and action_bundle_id=?`,
+				v.BindId, v.ActionBundleId,
 			)
 			if err := tx.Error; err != nil {
 				tx.Rollback()

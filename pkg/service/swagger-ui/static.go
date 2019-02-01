@@ -748,13 +748,13 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "feature_name": {
           "type": "string"
         },
-        "action": {
+        "action_bundle": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/amModuleFeatureActionBundle"
           }
         },
-        "checked_action_id": {
+        "checked_action_bundle_id": {
           "type": "array",
           "items": {
             "type": "string"
@@ -792,13 +792,13 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         "feature_name": {
           "type": "string"
         },
-        "action_id": {
+        "action_bundle_id": {
           "type": "string"
         },
-        "action_name": {
+        "action_bundle_name": {
           "type": "string"
         },
-        "action_enabled": {
+        "action_bundle_enabled": {
           "type": "boolean",
           "format": "boolean"
         },

@@ -17,7 +17,7 @@ func (p *Database) buildRoleModuleTree(
 	ctx context.Context, role *db_spec.Role,
 	roleModuleBindList []db_spec.RoleModuleBinding,
 	moduleApiList []db_spec.ModuleApi,
-	enableActionList []db_spec.EnableAction,
+	enableActionList []db_spec.EnableActionBundle,
 ) (*pbam.RoleModule, error) {
 	var (
 		featureMap = make(map[string]*pbam.ModuleFeature)
@@ -44,22 +44,22 @@ func (p *Database) buildRoleModuleTree(
 
 		m.FeatureId = v.FeatureId
 		m.FeatureName = v.FeatureName
-		m.Action = append(m.Action, v)
-		if v.ActionEnabled && !strutil.Contains(m.CheckedActionId, v.ActionId) {
-			m.CheckedActionId = append(m.CheckedActionId, v.ActionId)
+		m.ActionBundle = append(m.ActionBundle, v)
+		if v.ActionBundleEnabled && !strutil.Contains(m.CheckedActionBundleId, v.ActionBundleId) {
+			m.CheckedActionBundleId = append(m.CheckedActionBundleId, v.ActionBundleId)
 		}
 
 		featureMap[m.FeatureId] = m
 	}
 	for _, m := range featureMap {
-		sort.Slice(m.Action, func(i, j int) bool {
-			return m.Action[i].ActionId < m.Action[j].ActionId
+		sort.Slice(m.ActionBundle, func(i, j int) bool {
+			return m.ActionBundle[i].ActionBundleId < m.ActionBundle[j].ActionBundleId
 		})
 	}
 
 	// 3. feature map => module map
 	for _, v := range featureMap {
-		action := v.Action[0]
+		action := v.ActionBundle[0]
 
 		m := moduleMap[action.ModuleId]
 		if m == nil {
@@ -97,12 +97,12 @@ func (p *Database) buildRoleModuleTree(
 func (p *Database) buildActionFromModuleApi(
 	actionApi *db_spec.ModuleApi,
 	roleModuleBindList []db_spec.RoleModuleBinding,
-	enableActionList []db_spec.EnableAction,
+	enableActionList []db_spec.EnableActionBundle,
 	role *db_spec.Role,
 ) *pbam.ModuleFeatureActionBundle {
 	var (
 		roleBind     db_spec.RoleModuleBinding
-		enableAction db_spec.EnableAction
+		enableAction db_spec.EnableActionBundle
 	)
 	for _, v := range roleModuleBindList {
 		if v.ModuleId == actionApi.ModuleId && v.RoleId == role.RoleId {
@@ -111,30 +111,30 @@ func (p *Database) buildActionFromModuleApi(
 		}
 	}
 	for _, v := range enableActionList {
-		if v.ActionId == actionApi.ActionId && v.BindId == roleBind.BindId {
+		if v.ActionBundleId == actionApi.ActionBundleId && v.BindId == roleBind.BindId {
 			enableAction = v
 			break
 		}
 	}
 
 	q := &pbam.ModuleFeatureActionBundle{
-		RoleId:         role.RoleId,
-		RoleName:       role.RoleName,
-		Portal:         role.Portal,
-		ModuleId:       actionApi.ModuleId,
-		ModuleName:     actionApi.ModuleName,
-		DataLevel:      roleBind.DataLevel,
-		Owner:          role.Owner,
-		FeatureId:      actionApi.FeatureId,
-		FeatureName:    actionApi.FeatureName,
-		ActionId:       actionApi.ActionId,
-		ActionName:     actionApi.ActionName,
-		ActionEnabled:  enableAction != (db_spec.EnableAction{}),
-		ApiId:          actionApi.ApiId,
-		ApiMethod:      actionApi.ApiId,
-		ApiDescription: actionApi.ApiDescription,
-		Url:            actionApi.Url,
-		UrlMethod:      actionApi.UrlMethod,
+		RoleId:              role.RoleId,
+		RoleName:            role.RoleName,
+		Portal:              role.Portal,
+		ModuleId:            actionApi.ModuleId,
+		ModuleName:          actionApi.ModuleName,
+		DataLevel:           roleBind.DataLevel,
+		Owner:               role.Owner,
+		FeatureId:           actionApi.FeatureId,
+		FeatureName:         actionApi.FeatureName,
+		ActionBundleId:      actionApi.ActionBundleId,
+		ActionBundleName:    actionApi.ActionBundleName,
+		ActionBundleEnabled: enableAction != (db_spec.EnableActionBundle{}),
+		ApiId:               actionApi.ApiId,
+		ApiMethod:           actionApi.ApiId,
+		ApiDescription:      actionApi.ApiDescription,
+		Url:                 actionApi.Url,
+		UrlMethod:           actionApi.UrlMethod,
 	}
 
 	return q

@@ -4,8 +4,8 @@
 
 package db_spec
 
-type EnableAction struct {
-	EnableId string `gorm:"type:varchar(50);primary_key"`
-	BindId   string `gorm:"type:varchar(50);not null"`
-	ActionId string `gorm:"type:varchar(50);not null"`
+type EnableActionBundle struct {
+	EnableId       string `gorm:"type:varchar(50);primary_key"`
+	BindId         string `gorm:"type:varchar(50);not null"`
+	ActionBundleId string `gorm:"type:varchar(50);not null"`
 }

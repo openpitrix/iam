@@ -180,15 +180,6 @@ func (p *Database) checkTablesStruct(tableModuleList ...interface{}) {
 		return
 	}
 
-	type Result struct {
-		Field   string
-		Type    string
-		Null    string
-		Key     string
-		Default string
-		Extra   string
-	}
-
 	db, err := sql.Open(p.cfg.DB.Type, p.cfg.DB.GetUrl())
 	if err != nil {
 		logger.Warnf(nil, "%v", err)
@@ -248,7 +239,6 @@ func (p *Database) checkTablesStruct(tableModuleList ...interface{}) {
 			if !fieldExists {
 				err := fmt.Errorf("DB table(%q) field(%q) missing!", tableName, fieldName)
 				logger.Warnf(nil, "%+v", err)
-				logger.Warnf(nil, "table field info: %v", tcols)
 				return
 			}
 		}

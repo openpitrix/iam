@@ -177,8 +177,8 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 				logger.Warnf(nil, "%+v", err)
 			}
 		}
-		if !p.DB.HasTable(&db_spec.EnableAction{}) {
-			if err := p.DB.CreateTable(&db_spec.EnableAction{}).Error; err != nil {
+		if !p.DB.HasTable(&db_spec.EnableActionBundle{}) {
+			if err := p.DB.CreateTable(&db_spec.EnableActionBundle{}).Error; err != nil {
 				logger.Warnf(nil, "CreateTable: %+v", err)
 			}
 		}
@@ -191,7 +191,7 @@ func OpenDatabase(cfg *config.Config, opt *Options) (*Database, error) {
 			&db_spec.Role{},
 			&db_spec.UserRoleBinding{},
 			&db_spec.RoleModuleBinding{},
-			&db_spec.EnableAction{},
+			&db_spec.EnableActionBundle{},
 		)
 	}
 
@@ -202,15 +202,6 @@ func (p *Database) checkTablesStruct(tableModuleList ...interface{}) {
 	if !strings.EqualFold(p.cfg.DB.Type, "mysql") {
 		logger.Infof(nil, "no mysql, skip checkTablesStruct")
 		return
-	}
-
-	type Result struct {
-		Field   string
-		Type    string
-		Null    string
-		Key     string
-		Default string
-		Extra   string
 	}
 
 	db, err := sql.Open(p.cfg.DB.Type, p.cfg.DB.GetUrl())
@@ -272,7 +263,6 @@ func (p *Database) checkTablesStruct(tableModuleList ...interface{}) {
 			if !fieldExists {
 				err := fmt.Errorf("DB table(%q) field(%q) missing!", tableName, fieldName)
 				logger.Warnf(nil, "%+v", err)
-				logger.Warnf(nil, "table field info: %v", tcols)
 				return
 			}
 		}
