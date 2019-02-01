@@ -135,6 +135,10 @@ func (p *Database) buildActionFromModuleApi(
 		ApiDescription:      actionApi.ApiDescription,
 		Url:                 actionApi.Url,
 		UrlMethod:           actionApi.UrlMethod,
+
+		GlobalAdminActionBundleVisibility: actionApi.GlobalAdminActionBundleVisibility,
+		IsvActionBundleVisibility:         actionApi.IsvActionBundleVisibility,
+		UserActionBundleVisibility:        actionApi.UserActionBundleVisibility,
 	}
 
 	return q

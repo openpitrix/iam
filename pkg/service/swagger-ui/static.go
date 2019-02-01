@@ -816,6 +816,18 @@ var K=n(514),X=n(517),Z=n(518);t.Buffer=o,t.SlowBuffer=m,t.INSPECT_MAX_BYTES=50,
         },
         "url_method": {
           "type": "string"
+        },
+        "global_admin_action_bundle_visibility": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "isv_action_bundle_visibility": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "user_action_bundle_visibility": {
+          "type": "boolean",
+          "format": "boolean"
         }
       }
     },

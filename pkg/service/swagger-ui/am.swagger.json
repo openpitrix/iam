@@ -585,6 +585,18 @@
         },
         "url_method": {
           "type": "string"
+        },
+        "global_admin_action_bundle_visibility": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "isv_action_bundle_visibility": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "user_action_bundle_visibility": {
+          "type": "boolean",
+          "format": "boolean"
         }
       }
     },

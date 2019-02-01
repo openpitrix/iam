@@ -203,6 +203,10 @@ message ModuleFeatureActionBundle {
 
 	string url = 16;
 	string url_method = 17;
+
+	bool global_admin_action_bundle_visibility = 18;
+	bool isv_action_bundle_visibility = 19;
+	bool user_action_bundle_visibility = 20;
 }
 
 message ModuleFeature {
