@@ -34,6 +34,9 @@ func (p *Database) buildRoleModuleTree(
 			),
 		)
 	}
+	sort.Slice(actionList, func(i, j int) bool {
+		return actionList[i].ActionBundleId < actionList[j].ActionBundleId
+	})
 
 	// 2. actionList => feature map
 	for _, v := range actionList {

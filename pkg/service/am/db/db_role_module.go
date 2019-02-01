@@ -39,6 +39,22 @@ func (p *Database) GetRoleModule(ctx context.Context, req *pbam.RoleId) (*pbam.R
 		return nil, err
 	}
 
+	var sActionBundleVisibility string
+	switch role.Portal {
+	case db_spec.Portal_Admin:
+		sActionBundleVisibility = "global_admin_action_bundle_visibility=1"
+	case db_spec.Portal_Isv:
+		sActionBundleVisibility = "isv_action_bundle_visibility=1"
+
+	case db_spec.Portal_Dev:
+		sActionBundleVisibility = "user_action_bundle_visibility=1"
+	case db_spec.Portal_User:
+		sActionBundleVisibility = "user_action_bundle_visibility=1"
+
+	default:
+		sActionBundleVisibility = "user_action_bundle_visibility=1"
+	}
+
 	// 1. query roleModuleBindList
 	query, err := template.Render(`
 		select distinct * from role_module_binding where 1=1
@@ -73,9 +89,14 @@ func (p *Database) GetRoleModule(ctx context.Context, req *pbam.RoleId) (*pbam.R
 			role_module_binding, module_api
 		where 1=1
 			and role_module_binding.module_id=module_api.module_id
+
+			and {{sActionBundleVisibility}}
+
 			and role_module_binding.role_id='{{.RoleId}}'
 		`,
-		req,
+		req, template.FuncMap{
+			"sActionBundleVisibility": func() string { return sActionBundleVisibility },
+		},
 	)
 	if err != nil {
 		logger.Warnf(ctx, "%+v", err)
@@ -106,9 +127,13 @@ func (p *Database) GetRoleModule(ctx context.Context, req *pbam.RoleId) (*pbam.R
 			and enable_action_bundle.action_bundle_id=module_api.action_bundle_id
 			and module_api.module_id=role_module_binding.module_id
 
+			and {{sActionBundleVisibility}}
+
 			and role_module_binding.role_id='{{.RoleId}}'
 		`,
-		req,
+		req, template.FuncMap{
+			"sActionBundleVisibility": func() string { return sActionBundleVisibility },
+		},
 	)
 	if err != nil {
 		logger.Warnf(ctx, "%+v", err)
