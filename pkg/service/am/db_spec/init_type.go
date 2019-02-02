@@ -5,6 +5,10 @@
 package db_spec
 
 const (
+	ModuleId_M0 = "m0"
+)
+
+const (
 	Portal_Admin = "admin"
 	Portal_Dev   = "dev"
 	Portal_Isv   = "isv"

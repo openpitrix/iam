@@ -58,11 +58,19 @@ func (p *Database) CreateRole(ctx context.Context, req *pbam.Role) (*pbam.Role, 
 		// bind modules with no check
 		var now = time.Now()
 		for moduleId, _ := range moduleIdMap {
+			var isCheckAll = 0
+
+			// m0 enabled for all roles
+			if moduleId == db_spec.ModuleId_M0 {
+				isCheckAll = 1
+			}
+
 			var dbRoleModuleBinding = &db_spec.RoleModuleBinding{
 				BindId:     idpkg.GenId("bind-"),
 				RoleId:     dbRole.RoleId,
 				ModuleId:   moduleId,
-				DataLevel:  "self",
+				DataLevel:  db_spec.DataLevel_Self,
+				IsCheckAll: isCheckAll,
 				CreateTime: now,
 				UpdateTime: now,
 			}
