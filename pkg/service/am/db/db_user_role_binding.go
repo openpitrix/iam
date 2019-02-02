@@ -8,7 +8,6 @@ import (
 	"context"
 	"strings"
 
-	"github.com/chai2010/template"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -57,48 +56,84 @@ func (p *Database) BindUserRole(ctx context.Context, req *pbam.BindUserRoleReque
 		logger.Warnf(ctx, "%+v", err)
 		return nil, err
 	}
+	if len(idPairList) == 0 {
+		return &pbam.Empty{}, nil
+	}
 
-	// get exists bind_id
-	var query, err = template.Render(`
-		SELECT * FROM user_role_binding WHERE 1=0
-			{{range $i, $v := .}}
-				OR (role_id='{{$v.RoleId}}' AND user_id='{{$v.UserId}}')
-			{{end}}
-		`, idPairList,
+	// id list to id map
+	var (
+		idPairMap = make(map[string]string)
+		// roleIdMap = make(map[string]string)
 	)
-	if err != nil {
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
+	for _, v := range idPairList {
+		if _, ok := idPairMap[v.UserId]; ok {
+			err := status.Errorf(codes.InvalidArgument,
+				"a user can only have one role: %v, %v",
+				v.UserId, v.RoleId,
+			)
+			logger.Warnf(ctx, "%+v", err)
+			// ignore err
+		}
+
+		idPairMap[v.UserId] = v.RoleId
+		// roleIdMap[v.RoleId]= v.RoleId
 	}
 
-	query = strutil.SimplifyString(query)
-	logger.Infof(ctx, "query: %s", query)
+	// TODO: check user_id valid
+	// TODO: check role_id valid
 
-	var rows []db_spec.UserRoleBinding
-	p.DB.Raw(query).Find(&rows)
-	if err := p.DB.Error; err != nil {
-		logger.Warnf(ctx, "%+v", err)
-		return nil, err
-	}
+	/*
+		// get exists bind_id
+		var query, err = template.Render(`
+			SELECT * FROM user_role_binding WHERE 1=0
+				{{range $i, $v := .}}
+					OR (role_id='{{$v.RoleId}}' AND user_id='{{$v.UserId}}')
+				{{end}}
+			`, idPairList,
+		)
+		if err != nil {
+			logger.Warnf(ctx, "%+v", err)
+			return nil, err
+		}
 
-	// read bind_id
-	for _, vi := range rows {
-		for j, vj := range idPairList {
-			if vi.UserId == vj.UserId && vi.RoleId == vj.RoleId {
-				idPairList[j].Id = vi.Id
+		query = strutil.SimplifyString(query)
+		logger.Infof(ctx, "query: %s", query)
+
+		var rows []db_spec.UserRoleBinding
+		p.DB.Raw(query).Find(&rows)
+		if err := p.DB.Error; err != nil {
+			logger.Warnf(ctx, "%+v", err)
+			return nil, err
+		}
+
+		// read bind_id
+		for _, vi := range rows {
+			for j, vj := range idPairList {
+				if vi.UserId == vj.UserId && vi.RoleId == vj.RoleId {
+					idPairList[j].Id = vi.Id
+				}
 			}
 		}
-	}
+	*/
 
 	// 2. insert new bind
 	tx := p.DB.Begin()
 	{
+		// delete old bind
 		for _, v := range idPairList {
-			if v.Id != "" {
-				continue // skip
+			tx.Raw(
+				`DELETE FROM user_role_binding WHERE user_id=? and role_id=?`,
+				v.UserId, v.RoleId,
+			)
+			if err := tx.Error; err != nil {
+				tx.Rollback()
+				return nil, err
 			}
+		}
 
-			tx.Exec(
+		// insert new bind
+		for _, v := range idPairList {
+			tx.Raw(
 				`INSERT INTO user_role_binding (id, user_id, role_id) VALUES (?,?,?)`,
 				idpkg.GenId("xid-"), v.UserId, v.RoleId,
 			)
