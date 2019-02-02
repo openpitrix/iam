@@ -26,6 +26,9 @@ func (p *Role) AdjustForCreate() *Role {
 	if p.RoleId == "" {
 		p.RoleId = idpkg.GenId("role-")
 	}
+	if p.Portal == "" {
+		p.Portal = Portal_User
+	}
 
 	now := time.Now()
 	p.CreateTime = now
