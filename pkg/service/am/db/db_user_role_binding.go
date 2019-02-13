@@ -59,6 +59,7 @@ func (p *Database) BindUserRole(ctx context.Context, req *pbam.BindUserRoleReque
 	if len(idPairList) == 0 {
 		return &pbam.Empty{}, nil
 	}
+	logger.Warnf(ctx, "%+v", idPairList)
 
 	// id list to id map
 	var (
@@ -78,6 +79,7 @@ func (p *Database) BindUserRole(ctx context.Context, req *pbam.BindUserRoleReque
 		idPairMap[v.UserId] = v.RoleId
 		// roleIdMap[v.RoleId]= v.RoleId
 	}
+	logger.Warnf(ctx, "%+v", idPairMap)
 
 	// TODO: check user_id valid
 	// TODO: check role_id valid
@@ -121,7 +123,7 @@ func (p *Database) BindUserRole(ctx context.Context, req *pbam.BindUserRoleReque
 	{
 		// delete old bind
 		for _, v := range idPairList {
-			tx.Raw(
+			tx.Exec(
 				`DELETE FROM user_role_binding WHERE user_id=? and role_id=?`,
 				v.UserId, v.RoleId,
 			)
@@ -133,7 +135,7 @@ func (p *Database) BindUserRole(ctx context.Context, req *pbam.BindUserRoleReque
 
 		// insert new bind
 		for _, v := range idPairList {
-			tx.Raw(
+			tx.Exec(
 				`INSERT INTO user_role_binding (id, user_id, role_id) VALUES (?,?,?)`,
 				idpkg.GenId("xid-"), v.UserId, v.RoleId,
 			)
