@@ -218,7 +218,7 @@ func (p *Database) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (
 	{
 		// delete old RoleModuleBindingList
 		for _, v := range roleModuleBindingList {
-			tx.Raw(
+			tx.Exec(
 				`DELETE from role_module_binding where role_id=? and module_id=?`,
 				req.RoleId, v.ModuleId,
 			)
@@ -231,7 +231,7 @@ func (p *Database) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (
 
 		// delete old EnableActionList
 		for _, v := range enableActionList {
-			tx.Raw(
+			tx.Exec(
 				`DELETE from enable_action_bundle where bind_id=? and action_bundle_id=?`,
 				v.BindId, v.ActionBundleId,
 			)

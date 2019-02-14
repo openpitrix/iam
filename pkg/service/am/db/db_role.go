@@ -104,21 +104,21 @@ func (p *Database) DeleteRoles(ctx context.Context, req *pbam.RoleIdList) (*pbam
 
 	tx := p.DB.Begin()
 	{
-		tx.Raw("delete from role where role_id in (?)", req.RoleId)
+		tx.Exec("delete from role where role_id in (?)", req.RoleId)
 		if err := tx.Error; err != nil {
 			tx.Rollback()
 			logger.Warnf(ctx, "%+v", err)
 			return nil, err
 		}
 
-		tx.Raw("delete from user_role_binding where role_id in (?)", req.RoleId)
+		tx.Exec("delete from user_role_binding where role_id in (?)", req.RoleId)
 		if err := tx.Error; err != nil {
 			tx.Rollback()
 			logger.Warnf(ctx, "%+v", err)
 			return nil, err
 		}
 
-		tx.Raw("delete from role_module_binding where role_id in (?)", req.RoleId)
+		tx.Exec("delete from role_module_binding where role_id in (?)", req.RoleId)
 		if err := tx.Error; err != nil {
 			tx.Rollback()
 			logger.Warnf(ctx, "%+v", err)
