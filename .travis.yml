@@ -2,14 +2,32 @@
 # Use of this source code is governed by a Apache license
 # that can be found in the LICENSE file.
 
+sudo: required
+services:
+- docker
 language: go
-
 go:
-- '1.11'
-- 'tip'
-
+- '1.11.4'
 go_import_path: openpitrix.io/iam
-
+before_script:
+- make fmt-check
+- make check
+- make build
+- make compose-up
+- sleep 20
 script:
-- env GO111MODULE=on go test ./...
-- env GO111MODULE=on go vet ./...
+- make unit-test
+before_deploy:
+- make compose-down
+- sudo git stash --all
+deploy:
+- provider: script
+  script: bash docker_push latest
+  on:
+    branch: master
+    repo: openpitrix/iam
+- provider: script
+  script: bash docker_push $TRAVIS_TAG
+  on:
+    tags: true
+    repo: openpitrix/iam

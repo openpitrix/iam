@@ -1,0 +1,224 @@
+// Copyright 2019 The OpenPitrix Authors. All rights reserved.
+// Use of this source code is governed by a Apache license
+// that can be found in the LICENSE file.
+
+syntax = "proto3";
+
+package openpitrix.iam;
+
+option go_package = "pb";
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+// ----------------------------------------------------------------------------
+// service api type
+// ----------------------------------------------------------------------------
+
+message GetVersionRequest {
+}
+
+message GetVersionResponse {
+	string version = 1;
+}
+
+// ----------------------------------------------------------------------------
+// CanDo
+// ----------------------------------------------------------------------------
+
+message CanDoRequest {
+	string user_id = 1;
+	string url = 2;
+	string url_method = 3;
+}
+message CanDoResponse {
+	string user_id = 1;
+	string access_path = 2;
+	string owner_path = 3;
+}
+
+// ----------------------------------------------------------------------------
+// Role
+// ----------------------------------------------------------------------------
+
+message CreateRoleRequest {
+	string role_name = 1;
+	string description = 2;
+	string portal = 3;
+	string owner = 4;
+	string owner_path = 5;
+}
+
+message CreateRoleResponse {
+	string role_id = 1;
+}
+
+message DeleteRolesRequest {
+	repeated string role_id = 1;
+}
+message DeleteRolesResponse {
+	repeated string role_id = 1;
+}
+
+message ModifyRoleRequest {
+	string role_id = 1;
+	string role_name = 2;
+	string description = 3;
+}
+
+message ModifyRoleResponse {
+	string role_id = 1;
+}
+
+message GetRoleRequest {
+	string role_id = 1;
+}
+
+
+message Role {
+	string role_id = 1;
+	string role_name = 2;
+	string description = 3;
+	string portal = 4;
+	string owner = 5;
+	string owner_path = 6;
+	string status = 7;
+	string controller = 8;
+
+	google.protobuf.Timestamp create_time = 9;
+	google.protobuf.Timestamp update_time = 10;
+	google.protobuf.Timestamp status_time = 11;
+}
+
+message RoleWithUser {
+	Role role = 1;
+	repeated string user_id_set = 2;
+}
+
+message GetRoleResponse {
+	Role role = 1;
+}
+
+message GetRoleWithUserResponse {
+	RoleWithUser role = 1;
+}
+
+message DescribeRolesRequest {
+	string search_word = 1;
+	string sort_key = 2;
+	bool reverse = 3;
+	uint32 offset = 4;
+	uint32 limit = 5;
+
+	repeated string role_id = 6;
+	repeated string user_id = 7;
+	repeated string role_name = 8;
+	repeated string portal = 9;
+	repeated string status = 10;
+}
+
+message DescribeRolesResponse {
+	uint32 total = 1;
+	repeated Role role_set = 2;
+}
+
+message DescribeRolesWithUserResponse {
+	uint32 total = 1;
+	repeated RoleWithUser role_set = 2;
+}
+
+// ----------------------------------------------------------------------------
+// RoleModule
+// ----------------------------------------------------------------------------
+
+message ActionBundle {
+	string action_bundle_id = 1;
+	string action_bundle_name = 2;
+}
+
+message Feature {
+	string feature_id = 1;
+	string feature_name = 2;
+	repeated ActionBundle action_bundle_set = 3;
+	repeated string checked_action_bundle_id_set = 4;
+}
+
+message ModuleElem {
+	string module_id = 1;
+	string module_name = 2;
+	repeated Feature feature_set = 3;
+	string data_level = 4;
+	bool is_check_all = 5;
+}
+
+message Module {
+	repeated ModuleElem module_elem_set = 1;
+}
+
+message GetRoleModuleRequest {
+	string role_id = 1;
+}
+
+message GetRoleModuleResponse {
+	string role_id = 1;
+	Module module = 2;
+}
+
+message ModifyRoleModuleRequest {
+	string role_id = 1;
+	Module module = 2;
+}
+
+message ModifyRoleModuleResponse {
+	string role_id = 1;
+}
+
+// ----------------------------------------------------------------------------
+// Binding
+// ----------------------------------------------------------------------------
+
+message BindUserRoleRequest {
+	repeated string user_id = 1;
+	repeated string role_id = 2;
+}
+message BindUserRoleResponse {
+	repeated string user_id = 1;
+	repeated string role_id = 2;
+}
+
+message UnbindUserRoleRequest {
+	repeated string user_id = 1;
+	repeated string role_id = 2;
+}
+message UnbindUserRoleResponse {
+	repeated string user_id = 1;
+	repeated string role_id = 2;
+}
+
+// ----------------------------------------------------------------------------
+// service api
+// ----------------------------------------------------------------------------
+
+service AccessManager {
+	rpc GetVersion (GetVersionRequest) returns (GetVersionResponse);
+
+	rpc CanDo (CanDoRequest) returns (CanDoResponse);
+
+	rpc CreateRole (CreateRoleRequest) returns (CreateRoleResponse);
+	rpc DeleteRoles (DeleteRolesRequest) returns (DeleteRolesResponse);
+	rpc ModifyRole (ModifyRoleRequest) returns (ModifyRoleResponse);
+	rpc GetRole (GetRoleRequest) returns (GetRoleResponse);
+	rpc GetRoleWithUser (GetRoleRequest) returns (GetRoleWithUserResponse);
+	rpc DescribeRoles (DescribeRolesRequest) returns (DescribeRolesResponse);
+	rpc DescribeRolesWithUser (DescribeRolesRequest) returns (DescribeRolesWithUserResponse);
+
+	rpc GetRoleModule (GetRoleModuleRequest) returns (GetRoleModuleResponse);
+	rpc ModifyRoleModule (ModifyRoleModuleRequest) returns (ModifyRoleModuleResponse);
+
+	rpc BindUserRole (BindUserRoleRequest) returns (BindUserRoleResponse);
+	rpc UnbindUserRole (UnbindUserRoleRequest) returns (UnbindUserRoleResponse);
+}
+
+// ----------------------------------------------------------------------------
+// END
+// ----------------------------------------------------------------------------

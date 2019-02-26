@@ -5,40 +5,39 @@
 package am
 
 import (
-	"openpitrix.io/logger"
+	"os"
 
-	"openpitrix.io/iam/pkg/service/am/config"
-	"openpitrix.io/iam/pkg/service/am/db"
-	"openpitrix.io/iam/pkg/service/am/db/static"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+
+	"openpitrix.io/iam/pkg/config"
+	"openpitrix.io/iam/pkg/global"
+	"openpitrix.io/iam/pkg/manager"
+	"openpitrix.io/iam/pkg/pb"
+	"openpitrix.io/logger"
 )
 
 type Server struct {
-	cfg *config.Config
-	db  *db.Database
 }
 
-func OpenServer(cfg *config.Config) (*Server, error) {
-	cfg = cfg.Clone()
-
-	dbInitOpt := &db.Options{}
-	dbInitOpt.SqlInitData = append(dbInitOpt.SqlInitData, static.Files["V0_1__init.sql"])
-
-	dbInitOpt.SqlInitDB = append(dbInitOpt.SqlInitDB, cfg.DB.InitDB.SqlInitDB...)
-	dbInitOpt.SqlInitTable = append(dbInitOpt.SqlInitTable, cfg.DB.InitDB.SqlInitTable...)
-	dbInitOpt.SqlInitData = append(dbInitOpt.SqlInitData, cfg.DB.InitDB.SqlInitData...)
-
-	db, err := db.OpenDatabase(cfg, dbInitOpt)
-	if err != nil {
-		logger.Criticalf(nil, "%v", err)
+func Serve(cfg *config.Config) {
+	global.SetGlobal(cfg)
+	s := new(Server)
+	if cfg.TlsEnabled {
+		creds, err := credentials.NewServerTLSFromFile(cfg.TlsCertFile, cfg.TlsKeyFile)
+		if err != nil {
+			logger.Criticalf(nil, "Constructs TLS credentials failed: %+v", err)
+			os.Exit(1)
+		}
+		manager.NewGrpcServer(cfg.AMHost, cfg.AMPort).
+			Serve(func(server *grpc.Server) {
+				pb.RegisterAccessManagerServer(server, s)
+				grpc.Creds(creds)
+			})
+	} else {
+		manager.NewGrpcServer(cfg.AMHost, cfg.AMPort).
+			Serve(func(server *grpc.Server) {
+				pb.RegisterAccessManagerServer(server, s)
+			})
 	}
-
-	p := &Server{
-		cfg: cfg,
-		db:  db,
-	}
-	return p, nil
-}
-
-func (p *Server) Close() error {
-	return p.db.Close()
 }

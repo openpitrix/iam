@@ -1,21 +1,18 @@
-// Copyright 2018 The OpenPitrix Authors. All rights reserved.
+// Copyright 2019 The OpenPitrix Authors. All rights reserved.
 // Use of this source code is governed by a Apache license
 // that can be found in the LICENSE file.
 
-// Access Management System for OpenPitrix.
 package main
 
 import (
 	"fmt"
 	"io/ioutil"
-	"net"
 	"os"
 
 	"github.com/urfave/cli"
 
+	"openpitrix.io/iam/pkg/config"
 	"openpitrix.io/iam/pkg/service/am"
-	"openpitrix.io/iam/pkg/service/am/config"
-	"openpitrix.io/iam/pkg/service/web"
 	"openpitrix.io/iam/pkg/version"
 	"openpitrix.io/logger"
 )
@@ -26,35 +23,35 @@ var (
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "iam"
-	app.Usage = "iam provides iam service."
+	app.Name = "am"
+	app.Usage = "provide am service."
 	app.Version = version.GetVersionString()
 
-	app.UsageText = `im [global options] command [options] [args...]
+	app.UsageText = `am [global options] command [options] [args...]
 
 EXAMPLE:
-   iam gen-config
-   iam serve`
+   am gen-config
+   am serve`
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:   "config",
 			Value:  "config-am.json",
-			Usage:  "iam config file",
-			EnvVar: "OPENPITRIX_AM_CONFIG",
+			Usage:  "am config file",
+			EnvVar: "am_CONFIG",
 		},
 		cli.StringFlag{
 			Name:   "host",
-			Value:  "openpitrix-am-service",
-			EnvVar: "OPENPITRIX_AM_HOST",
+			Value:  "am-service",
+			EnvVar: "am_HOST",
 		},
 	}
 
 	app.Before = func(c *cli.Context) error {
-		cfgpath := c.GlobalString("config")
-		if _, err := os.Stat(cfgpath); os.IsNotExist(err) {
+		cfgPath := c.GlobalString("config")
+		if _, err := os.Stat(cfgPath); os.IsNotExist(err) {
 			appConfig = config.Default()
-			ioutil.WriteFile(cfgpath, []byte(appConfig.JSONString()), 0666)
+			ioutil.WriteFile(cfgPath, []byte(appConfig.JSONString()), 0666)
 		} else {
 			appConfig = config.MustLoad(c.GlobalString("config"))
 		}
@@ -68,17 +65,6 @@ EXAMPLE:
 	}
 
 	app.Commands = []cli.Command{
-		{
-			Name:   "debug",
-			Usage:  "debug app",
-			Hidden: true,
-
-			Action: func(c *cli.Context) {
-				fmt.Println(nil)
-				fmt.Println(version.GetVersion())
-				return
-			},
-		},
 		{
 			Name:  "gen-config",
 			Usage: "gen config file",
@@ -129,61 +115,5 @@ EXAMPLE:
 }
 
 func serve(c *cli.Context) {
-	if !appConfig.TlsEnabled {
-		logger.Infof(nil, "version: %s", version.GetVersionString())
-		logger.Infof(nil, "IAM service http://%s:%d", appConfig.Host, appConfig.Port)
-		logger.Infof(nil, "IAM service http://%s:%d", getLocalIP(), appConfig.Port)
-	} else {
-		logger.Infof(nil, "version: %s", version.GetVersionString())
-		logger.Infof(nil, "IAM service https://%s:%d", appConfig.Host, appConfig.Port)
-		logger.Infof(nil, "IAM service https://%s:%d", getLocalIP(), appConfig.Port)
-	}
-
-	amService, err := am.OpenServer(appConfig)
-	if err != nil {
-		logger.Criticalf(nil, "%v", err)
-		os.Exit(1)
-	}
-
-	if !appConfig.TlsEnabled {
-		err := web.ListenAndServe(
-			fmt.Sprintf(":%d", appConfig.Port),
-			[]web.GrpcServer{
-				web.WithAccessManager(amService),
-			},
-			nil,
-		)
-		if err != nil {
-			logger.Criticalf(nil, "%v", err)
-			os.Exit(1)
-		}
-	} else {
-		err := web.ListenAndServeTLS(
-			fmt.Sprintf(":%d", appConfig.Port),
-			appConfig.TlsCertFile, appConfig.TlsKeyFile,
-			[]web.GrpcServer{
-				web.WithAccessManager(amService),
-			},
-			nil,
-		)
-		if err != nil {
-			logger.Criticalf(nil, "%v", err)
-			os.Exit(1)
-		}
-	}
-}
-
-func getLocalIP() string {
-	addrs, err := net.InterfaceAddrs()
-	if err != nil {
-		return "127.0.0.1"
-	}
-	for _, address := range addrs {
-		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
-			if ipnet.IP.To4() != nil {
-				return ipnet.IP.String()
-			}
-		}
-	}
-	return "127.0.0.1"
+	am.Serve(appConfig)
 }

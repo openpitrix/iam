@@ -7,54 +7,98 @@ package am
 import (
 	"context"
 
-	"openpitrix.io/iam/pkg/pb/am"
+	"openpitrix.io/iam/pkg/constants"
+	"openpitrix.io/iam/pkg/pb"
+	"openpitrix.io/iam/pkg/service/am/resource"
 	"openpitrix.io/iam/pkg/version"
 )
 
-var _ pbam.AccessManagerServer = (*Server)(nil)
+var _ pb.AccessManagerServer = (*Server)(nil)
 
-func (p *Server) GetVersion(context.Context, *pbam.Empty) (*pbam.String, error) {
-	reply := &pbam.String{Value: version.GetVersionString()}
-	return reply, nil
-}
-
-func (p *Server) CanDo(ctx context.Context, req *pbam.CanDoRequest) (*pbam.CanDoResponse, error) {
-	return p.db.CanDo(ctx, req)
+func (p *Server) GetVersion(context.Context, *pb.GetVersionRequest) (*pb.GetVersionResponse, error) {
+	return &pb.GetVersionResponse{
+		Version: version.GetVersionString(),
+	}, nil
 }
 
-func (p *Server) CreateRole(ctx context.Context, req *pbam.Role) (*pbam.Role, error) {
-	return p.db.CreateRole(ctx, req)
-}
-func (p *Server) DeleteRoles(ctx context.Context, req *pbam.RoleIdList) (*pbam.Empty, error) {
-	return p.db.DeleteRoles(ctx, req)
-}
-func (p *Server) ModifyRole(ctx context.Context, req *pbam.Role) (*pbam.Role, error) {
-	return p.db.ModifyRole(ctx, req)
-}
-func (p *Server) GetRole(ctx context.Context, req *pbam.RoleId) (*pbam.Role, error) {
-	return p.db.GetRole(ctx, req)
-}
-func (p *Server) DescribeRoles(ctx context.Context, req *pbam.DescribeRolesRequest) (*pbam.RoleList, error) {
-	return p.db.DescribeRoles(ctx, req)
+func (p *Server) CanDo(ctx context.Context, req *pb.CanDoRequest) (*pb.CanDoResponse, error) {
+	return resource.CanDo(ctx, req)
 }
 
-func (p *Server) GetUserWithRole(ctx context.Context, req *pbam.UserId) (*pbam.UserWithRole, error) {
-	return p.db.GetUserWithRole(ctx, req)
-}
-func (p *Server) DescribeUsersWithRole(ctx context.Context, req *pbam.DescribeUsersWithRoleRequest) (*pbam.DescribeUsersWithRoleResponse, error) {
-	return p.db.DescribeUsersWithRole(ctx, req)
+func (p *Server) CreateRole(ctx context.Context, req *pb.CreateRoleRequest) (*pb.CreateRoleResponse, error) {
+	return resource.CreateRole(ctx, req)
 }
 
-func (p *Server) GetRoleModule(ctx context.Context, req *pbam.RoleId) (*pbam.RoleModule, error) {
-	return p.db.GetRoleModule(ctx, req)
-}
-func (p *Server) ModifyRoleModule(ctx context.Context, req *pbam.RoleModule) (*pbam.RoleModule, error) {
-	return p.db.ModifyRoleModule(ctx, req)
+func (p *Server) DeleteRoles(ctx context.Context, req *pb.DeleteRolesRequest) (*pb.DeleteRolesResponse, error) {
+	_, err := CheckRolesPermission(ctx, req.RoleId, constants.ActionDelete)
+	if err != nil {
+		return nil, err
+	}
+	return resource.DeleteRoles(ctx, req)
 }
 
-func (p *Server) BindUserRole(ctx context.Context, req *pbam.BindUserRoleRequest) (*pbam.Empty, error) {
-	return p.db.BindUserRole(ctx, req)
+func (p *Server) ModifyRole(ctx context.Context, req *pb.ModifyRoleRequest) (*pb.ModifyRoleResponse, error) {
+	_, err := CheckRolesPermission(ctx, []string{req.RoleId}, constants.ActionModify)
+	if err != nil {
+		return nil, err
+	}
+	return resource.ModifyRole(ctx, req)
 }
-func (p *Server) UnbindUserRole(ctx context.Context, req *pbam.UnbindUserRoleRequest) (*pbam.Empty, error) {
-	return p.db.UnbindUserRole(ctx, req)
+
+func (p *Server) GetRole(ctx context.Context, req *pb.GetRoleRequest) (*pb.GetRoleResponse, error) {
+	roles, err := CheckRolesPermission(ctx, []string{req.RoleId}, constants.ActionDescribe)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.GetRoleResponse{
+		Role: roles[0].ToPB(),
+	}, nil
+}
+
+func (p *Server) GetRoleWithUser(ctx context.Context, req *pb.GetRoleRequest) (*pb.GetRoleWithUserResponse, error) {
+	_, err := CheckRolesPermission(ctx, []string{req.RoleId}, constants.ActionDescribe)
+	if err != nil {
+		return nil, err
+	}
+	return resource.GetRoleWithUser(ctx, req)
+}
+
+func (p *Server) DescribeRoles(ctx context.Context, req *pb.DescribeRolesRequest) (*pb.DescribeRolesResponse, error) {
+	return resource.DescribeRoles(ctx, req)
+}
+
+func (p *Server) DescribeRolesWithUser(ctx context.Context, req *pb.DescribeRolesRequest) (*pb.DescribeRolesWithUserResponse, error) {
+	return resource.DescribeRolesWithUser(ctx, req)
+}
+
+func (p *Server) GetRoleModule(ctx context.Context, req *pb.GetRoleModuleRequest) (*pb.GetRoleModuleResponse, error) {
+	_, err := CheckRolesPermission(ctx, []string{req.RoleId}, constants.ActionDescribe)
+	if err != nil {
+		return nil, err
+	}
+	return resource.GetRoleModule(ctx, req)
+}
+
+func (p *Server) ModifyRoleModule(ctx context.Context, req *pb.ModifyRoleModuleRequest) (*pb.ModifyRoleModuleResponse, error) {
+	_, err := CheckRolesPermission(ctx, []string{req.RoleId}, constants.ActionModify)
+	if err != nil {
+		return nil, err
+	}
+	return resource.ModifyRoleModule(ctx, req)
+}
+
+func (p *Server) BindUserRole(ctx context.Context, req *pb.BindUserRoleRequest) (*pb.BindUserRoleResponse, error) {
+	_, err := CheckRolesPermission(ctx, req.RoleId, constants.ActionCreate)
+	if err != nil {
+		return nil, err
+	}
+	return resource.BindUserRole(ctx, req)
+}
+
+func (p *Server) UnbindUserRole(ctx context.Context, req *pb.UnbindUserRoleRequest) (*pb.UnbindUserRoleResponse, error) {
+	_, err := CheckRolesPermission(ctx, req.RoleId, constants.ActionCreate)
+	if err != nil {
+		return nil, err
+	}
+	return resource.UnbindUserRole(ctx, req)
 }

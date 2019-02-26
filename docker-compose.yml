@@ -1,0 +1,117 @@
+# Copyright 2019 The KubeSphere Authors.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+version: '3'
+
+services:
+  iam-db:
+    image: "mysql:8.0.11"
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - ${DATA_PATH}/mysql:/var/lib/mysql
+    command: --lower_case_table_names=0 --default-authentication-plugin=mysql_native_password
+    ports:
+     - "13306:3306"
+    container_name: "iam-db"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: ${LOG_MAX_SIZE}
+        max-file: ${LOG_MAX_FILE}
+
+  am-db-init:
+    image: "iam:flyway"
+    environment:
+      - PASSWORD=${MYSQL_ROOT_PASSWORD}
+    entrypoint: sh
+    command: -c "/flyway/sql/ddl/ddl_init.sh -hiam-db -uroot --connect-timeout=5"
+    depends_on:
+      - iam-db
+    container_name: "am-db-init"
+
+  im-db-init:
+    image: "kubespheredev/im:flyway"
+    environment:
+      - PASSWORD=${MYSQL_ROOT_PASSWORD}
+    entrypoint: sh
+    command: -c "/flyway/sql/ddl/ddl_init.sh -hiam-db -uroot --connect-timeout=5"
+    depends_on:
+      - iam-db
+    container_name: "im-db-init"
+
+  am-db-ctrl:
+    image: "iam:flyway"
+    command: -url=jdbc:mysql://iam-db/am -user=root -password=${MYSQL_ROOT_PASSWORD} -validateOnMigrate=false migrate
+    links:
+      - iam-db:iam-db
+    depends_on:
+      - am-db-init
+    container_name: "am-db-ctrl"
+
+  # am service
+  am-service:
+    image: "iam"
+    command: "am serve"
+    links:
+      - iam-db:iam-db
+    depends_on:
+      - am-db-ctrl
+    container_name: "am-service"
+    ports:
+      - "9120:9120"
+    environment:
+      - AM_LOG_LEVEL=${LOG_LEVEL}
+      - AM_DB_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - AM_DB_DATABASE=am
+      - AM_DB_HOST=am-db
+      - AM_DB_LOG_MODE_ENABLE=${DB_LOG_MODE_ENABLE}
+      - AM_IM_HOST=im-service
+    logging:
+      driver: "json-file"
+      options:
+        max-size: ${LOG_MAX_SIZE}
+        max-file: ${LOG_MAX_FILE}
+
+  im-db-ctrl:
+    image: "kubespheredev/im:flyway"
+    command: -url=jdbc:mysql://iam-db/im -user=root -password=${MYSQL_ROOT_PASSWORD} -validateOnMigrate=false migrate
+    links:
+      - iam-db:iam-db
+    depends_on:
+      - im-db-init
+    container_name: "im-db-ctrl"
+
+  # im service
+  im-service:
+    image: "kubespheredev/im:latest"
+    command: "im serve"
+    links:
+      - iam-db:iam-db
+    depends_on:
+      - im-db-ctrl
+    container_name: "im-service"
+    ports:
+      - "9119:9119"
+    environment:
+      - IM_LOG_LEVEL=${LOG_LEVEL}
+      - IM_DB_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - IM_DB_DATABASE=im
+      - IM_DB_HOST=im-db
+      - IM_DB_LOG_MODE_ENABLE=${DB_LOG_MODE_ENABLE}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: ${LOG_MAX_SIZE}
+        max-file: ${LOG_MAX_FILE}
