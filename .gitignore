@@ -15,6 +15,7 @@
 .idea
 
 go.sum
+tmp
 
 /config.json
 /config-im.json

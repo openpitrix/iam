@@ -1,44 +1,23 @@
-# Copyright 2018 The OpenPitrix Authors. All rights reserved.
+# Copyright 2019 The OpenPitrix Authors. All rights reserved.
 # Use of this source code is governed by a Apache license
 # that can be found in the LICENSE file.
-
-# -----------------------------------------------------------------------------
-# builder
-# -----------------------------------------------------------------------------
 
 FROM golang:1.11-alpine3.7 as builder
 
 # intall tools
 RUN apk add --no-cache git
 
-WORKDIR /build-dir
+WORKDIR /go/src/openpitrix.io/iam
 COPY . .
 
 ENV GO111MODULE=on
 ENV CGO_ENABLED=0
 ENV GOOS=linux
-ENV GOBIN=/build-dir
 
-RUN echo module iam > /build-dir/go.mod
-RUN git describe --tags --always > /build-dir/version
-RUN git describe --exact-match 2>/dev/null || git log -1 --format="%H" > /build-dir/version
-
-RUN go get -ldflags '-w -s' -tags netgo openpitrix.io/iam/cmd/im@$(cat /build-dir/version)
-RUN go get -ldflags '-w -s' -tags netgo openpitrix.io/iam/cmd/am@$(cat /build-dir/version)
-
-RUN echo version: $(cat /build-dir/version)
-
-# -----------------------------------------------------------------------------
-# for image
-# -----------------------------------------------------------------------------
+RUN mkdir -p /openpitrix_bin
+RUN go generate openpitrix.io/iam/pkg/version && \
+	GOBIN=/openpitrix_bin go install -ldflags '-w -s' -tags netgo openpitrix.io/iam/cmd/...
 
 FROM alpine:3.7
-
-COPY --from=builder /build-dir/im /usr/local/bin/
-COPY --from=builder /build-dir/am /usr/local/bin/
-
-CMD ["im"]
-
-# -----------------------------------------------------------------------------
-# END
-# -----------------------------------------------------------------------------
+COPY --from=builder /openpitrix_bin/* /usr/local/bin/
+CMD ["/usr/local/bin/am"]
