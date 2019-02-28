@@ -16,11 +16,13 @@ import (
 
 func GetUserRoleBindings(ctx context.Context, userIds, roleIds []string) ([]*models.UserRoleBinding, error) {
 	var userRoleBindings []*models.UserRoleBinding
-	if err := global.Global().Database.Table(constants.TableUserRoleBinding).
-		Where(constants.ColumnRoleId+" in (?)", roleIds).
-		Where(constants.ColumnUserId+" in (?)", userIds).
-		Find(&userRoleBindings).
-		Error; err != nil {
+	tx := global.Global().Database.Table(constants.TableUserRoleBinding).
+		Where(constants.ColumnUserId+" in (?)", userIds)
+
+	if len(roleIds) > 0 {
+		tx = tx.Where(constants.ColumnRoleId+" in (?)", roleIds)
+	}
+	if err := tx.Find(&userRoleBindings).Error; err != nil {
 		return nil, gerr.NewWithDetail(ctx, gerr.Internal, err, gerr.ErrorInternalError)
 	}
 
@@ -71,13 +73,12 @@ func BindUserRole(ctx context.Context, req *pb.BindUserRoleRequest) (*pb.BindUse
 		return nil, gerr.New(ctx, gerr.PermissionDenied, gerr.ErrorCannotBindRole)
 	}
 
-	// one user can only bind to one role
-	roleIds, err := GetRoleIdsByUserIds(ctx, req.UserId)
-	if err != nil {
-		return nil, err
-	}
-	if len(roleIds) > 0 {
-		return nil, gerr.New(ctx, gerr.PermissionDenied, gerr.ErrorCannotBindRole)
+	// Unbind first
+	if err := global.Global().Database.
+		Where(constants.ColumnRoleId+" in (?)", req.RoleId).
+		Where(constants.ColumnUserId+" in (?)", req.UserId).
+		Delete(models.UserRoleBinding{}).Error; err != nil {
+		return nil, gerr.NewWithDetail(ctx, gerr.Internal, err, gerr.ErrorInternalError)
 	}
 
 	tx := global.Global().Database.Begin()
@@ -102,8 +103,8 @@ func BindUserRole(ctx context.Context, req *pb.BindUserRoleRequest) (*pb.BindUse
 }
 
 func UnbindUserRole(ctx context.Context, req *pb.UnbindUserRoleRequest) (*pb.UnbindUserRoleResponse, error) {
-	if len(req.UserId) == 0 || len(req.RoleId) == 0 {
-		return nil, gerr.New(ctx, gerr.InvalidArgument, gerr.ErrorMissingParameter, "userId, roleId")
+	if len(req.UserId) == 0 {
+		return nil, gerr.New(ctx, gerr.InvalidArgument, gerr.ErrorMissingParameter, "userId")
 	}
 
 	// check user bound to role
@@ -111,14 +112,18 @@ func UnbindUserRole(ctx context.Context, req *pb.UnbindUserRoleRequest) (*pb.Unb
 	if err != nil {
 		return nil, err
 	}
-	if len(userRoleBindings) != len(req.UserId)*len(req.RoleId) {
+
+	if len(req.RoleId) > 0 && len(userRoleBindings) != len(req.UserId)*len(req.RoleId) {
 		return nil, gerr.New(ctx, gerr.PermissionDenied, gerr.ErrorCannotUnbindGroup)
 	}
 
-	if err := global.Global().Database.
-		Where(constants.ColumnRoleId+" in (?)", req.RoleId).
-		Where(constants.ColumnUserId+" in (?)", req.UserId).
-		Delete(models.UserRoleBinding{}).Error; err != nil {
+	tx := global.Global().Database.
+		Where(constants.ColumnUserId+" in (?)", req.UserId)
+	if len(req.RoleId) > 0 {
+		tx = tx.Where(constants.ColumnRoleId+" in (?)", req.RoleId)
+	}
+
+	if err := tx.Delete(models.UserRoleBinding{}).Error; err != nil {
 		return nil, gerr.NewWithDetail(ctx, gerr.Internal, err, gerr.ErrorInternalError)
 	}
 
