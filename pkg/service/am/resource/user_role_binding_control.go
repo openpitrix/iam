@@ -75,7 +75,6 @@ func BindUserRole(ctx context.Context, req *pb.BindUserRoleRequest) (*pb.BindUse
 
 	// Unbind first
 	if err := global.Global().Database.
-		Where(constants.ColumnRoleId+" in (?)", req.RoleId).
 		Where(constants.ColumnUserId+" in (?)", req.UserId).
 		Delete(models.UserRoleBinding{}).Error; err != nil {
 		return nil, gerr.NewWithDetail(ctx, gerr.Internal, err, gerr.ErrorInternalError)
