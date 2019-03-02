@@ -15,7 +15,7 @@ import (
 	"openpitrix.io/iam/pkg/constants"
 	"openpitrix.io/iam/pkg/gerr"
 	"openpitrix.io/iam/pkg/pb"
-	"openpitrix.io/iam/pkg/util/strutil"
+	"openpitrix.io/iam/pkg/util/stringutil"
 	"openpitrix.io/logger"
 )
 
@@ -33,9 +33,9 @@ func GetDataLevelNum(dataLevel string) int {
 }
 
 func CanDo(ctx context.Context, req *pb.CanDoRequest) (*pb.CanDoResponse, error) {
-	userId := strutil.SimplifyString(req.UserId)
-	url := strutil.SimplifyString(req.Url)
-	urlMethod := strings.ToLower(strutil.SimplifyString(req.UrlMethod))
+	userId := stringutil.SimplifyString(req.UserId)
+	url := stringutil.SimplifyString(req.Url)
+	urlMethod := strings.ToLower(stringutil.SimplifyString(req.UrlMethod))
 
 	var roleIds []string
 	if userId == constants.UserSystem {
