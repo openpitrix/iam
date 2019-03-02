@@ -11,7 +11,7 @@ import (
 	"openpitrix.io/iam/pkg/global"
 	"openpitrix.io/iam/pkg/models"
 	"openpitrix.io/iam/pkg/pb"
-	"openpitrix.io/iam/pkg/util/strutil"
+	"openpitrix.io/iam/pkg/util/stringutil"
 )
 
 func getModuleTree(moduleApis []*models.ModuleApi) map[string]map[string]map[string][]*models.ModuleApi {
@@ -162,7 +162,7 @@ func ModifyRoleModule(ctx context.Context, req *pb.ModifyRoleModuleRequest) (*pb
 	var newEnableActionBundles []*models.EnableActionBundle
 	for _, moduleElem := range module.ModuleElemSet {
 		moduleId := moduleElem.ModuleId
-		if !strutil.Contains(visibilityModuleIds, moduleId) {
+		if !stringutil.Contains(visibilityModuleIds, moduleId) {
 			return nil, gerr.New(ctx, gerr.NotFound, gerr.ErrorModuleNotFound, moduleId)
 		}
 

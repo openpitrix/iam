@@ -14,7 +14,7 @@ import (
 
 	"openpitrix.io/iam/pkg/constants"
 	"openpitrix.io/iam/pkg/util/ctxutil"
-	"openpitrix.io/iam/pkg/util/strutil"
+	"openpitrix.io/iam/pkg/util/stringutil"
 	"openpitrix.io/logger"
 )
 
@@ -133,7 +133,7 @@ func GetDisplayColumns(displayColumns []string, wholeColumns []string) []string 
 	} else {
 		var newDisplayColumns []string
 		for _, column := range displayColumns {
-			if strutil.Contains(wholeColumns, column) {
+			if stringutil.Contains(wholeColumns, column) {
 				newDisplayColumns = append(newDisplayColumns, column)
 			}
 		}
@@ -201,14 +201,14 @@ func (c *Chain) getSearchFilter(tableName string, value interface{}, exclude ...
 	if vs, ok := value.([]string); ok {
 		for _, v := range vs {
 			for _, column := range constants.SearchColumns[tableName] {
-				if strutil.Contains(exclude, column) {
+				if stringutil.Contains(exclude, column) {
 					continue
 				}
 				// if column suffix is _id, must exact match
 				if strings.HasSuffix(column, "_id") {
 					conditions = append(conditions, column+" = '"+v+"'")
 				} else {
-					likeV := "%" + strutil.SimplifyString(v) + "%"
+					likeV := "%" + stringutil.SimplifyString(v) + "%"
 					conditions = append(conditions, column+" LIKE '"+likeV+"'")
 				}
 			}
@@ -225,14 +225,14 @@ func (c *Chain) buildFilterConditions(req Request, tableName string, exclude ...
 		column := getFieldName(field)
 		param := field.Value()
 		indexedColumns, ok := constants.IndexedColumns[tableName]
-		if ok && strutil.Contains(indexedColumns, column) {
+		if ok && stringutil.Contains(indexedColumns, column) {
 			value := getReqValue(param)
 			if value != nil {
 				key := column
 				c.DB = c.Where(key+" in (?)", value)
 			}
 		}
-		if column == SearchWordColumnName && strutil.Contains(constants.SearchWordColumnTable, tableName) {
+		if column == SearchWordColumnName && stringutil.Contains(constants.SearchWordColumnTable, tableName) {
 			value := getReqValue(param)
 			c.getSearchFilter(tableName, value, exclude...)
 		}

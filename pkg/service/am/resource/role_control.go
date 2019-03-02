@@ -17,7 +17,7 @@ import (
 	"openpitrix.io/iam/pkg/models"
 	"openpitrix.io/iam/pkg/pb"
 	"openpitrix.io/iam/pkg/util/ctxutil"
-	"openpitrix.io/iam/pkg/util/strutil"
+	"openpitrix.io/iam/pkg/util/stringutil"
 	"openpitrix.io/logger"
 )
 
@@ -67,7 +67,7 @@ func GetSenderPortal(ctx context.Context) (string, error) {
 }
 
 func CreateRole(ctx context.Context, req *pb.CreateRoleRequest) (*pb.CreateRoleResponse, error) {
-	if !strutil.Contains(constants.PortalSet, req.Portal) {
+	if !stringutil.Contains(constants.PortalSet, req.Portal) {
 		return nil, gerr.New(ctx, gerr.InvalidArgument, gerr.ErrorPortalNotFound, req.Portal)
 	}
 
@@ -177,15 +177,15 @@ func DescribeRoles(ctx context.Context, req *pb.DescribeRolesRequest) (*pb.Descr
 		return nil, err
 	}
 
-	if !strutil.Contains(constants.PortalSet, senderPortal) {
+	if !stringutil.Contains(constants.PortalSet, senderPortal) {
 		return nil, gerr.New(ctx, gerr.InvalidArgument, gerr.ErrorPortalNotFound, senderPortal)
 	}
 
-	req.RoleId = strutil.SimplifyStringList(req.RoleId)
-	req.RoleName = strutil.SimplifyStringList(req.RoleName)
-	req.Portal = strutil.SimplifyStringList(req.Portal)
-	req.Status = strutil.SimplifyStringList(req.Status)
-	req.UserId = strutil.SimplifyStringList(req.UserId)
+	req.RoleId = stringutil.SimplifyStringList(req.RoleId)
+	req.RoleName = stringutil.SimplifyStringList(req.RoleName)
+	req.Portal = stringutil.SimplifyStringList(req.Portal)
+	req.Status = stringutil.SimplifyStringList(req.Status)
+	req.UserId = stringutil.SimplifyStringList(req.UserId)
 
 	var addedRoleIds []string
 	if senderPortal == constants.PortalGlobalAdmin {
@@ -212,7 +212,7 @@ func DescribeRoles(ctx context.Context, req *pb.DescribeRolesRequest) (*pb.Descr
 		} else {
 			var inRoleIds []string
 			for _, roleId := range req.RoleId {
-				if strutil.Contains(roleIds, roleId) {
+				if stringutil.Contains(roleIds, roleId) {
 					inRoleIds = append(inRoleIds, roleId)
 				}
 			}
