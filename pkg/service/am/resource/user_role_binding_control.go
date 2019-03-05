@@ -47,11 +47,14 @@ func GetRoleIdsByUserIds(ctx context.Context, userIds []string) ([]string, error
 	return roleIds, nil
 }
 
-func GetUserIdsByRoleIds(ctx context.Context, roleIds []string) ([]string, error) {
-	rows, err := global.Global().Database.Table(constants.TableUserRoleBinding).
+func GetUserIdsByRoleIds(ctx context.Context, roleIds []string, status ...string) ([]string, error) {
+	tx := global.Global().Database.Table(constants.TableUserRoleBinding).
 		Select(constants.ColumnUserId).
-		Where(constants.ColumnRoleId+" in (?)", roleIds).
-		Rows()
+		Where(constants.ColumnRoleId+" in (?)", roleIds)
+	if len(status) > 0 {
+		tx = tx.Where(constants.ColumnStatus+" in (?)", status)
+	}
+	rows, err := tx.Rows()
 	if err != nil {
 		return nil, gerr.NewWithDetail(ctx, gerr.Internal, err, gerr.ErrorInternalError)
 	}

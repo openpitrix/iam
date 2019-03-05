@@ -117,7 +117,7 @@ func CreateRole(ctx context.Context, req *pb.CreateRoleRequest) (*pb.CreateRoleR
 func DeleteRoles(ctx context.Context, req *pb.DeleteRolesRequest) (*pb.DeleteRolesResponse, error) {
 	roleIds := req.GetRoleId()
 
-	userIds, err := GetUserIdsByRoleIds(ctx, roleIds)
+	userIds, err := GetUserIdsByRoleIds(ctx, roleIds, constants.StatusActive)
 	if err != nil {
 		return nil, err
 	}
