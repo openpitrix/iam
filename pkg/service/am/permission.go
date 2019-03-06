@@ -14,10 +14,22 @@ import (
 	"openpitrix.io/iam/pkg/sender"
 	"openpitrix.io/iam/pkg/service/am/resource"
 	"openpitrix.io/iam/pkg/util/ctxutil"
+	"openpitrix.io/logger"
 )
 
 func CheckRolesPermission(ctx context.Context, roleIds []string, action string) ([]*models.Role, error) {
 	s := ctxutil.GetSender(ctx)
+
+	logger.Debugf(ctx, "Sender user [%s].", s.UserId)
+
+	isBound := false
+	userRoleBindings, err := resource.GetUserRoleBindings(ctx, []string{s.UserId}, roleIds)
+	if err != nil {
+		return nil, err
+	}
+	if len(userRoleBindings) > 0 {
+		isBound = true
+	}
 
 	roles, err := resource.GetRoles(ctx, roleIds)
 	if err != nil {
@@ -39,10 +51,15 @@ func CheckRolesPermission(ctx context.Context, roleIds []string, action string) 
 				return nil, gerr.New(ctx, gerr.PermissionDenied, gerr.ErrorInternalRoleIllegalAction)
 			}
 		} else if role.Controller == constants.ControllerSelf {
-			ownerPath := sender.OwnerPath(role.OwnerPath)
-			if !ownerPath.CheckPermission(s) {
-				return nil, gerr.New(ctx, gerr.PermissionDenied, gerr.ErrorRoleAccessDenied, role.RoleId)
+			if isBound && action == constants.ActionDescribe {
+				continue
+			} else {
+				ownerPath := sender.OwnerPath(role.OwnerPath)
+				if !ownerPath.CheckPermission(s) {
+					return nil, gerr.New(ctx, gerr.PermissionDenied, gerr.ErrorRoleAccessDenied, role.RoleId)
+				}
 			}
+
 		}
 	}
 	return roles, nil

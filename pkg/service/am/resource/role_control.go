@@ -117,7 +117,7 @@ func CreateRole(ctx context.Context, req *pb.CreateRoleRequest) (*pb.CreateRoleR
 func DeleteRoles(ctx context.Context, req *pb.DeleteRolesRequest) (*pb.DeleteRolesResponse, error) {
 	roleIds := req.GetRoleId()
 
-	userIds, err := GetUserIdsByRoleIds(ctx, roleIds, constants.StatusActive)
+	userIds, err := GetUserIdsByRoleIds(ctx, roleIds)
 	if err != nil {
 		return nil, err
 	}
@@ -172,7 +172,14 @@ func ModifyRole(ctx context.Context, req *pb.ModifyRoleRequest) (*pb.ModifyRoleR
 }
 
 func DescribeRoles(ctx context.Context, req *pb.DescribeRolesRequest) (*pb.DescribeRolesResponse, error) {
+	s := ctxutil.GetSender(ctx)
+
 	senderPortal, err := GetSenderPortal(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	bindingRoleIds, err := GetRoleIdsByUserIds(ctx, []string{s.UserId})
 	if err != nil {
 		return nil, err
 	}
@@ -195,6 +202,7 @@ func DescribeRoles(ctx context.Context, req *pb.DescribeRolesRequest) (*pb.Descr
 	} else if senderPortal == constants.PortalUser {
 		addedRoleIds = []string{constants.RoleUser}
 	}
+	addedRoleIds = append(addedRoleIds, bindingRoleIds...)
 
 	req.Portal = []string{}
 
