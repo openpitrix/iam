@@ -23,7 +23,8 @@ import (
 
 func GetRole(ctx context.Context, roleId string) (*models.Role, error) {
 	var role = &models.Role{RoleId: roleId}
-	if err := global.Global().Database.Table(constants.TableRole).
+	if err := global.Global().Database.
+		Table(constants.TableRole).
 		Take(role).Error; err != nil {
 		return nil, gerr.New(ctx, gerr.NotFound, gerr.ErrorRoleNotFound, roleId)
 	}
@@ -33,37 +34,14 @@ func GetRole(ctx context.Context, roleId string) (*models.Role, error) {
 
 func GetRoles(ctx context.Context, roleIds []string) ([]*models.Role, error) {
 	var roles []*models.Role
-	if err := global.Global().Database.Table(constants.TableRole).
+	if err := global.Global().Database.
+		Table(constants.TableRole).
 		Where(constants.ColumnRoleId+" in (?)", roleIds).
 		Find(&roles).Error; err != nil {
 		return nil, gerr.NewWithDetail(ctx, gerr.Internal, err, gerr.ErrorInternalError)
 	}
 
 	return roles, nil
-}
-
-func GetSenderPortal(ctx context.Context) (string, error) {
-	s := ctxutil.GetSender(ctx)
-
-	var senderRoleId string
-	if s.UserId == constants.UserSystem {
-		senderRoleId = constants.RoleGlobalAdmin
-	} else {
-		roleIds, err := GetRoleIdsByUserIds(ctx, []string{s.UserId})
-		if err != nil {
-			return "", err
-		}
-		if len(roleIds) == 0 {
-			return "", gerr.NewWithDetail(ctx, gerr.Internal, err, gerr.ErrorInternalError)
-		}
-		senderRoleId = roleIds[0]
-	}
-
-	senderRole, err := GetRole(ctx, senderRoleId)
-	if err != nil {
-		return "", err
-	}
-	return senderRole.Portal, nil
 }
 
 func CreateRole(ctx context.Context, req *pb.CreateRoleRequest) (*pb.CreateRoleResponse, error) {
@@ -139,7 +117,8 @@ func DeleteRoles(ctx context.Context, req *pb.DeleteRolesRequest) (*pb.DeleteRol
 		constants.ColumnUpdateTime: now,
 		constants.ColumnStatus:     constants.StatusDeleted,
 	}
-	if err := global.Global().Database.Table(constants.TableRole).
+	if err := global.Global().Database.
+		Table(constants.TableRole).
 		Where(constants.ColumnRoleId+" in (?)", roleIds).
 		Updates(attributes).Error; err != nil {
 		logger.Errorf(ctx, "Update role status failed: %+v", err)
@@ -167,7 +146,8 @@ func ModifyRole(ctx context.Context, req *pb.ModifyRoleRequest) (*pb.ModifyRoleR
 	}
 	attributes[constants.ColumnUpdateTime] = time.Now()
 
-	if err := global.Global().Database.Table(constants.TableRole).
+	if err := global.Global().Database.
+		Table(constants.TableRole).
 		Where(constants.ColumnRoleId+" = ?", roleId).
 		Updates(attributes).Error; err != nil {
 		logger.Errorf(ctx, "Update role [%s] failed: %+v", roleId, err)
@@ -182,14 +162,23 @@ func ModifyRole(ctx context.Context, req *pb.ModifyRoleRequest) (*pb.ModifyRoleR
 func DescribeRoles(ctx context.Context, req *pb.DescribeRolesRequest) (*pb.DescribeRolesResponse, error) {
 	s := ctxutil.GetSender(ctx)
 
-	senderPortal, err := GetSenderPortal(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	bindingRoleIds, err := GetRoleIdsByUserIds(ctx, []string{s.UserId})
-	if err != nil {
-		return nil, err
+	var senderPortal string
+	var bindingRoleIds []string
+	if s.UserId == constants.UserSystem {
+		senderPortal = constants.PortalGlobalAdmin
+	} else {
+		roles, err := GetRolesByUserIds(ctx, []string{s.UserId})
+		if err != nil {
+			return nil, err
+		}
+		if len(roles) == 0 {
+			logger.Errorf(ctx, "Failed to find role for user [%s]", s.UserId)
+			return nil, gerr.NewWithDetail(ctx, gerr.Internal, err, gerr.ErrorInternalError)
+		}
+		senderPortal = roles[0].Portal
+		for _, role := range roles {
+			bindingRoleIds = append(bindingRoleIds, role.RoleId)
+		}
 	}
 
 	if !stringutil.Contains(constants.PortalSet, senderPortal) {
@@ -201,6 +190,7 @@ func DescribeRoles(ctx context.Context, req *pb.DescribeRolesRequest) (*pb.Descr
 	req.Portal = stringutil.SimplifyStringList(req.Portal)
 	req.Status = stringutil.SimplifyStringList(req.Status)
 	req.UserId = stringutil.SimplifyStringList(req.UserId)
+	req.ActionBundleId = stringutil.SimplifyStringList(req.ActionBundleId)
 
 	var addedRoleIds []string
 	if senderPortal == constants.PortalGlobalAdmin {
@@ -223,18 +213,23 @@ func DescribeRoles(ctx context.Context, req *pb.DescribeRolesRequest) (*pb.Descr
 			return nil, err
 		}
 
+		req.RoleId = stringutil.Merge(req.RoleId, roleIds)
 		if len(req.RoleId) == 0 {
-			req.RoleId = roleIds
-		} else {
-			var inRoleIds []string
-			for _, roleId := range req.RoleId {
-				if stringutil.Contains(roleIds, roleId) {
-					inRoleIds = append(inRoleIds, roleId)
-				}
-			}
-			req.RoleId = inRoleIds
+			return &pb.DescribeRolesResponse{
+				RoleSet: pbRoles,
+				Total:   uint32(0),
+			}, nil
+		}
+	}
+
+	if len(req.ActionBundleId) > 0 {
+		roleIds, err := GetRoleIdsByActionBundleIds(ctx, req.ActionBundleId)
+		if err != nil {
+			logger.Errorf(ctx, "Get role id by action bundle id failed: %+v", err)
+			return nil, err
 		}
 
+		req.RoleId = stringutil.Merge(req.RoleId, roleIds)
 		if len(req.RoleId) == 0 {
 			return &pb.DescribeRolesResponse{
 				RoleSet: pbRoles,

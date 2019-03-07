@@ -115,6 +115,7 @@ message DescribeRolesRequest {
 	repeated string role_name = 8;
 	repeated string portal = 9;
 	repeated string status = 10;
+	repeated string action_bundle_id = 11;
 }
 
 message DescribeRolesResponse {
