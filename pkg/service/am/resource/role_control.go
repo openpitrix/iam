@@ -96,7 +96,15 @@ func CreateRole(ctx context.Context, req *pb.CreateRoleRequest) (*pb.CreateRoleR
 				isCheckAll = true
 			}
 
-			roleModuleBinding := models.NewRoleModuleBinding(role.RoleId, moduleId, constants.DataLevelSelf, isCheckAll)
+			dataLevel := constants.DataLevelSelf
+			switch req.Portal {
+			case constants.PortalGlobalAdmin:
+				dataLevel = constants.DataLevelAll
+			case constants.PortalIsv:
+				dataLevel = constants.DataLevelGroup
+			}
+
+			roleModuleBinding := models.NewRoleModuleBinding(role.RoleId, moduleId, dataLevel, isCheckAll)
 			if err := tx.Create(roleModuleBinding).Error; err != nil {
 				tx.Rollback()
 				logger.Errorf(ctx, "Insert role module binding failed: %v", err)
@@ -117,7 +125,7 @@ func CreateRole(ctx context.Context, req *pb.CreateRoleRequest) (*pb.CreateRoleR
 func DeleteRoles(ctx context.Context, req *pb.DeleteRolesRequest) (*pb.DeleteRolesResponse, error) {
 	roleIds := req.GetRoleId()
 
-	userIds, err := GetUserIdsByRoleIds(ctx, roleIds, constants.StatusActive)
+	userIds, err := GetUserIdsByRoleIds(ctx, roleIds)
 	if err != nil {
 		return nil, err
 	}
@@ -172,7 +180,14 @@ func ModifyRole(ctx context.Context, req *pb.ModifyRoleRequest) (*pb.ModifyRoleR
 }
 
 func DescribeRoles(ctx context.Context, req *pb.DescribeRolesRequest) (*pb.DescribeRolesResponse, error) {
+	s := ctxutil.GetSender(ctx)
+
 	senderPortal, err := GetSenderPortal(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	bindingRoleIds, err := GetRoleIdsByUserIds(ctx, []string{s.UserId})
 	if err != nil {
 		return nil, err
 	}
@@ -195,6 +210,7 @@ func DescribeRoles(ctx context.Context, req *pb.DescribeRolesRequest) (*pb.Descr
 	} else if senderPortal == constants.PortalUser {
 		addedRoleIds = []string{constants.RoleUser}
 	}
+	addedRoleIds = append(addedRoleIds, bindingRoleIds...)
 
 	req.Portal = []string{}
 

@@ -64,6 +64,7 @@ func CanDo(ctx context.Context, req *pb.CanDoRequest) (*pb.CanDoResponse, error)
 	}
 
 	if !canDo {
+		logger.Errorf(ctx, "Permission denied for user_id [%s], url [%s], url_method [%s]", userId, url, urlMethod)
 		return nil, gerr.New(ctx, gerr.PermissionDenied, gerr.ErrorPermissionDenied)
 	}
 

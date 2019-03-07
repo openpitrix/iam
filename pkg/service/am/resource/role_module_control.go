@@ -75,6 +75,15 @@ func buildModuleTree(
 				if len(apis) == 0 {
 					continue
 				}
+				var apiSet []*pb.Api
+				for _, api := range apis {
+					apiSet = append(apiSet, &pb.Api{
+						ApiId:     api.ApiId,
+						ApiMethod: api.ApiMethod,
+						UrlMethod: api.UrlMethod,
+						Url:       api.Url,
+					})
+				}
 				if featureName == "" {
 					featureName = apis[0].FeatureName
 				}
@@ -84,6 +93,7 @@ func buildModuleTree(
 				actionBundleSet = append(actionBundleSet, &pb.ActionBundle{
 					ActionBundleId:   actionBundleId,
 					ActionBundleName: apis[0].ActionBundleName,
+					ApiSet:           apiSet,
 				})
 			}
 
