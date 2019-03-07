@@ -96,7 +96,15 @@ func CreateRole(ctx context.Context, req *pb.CreateRoleRequest) (*pb.CreateRoleR
 				isCheckAll = true
 			}
 
-			roleModuleBinding := models.NewRoleModuleBinding(role.RoleId, moduleId, constants.DataLevelSelf, isCheckAll)
+			dataLevel := constants.DataLevelSelf
+			switch req.Portal {
+			case constants.PortalGlobalAdmin:
+				dataLevel = constants.DataLevelAll
+			case constants.PortalIsv:
+				dataLevel = constants.DataLevelGroup
+			}
+
+			roleModuleBinding := models.NewRoleModuleBinding(role.RoleId, moduleId, dataLevel, isCheckAll)
 			if err := tx.Create(roleModuleBinding).Error; err != nil {
 				tx.Rollback()
 				logger.Errorf(ctx, "Insert role module binding failed: %v", err)
