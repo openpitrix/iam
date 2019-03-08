@@ -69,7 +69,7 @@ func CreateRole(ctx context.Context, req *pb.CreateRoleRequest) (*pb.CreateRoleR
 		for _, moduleId := range moduleIds {
 			isCheckAll := false
 
-			// m0 enabled for all roles
+			// m0 enable for all roles
 			if moduleId == constants.ModuleIdM0 {
 				isCheckAll = true
 			}

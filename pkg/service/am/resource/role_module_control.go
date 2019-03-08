@@ -137,7 +137,7 @@ func GetRoleModule(ctx context.Context, req *pb.GetRoleModuleRequest) (*pb.GetRo
 		return nil, err
 	}
 
-	enableModuleApis, err := GetEnableModuleApis(ctx, []string{roleId})
+	enableModuleApis, err := GetEnableModuleApis(ctx, []string{roleId}, roleModuleBindings...)
 	if err != nil {
 		return nil, err
 	}
@@ -237,6 +237,60 @@ func ModifyRoleModule(ctx context.Context, req *pb.ModifyRoleModuleRequest) (*pb
 	}, nil
 }
 
+func FilterRolesByModuleApis(moduleApis []*models.ModuleApi, roles []*models.Role) []*models.Role {
+	var filterRoles []*models.Role
+	for _, moduleApi := range moduleApis {
+		for _, role := range roles {
+			if moduleApi.ModuleId == constants.ModuleIdM0 {
+				roles = append(roles, role)
+			} else {
+				switch role.Portal {
+				case constants.PortalGlobalAdmin:
+					if moduleApi.GlobalAdminActionBundleVisibility {
+						filterRoles = append(filterRoles, role)
+					}
+				case constants.PortalIsv:
+					if moduleApi.IsvActionBundleVisibility {
+						filterRoles = append(filterRoles, role)
+					}
+				case constants.PortalUser:
+					if moduleApi.UserActionBundleVisibility {
+						filterRoles = append(filterRoles, role)
+					}
+				}
+			}
+		}
+	}
+	return models.UniqueRoles(filterRoles)
+}
+
+func FilterModuleApisByRoles(moduleApis []*models.ModuleApi, roles []*models.Role) []*models.ModuleApi {
+	var filterModuleApis []*models.ModuleApi
+	for _, role := range roles {
+		for _, moduleApi := range moduleApis {
+			if moduleApi.ModuleId == constants.ModuleIdM0 {
+				filterModuleApis = append(filterModuleApis, moduleApi)
+			} else {
+				switch role.Portal {
+				case constants.PortalGlobalAdmin:
+					if moduleApi.GlobalAdminActionBundleVisibility {
+						filterModuleApis = append(filterModuleApis, moduleApi)
+					}
+				case constants.PortalIsv:
+					if moduleApi.IsvActionBundleVisibility {
+						filterModuleApis = append(filterModuleApis, moduleApi)
+					}
+				case constants.PortalUser:
+					if moduleApi.UserActionBundleVisibility {
+						filterModuleApis = append(filterModuleApis, moduleApi)
+					}
+				}
+			}
+		}
+	}
+	return models.UniqueModuleApis(filterModuleApis)
+}
+
 func GetRoleIdsByActionBundleIds(ctx context.Context, actionBundleIds []string) ([]string, error) {
 	// get module apis
 	moduleApis, err := GetModuleApisByActionBundleIds(ctx, actionBundleIds)
@@ -262,6 +316,7 @@ func GetRoleIdsByActionBundleIds(ctx context.Context, actionBundleIds []string) 
 			constants.TableRoleModuleBinding+"."+constants.ColumnRoleId+" = "+constants.TableRole+"."+constants.ColumnRoleId).
 		Where(constants.TableRoleModuleBinding+"."+constants.ColumnIsCheckAll+" = 1").
 		Where(constants.TableRoleModuleBinding+"."+constants.ColumnModuleId+" in (?)", moduleIds).
+		Group(constants.TableRole + "." + constants.ColumnRoleId).
 		Scan(&isCheckAllRoles).Error; err != nil {
 		logger.Errorf(ctx, "Get is_check_all = 1 roles by module [%s] failed: %+v",
 			strings.Join(moduleIds, ","), err)
@@ -269,8 +324,8 @@ func GetRoleIdsByActionBundleIds(ctx context.Context, actionBundleIds []string) 
 	}
 	candidateRoles = append(candidateRoles, isCheckAllRoles...)
 
-	// get action bundle enabled roles
-	var actionBundleEnabledRoles []*models.Role
+	// get action bundle enable roles
+	var actionBundleEnableRoles []*models.Role
 	if err := global.Global().Database.
 		Table(constants.TableRole).
 		Select(constants.TableRole+".*").
@@ -281,36 +336,19 @@ func GetRoleIdsByActionBundleIds(ctx context.Context, actionBundleIds []string) 
 		Joins("JOIN "+constants.TableEnableActionBundle+" on "+
 			constants.TableEnableActionBundle+"."+constants.ColumnBindId+" = "+constants.TableRoleModuleBinding+"."+constants.ColumnBindId).
 		Where(constants.TableEnableActionBundle+"."+constants.ColumnActionBundleId+" in (?)", actionBundleIds).
-		Scan(&actionBundleEnabledRoles).Error; err != nil {
-		logger.Errorf(ctx, "Get action bundle enabled roles by module [%s] failed: %+v",
+		Group(constants.TableRole + "." + constants.ColumnRoleId).
+		Scan(&actionBundleEnableRoles).Error; err != nil {
+		logger.Errorf(ctx, "Get action bundle enable roles by module [%s] failed: %+v",
 			strings.Join(moduleIds, ","), err)
 		return nil, gerr.NewWithDetail(ctx, gerr.Internal, err, gerr.ErrorInternalError)
 	}
-	candidateRoles = append(candidateRoles, actionBundleEnabledRoles...)
+	candidateRoles = append(candidateRoles, actionBundleEnableRoles...)
+
+	filterRoles := FilterRolesByModuleApis(moduleApis, candidateRoles)
 
 	var retRoleIds []string
-	for _, moduleApi := range moduleApis {
-		for _, role := range candidateRoles {
-			if moduleApi.ModuleId == constants.ModuleIdM0 && !stringutil.Contains(retRoleIds, role.RoleId) {
-				retRoleIds = append(retRoleIds, role.RoleId)
-			} else {
-				switch role.Portal {
-				case constants.PortalGlobalAdmin:
-					if moduleApi.GlobalAdminActionBundleVisibility && !stringutil.Contains(retRoleIds, role.RoleId) {
-						retRoleIds = append(retRoleIds, role.RoleId)
-					}
-				case constants.PortalIsv:
-					if moduleApi.IsvActionBundleVisibility && !stringutil.Contains(retRoleIds, role.RoleId) {
-						retRoleIds = append(retRoleIds, role.RoleId)
-					}
-				case constants.PortalUser:
-					if moduleApi.UserActionBundleVisibility && !stringutil.Contains(retRoleIds, role.RoleId) {
-						retRoleIds = append(retRoleIds, role.RoleId)
-					}
-				}
-			}
-
-		}
+	for _, role := range filterRoles {
+		retRoleIds = append(retRoleIds, role.RoleId)
 	}
 	return retRoleIds, nil
 }

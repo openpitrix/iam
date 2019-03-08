@@ -36,6 +36,7 @@ func GetRolesByUserIds(ctx context.Context, userIds []string) ([]*models.Role, e
 		Table(constants.TableRole).
 		Joins("JOIN "+constants.TableUserRoleBinding+" on "+
 			constants.TableUserRoleBinding+"."+constants.ColumnRoleId+" = "+constants.TableRole+"."+constants.ColumnRoleId).
+		Group(constants.TableRole+"."+constants.ColumnRoleId).
 		Where(constants.TableUserRoleBinding+"."+constants.ColumnUserId+" in (?)", userIds).
 		Find(&roles).Error; err != nil {
 		return nil, gerr.NewWithDetail(ctx, gerr.Internal, err, gerr.ErrorInternalError)

@@ -22,6 +22,7 @@ const (
 	ColumnActionBundleId               = "action_bundle_id"
 	ColumnIsCheckAll                   = "is_check_all"
 	ColumnBindId                       = "bind_id"
+	ColumnApiId                        = "api_id"
 )
 
 const (

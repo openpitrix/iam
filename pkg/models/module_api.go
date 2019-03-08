@@ -27,7 +27,7 @@ type ModuleApi struct {
 	UserActionBundleVisibility        bool
 }
 
-func Unique(moduleApis []*ModuleApi) []*ModuleApi {
+func UniqueModuleApis(moduleApis []*ModuleApi) []*ModuleApi {
 	moduleApiMap := make(map[string]*ModuleApi)
 	var uniqueModuleApis []*ModuleApi
 
