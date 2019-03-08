@@ -84,3 +84,17 @@ func (p *RoleWithUser) ToPB() *pb.RoleWithUser {
 		UserIdSet: p.UserIds,
 	}
 }
+
+func UniqueRoles(roles []*Role) []*Role {
+	roleMap := make(map[string]*Role)
+	var uniqueRoles []*Role
+
+	for _, role := range roles {
+		roleMap[role.RoleId] = role
+	}
+
+	for _, role := range roleMap {
+		uniqueRoles = append(uniqueRoles, role)
+	}
+	return uniqueRoles
+}

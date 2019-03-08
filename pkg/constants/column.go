@@ -19,14 +19,18 @@ const (
 	ColumnOwnerPath                    = "owner_path"
 	ColumnController                   = "controller"
 	ColumnActionBundleVisibilitySuffix = "_action_bundle_visibility"
+	ColumnActionBundleId               = "action_bundle_id"
+	ColumnIsCheckAll                   = "is_check_all"
+	ColumnBindId                       = "bind_id"
+	ColumnApiId                        = "api_id"
 )
 
 const (
-	TableUserRoleBinding   = "user_role_binding"
-	TableRole              = "role"
-	TableEnableAction      = "enable_action_bundle"
-	TableModuleApi         = "module_api"
-	TableRoleModuleBinding = "role_module_binding"
+	TableUserRoleBinding    = "user_role_binding"
+	TableRole               = "role"
+	TableEnableActionBundle = "enable_action_bundle"
+	TableModuleApi          = "module_api"
+	TableRoleModuleBinding  = "role_module_binding"
 )
 
 // columns that can be search through sql '=' operator

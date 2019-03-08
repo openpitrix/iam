@@ -7,11 +7,15 @@ package resource
 import (
 	"context"
 
+	"strings"
+
+	"openpitrix.io/iam/pkg/constants"
 	"openpitrix.io/iam/pkg/gerr"
 	"openpitrix.io/iam/pkg/global"
 	"openpitrix.io/iam/pkg/models"
 	"openpitrix.io/iam/pkg/pb"
 	"openpitrix.io/iam/pkg/util/stringutil"
+	"openpitrix.io/logger"
 )
 
 func getModuleTree(moduleApis []*models.ModuleApi) map[string]map[string]map[string][]*models.ModuleApi {
@@ -133,7 +137,7 @@ func GetRoleModule(ctx context.Context, req *pb.GetRoleModuleRequest) (*pb.GetRo
 		return nil, err
 	}
 
-	enableModuleApis, err := GetEnableModuleApis(ctx, []string{roleId})
+	enableModuleApis, err := GetEnableModuleApis(ctx, []string{roleId}, roleModuleBindings...)
 	if err != nil {
 		return nil, err
 	}
@@ -231,4 +235,120 @@ func ModifyRoleModule(ctx context.Context, req *pb.ModifyRoleModuleRequest) (*pb
 	return &pb.ModifyRoleModuleResponse{
 		RoleId: roleId,
 	}, nil
+}
+
+func FilterRolesByModuleApis(moduleApis []*models.ModuleApi, roles []*models.Role) []*models.Role {
+	var filterRoles []*models.Role
+	for _, moduleApi := range moduleApis {
+		for _, role := range roles {
+			if moduleApi.ModuleId == constants.ModuleIdM0 {
+				roles = append(roles, role)
+			} else {
+				switch role.Portal {
+				case constants.PortalGlobalAdmin:
+					if moduleApi.GlobalAdminActionBundleVisibility {
+						filterRoles = append(filterRoles, role)
+					}
+				case constants.PortalIsv:
+					if moduleApi.IsvActionBundleVisibility {
+						filterRoles = append(filterRoles, role)
+					}
+				case constants.PortalUser:
+					if moduleApi.UserActionBundleVisibility {
+						filterRoles = append(filterRoles, role)
+					}
+				}
+			}
+		}
+	}
+	return models.UniqueRoles(filterRoles)
+}
+
+func FilterModuleApisByRoles(moduleApis []*models.ModuleApi, roles []*models.Role) []*models.ModuleApi {
+	var filterModuleApis []*models.ModuleApi
+	for _, role := range roles {
+		for _, moduleApi := range moduleApis {
+			if moduleApi.ModuleId == constants.ModuleIdM0 {
+				filterModuleApis = append(filterModuleApis, moduleApi)
+			} else {
+				switch role.Portal {
+				case constants.PortalGlobalAdmin:
+					if moduleApi.GlobalAdminActionBundleVisibility {
+						filterModuleApis = append(filterModuleApis, moduleApi)
+					}
+				case constants.PortalIsv:
+					if moduleApi.IsvActionBundleVisibility {
+						filterModuleApis = append(filterModuleApis, moduleApi)
+					}
+				case constants.PortalUser:
+					if moduleApi.UserActionBundleVisibility {
+						filterModuleApis = append(filterModuleApis, moduleApi)
+					}
+				}
+			}
+		}
+	}
+	return models.UniqueModuleApis(filterModuleApis)
+}
+
+func GetRoleIdsByActionBundleIds(ctx context.Context, actionBundleIds []string) ([]string, error) {
+	// get module apis
+	moduleApis, err := GetModuleApisByActionBundleIds(ctx, actionBundleIds)
+	if err != nil {
+		return nil, err
+	}
+
+	var moduleIds []string
+	for _, moduleApi := range moduleApis {
+		if !stringutil.Contains(moduleIds, moduleApi.ModuleId) {
+			moduleIds = append(moduleIds, moduleApi.ModuleId)
+		}
+	}
+
+	var candidateRoles []*models.Role
+
+	// get is_check_all = 1 roles
+	var isCheckAllRoles []*models.Role
+	if err := global.Global().Database.
+		Table(constants.TableRole).
+		Select(constants.TableRole+".*").
+		Joins("JOIN "+constants.TableRoleModuleBinding+" on "+
+			constants.TableRoleModuleBinding+"."+constants.ColumnRoleId+" = "+constants.TableRole+"."+constants.ColumnRoleId).
+		Where(constants.TableRoleModuleBinding+"."+constants.ColumnIsCheckAll+" = 1").
+		Where(constants.TableRoleModuleBinding+"."+constants.ColumnModuleId+" in (?)", moduleIds).
+		Group(constants.TableRole + "." + constants.ColumnRoleId).
+		Scan(&isCheckAllRoles).Error; err != nil {
+		logger.Errorf(ctx, "Get is_check_all = 1 roles by module [%s] failed: %+v",
+			strings.Join(moduleIds, ","), err)
+		return nil, gerr.NewWithDetail(ctx, gerr.Internal, err, gerr.ErrorInternalError)
+	}
+	candidateRoles = append(candidateRoles, isCheckAllRoles...)
+
+	// get action bundle enable roles
+	var actionBundleEnableRoles []*models.Role
+	if err := global.Global().Database.
+		Table(constants.TableRole).
+		Select(constants.TableRole+".*").
+		Joins("JOIN "+constants.TableRoleModuleBinding+" on "+
+			constants.TableRoleModuleBinding+"."+constants.ColumnRoleId+" = "+constants.TableRole+"."+constants.ColumnRoleId).
+		Where(constants.TableRoleModuleBinding+"."+constants.ColumnIsCheckAll+" = 0").
+		Where(constants.TableRoleModuleBinding+"."+constants.ColumnModuleId+" in (?)", moduleIds).
+		Joins("JOIN "+constants.TableEnableActionBundle+" on "+
+			constants.TableEnableActionBundle+"."+constants.ColumnBindId+" = "+constants.TableRoleModuleBinding+"."+constants.ColumnBindId).
+		Where(constants.TableEnableActionBundle+"."+constants.ColumnActionBundleId+" in (?)", actionBundleIds).
+		Group(constants.TableRole + "." + constants.ColumnRoleId).
+		Scan(&actionBundleEnableRoles).Error; err != nil {
+		logger.Errorf(ctx, "Get action bundle enable roles by module [%s] failed: %+v",
+			strings.Join(moduleIds, ","), err)
+		return nil, gerr.NewWithDetail(ctx, gerr.Internal, err, gerr.ErrorInternalError)
+	}
+	candidateRoles = append(candidateRoles, actionBundleEnableRoles...)
+
+	filterRoles := FilterRolesByModuleApis(moduleApis, candidateRoles)
+
+	var retRoleIds []string
+	for _, role := range filterRoles {
+		retRoleIds = append(retRoleIds, role.RoleId)
+	}
+	return retRoleIds, nil
 }

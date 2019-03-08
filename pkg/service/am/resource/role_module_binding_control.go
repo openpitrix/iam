@@ -8,6 +8,7 @@ import (
 	"context"
 	"strings"
 
+	"openpitrix.io/iam/pkg/constants"
 	"openpitrix.io/iam/pkg/gerr"
 	"openpitrix.io/iam/pkg/global"
 	"openpitrix.io/iam/pkg/models"
@@ -15,14 +16,11 @@ import (
 )
 
 func GetRoleModuleBindingsByRoleIds(ctx context.Context, roleIds []string) ([]*models.RoleModuleBinding, error) {
-	const query = `
-		select role_module_binding.*
-		from
-			role_module_binding
-		where role_module_binding.role_id in (?)
-	`
 	var roleModuleBindings []*models.RoleModuleBinding
-	if err := global.Global().Database.Raw(query, roleIds).Scan(&roleModuleBindings).Error; err != nil {
+	if err := global.Global().Database.
+		Table(constants.TableRoleModuleBinding).
+		Where(constants.ColumnRoleId+" in (?)", roleIds).
+		Scan(&roleModuleBindings).Error; err != nil {
 		logger.Errorf(ctx, "Get role module bindings by role [%s] failed: %+v", strings.Join(roleIds, ","), err)
 		return nil, gerr.NewWithDetail(ctx, gerr.Internal, err, gerr.ErrorInternalError)
 	}
@@ -31,14 +29,12 @@ func GetRoleModuleBindingsByRoleIds(ctx context.Context, roleIds []string) ([]*m
 }
 
 func GetRoleModuleBindingsByRoleIdsAndModuleIds(ctx context.Context, roleIds, moduleIds []string) ([]*models.RoleModuleBinding, error) {
-	const query = `
-		select role_module_binding.*
-		from
-			role_module_binding
-		where role_id in (?) and module_id in (?)
-	`
 	var roleModuleBindings []*models.RoleModuleBinding
-	if err := global.Global().Database.Raw(query, roleIds, moduleIds).Scan(&roleModuleBindings).Error; err != nil {
+	if err := global.Global().Database.
+		Table(constants.TableRoleModuleBinding).
+		Where(constants.ColumnRoleId+" in (?)", roleIds).
+		Where(constants.ColumnModuleId+" in (?)", moduleIds).
+		Scan(&roleModuleBindings).Error; err != nil {
 		logger.Errorf(ctx, "Get role module bindings by role [%s] module [%s] failed: %+v",
 			strings.Join(roleIds, ","), strings.Join(moduleIds, ","), err)
 		return nil, gerr.NewWithDetail(ctx, gerr.Internal, err, gerr.ErrorInternalError)

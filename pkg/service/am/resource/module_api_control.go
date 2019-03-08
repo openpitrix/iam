@@ -15,8 +15,20 @@ import (
 	"openpitrix.io/logger"
 )
 
+func GetModuleApisByActionBundleIds(ctx context.Context, actionBundleIds []string) ([]*models.ModuleApi, error) {
+	var moduleApis []*models.ModuleApi
+	if err := global.Global().Database.
+		Table(constants.TableModuleApi).
+		Where(constants.ColumnActionBundleId+" in (?)", actionBundleIds).
+		Find(&moduleApis).Error; err != nil {
+		return nil, gerr.New(ctx, gerr.Internal, gerr.ErrorInternalError)
+	}
+
+	return moduleApis, nil
+}
+
 func GetModuleIds(ctx context.Context) ([]string, error) {
-	query := "select module_id from module_api group by module_id"
+	query := "select module_id from `module_api` group by module_id"
 	rows, err := global.Global().Database.Raw(query).Rows()
 	if err != nil {
 		return nil, gerr.NewWithDetail(ctx, gerr.Internal, err, gerr.ErrorInternalError)
@@ -38,15 +50,14 @@ func GetVisibilityModuleIds(ctx context.Context, roleId string) ([]string, error
 
 	columnActionBundleVisibility := role.Portal + constants.ColumnActionBundleVisibilitySuffix
 
-	query := `
-		select module_api.module_id
-		from
-			role_module_binding, module_api
-		where role_module_binding.module_id=module_api.module_id
-			and role_module_binding.role_id=? and module_api.` +
-		columnActionBundleVisibility + "=1 group by module_api.module_id"
 	var moduleIds []string
-	rows, err := global.Global().Database.Raw(query, roleId).Rows()
+	rows, err := global.Global().Database.
+		Table(constants.TableModuleApi).
+		Select(constants.TableModuleApi+"."+constants.ColumnModuleId).
+		Where(constants.TableModuleApi+"."+columnActionBundleVisibility+" = 1").
+		Joins("JOIN "+constants.TableRoleModuleBinding+" on "+constants.TableRoleModuleBinding+"."+constants.ColumnRoleId+" = ?", roleId).
+		Group(constants.TableModuleApi + "." + constants.ColumnApiId).
+		Rows()
 	if err != nil {
 		logger.Errorf(ctx, "Get visibility module ids by role id [%s] failed: %+v", roleId, err)
 		return nil, gerr.NewWithDetail(ctx, gerr.Internal, err, gerr.ErrorInternalError)
@@ -59,17 +70,45 @@ func GetVisibilityModuleIds(ctx context.Context, roleId string) ([]string, error
 	return moduleIds, nil
 }
 
-func getEnableModuleApis(ctx context.Context, roleIds []string) ([]*models.ModuleApi, error) {
-	const query = `
-		select module_api.* from
-			enable_action_bundle, role_module_binding, module_api
-		where enable_action_bundle.bind_id=role_module_binding.bind_id
-			and enable_action_bundle.action_bundle_id=module_api.action_bundle_id
-			and module_api.module_id=role_module_binding.module_id
-			and role_module_binding.role_id in (?)
-		`
+func GetVisibilityModuleApis(ctx context.Context, roleId string) ([]*models.ModuleApi, error) {
+	role, err := GetRole(ctx, roleId)
+	if err != nil {
+		return nil, err
+	}
+
+	columnActionBundleVisibility := role.Portal + constants.ColumnActionBundleVisibilitySuffix
+
+	var moduleApis []*models.ModuleApi
+	if err := global.Global().Database.
+		Table(constants.TableModuleApi).
+		Select(constants.TableModuleApi+".*").
+		Joins("JOIN "+constants.TableRoleModuleBinding+" on "+
+			constants.TableRoleModuleBinding+"."+constants.ColumnModuleId+" = "+constants.TableModuleApi+"."+constants.ColumnModuleId).
+		Where(constants.TableRoleModuleBinding+"."+constants.ColumnRoleId+" = ?", roleId).
+		Where(constants.TableModuleApi + "." + columnActionBundleVisibility + " = 1").
+		Scan(&moduleApis).Error; err != nil {
+		logger.Errorf(ctx, "Get module apis by role id [%s] failed: %+v", roleId, err)
+		return nil, gerr.NewWithDetail(ctx, gerr.Internal, err, gerr.ErrorInternalError)
+	}
+
+	return moduleApis, nil
+}
+
+func GetCheckedModuleApis(ctx context.Context, roleIds []string) ([]*models.ModuleApi, error) {
 	var enableModuleApis []*models.ModuleApi
-	if err := global.Global().Database.Raw(query, roleIds).Scan(&enableModuleApis).Error; err != nil {
+	if err := global.Global().Database.
+		Table(constants.TableModuleApi).
+		Select(constants.TableModuleApi+".*").
+		Joins("JOIN "+constants.TableRoleModuleBinding+" on "+
+			constants.TableRoleModuleBinding+"."+constants.ColumnModuleId+" = "+constants.TableModuleApi+"."+constants.ColumnModuleId).
+		Where(constants.TableRoleModuleBinding+"."+constants.ColumnRoleId+" in (?)", roleIds).
+		Where(constants.TableRoleModuleBinding + "." + constants.ColumnIsCheckAll + " = 0").
+		Joins("JOIN " + constants.TableEnableActionBundle + " on " +
+			constants.TableEnableActionBundle + "." + constants.ColumnActionBundleId + " = " + constants.TableModuleApi + "." + constants.ColumnActionBundleId +
+			" AND " +
+			constants.TableEnableActionBundle + "." + constants.ColumnBindId + " = " + constants.TableRoleModuleBinding + "." + constants.ColumnBindId).
+		Group(constants.TableModuleApi + "." + constants.ColumnApiId).
+		Scan(&enableModuleApis).Error; err != nil {
 		logger.Errorf(ctx, "Get enable module apis by role id [%s] failed: %+v", strings.Join(roleIds, ","), err)
 		return nil, gerr.NewWithDetail(ctx, gerr.Internal, err, gerr.ErrorInternalError)
 	}
@@ -77,10 +116,17 @@ func getEnableModuleApis(ctx context.Context, roleIds []string) ([]*models.Modul
 	return enableModuleApis, nil
 }
 
-func GetEnableModuleApis(ctx context.Context, roleIds []string) ([]*models.ModuleApi, error) {
-	roleModuleBindings, err := GetRoleModuleBindingsByRoleIds(ctx, roleIds)
+func GetEnableModuleApis(ctx context.Context, roleIds []string, roleModuleBindings ...*models.RoleModuleBinding) ([]*models.ModuleApi, error) {
+	roles, err := GetRoles(ctx, roleIds)
 	if err != nil {
 		return nil, err
+	}
+
+	if len(roleModuleBindings) == 0 {
+		roleModuleBindings, err = GetRoleModuleBindingsByRoleIds(ctx, roleIds)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	var isCheckAllModuleIds []string
@@ -90,47 +136,26 @@ func GetEnableModuleApis(ctx context.Context, roleIds []string) ([]*models.Modul
 		}
 	}
 
-	allEnableModuleApis, err := GetModuleApisByModuleIds(ctx, isCheckAllModuleIds)
+	isCheckAllModuleApis, err := GetModuleApisByModuleIds(ctx, isCheckAllModuleIds)
 	if err != nil {
 		return nil, err
 	}
 
-	enableModuleApis, err := getEnableModuleApis(ctx, roleIds)
+	filterModuleApis := FilterModuleApisByRoles(isCheckAllModuleApis, roles)
+
+	checkedModuleApis, err := GetCheckedModuleApis(ctx, roleIds)
 	if err != nil {
 		return nil, err
 	}
 
-	allEnableModuleApis = append(allEnableModuleApis, enableModuleApis...)
-
-	return models.Unique(allEnableModuleApis), nil
-}
-
-func GetVisibilityModuleApis(ctx context.Context, roleId string) ([]*models.ModuleApi, error) {
-	role, err := GetRole(ctx, roleId)
-	if err != nil {
-		return nil, err
-	}
-
-	columnActionBundleVisibility := role.Portal + constants.ColumnActionBundleVisibilitySuffix
-
-	query := `
-		select module_api.*
-		from
-			role_module_binding, module_api
-		where role_module_binding.module_id=module_api.module_id
-			and role_module_binding.role_id=? and module_api.` + columnActionBundleVisibility + "=1"
-	var moduleApis []*models.ModuleApi
-	if err := global.Global().Database.Raw(query, roleId).Scan(&moduleApis).Error; err != nil {
-		logger.Errorf(ctx, "Get module apis by role id [%s] failed: %+v", roleId, err)
-		return nil, gerr.NewWithDetail(ctx, gerr.Internal, err, gerr.ErrorInternalError)
-	}
-
-	return moduleApis, nil
+	filterModuleApis = append(filterModuleApis, checkedModuleApis...)
+	return models.UniqueModuleApis(filterModuleApis), nil
 }
 
 func GetModuleApisByModuleIds(ctx context.Context, moduleIds []string) ([]*models.ModuleApi, error) {
 	var moduleApis []*models.ModuleApi
-	if err := global.Global().Database.Table(constants.TableModuleApi).
+	if err := global.Global().Database.
+		Table(constants.TableModuleApi).
 		Where(constants.ColumnModuleId+" in (?)", moduleIds).
 		Find(&moduleApis).Error; err != nil {
 		logger.Errorf(ctx, "Get module apis by module ids [%s] failed: %+v", strings.Join(moduleIds, ","), err)

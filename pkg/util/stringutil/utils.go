@@ -50,3 +50,17 @@ func Reverse(s string) string {
 	}
 	return string(buf)
 }
+
+func Merge(left, right []string) []string {
+	if len(left) == 0 {
+		return right
+	} else {
+		var merge []string
+		for _, s := range left {
+			if Contains(right, s) {
+				merge = append(merge, s)
+			}
+		}
+		return merge
+	}
+}

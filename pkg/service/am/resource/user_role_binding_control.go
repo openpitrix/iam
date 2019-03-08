@@ -16,7 +16,8 @@ import (
 
 func GetUserRoleBindings(ctx context.Context, userIds, roleIds []string) ([]*models.UserRoleBinding, error) {
 	var userRoleBindings []*models.UserRoleBinding
-	tx := global.Global().Database.Table(constants.TableUserRoleBinding).
+	tx := global.Global().Database.
+		Table(constants.TableUserRoleBinding).
 		Where(constants.ColumnUserId+" in (?)", userIds)
 
 	if len(roleIds) > 0 {
@@ -29,8 +30,24 @@ func GetUserRoleBindings(ctx context.Context, userIds, roleIds []string) ([]*mod
 	return userRoleBindings, nil
 }
 
+func GetRolesByUserIds(ctx context.Context, userIds []string) ([]*models.Role, error) {
+	var roles []*models.Role
+	if err := global.Global().Database.
+		Table(constants.TableRole).
+		Joins("JOIN "+constants.TableUserRoleBinding+" on "+
+			constants.TableUserRoleBinding+"."+constants.ColumnRoleId+" = "+constants.TableRole+"."+constants.ColumnRoleId).
+		Group(constants.TableRole+"."+constants.ColumnRoleId).
+		Where(constants.TableUserRoleBinding+"."+constants.ColumnUserId+" in (?)", userIds).
+		Find(&roles).Error; err != nil {
+		return nil, gerr.NewWithDetail(ctx, gerr.Internal, err, gerr.ErrorInternalError)
+	}
+
+	return roles, nil
+}
+
 func GetRoleIdsByUserIds(ctx context.Context, userIds []string) ([]string, error) {
-	rows, err := global.Global().Database.Table(constants.TableUserRoleBinding).
+	rows, err := global.Global().Database.
+		Table(constants.TableUserRoleBinding).
 		Select(constants.ColumnRoleId).
 		Where(constants.ColumnUserId+" in (?)", userIds).
 		Rows()
@@ -48,7 +65,8 @@ func GetRoleIdsByUserIds(ctx context.Context, userIds []string) ([]string, error
 }
 
 func GetUserIdsByRoleIds(ctx context.Context, roleIds []string) ([]string, error) {
-	rows, err := global.Global().Database.Table(constants.TableUserRoleBinding).
+	rows, err := global.Global().Database.
+		Table(constants.TableUserRoleBinding).
 		Select(constants.ColumnUserId).
 		Where(constants.ColumnRoleId+" in (?)", roleIds).
 		Rows()
