@@ -129,7 +129,7 @@ func GetVisibilityModuleApis(ctx context.Context, roleId string) ([]*models.Modu
 		Select(constants.TableModuleApi+".*").
 		Joins("JOIN "+constants.TableRoleModuleBinding+" on "+
 			constants.TableRoleModuleBinding+"."+constants.ColumnModuleId+" = "+constants.TableModuleApi+"."+constants.ColumnModuleId).
-		Where(constants.TableRoleModuleBinding+"."+constants.ColumnRoleId+" = ？", roleId).
+		Where(constants.TableRoleModuleBinding+"."+constants.ColumnRoleId+" = ?", roleId).
 		Where(constants.TableModuleApi + "." + columnActionBundleVisibility + " = 1").
 		Scan(&moduleApis).Error; err != nil {
 		logger.Errorf(ctx, "Get module apis by role id [%s] failed: %+v", roleId, err)
