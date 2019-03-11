@@ -40,7 +40,11 @@ func CanDo(ctx context.Context, req *pb.CanDoRequest) (*pb.CanDoResponse, error)
 
 	var roleIds []string
 	if userId == constants.UserSystem {
-		roleIds = []string{constants.RoleGlobalAdmin}
+		return &pb.CanDoResponse{
+			UserId:     userId,
+			OwnerPath:  ":" + userId,
+			AccessPath: "",
+		}, nil
 	} else {
 		var err error
 		roleIds, err = GetRoleIdsByUserIds(ctx, []string{userId})
