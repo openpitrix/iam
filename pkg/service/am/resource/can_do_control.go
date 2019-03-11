@@ -36,10 +36,15 @@ func CanDo(ctx context.Context, req *pb.CanDoRequest) (*pb.CanDoResponse, error)
 	userId := stringutil.SimplifyString(req.UserId)
 	url := stringutil.SimplifyString(req.Url)
 	urlMethod := strings.ToLower(stringutil.SimplifyString(req.UrlMethod))
+	apiMethod := stringutil.SimplifyString(req.ApiMethod)
 
 	var roleIds []string
 	if userId == constants.UserSystem {
-		roleIds = []string{constants.RoleGlobalAdmin}
+		return &pb.CanDoResponse{
+			UserId:     userId,
+			OwnerPath:  ":" + userId,
+			AccessPath: "",
+		}, nil
 	} else {
 		var err error
 		roleIds, err = GetRoleIdsByUserIds(ctx, []string{userId})
@@ -57,14 +62,16 @@ func CanDo(ctx context.Context, req *pb.CanDoRequest) (*pb.CanDoResponse, error)
 	var moduleIds []string
 
 	for _, enableModuleApi := range enableModuleApis {
-		if enableModuleApi.Url == url && enableModuleApi.UrlMethod == urlMethod {
+		if (enableModuleApi.Url == url && enableModuleApi.UrlMethod == urlMethod) ||
+			(enableModuleApi.ApiMethod == apiMethod) {
 			canDo = true
 			moduleIds = append(moduleIds, enableModuleApi.ModuleId)
 		}
 	}
 
 	if !canDo {
-		logger.Errorf(ctx, "Permission denied for user_id [%s], url [%s], url_method [%s]", userId, url, urlMethod)
+		logger.Errorf(ctx, "Permission denied for user_id [%s], url [%s], url_method [%s], api_method [%s]",
+			userId, url, urlMethod, apiMethod)
 		return nil, gerr.New(ctx, gerr.PermissionDenied, gerr.ErrorPermissionDenied)
 	}
 
