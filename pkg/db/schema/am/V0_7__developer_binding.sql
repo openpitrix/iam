@@ -1,6 +1,6 @@
 UPDATE role_module_binding
 SET is_check_all = 0, bind_id = 'bid-developerm1'
-WHERE role_id = 'developer' and module_id = 'm1'
+WHERE role_id = 'developer' and module_id = 'm1';
 
 INSERT INTO enable_action_bundle
 (enable_id, bind_id, action_bundle_id) VALUES
