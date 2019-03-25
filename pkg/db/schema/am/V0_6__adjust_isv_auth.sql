@@ -35,7 +35,7 @@ INSERT INTO module_api
 ('m0','默认权限','m0.f11','环境管理','m0.f11.a1','查看环境',0,0,0,'m0.f11.a1.api2','DescribeDebugRuntimes','get','/v1/debug_runtimes'),
 ('m0','默认权限','m0.f12','授权信息管理','m0.f12.a1','查看授权信息',0,0,0,'m0.f12.a1.api1','DescribeRuntimeCredentials','get','/v1/runtimes/credentials'),
 ('m0','默认权限','m0.f12','授权信息管理','m0.f12.a1','查看授权信息',0,0,0,'m0.f12.a1.api2','DescribeDebugRuntimeCredentials','get','/v1/debug_runtimes/credentials'),
-('m0','默认权限','m0.f13','服务商认证','m0.f13.a1','查看服务商申请',0,1,1,'m0.f13.a1.api2','DescribeVendorVerifyInfos','get','/v1/app_vendors'),
+('m0','默认权限','m0.f13','服务商认证','m0.f13.a1','查看服务商申请',0,0,0,'m0.f13.a1.api2','DescribeVendorVerifyInfos','get','/v1/app_vendors'),
 ('m1','商店管理','m1.f1','应用管理','m1.f1.a1','查看应用统计信息',1,1,1,'m1.f1.a1.api2','GetAppStatistics','get','/v1/apps/statistics'),
 ('m1','商店管理','m1.f1','应用管理','m1.f1.a2','创建应用',1,1,0,'m1.f1.a2.api1','CreateApp','post','/v1/apps'),
 ('m1','商店管理','m1.f1','应用管理','m1.f1.a2','创建应用',1,1,0,'m1.f1.a2.api2','CreateAppVersion','post','/v1/app_versions'),

@@ -192,6 +192,11 @@ var (
 		en:   "module [%s] not found",
 		zhCN: "没有找到模块[%s]",
 	}
+	ErrorDataLevelPermissionDenied = ErrorMessage{
+		Name: "data_level_permission_denied",
+		en:   "data level [%s] permission denied",
+		zhCN: "禁止使用数据权限[%s]",
+	}
 	ErrorResourceRoleNotFound = ErrorMessage{
 		Name: "resource_role_not_found",
 		en:   "resource [%s] role [%s] not found",

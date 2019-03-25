@@ -155,9 +155,15 @@ func GetRoleModule(ctx context.Context, req *pb.GetRoleModuleRequest) (*pb.GetRo
 
 func ModifyRoleModule(ctx context.Context, req *pb.ModifyRoleModuleRequest) (*pb.ModifyRoleModuleResponse, error) {
 	roleId := req.RoleId
+
+	role, err := GetRole(ctx, roleId)
+	if err != nil {
+		return nil, err
+	}
+
 	module := req.Module
 
-	visibilityModuleIds, err := GetVisibilityModuleIds(ctx, roleId)
+	visibilityModuleIds, err := GetVisibilityModuleIds(ctx, role)
 	if err != nil {
 		return nil, err
 	}
@@ -180,6 +186,10 @@ func ModifyRoleModule(ctx context.Context, req *pb.ModifyRoleModuleRequest) (*pb
 			return nil, gerr.New(ctx, gerr.NotFound, gerr.ErrorModuleNotFound, moduleId)
 		}
 
+		if role.Portal != constants.PortalGlobalAdmin && moduleElem.DataLevel == constants.DataLevelAll {
+			return nil, gerr.New(ctx, gerr.PermissionDenied, gerr.ErrorDataLevelPermissionDenied, moduleElem.DataLevel)
+		}
+
 		newRoleModuleBinding := models.NewRoleModuleBinding(
 			roleId,
 			moduleId,
@@ -200,8 +210,8 @@ func ModifyRoleModule(ctx context.Context, req *pb.ModifyRoleModuleRequest) (*pb
 
 	tx := global.Global().Database.Begin()
 	{
-		// delete old role_module_binding
-		if err := tx.Exec("DELETE from role_module_binding where bind_id in (?)", bindIds).Error; err != nil {
+		// delete old role_module_binding without m0
+		if err := tx.Exec("DELETE from role_module_binding where bind_id in (?) and module_id != ?", bindIds, constants.ModuleIdM0).Error; err != nil {
 			tx.Rollback()
 			return nil, gerr.NewWithDetail(ctx, gerr.Internal, err, gerr.ErrorInternalError)
 		}
@@ -212,11 +222,13 @@ func ModifyRoleModule(ctx context.Context, req *pb.ModifyRoleModuleRequest) (*pb
 			return nil, gerr.NewWithDetail(ctx, gerr.Internal, err, gerr.ErrorInternalError)
 		}
 
-		// insert new role_module_binding
+		// insert new role_module_binding without m0
 		for _, roleModuleBinding := range newRoleModuleBindings {
-			if err := tx.Create(roleModuleBinding).Error; err != nil {
-				tx.Rollback()
-				return nil, gerr.NewWithDetail(ctx, gerr.Internal, err, gerr.ErrorInternalError)
+			if roleModuleBinding.ModuleId != constants.ModuleIdM0 {
+				if err := tx.Create(roleModuleBinding).Error; err != nil {
+					tx.Rollback()
+					return nil, gerr.NewWithDetail(ctx, gerr.Internal, err, gerr.ErrorInternalError)
+				}
 			}
 		}
 		// insert new enable_action_bundle
