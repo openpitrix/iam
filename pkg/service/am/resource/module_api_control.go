@@ -42,12 +42,7 @@ func GetModuleIds(ctx context.Context) ([]string, error) {
 	return moduleIds, nil
 }
 
-func GetVisibilityModuleIds(ctx context.Context, roleId string) ([]string, error) {
-	role, err := GetRole(ctx, roleId)
-	if err != nil {
-		return nil, err
-	}
-
+func GetVisibilityModuleIds(ctx context.Context, role *models.Role) ([]string, error) {
 	columnActionBundleVisibility := role.Portal + constants.ColumnActionBundleVisibilitySuffix
 
 	var moduleIds []string
@@ -55,11 +50,11 @@ func GetVisibilityModuleIds(ctx context.Context, roleId string) ([]string, error
 		Table(constants.TableModuleApi).
 		Select(constants.TableModuleApi+"."+constants.ColumnModuleId).
 		Where(constants.TableModuleApi+"."+columnActionBundleVisibility+" = 1").
-		Joins("JOIN "+constants.TableRoleModuleBinding+" on "+constants.TableRoleModuleBinding+"."+constants.ColumnRoleId+" = ?", roleId).
+		Joins("JOIN "+constants.TableRoleModuleBinding+" on "+constants.TableRoleModuleBinding+"."+constants.ColumnRoleId+" = ?", role.RoleId).
 		Group(constants.TableModuleApi + "." + constants.ColumnApiId).
 		Rows()
 	if err != nil {
-		logger.Errorf(ctx, "Get visibility module ids by role id [%s] failed: %+v", roleId, err)
+		logger.Errorf(ctx, "Get visibility module ids by role id [%s] failed: %+v", role.RoleId, err)
 		return nil, gerr.NewWithDetail(ctx, gerr.Internal, err, gerr.ErrorInternalError)
 	}
 	for rows.Next() {
