@@ -7,7 +7,7 @@ require (
 	github.com/golang/protobuf v1.2.0
 	github.com/google/gops v0.3.6
 	github.com/grpc-ecosystem/go-grpc-middleware v1.0.0
-	github.com/jinzhu/gorm v1.9.2
+	github.com/jinzhu/gorm v1.9.10
 	github.com/jinzhu/now v1.0.0 // indirect
 	github.com/koding/multiconfig v0.0.0-20171124222453-69c27309b2d7
 	github.com/pkg/errors v0.8.1
